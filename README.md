@@ -42,6 +42,7 @@ sécurité de niveau production.
 
 - **LibraryBrain** — RAG local de livres (sqlite-vec + FTS5) qui alimente Klody.
 - **VocalBrain** — outil autour de la voix / l'audio.
+- **Dream × World** *(en exploration)* — générateur de **mondes IA persistants & cohérents**, 100 % local. Un *Canon Engine* (retrieve → generate → vérif anti-contradiction → Best-of-N) garde le monde non-contradictoire dans la durée ; exposé en **MCP** pour que les agents y jouent.
 - *(et d'autres explorations IA locale, audio, MCP…)*
 
 ## 📬 Me contacter
