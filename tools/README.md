@@ -15,8 +15,11 @@ parcourt `~/.claude/projects/` et ne modifie rien.
 # rapport Markdown affiché dans le terminal
 python3 tools/classer_sessions.py
 
-# écrire le rapport dans un fichier
+# écrire le rapport Markdown dans un fichier
 python3 tools/classer_sessions.py --out rapport.md
+
+# rapport visuel : HTML autonome avec graphiques (à ouvrir dans le navigateur)
+python3 tools/classer_sessions.py --html rapport.html
 
 # exporter aussi un CSV (pour trier/filtrer soi-même)
 python3 tools/classer_sessions.py --csv sessions.csv
@@ -24,6 +27,9 @@ python3 tools/classer_sessions.py --csv sessions.csv
 # pointer vers un autre dossier de sessions
 python3 tools/classer_sessions.py --dir /chemin/vers/.claude/projects
 ```
+
+> Astuce : les options se combinent
+> (`--out rapport.md --html rapport.html --csv sessions.csv`).
 
 ### Ce qu'il produit
 
@@ -33,6 +39,11 @@ python3 tools/classer_sessions.py --dir /chemin/vers/.claude/projects
 - **🎯 Par thème** — debug, feature, refactor, doc, tests, question, config/CI, sécurité.
 - **🛠️ Par techno** — Python, Rust, TS/JS, MCP, SQL, Shell.
 - **🕑 Détail chronologique** — date, projet, thème, nb de messages, durée, aperçu du prompt.
+
+Le rapport `--html` reprend ces angles sous forme visuelle : tuiles de stats,
+barres par projet, donut par thème, barres par techno et timeline d'activité.
+C'est un fichier **autonome** (SVG en ligne, thème clair/sombre, aucune
+ressource externe) qui s'ouvre directement dans un navigateur.
 
 ### Personnalisation
 

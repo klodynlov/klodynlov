@@ -5,8 +5,9 @@ classer_sessions.py — Classe tes sessions Claude Code par catégories.
 À lancer EN LOCAL sur ta machine (là où vivent tes sessions) :
 
     python3 classer_sessions.py                 # rapport Markdown dans le terminal
+    python3 classer_sessions.py --out rapport.md     # écrit le rapport Markdown
+    python3 classer_sessions.py --html rapport.html  # rapport visuel (graphiques SVG)
     python3 classer_sessions.py --csv sessions.csv   # export CSV en plus
-    python3 classer_sessions.py --out rapport.md     # écrit le rapport dans un fichier
 
 Aucune dépendance externe : uniquement la bibliothèque standard Python 3.8+.
 Le script ne modifie RIEN — il lit seulement ~/.claude/projects/.
@@ -406,6 +407,305 @@ def rapport_markdown(sessions: list[dict]) -> str:
     return "\n".join(out)
 
 
+# --------------------------------------------------------------------------- #
+#  Rapport HTML autonome (SVG en ligne, thème clair/sombre, sans dépendance)
+# --------------------------------------------------------------------------- #
+#  Palette catégorielle validée CVD-safe (cf. skill dataviz). 8 teintes, en
+#  ordre fixe ; le 9e cas (« Autre ») retombe sur un gris neutre.
+CAT_LIGHT = ["#2a78d6", "#1baf7a", "#eda100", "#008300",
+             "#4a3aa7", "#e34948", "#e87ba4", "#eb6834"]
+CAT_DARK = ["#3987e5", "#199e70", "#c98500", "#008300",
+            "#9085e9", "#e66767", "#d55181", "#d95926"]
+
+# Chaque thème garde une teinte fixe (la couleur suit l'entité, pas le rang).
+THEME_SLOT = {theme: i for i, theme in enumerate(THEMES)}
+
+
+def _esc(s: str) -> str:
+    return (str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+
+
+def _rect_droite_arrondie(x: float, y: float, w: float, h: float, r: float) -> str:
+    """Rectangle au coin-données (droit) arrondi, carré au départ (baseline)."""
+    r = min(r, w, h / 2)
+    if w <= 0:
+        return ""
+    return (f"M{x:.1f},{y:.1f} H{x + w - r:.1f} Q{x + w:.1f},{y:.1f} "
+            f"{x + w:.1f},{y + r:.1f} V{y + h - r:.1f} "
+            f"Q{x + w:.1f},{y + h:.1f} {x + w - r:.1f},{y + h:.1f} "
+            f"H{x:.1f} Z")
+
+
+def svg_barres(rows: list, couleur_var: str) -> str:
+    """Barres horizontales de magnitude (une seule teinte). rows: (label, valeur)."""
+    if not rows:
+        return "<p class='vide'>—</p>"
+    larg, lab_w, pad = 660, 190, 8
+    bar_h, gap = 20, 14
+    aire = larg - lab_w - 56
+    vmax = max(v for _, v in rows) or 1
+    haut = pad * 2 + len(rows) * bar_h + (len(rows) - 1) * gap
+    parts = [f"<svg viewBox='0 0 {larg} {haut}' class='chart' role='img' "
+             f"preserveAspectRatio='xMinYMin meet'>"]
+    y = pad
+    for label, val in rows:
+        w = aire * (val / vmax)
+        parts.append(
+            f"<text x='{lab_w - 10}' y='{y + bar_h / 2:.1f}' class='ylab' "
+            f"text-anchor='end' dominant-baseline='central'>{_esc(label)}</text>")
+        parts.append(f"<path d='{_rect_droite_arrondie(lab_w, y, w, bar_h, 4)}' "
+                     f"fill='var({couleur_var})'/>")
+        parts.append(
+            f"<text x='{lab_w + w + 8:.1f}' y='{y + bar_h / 2:.1f}' class='val' "
+            f"dominant-baseline='central'>{val}</text>")
+        y += bar_h + gap
+    parts.append("</svg>")
+    return "".join(parts)
+
+
+def svg_donut(rows: list) -> str:
+    """Donut catégoriel. rows: (label, valeur, slot|None) ; slot None -> gris."""
+    total = sum(v for _, v, _ in rows) or 1
+    r, cx, cy, sw = 70, 90, 90, 26
+    circo = 2 * 3.141592653589793 * r
+    seg = [f"<svg viewBox='0 0 180 180' class='donut' role='img'>",
+           f"<g transform='rotate(-90 {cx} {cy})'>"]
+    cumul = 0.0
+    for label, val, slot in rows:
+        frac = val / total
+        longueur = frac * circo
+        couleur = (f"var(--s{slot})" if slot is not None else "var(--muted-fill)")
+        # petit espace de surface entre segments (2px)
+        dash = max(longueur - 2, 0.1)
+        seg.append(
+            f"<circle cx='{cx}' cy='{cy}' r='{r}' fill='none' "
+            f"stroke='{couleur}' stroke-width='{sw}' "
+            f"stroke-dasharray='{dash:.2f} {circo - dash:.2f}' "
+            f"stroke-dashoffset='{-cumul:.2f}'/>")
+        cumul += longueur
+    seg.append("</g>")
+    seg.append(f"<text x='{cx}' y='{cy - 6}' class='donut-num' "
+               f"text-anchor='middle'>{total}</text>")
+    seg.append(f"<text x='{cx}' y='{cy + 14}' class='donut-lab' "
+               f"text-anchor='middle'>sessions</text>")
+    seg.append("</svg>")
+    return "".join(seg)
+
+
+def svg_timeline(sessions: list) -> str:
+    """Colonnes : nombre de sessions par jour (ou par semaine si période longue)."""
+    jours = [s["debut"].astimezone().date() for s in sessions if s["debut"]]
+    if not jours:
+        return "<p class='vide'>Pas de dates exploitables.</p>"
+    from datetime import timedelta
+    d0, d1 = min(jours), max(jours)
+    span = (d1 - d0).days
+    pas = 7 if span > 120 else 1  # agrège par semaine si > ~4 mois
+    from collections import Counter as _C
+    if pas == 7:
+        cnt = _C(d - timedelta(days=d.weekday()) for d in jours)
+        debut = d0 - timedelta(days=d0.weekday())
+        buckets, cur = [], debut
+        while cur <= d1:
+            buckets.append((cur, cnt.get(cur, 0)))
+            cur += timedelta(days=7)
+    else:
+        cnt = _C(jours)
+        buckets, cur = [], d0
+        while cur <= d1:
+            buckets.append((cur, cnt.get(cur, 0)))
+            cur += timedelta(days=1)
+    vmax = max(v for _, v in buckets) or 1
+    col = min(22, max(6, int(620 / max(len(buckets), 1))))
+    ecart = max(2, col // 4)
+    larg = len(buckets) * (col + ecart) + 40
+    haut = 150
+    base_y, aire_h = haut - 26, haut - 40
+    parts = [f"<svg viewBox='0 0 {larg} {haut}' height='{haut}' "
+             f"class='timeline' role='img'>"]
+    parts.append(f"<line x1='20' y1='{base_y}' x2='{larg - 10}' y2='{base_y}' "
+                 f"class='axe'/>")
+    x = 24
+    n = len(buckets)
+    for i, (jour, val) in enumerate(buckets):
+        h = aire_h * (val / vmax)
+        if val:
+            parts.append(
+                f"<rect x='{x:.1f}' y='{base_y - h:.1f}' width='{col}' "
+                f"height='{h:.1f}' rx='3' fill='var(--s0)'/>")
+        # étiquettes de dates : première, dernière, et quelques intermédiaires
+        if i == 0 or i == n - 1 or (n > 4 and i == n // 2):
+            parts.append(
+                f"<text x='{x + col / 2:.1f}' y='{base_y + 16}' class='xlab' "
+                f"text-anchor='middle'>{jour:%d/%m}</text>")
+        x += col + ecart
+    parts.append("</svg>")
+    unite = "semaine" if pas == 7 else "jour"
+    return (f"<p class='note'>1 colonne = 1 {unite} · pic à {vmax} "
+            f"session{'s' if vmax > 1 else ''}</p>" + "".join(parts))
+
+
+def _tile(valeur, label: str) -> str:
+    return (f"<div class='tile'><div class='tile-v'>{_esc(valeur)}</div>"
+            f"<div class='tile-l'>{_esc(label)}</div></div>")
+
+
+def _legende(rows: list) -> str:
+    """Légende thèmes : pastille + libellé + compte (identité jamais couleur-seule)."""
+    li = []
+    for label, val, slot in rows:
+        c = (f"var(--s{slot})" if slot is not None else "var(--muted-fill)")
+        li.append(f"<li><span class='dot' style='background:{c}'></span>"
+                  f"<span class='lg-lab'>{_esc(label)}</span>"
+                  f"<span class='lg-val'>{val}</span></li>")
+    return "<ul class='legende'>" + "".join(li) + "</ul>"
+
+
+def generer_html(sessions: list) -> str:
+    total_msgs = sum(s["n_messages"] for s in sessions)
+    dts = [s["debut"] for s in sessions if s["debut"]]
+    periode = (f"{min(dts).astimezone():%d/%m/%Y} → {max(dts).astimezone():%d/%m/%Y}"
+               if dts else "—")
+
+    # --- agrégations ---
+    par_connu: dict = defaultdict(list)
+    for s in sessions:
+        par_connu[s["projet_connu"]].append(s)
+    rows_proj = sorted(((p, len(g)) for p, g in par_connu.items()),
+                       key=lambda kv: -kv[1])
+
+    par_theme: dict = defaultdict(int)
+    for s in sessions:
+        par_theme[s["theme"]] += 1
+    rows_theme = sorted(par_theme.items(), key=lambda kv: -kv[1])
+    donut_rows = [(t, n, THEME_SLOT.get(t)) for t, n in rows_theme]
+
+    compte_tech: Counter = Counter()
+    for s in sessions:
+        for t in s["technos"]:
+            if t != "—":
+                compte_tech[t] += 1
+    rows_tech = compte_tech.most_common()
+
+    nb_projets = len([p for p in par_connu if not p.startswith("🗂️")])
+
+    doc = [f"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sessions Claude Code — classées</title>
+<style>
+:root {{
+  --plane:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e;
+  --muted:#898781; --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,.10);
+  --muted-fill:#c3c2b7;
+  --s0:{CAT_LIGHT[0]}; --s1:{CAT_LIGHT[1]}; --s2:{CAT_LIGHT[2]}; --s3:{CAT_LIGHT[3]};
+  --s4:{CAT_LIGHT[4]}; --s5:{CAT_LIGHT[5]}; --s6:{CAT_LIGHT[6]}; --s7:{CAT_LIGHT[7]};
+}}
+:root[data-theme="dark"], html[data-theme="dark"] {{
+  --plane:#0d0d0d; --surface:#1a1a19; --ink:#fff; --ink2:#c3c2b7;
+  --muted:#898781; --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,.10);
+  --muted-fill:#54534e;
+  --s0:{CAT_DARK[0]}; --s1:{CAT_DARK[1]}; --s2:{CAT_DARK[2]}; --s3:{CAT_DARK[3]};
+  --s4:{CAT_DARK[4]}; --s5:{CAT_DARK[5]}; --s6:{CAT_DARK[6]}; --s7:{CAT_DARK[7]};
+}}
+@media (prefers-color-scheme: dark) {{
+  :root:not([data-theme="light"]) {{
+    --plane:#0d0d0d; --surface:#1a1a19; --ink:#fff; --ink2:#c3c2b7;
+    --muted:#898781; --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,.10);
+    --muted-fill:#54534e;
+    --s0:{CAT_DARK[0]}; --s1:{CAT_DARK[1]}; --s2:{CAT_DARK[2]}; --s3:{CAT_DARK[3]};
+    --s4:{CAT_DARK[4]}; --s5:{CAT_DARK[5]}; --s6:{CAT_DARK[6]}; --s7:{CAT_DARK[7]};
+  }}
+}}
+* {{ box-sizing:border-box; }}
+body {{ margin:0; background:var(--plane); color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif; line-height:1.5; }}
+.wrap {{ max-width:900px; margin:0 auto; padding:32px 20px 64px; }}
+header {{ display:flex; align-items:baseline; justify-content:space-between;
+  gap:16px; flex-wrap:wrap; margin-bottom:4px; }}
+h1 {{ font-size:22px; margin:0; }}
+.sub {{ color:var(--ink2); font-size:14px; }}
+.toggle {{ border:1px solid var(--border); background:var(--surface);
+  color:var(--ink2); border-radius:8px; padding:6px 12px; font:inherit;
+  font-size:13px; cursor:pointer; }}
+.tiles {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:12px; margin:20px 0 8px; }}
+.tile {{ background:var(--surface); border:1px solid var(--border);
+  border-radius:12px; padding:16px 18px; }}
+.tile-v {{ font-size:28px; font-weight:600; }}
+.tile-l {{ color:var(--ink2); font-size:13px; margin-top:2px; }}
+section {{ background:var(--surface); border:1px solid var(--border);
+  border-radius:14px; padding:20px 22px; margin-top:18px; }}
+h2 {{ font-size:15px; margin:0 0 14px; font-weight:600; }}
+.chart {{ width:100%; height:auto; }}
+.scroll {{ overflow-x:auto; }}
+.timeline {{ display:block; min-width:100%; }}
+.ylab {{ fill:var(--ink2); font-size:12.5px; }}
+.val {{ fill:var(--ink); font-size:12.5px; font-weight:600;
+  font-variant-numeric:tabular-nums; }}
+.xlab {{ fill:var(--muted); font-size:11px; font-variant-numeric:tabular-nums; }}
+.axe {{ stroke:var(--axis); stroke-width:1; }}
+.donut-num {{ fill:var(--ink); font-size:26px; font-weight:600; }}
+.donut-lab {{ fill:var(--muted); font-size:11px; }}
+.split {{ display:flex; gap:24px; align-items:center; flex-wrap:wrap; }}
+.donut {{ width:180px; height:180px; flex:0 0 auto; }}
+.legende {{ list-style:none; margin:0; padding:0; flex:1 1 240px;
+  min-width:220px; }}
+.legende li {{ display:flex; align-items:center; gap:10px; padding:3px 0;
+  font-size:13.5px; }}
+.dot {{ width:11px; height:11px; border-radius:3px; flex:0 0 auto; }}
+.lg-lab {{ flex:1; color:var(--ink2); }}
+.lg-val {{ font-weight:600; font-variant-numeric:tabular-nums; }}
+.note {{ color:var(--muted); font-size:12px; margin:0 0 8px; }}
+.vide {{ color:var(--muted); font-size:13px; }}
+footer {{ color:var(--muted); font-size:12px; margin-top:28px; text-align:center; }}
+a {{ color:var(--s0); }}
+</style></head><body><div class="wrap">
+<header>
+  <div><h1>🗂️ Tes sessions Claude Code</h1>
+  <div class="sub">{_esc(periode)} · généré le {datetime.now().astimezone():%d/%m/%Y %H:%M}</div></div>
+  <button class="toggle" onclick="tt()">◐ Thème</button>
+</header>
+<div class="tiles">
+  {_tile(len(sessions), "sessions")}
+  {_tile(total_msgs, "messages")}
+  {_tile(nb_projets, "projets actifs")}
+  {_tile(len(rows_theme), "thèmes")}
+</div>
+
+<section>
+  <h2>🚀 Sessions par projet</h2>
+  {svg_barres(rows_proj, "--s0")}
+</section>
+
+<section>
+  <h2>🎯 Répartition par thème</h2>
+  <div class="split">{svg_donut(donut_rows)}{_legende(donut_rows)}</div>
+</section>
+
+<section>
+  <h2>🛠️ Sessions par techno</h2>
+  {svg_barres(rows_tech, "--s1") if rows_tech else "<p class='vide'>Aucune techno détectée.</p>"}
+</section>
+
+<section>
+  <h2>🕑 Activité dans le temps</h2>
+  <div class="scroll">{svg_timeline(sessions)}</div>
+</section>
+
+<footer>Généré par <code>classer_sessions.py</code> · données locales, 100 % hors-ligne</footer>
+</div>
+<script>
+function tt(){{
+  var r=document.documentElement;
+  var cur=r.getAttribute('data-theme');
+  if(!cur){{cur=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}}
+  r.setAttribute('data-theme', cur==='dark'?'light':'dark');
+}}
+</script>
+</body></html>"""]
+    return "".join(doc)
+
+
 def ecrire_csv(sessions: list[dict], chemin: str) -> None:
     champs = ["session_id", "projet_connu", "projet", "theme", "technos",
               "n_messages", "n_user", "n_assistant", "debut", "fin", "duree_s",
@@ -434,6 +734,8 @@ def main() -> int:
                          "(défaut: $CLAUDE_CONFIG_DIR/projects ou ~/.claude/projects)")
     ap.add_argument("--csv", metavar="FICHIER", help="Exporte aussi un CSV")
     ap.add_argument("--out", metavar="FICHIER", help="Écrit le rapport Markdown dans un fichier")
+    ap.add_argument("--html", metavar="FICHIER",
+                    help="Génère un rapport HTML autonome avec graphiques (SVG)")
     args = ap.parse_args()
 
     base = Path(args.dir).expanduser()
@@ -461,6 +763,10 @@ def main() -> int:
         print(f"✅ Rapport écrit dans {args.out}", file=sys.stderr)
     else:
         print(rapport)
+
+    if args.html:
+        Path(args.html).write_text(generer_html(sessions), encoding="utf-8")
+        print(f"✅ Rapport HTML écrit dans {args.html}", file=sys.stderr)
 
     if args.csv:
         ecrire_csv(sessions, args.csv)
