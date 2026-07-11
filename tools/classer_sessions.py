@@ -18,10 +18,36 @@ import argparse
 import csv
 import json
 import os
+import re
 import sys
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
+
+
+# --------------------------------------------------------------------------- #
+#  Correspondance de mots-clés
+# --------------------------------------------------------------------------- #
+#  Cache des regex « mot entier » pour les mots-clés purement alphanumériques.
+_MOT_RE_CACHE: dict = {}
+
+
+def contient_motcle(texte: str, motcle: str) -> bool:
+    """Vrai si `motcle` apparaît dans `texte` (supposé déjà en minuscules).
+
+    - mot purement alphanumérique (« ci », « add », « test », « débug »)
+      → correspondance « mot entier » délimitée, pour éviter les faux positifs
+      (« ci » dans « merci », « add » dans « adresse », « test » dans « latest »).
+    - mot avec espace / ponctuation (« best-of-n », « .py », « rag local »)
+      → simple sous-chaîne, car les bornes de mot n'ont pas de sens ici.
+    """
+    if motcle.isalnum():
+        rx = _MOT_RE_CACHE.get(motcle)
+        if rx is None:
+            rx = re.compile(rf"(?<![0-9a-zà-ÿ]){re.escape(motcle)}(?![0-9a-zà-ÿ])")
+            _MOT_RE_CACHE[motcle] = rx
+        return rx.search(texte) is not None
+    return motcle in texte
 
 # --------------------------------------------------------------------------- #
 #  Catégorisation par THÈME (heuristique sur le 1er prompt utilisateur)
@@ -72,7 +98,7 @@ def theme_de(prompt: str) -> str:
     scores = Counter()
     for theme, mots in THEMES.items():
         for m in mots:
-            if m in p:
+            if contient_motcle(p, m):
                 scores[theme] += 1
     if not scores:
         return "🗂️  Autre / non classé"
@@ -126,7 +152,7 @@ def projet_connu(cwd: str, prompt: str) -> str:
     # 2) Repli sur le contenu du premier prompt.
     p = (prompt or "").lower()
     for label, regles in PROJETS_CONNUS.items():
-        if any(m in p for m in regles["mots"]):
+        if any(contient_motcle(p, m) for m in regles["mots"]):
             return label
     return "🗂️  Hors projet connu"
 
@@ -146,7 +172,8 @@ TECHNOS = {
 
 def technos_de(prompt: str) -> list[str]:
     p = (prompt or "").lower()
-    trouves = [t for t, mots in TECHNOS.items() if any(m in p for m in mots)]
+    trouves = [t for t, mots in TECHNOS.items()
+               if any(contient_motcle(p, m) for m in mots)]
     return trouves or ["—"]
 
 
@@ -164,10 +191,17 @@ def parse_ts(val) -> datetime | None:
         return None
     try:
         # Formats ISO type "2026-07-09T06:43:00.000Z"
-        s = str(val).replace("Z", "+00:00")
-        return datetime.fromisoformat(s)
+        s = str(val)
+        if s.endswith("Z"):
+            s = s[:-1] + "+00:00"
+        dt = datetime.fromisoformat(s)
     except Exception:
         return None
+    # Toujours renvoyer un datetime « aware » (UTC par défaut) : mélanger des
+    # datetimes naïfs et aware ferait planter les tris / min / max plus loin.
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt
 
 
 def lire_session(path: Path) -> dict | None:
@@ -191,6 +225,11 @@ def lire_session(path: Path) -> dict | None:
                 except json.JSONDecodeError:
                     continue
 
+                # Entrées internes de Claude Code (caveats, sorties de commande…)
+                # : ni comptées, ni utilisées pour deviner le thème.
+                if obj.get("isMeta"):
+                    continue
+
                 ts = parse_ts(obj.get("timestamp"))
                 if ts:
                     t_debut = ts if t_debut is None else min(t_debut, ts)
@@ -208,7 +247,11 @@ def lire_session(path: Path) -> dict | None:
                     n_user += 1
                     n_msgs += 1
                     if not premier_prompt:
-                        premier_prompt = extraire_texte(msg)
+                        txt = extraire_texte(msg).strip()
+                        # On saute les wrappers de commandes (<command-name>…,
+                        # <local-command-stdout>…) et les blocs vides / tool_result.
+                        if txt and not txt.startswith("<"):
+                            premier_prompt = txt
                 elif role in ("assistant", "ai"):
                     n_assistant += 1
                     n_msgs += 1
@@ -383,8 +426,12 @@ def ecrire_csv(sessions: list[dict], chemin: str) -> None:
 # --------------------------------------------------------------------------- #
 def main() -> int:
     ap = argparse.ArgumentParser(description="Classe tes sessions Claude Code par catégories.")
-    ap.add_argument("--dir", default=str(Path.home() / ".claude" / "projects"),
-                    help="Dossier des projets Claude Code (défaut: ~/.claude/projects)")
+    # Claude Code respecte CLAUDE_CONFIG_DIR pour relocaliser ~/.claude.
+    config_dir = os.environ.get("CLAUDE_CONFIG_DIR")
+    defaut_dir = (Path(config_dir) if config_dir else Path.home() / ".claude") / "projects"
+    ap.add_argument("--dir", default=str(defaut_dir),
+                    help="Dossier des projets Claude Code "
+                         "(défaut: $CLAUDE_CONFIG_DIR/projects ou ~/.claude/projects)")
     ap.add_argument("--csv", metavar="FICHIER", help="Exporte aussi un CSV")
     ap.add_argument("--out", metavar="FICHIER", help="Écrit le rapport Markdown dans un fichier")
     args = ap.parse_args()
