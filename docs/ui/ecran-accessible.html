@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SilverBrain — écran accessible « gros boutons »</title>
+<style>
+  :root{
+    --ground:#EEF3EE; --surface:#FFFFFF; --surface-2:#F5F8F4;
+    --ink:#15201B; --muted:#54615A; --line:rgba(20,45,32,.12);
+    --accent:#2F7D6B; --accent-ink:#1C4E43; --warm:#C87F2E; --warm-soft:#FBEFD9;
+    --good:#2F7D6B; --alert:#B4502F;
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif;
+    --sans:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --r:22px; --shadow:0 6px 24px rgba(20,45,32,.08),0 1px 0 rgba(255,255,255,.6) inset;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ground:#101815; --surface:#1A2621; --surface-2:#202E28;
+      --ink:#E9F0EA; --muted:#9EABA2; --line:rgba(255,255,255,.12);
+      --accent:#5BC6AB; --accent-ink:#BFEce0; --warm:#E7AC58; --warm-soft:#2C2416;
+      --good:#5BC6AB; --alert:#E08663;
+      --shadow:0 8px 28px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.04) inset;
+    }
+  }
+  :root[data-theme="light"]{
+    --ground:#EEF3EE; --surface:#FFFFFF; --surface-2:#F5F8F4;
+    --ink:#15201B; --muted:#54615A; --line:rgba(20,45,32,.12);
+    --accent:#2F7D6B; --accent-ink:#1C4E43; --warm:#C87F2E; --warm-soft:#FBEFD9;
+    --good:#2F7D6B; --alert:#B4502F;
+    --shadow:0 6px 24px rgba(20,45,32,.08),0 1px 0 rgba(255,255,255,.6) inset;
+  }
+  :root[data-theme="dark"]{
+    --ground:#101815; --surface:#1A2621; --surface-2:#202E28;
+    --ink:#E9F0EA; --muted:#9EABA2; --line:rgba(255,255,255,.12);
+    --accent:#5BC6AB; --accent-ink:#BFEce0; --warm:#E7AC58; --warm-soft:#2C2416;
+    --good:#5BC6AB; --alert:#E08663;
+    --shadow:0 8px 28px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.04) inset;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans); background:var(--ground); color:var(--ink);
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; align-items:center;
+    padding:clamp(12px,3vw,32px);
+  }
+  .note{
+    max-width:560px; text-align:center; color:var(--muted);
+    font-size:.9rem; margin:0 0 16px; line-height:1.5;
+  }
+  .note strong{color:var(--ink)}
+
+  /* --- the device screen --- */
+  .screen{
+    width:min(560px,100%); background:var(--surface); border-radius:34px;
+    border:1px solid var(--line); box-shadow:var(--shadow);
+    overflow:hidden; display:flex; flex-direction:column;
+  }
+  .statusbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px; color:var(--muted);
+    font-size:1rem; font-variant-numeric:tabular-nums;
+    border-bottom:1px solid var(--line);
+  }
+  .statusbar .brand{display:flex;align-items:center;gap:9px;font-weight:600;color:var(--ink)}
+  .dot{width:11px;height:11px;border-radius:50%;background:var(--good);
+       box-shadow:0 0 0 4px color-mix(in srgb,var(--good) 22%,transparent)}
+  .pad{padding:clamp(20px,5vw,32px);display:flex;flex-direction:column;gap:22px}
+
+  .greet{font-family:var(--serif);line-height:1.12;letter-spacing:.2px;
+         font-size:clamp(2.1rem,7vw,2.9rem);margin:2px 0 -4px}
+  .greet .day{display:block;color:var(--muted);font-size:clamp(1.05rem,3.6vw,1.25rem);
+              font-family:var(--sans);font-weight:500;margin-top:10px;letter-spacing:.2px}
+
+  /* next reminder card */
+  .reminder{
+    background:var(--warm-soft); border:1px solid color-mix(in srgb,var(--warm) 40%,transparent);
+    border-radius:var(--r); padding:20px 22px; display:flex; gap:16px; align-items:center;
+  }
+  .reminder .ic{font-size:2.2rem;line-height:1}
+  .reminder .txt{display:flex;flex-direction:column;gap:3px}
+  .reminder .lbl{text-transform:uppercase;letter-spacing:.09em;font-size:.78rem;
+                 font-weight:700;color:var(--warm)}
+  .reminder .big{font-size:clamp(1.25rem,4.4vw,1.55rem);font-weight:650;line-height:1.25}
+
+  /* big action buttons */
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .btn{
+    appearance:none;border:1px solid var(--line);background:var(--surface-2);
+    color:var(--ink);border-radius:var(--r);padding:22px 18px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:flex-start;gap:12px;
+    font-family:var(--sans);font-size:clamp(1.15rem,3.8vw,1.35rem);font-weight:600;
+    min-height:118px;text-align:left;transition:transform .12s ease,border-color .12s ease,background .12s ease;
+  }
+  .btn .ic{font-size:2rem;line-height:1}
+  .btn:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--accent) 55%,transparent)}
+  .btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .btn.wide{grid-column:1/-1;flex-direction:row;align-items:center;min-height:0;padding:18px 22px}
+  .btn.wide .ic{font-size:1.7rem}
+
+  /* voice bar */
+  .voice{
+    display:flex;align-items:center;gap:18px;background:var(--accent);
+    color:#fff;border:none;border-radius:26px;padding:20px 24px;cursor:pointer;
+    font-family:var(--sans);width:100%;transition:filter .12s ease;
+  }
+  .voice:hover{filter:brightness(1.05)}
+  .voice:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .voice .mic{
+    width:58px;height:58px;flex:none;border-radius:50%;
+    background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:1.7rem;
+    position:relative;
+  }
+  .voice[aria-pressed="true"] .mic::after{
+    content:"";position:absolute;inset:-6px;border-radius:50%;
+    border:3px solid rgba(255,255,255,.6);animation:pulse 1.4s ease-out infinite;
+  }
+  @keyframes pulse{0%{transform:scale(.9);opacity:.9}100%{transform:scale(1.5);opacity:0}}
+  @media (prefers-reduced-motion:reduce){.voice[aria-pressed="true"] .mic::after{animation:none}}
+  .voice .vt{display:flex;flex-direction:column;gap:2px;text-align:left}
+  .voice .vt b{font-size:1.35rem;font-weight:700;letter-spacing:.2px}
+  .voice .vt span{font-size:1rem;opacity:.9}
+
+  .foot{padding:16px 24px 22px;border-top:1px solid var(--line);
+        display:flex;justify-content:center;color:var(--muted);font-size:.95rem;gap:8px;align-items:center}
+
+  @media (max-width:420px){.actions{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <p class="note"><strong>Maquette — écran accessible « gros boutons ».</strong> L'écran optionnel de SilverBrain, côté utilisateur : voix d'abord, très gros caractères, fort contraste, une action à la fois. Rien n'oblige à le regarder — tout se fait aussi à l'oral.</p>
+
+  <main class="screen" aria-label="Écran d'accueil SilverBrain">
+    <div class="statusbar">
+      <span class="brand"><span class="dot" aria-hidden="true"></span> SilverBrain</span>
+      <span aria-label="dix heures dix">10:10</span>
+    </div>
+
+    <div class="pad">
+      <h1 class="greet">Bonjour Jeanne.
+        <span class="day">Nous sommes dimanche 12 juillet.</span>
+      </h1>
+
+      <div class="reminder" role="status">
+        <span class="ic" aria-hidden="true">💊</span>
+        <span class="txt">
+          <span class="lbl">Tout à l'heure</span>
+          <span class="big">Votre comprimé pour la tension, après le café.</span>
+        </span>
+      </div>
+
+      <button class="voice" type="button" aria-pressed="false" id="mic">
+        <span class="mic" aria-hidden="true">🎤</span>
+        <span class="vt"><b>Parlez-moi</b><span>Dites simplement ce dont vous avez besoin.</span></span>
+      </button>
+
+      <div class="actions">
+        <button class="btn" type="button"><span class="ic" aria-hidden="true">📞</span> Appeler<br>un proche</button>
+        <button class="btn" type="button"><span class="ic" aria-hidden="true">✉️</span> Lire<br>mon courrier</button>
+        <button class="btn" type="button"><span class="ic" aria-hidden="true">🗓️</span> Mes<br>rappels</button>
+        <button class="btn" type="button"><span class="ic" aria-hidden="true">🌱</span> Un peu<br>de lecture</button>
+        <button class="btn wide" type="button"><span class="ic" aria-hidden="true">🆘</span> J'ai besoin d'aide</button>
+      </div>
+    </div>
+
+    <div class="foot">🔒 Tout reste sur cet appareil — rien ne part sur internet.</div>
+  </main>
+
+<script>
+  // Voice button toggles a calm "listening" state — purely illustrative.
+  var mic = document.getElementById('mic');
+  var vt = mic.querySelector('.vt b');
+  var sub = mic.querySelector('.vt span');
+  mic.addEventListener('click', function(){
+    var on = mic.getAttribute('aria-pressed') === 'true';
+    mic.setAttribute('aria-pressed', String(!on));
+    vt.textContent = on ? 'Parlez-moi' : 'Je vous écoute…';
+    sub.textContent = on ? 'Dites simplement ce dont vous avez besoin.' : 'Prenez votre temps.';
+  });
+</script>
+</body>
+</html>
