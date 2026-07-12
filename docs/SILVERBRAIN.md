@@ -124,6 +124,10 @@ conversation ──► extraction de traits ──► profil (SQLite local)
 à l'assistant de parler *de ce qui la concerne*. Il vit **entièrement en local** — c'est
 ce qui rend acceptable un profilage aussi personnel.
 
+> 📐 Le modèle de données complet du profil (schéma des traits, confiance & oubli, pipeline
+> d'extraction, consentement, sécurité) est spécifié dans
+> [**SILVERBRAIN-PROFIL.md**](SILVERBRAIN-PROFIL.md).
+
 ---
 
 ## 3. 📅 Accompagnement au quotidien — ce que l'assistant fait
@@ -215,6 +219,82 @@ Profil « réfractaire / intimidé » :
 du langage**. En traitant le style comme une contrainte de première classe (et non un
 réglage caché), SilverBrain reste utilisable par la personne qui, précisément, ne
 toucherait jamais à un réglage.
+
+---
+
+## 🌅 Une journée avec SilverBrain (scénario de bout en bout)
+
+*Jeanne, 78 ans, vit seule. Elle n'a jamais aimé « les machines ». Sa fille Marie a
+installé SilverBrain sur un petit boîtier posé dans le salon. Voici une journée — chaque
+échange met en jeu les quatre piliers.*
+
+**8 h 10 — le réveil en douceur** *(pilier 3 : rappel · pilier 4 : formulation)*
+```
+SilverBrain — Bonjour Jeanne. … Ce matin, il y a votre comprimé pour la tension.
+              Voulez-vous que je vous le rappelle maintenant, ou après le café ?
+Jeanne      — Oh, après le café.
+SilverBrain — C'est noté. Je vous le redis dans un moment.
+```
+> Le rappel est calé sur son `rythme` (lève-tôt, café d'abord), la phrase est courte et
+> propose **une seule** décision.
+
+**9 h 30 — un courrier qui inquiète** *(pilier 1 : intention · pilier 3 : lecture)*
+```
+Jeanne      — J'ai reçu une lettre, je n'y comprends rien…
+SilverBrain — Voulez-vous que je vous la lise ? Posez-la à plat, je regarde.
+              … C'est un courrier de la mairie au sujet de vos impôts locaux.
+              En un mot : ils confirment une réduction. Je vous lis le détail ?
+Jeanne      — Juste l'essentiel.
+SilverBrain — Vous n'avez rien à faire, et vous paierez moins que l'an dernier.
+```
+> Comprension **par intention** (« je n'y comprends rien » → lecture + résumé), **résumé
+> en une phrase** avant le détail, ton rassurant.
+
+**11 h 00 — une confidence, donc un trait** *(pilier 2 : profilage)*
+```
+Jeanne      — Mon mari, lui, il passait ses matinées au jardin. Les tomates…
+SilverBrain — (n'interrompt pas ; enregistre un trait candidat)
+              centre_interet:jardinage — source:inference, consentement:propose
+```
+> Rien n'est imposé : le trait reste en **`propose`** tant qu'il n'est pas confirmé
+> (voir [SILVERBRAIN-PROFIL.md](SILVERBRAIN-PROFIL.md)).
+
+**15 h 00 — l'orientation thématique** *(pilier 2 → 3 : LibraryBrain)*
+```
+SilverBrain — Vous m'avez parlé du jardin de votre mari. Si vous voulez, je peux
+              vous lire de temps en temps de petites choses sur le jardinage —
+              d'accord ?
+Jeanne      — Ah oui, ça me plairait.
+SilverBrain — (le trait passe à consentement:confirme)
+              Alors écoutez : c'est bientôt la saison pour tailler les rosiers…
+```
+> Le profil **confirmé** déclenche une requête **LibraryBrain** vers des thématiques qui
+> la concernent vraiment — pas un catalogue générique.
+
+**18 h 00 — garder le lien** *(pilier 1 : intention · pilier 3 : MCP · confirmation)*
+```
+Jeanne      — Je voudrais dire bonsoir à Marie.
+SilverBrain — Vous voulez appeler votre fille Marie ? … Je l'appelle ?
+Jeanne      — Oui.
+SilverBrain — J'appelle Marie.        (connecteur MCP activé par Marie ; confirmation avant l'action)
+```
+
+**21 h 30 — le calibrage silencieux** *(pilier 4 : boucle d'adaptation)*
+```
+SilverBrain — Demain, votre rendez-vous chez le podologue est à…
+Jeanne      — Hein ? Répète ?
+SilverBrain — (signal d'incompréhension → le contrat de style se simplifie et ralentit)
+              Demain… vous voyez le podologue. … À dix heures, le matin.
+              Voulez-vous que je vous le rappelle au réveil ?
+Jeanne      — Oui, merci.
+```
+> Le « hein ? » ajuste **automatiquement** la formulation vers plus de simplicité et de
+> lenteur, sans que personne ne touche à un réglage.
+
+**Le lendemain, côté Marie — la confiance** *(accessibilité & confiance)*
+> Depuis son téléphone, Marie voit un résumé bienveillant (rappels tenus, ton d'humeur),
+> **jamais les sujets sensibles** sans accord distinct de Jeanne. Tout est resté **sur le
+> boîtier, en local** — rien n'est parti dans le cloud.
 
 ---
 
