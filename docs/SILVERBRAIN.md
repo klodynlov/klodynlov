@@ -220,6 +220,10 @@ du langage**. En traitant le style comme une contrainte de première classe (et 
 réglage caché), SilverBrain reste utilisable par la personne qui, précisément, ne
 toucherait jamais à un réglage.
 
+> 📐 Le catalogue complet des règles du contrat de style (les quatre niveaux, les
+> transformations avant/après, la boucle de calibrage) est détaillé dans
+> [**SILVERBRAIN-STYLE.md**](SILVERBRAIN-STYLE.md).
+
 ---
 
 ## 🌅 Une journée avec SilverBrain (scénario de bout en bout)
@@ -322,6 +326,39 @@ Voix ──► VocalBrain (STT/TTS local) ──► Klody (routeur adaptatif + b
 - **Actions** : exposées via **MCP** — la famille active uniquement les connecteurs
   souhaités, chacun avec confirmation.
 
+### Flux profil → thématiques → formulation
+
+Le profil est le pivot : il décide **quoi** proposer (via LibraryBrain) *et* **comment** le
+dire (via le contrat de style).
+
+```mermaid
+flowchart TD
+    U(["👤 Parole de l'utilisateur"]) --> STT["VocalBrain · STT local"]
+    STT --> K{{"Klody · routeur adaptatif + ReAct"}}
+
+    K -->|"extraction de traits"| P[("Profil local<br/>SQLite chiffré")]
+    P -->|"centres d'intérêt confirmés"| LB["LibraryBrain<br/>sqlite-vec + FTS5"]
+    P -->|"traits expression / capacité / aversion"| CS["Contrat de style<br/>niveau · débit · registre"]
+
+    LB -->|"thématiques pertinentes"| K
+    CS -->|"contraintes de formulation"| GEN["Génération + passe de simplification"]
+    K --> GEN
+    GEN --> TTS["VocalBrain · TTS local"]
+    TTS --> R(["🔊 Réponse adaptée"])
+
+    R -.->|"signaux : hein ?, silences, fluidité"| CS
+
+    MCP["Connecteurs MCP<br/>appels · messages · agenda"] --- K
+
+    classDef local fill:#eef7ee,stroke:#4c9a4c,color:#123;
+    classDef engine fill:#eef0fb,stroke:#5a5ad6,color:#123;
+    class P,LB,STT,TTS local;
+    class K,CS,GEN engine;
+```
+
+La boucle en pointillés est le **calibrage** (pilier 4) : la réaction de l'utilisateur
+ajuste le contrat de style pour l'énoncé suivant. Tout le graphe s'exécute **en local**.
+
 ---
 
 ## ♿ Accessibilité & confiance
@@ -345,6 +382,11 @@ Concept / exploration au sein du portfolio IA locale. Les briques réutilisées
 
 Jalons envisagés :
 1. **Socle vocal + intentions** (piliers 1 & 3 de base) sur VocalBrain + Klody.
-2. **Profil local + orientation LibraryBrain** (pilier 2).
-3. **Contrat de style + boucle de calibrage** (pilier 4).
+2. **Profil local + orientation LibraryBrain** (pilier 2) — voir [SILVERBRAIN-PROFIL.md](SILVERBRAIN-PROFIL.md).
+3. **Contrat de style + boucle de calibrage** (pilier 4) — voir [SILVERBRAIN-STYLE.md](SILVERBRAIN-STYLE.md).
 4. **Connecteurs MCP proches** et interface aidant « gros boutons ».
+
+### 📚 Documentation
+- [SILVERBRAIN.md](SILVERBRAIN.md) — concept, 4 piliers, scénario, architecture *(ce fichier)*
+- [SILVERBRAIN-PROFIL.md](SILVERBRAIN-PROFIL.md) — modèle de données du profil
+- [SILVERBRAIN-STYLE.md](SILVERBRAIN-STYLE.md) — catalogue du contrat de style
