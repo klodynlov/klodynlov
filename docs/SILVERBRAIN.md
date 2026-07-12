@@ -390,3 +390,8 @@ Jalons envisagés :
 - [SILVERBRAIN.md](SILVERBRAIN.md) — concept, 4 piliers, scénario, architecture *(ce fichier)*
 - [SILVERBRAIN-PROFIL.md](SILVERBRAIN-PROFIL.md) — modèle de données du profil
 - [SILVERBRAIN-STYLE.md](SILVERBRAIN-STYLE.md) — catalogue du contrat de style
+- [SILVERBRAIN-MCP.md](SILVERBRAIN-MCP.md) — connecteurs MCP (appels, messages, agenda)
+
+### 🎨 Maquettes
+- [ui/landing.html](ui/landing.html) — page de présentation publique
+- [ui/ecran-accessible.html](ui/ecran-accessible.html) — écran « gros boutons » voix-d'abord
