@@ -38,6 +38,31 @@ sécurité de niveau production.
 **Front / Desktop** — React 19 · Tailwind 4 · Tauri 2
 **Qualité** — pytest · CI durcie (bandit / gitleaks / pip-audit / CodeQL) · commits signés
 
+---
+
+## 🌱 Projet en lumière — [SilverBrain](docs/SILVERBRAIN.md)
+
+Un assistant IA **intuitif, pensé pour les personnes que la technologie intimide** —
+seniors et au-delà. On lui parle naturellement : il n'y a *rien à apprendre*.
+
+![IA](https://img.shields.io/badge/IA-100%25%20local-orange)
+![Accessibilité](https://img.shields.io/badge/accessibilit%C3%A9-langage%20adaptatif-6f42c1)
+![MCP](https://img.shields.io/badge/MCP-connecteurs%20proches-blueviolet)
+![Voix](https://img.shields.io/badge/interface-voix%20d'abord-0aa)
+
+Quatre piliers :
+
+1. 🧠 **Intuitif** — langage naturel uniquement, compréhension par intention, aucune commande à mémoriser.
+2. 🧭 **Profilage conversationnel** — apprend à connaître la personne (sans questionnaire) pour l'orienter vers des thématiques **LibraryBrain** qui la concernent vraiment.
+3. 📅 **Accompagnement** — rappels proactifs, aide à la lecture/mémoire, lien avec les proches (**MCP**), socle extensible.
+4. 🗣️ **Formulation adaptative** — ajuste *comment* il parle (vocabulaire, rythme, ton) aux contraintes d'un public réfractaire à la technologie.
+
+📖 [Concept & scénario](docs/SILVERBRAIN.md) · 🧬 [Modèle du profil](docs/SILVERBRAIN-PROFIL.md) · 🗣️ [Contrat de style](docs/SILVERBRAIN-STYLE.md) · 🔌 [Connecteurs MCP](docs/SILVERBRAIN-MCP.md) · 🎨 [Maquettes](docs/ui/landing.html)
+
+> Réutilise VocalBrain (voix), LibraryBrain (thématiques/lecture) et Klody (orchestration + MCP) — 100 % local, aucune donnée dans le cloud.
+
+---
+
 ## 🚀 Autres projets
 
 - **LibraryBrain** — RAG local de livres (sqlite-vec + FTS5) qui alimente Klody.
