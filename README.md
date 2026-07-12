@@ -48,7 +48,7 @@ sécurité de niveau production.
 
 Prolongement edge de la démarche local-first : l'inférence tourne **sur** l'objet, les données des capteurs ne quittent jamais le réseau. → [**Note de conception & état de l'art AIoT 2025-2026**](docs/aiot-edge-projects.md) (synthèse sourcée + feuilles de route).
 
-- **EdgeSense** *(conception)* — passerelle **MCP** exposant capteurs & actionneurs (Raspberry Pi / ESP32) comme des *outils* que les agents locaux lisent et actionnent. Prolonge directement le positionnement *client & serveur MCP*.
+- **[EdgeSense](edgesense/)** *(M0 codé ✓)* — passerelle **MCP** exposant capteurs & actionneurs (Raspberry Pi / ESP32) comme des *outils* que les agents locaux lisent et actionnent. Prolonge directement le positionnement *client & serveur MCP*. Le jalon M0 prouve la boucle *percevoir → agir* avec capteur/actionneur simulés (serveur MCP + garde-fous + journal tamper-evident, 9 tests).
 - **TinyGuard** *(conception)* — surveillance vidéo/audio **100 % edge** : détection sur modèle quantifié (INT8), rien dans le cloud, alertes locales exposables en MCP.
 
 - *(et d'autres explorations IA locale, audio, MCP…)*

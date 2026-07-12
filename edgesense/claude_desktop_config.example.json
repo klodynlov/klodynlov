@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "edgesense": {
+      "command": "python3",
+      "args": ["/CHEMIN/ABSOLU/VERS/edgesense/server.py"]
+    }
+  }
+}
