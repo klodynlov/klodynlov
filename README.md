@@ -43,7 +43,7 @@ sécurité de niveau production.
 - **LibraryBrain** — RAG local de livres (sqlite-vec + FTS5) qui alimente Klody.
 - **VocalBrain** — outil autour de la voix / l'audio.
 - **[Dream × World](https://github.com/klodynlov/dream-x-world)** — générateur de **mondes IA persistants & cohérents**, 100 % local. Un *Canon Engine* (retrieve → generate → vérif anti-contradiction → Best-of-N) garde le monde non-contradictoire dans la durée ; simulation temporelle multi-agents et monde exposé en **MCP** pour que les agents y jouent.
-- **[SilverBrain](docs/SILVERBRAIN.md)** — assistant vocal du quotidien **pensé pour les seniors**, 100 % local. Rappels, contact avec les proches et lecture de courriers, sans qu'aucune donnée (santé, famille) ne parte dans le cloud. Réutilise VocalBrain (voix), LibraryBrain (lecture/résumés) et Klody (orchestration + **MCP**).
+- **[SilverBrain](docs/SILVERBRAIN.md)** — assistant IA **intuitif pour un public réfractaire aux nouvelles technologies** (seniors et au-delà), 100 % local. On lui parle naturellement ; il **profile l'utilisateur en langage naturel** pour l'orienter vers des thématiques précises (**LibraryBrain**), puis assure rappels et aide à la lecture/mémoire — en **adaptant toujours sa formulation** aux personnes que la technologie intimide. Réutilise VocalBrain (voix), LibraryBrain (thématiques/lecture) et Klody (orchestration + **MCP**).
 - *(et d'autres explorations IA locale, audio, MCP…)*
 
 ## 📬 Me contacter
