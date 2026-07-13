@@ -70,6 +70,15 @@ Quatre piliers :
 - **[Dream × World](https://github.com/klodynlov/dream-x-world)** — générateur de **mondes IA persistants & cohérents**, 100 % local. Un *Canon Engine* (retrieve → generate → vérif anti-contradiction → Best-of-N) garde le monde non-contradictoire dans la durée ; simulation temporelle multi-agents et monde exposé en **MCP** pour que les agents y jouent.
 - *(et d'autres explorations IA locale, audio, MCP…)*
 
+## 🧰 Outils & feuille de route
+
+- 🎯 [**Feuille de route**](docs/ROADMAP.md) — mes ambitions et leur avancement.
+- 🗂️ [`tools/`](tools/) — petits utilitaires locaux, sans dépendance :
+  [`classer_sessions.py`](tools/classer_sessions.py) (analyse des sessions Claude Code)
+  et [`objectifs.py`](tools/objectifs.py) (suivi d'ambitions → dashboard HTML).
+
+---
+
 ## 📬 Me contacter
 
 💼 [LinkedIn](https://www.linkedin.com/in/claude-volny-94129894/) · 📧 **volnyclaude@protonmail.com**

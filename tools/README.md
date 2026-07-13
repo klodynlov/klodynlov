@@ -51,3 +51,42 @@ La reconnaissance des projets, des thèmes et des technos repose sur des
 dictionnaires en haut du fichier (`PROJETS_CONNUS`, `THEMES`, `TECHNOS`).
 Ajoute tes propres indices de chemin ou mots-clés selon tes conventions de
 dossiers.
+
+## `objectifs.py`
+
+Suit tes **ambitions** et leur avancement. Tu écris tes objectifs dans un
+simple fichier texte (titre, horizon, description, jalons cochables) et le
+script calcule la progression, met en avant les prochaines échéances et génère
+un rapport lisible — Markdown ou dashboard HTML autonome. Aucune dépendance
+externe (Python 3.8+). Il ne modifie que les fichiers de sortie que tu demandes.
+
+### Usage
+
+```bash
+# rapport Markdown affiché dans le terminal
+python3 tools/objectifs.py mes-objectifs.txt
+
+# écrire le rapport Markdown dans un fichier
+python3 tools/objectifs.py mes-objectifs.txt --out road.md
+
+# dashboard visuel : HTML autonome (barres de progression, échéances)
+python3 tools/objectifs.py mes-objectifs.txt --html road.html
+```
+
+Un exemple prêt à copier : [`objectifs.exemple.txt`](objectifs.exemple.txt).
+
+### Format du fichier d'ambitions
+
+```
+# Titre de l'ambition
+horizon: 2026-12-31            # échéance globale (AAAA-MM-JJ ou AAAA-MM)
+statut: en cours              # texte libre
+> Description sur une ou plusieurs lignes préfixées par « > ».
+- [x] Jalon déjà atteint
+- [ ] Jalon à faire @2026-08          # « @date » = échéance du jalon
+- [ ] Jalon prioritaire ! @2026-09    # « ! » = jalon prioritaire
+```
+
+Les lignes vides et celles commençant par `//` sont ignorées. Garde ton fichier
+d'ambitions **en local** (hors dépôt) si tu ne veux pas le publier ; la
+[feuille de route synthétique](../docs/ROADMAP.md) reste, elle, versionnée.
