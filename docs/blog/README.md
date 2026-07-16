@@ -49,6 +49,11 @@ Ouvrir `docs/blog/index.html` directement dans un navigateur suffit
 
 ## Mise en ligne (GitHub Pages)
 
-Dans **Settings → Pages** du dépôt `klodynlov/klodynlov`, choisir
-**Deploy from a branch → `main` → `/docs`**. Le blog est alors servi à
-`https://klodynlov.github.io/blog/`.
+Le déploiement est **automatisé** par GitHub Actions
+(`.github/workflows/pages.yml`) : à chaque `push` sur `main` touchant `docs/`,
+le dossier `docs/` est publié sur GitHub Pages (Pages est activé
+automatiquement au premier passage, aucun réglage manuel requis).
+
+- Blog : `https://klodynlov.github.io/blog/`
+- La racine `https://klodynlov.github.io/` redirige vers le blog
+  (`docs/index.html`).
