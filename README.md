@@ -70,6 +70,18 @@ Quatre piliers :
 - **[Dream × World](https://github.com/klodynlov/dream-x-world)** — générateur de **mondes IA persistants & cohérents**, 100 % local. Un *Canon Engine* (retrieve → generate → vérif anti-contradiction → Best-of-N) garde le monde non-contradictoire dans la durée ; simulation temporelle multi-agents et monde exposé en **MCP** pour que les agents y jouent.
 - *(et d'autres explorations IA locale, audio, MCP…)*
 
+## ✍️ Mon carnet — [Le Carnet](docs/blog/index.html)
+
+J'écris, à but informatif, sur ce qui me touche et m'intéresse : IA locale, agents, MCP, ingénierie du quotidien. Un *pseudo LinkedIn, mais pour moi* — des textes qui restent, à une adresse stable.
+
+- 🔒 [Pourquoi je fais tourner mes agents IA à 100 % en local](docs/blog/posts/2026-07-13-agents-ia-100-local.html)
+- 🔌 [MCP, expliqué simplement : donner des mains à un modèle de langage](docs/blog/posts/2026-07-06-mcp-donner-des-mains.html)
+- 🧭 [Faire en sorte qu'un agent de code aille vraiment au bout](docs/blog/posts/2026-06-28-agent-aller-au-bout.html)
+
+> Blog **100 % statique** (aucun build) — [tous les articles](docs/blog/index.html) · [comment ça marche](docs/blog/README.md)
+
+---
+
 ## 📬 Me contacter
 
 💼 [LinkedIn](https://www.linkedin.com/in/claude-volny-94129894/) · 📧 **volnyclaude@protonmail.com**

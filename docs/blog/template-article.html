@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+<!-- =======================================================================
+     MODÈLE D'ARTICLE — copie ce fichier dans posts/ sous un nom du type
+     posts/AAAA-MM-JJ-titre-court.html, puis :
+       1. Remplace le <title>, la description, la catégorie, la date, la durée
+          de lecture et le <h1>.
+       2. Écris ton contenu dans <div class="prose"> (voir les balises dispo).
+       3. Ajoute l'entrée correspondante en tête du tableau POSTS dans
+          assets/blog.js pour qu'elle apparaisse sur la page d'accueil.
+     Balises utiles dans .prose : <p>, <h2>, <h3>, <ul>/<li>, <blockquote>,
+     <strong>, <em>, <code>, et <pre><code>…</code></pre> pour un bloc de code.
+     Le premier <p> (ou un <p class="lede">) sert de chapô mis en avant.
+     ======================================================================= -->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Titre de l'article — Le Carnet</title>
+<meta name="description" content="Résumé d'une phrase de l'article.">
+<link rel="stylesheet" href="../assets/blog.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap bar">
+    <a class="logo" href="../index.html"><span class="seed" aria-hidden="true">✍️</span> Le Carnet</a>
+    <nav class="nav">
+      <a href="../index.html">Articles</a>
+      <a href="../a-propos.html">À propos</a>
+      <a href="../../../README.md">← Profil</a>
+      <button class="toggle" id="toggle" type="button" aria-label="Changer de thème">◐</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <article class="post-body">
+    <div class="post-head">
+      <div class="meta">
+        <span class="chip">Catégorie</span>
+        <time datetime="2026-01-01">1ᵉʳ janvier 2026</time>
+        <span aria-hidden="true">·</span><span>X min de lecture</span>
+      </div>
+      <h1>Titre de l'article</h1>
+    </div>
+
+    <div class="prose">
+      <p class="lede">Le chapô : deux ou trois phrases qui donnent envie de lire la suite.</p>
+
+      <h2>Un sous-titre</h2>
+      <p>Le corps de l'article…</p>
+    </div>
+
+    <div class="post-foot">
+      <a class="back" href="../index.html"><span aria-hidden="true">←</span> Retour aux articles</a>
+      <div class="sign">
+        <span class="av" aria-hidden="true">✍️</span>
+        <span>Écrit par <b>Claude Volny</b> · <a href="https://www.linkedin.com/in/claude-volny-94129894/">LinkedIn</a> · <a href="mailto:volnyclaude@protonmail.com">volnyclaude@protonmail.com</a></span>
+      </div>
+    </div>
+  </article>
+</main>
+
+<footer class="site">
+  <div class="wrap footRow">
+    <span>Le Carnet — un espace du portfolio <strong>klodynlov</strong> · IA privée, local-first.</span>
+    <span class="badge">✍️ Écrit à la main · 100 % statique</span>
+  </div>
+</footer>
+
+<script src="../assets/blog.js"></script>
+</body>
+</html>

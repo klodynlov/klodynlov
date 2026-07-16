@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pourquoi je fais tourner mes agents IA à 100 % en local — Le Carnet</title>
+<meta name="description" content="La vie privée n'est pas une posture, c'est devenu le choix le plus rationnel sur mon poste de travail. Ce que le local change vraiment — et ses vrais compromis.">
+<link rel="stylesheet" href="../assets/blog.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap bar">
+    <a class="logo" href="../index.html"><span class="seed" aria-hidden="true">✍️</span> Le Carnet</a>
+    <nav class="nav">
+      <a href="../index.html">Articles</a>
+      <a href="../a-propos.html">À propos</a>
+      <a href="../../../README.md">← Profil</a>
+      <button class="toggle" id="toggle" type="button" aria-label="Changer de thème">◐</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <article class="post-body">
+    <div class="post-head">
+      <div class="meta">
+        <span class="chip">IA locale</span>
+        <time datetime="2026-07-13">13 juillet 2026</time>
+        <span aria-hidden="true">·</span><span>6 min de lecture</span>
+      </div>
+      <h1>Pourquoi je fais tourner mes agents IA à 100 % en local</h1>
+    </div>
+
+    <div class="prose">
+<p class="lede">Depuis un peu plus d'un an, aucun de mes agents IA ne parle au cloud. Tout tourne sur mon Mac, derrière mon pare-feu, sur mes fichiers. Ce n'est pas une posture idéologique : c'est devenu le choix le plus rationnel que j'aie fait sur mon poste de travail.</p>
+
+<p>On me pose souvent la question avec un sourcil levé : « Tu fais tourner tes modèles en <em>local</em> ? Pourquoi te compliquer la vie alors qu'une clé API et trois lignes de code suffisent ? » La réponse tient en une phrase, puis mérite tout un article : parce que je refuse que mes données soient la contrepartie invisible d'un service que je paie déjà.</p>
+
+<h2>Le vrai sujet, ce n'est pas la performance, c'est la propriété</h2>
+
+<p>Quand j'envoie un document à une API distante, je perds le contrôle sur trois choses à la fois : où il est stocké, combien de temps, et ce qu'il devient. Les conditions d'utilisation changent, les politiques de rétention aussi, et « nous n'entraînons pas sur vos données » est une promesse contractuelle, pas une garantie technique. En local, la question ne se pose même pas. Le modèle lit le fichier, produit sa réponse, et rien ne quitte la machine. Je n'ai pas à <em>faire confiance</em> : l'architecture rend la fuite impossible.</p>
+
+<p>C'est une différence de nature, pas de degré. Le chiffrement en transit protège les données pendant le trajet ; le local supprime le trajet. Pour beaucoup de mes usages, c'est exactement ce qu'il faut.</p>
+
+<h2>Apple Silicon a rendu tout ça sérieux</h2>
+
+<p>Il y a trois ans, « l'IA locale » voulait dire des modèles poussifs et des réponses décevantes. Ce n'est plus vrai. La mémoire unifiée d'Apple Silicon change la donne : le processeur graphique et les cœurs de calcul partagent la même RAM, donc un modèle de plusieurs milliards de paramètres tient en mémoire sans les acrobaties habituelles. Avec <code>MLX</code>, le cadre de calcul d'Apple pensé pour cette architecture, je charge un modèle quantifié et j'obtiens des vitesses très correctes pour du travail interactif.</p>
+
+<p>Ma pile est volontairement banale, et c'est un compliment :</p>
+
+<ul>
+<li><code>Ollama</code> ou <code>MLX</code> pour servir le modèle localement ;</li>
+<li><code>MCP</code> (Model Context Protocol) pour brancher mes agents sur mes fichiers, mon calendrier, mes dépôts, sans passerelle externe ;</li>
+<li>du <code>Python</code> pour l'orchestration, et du <code>Rust</code> avec <code>Tauri</code> quand je veux une vraie application de bureau légère.</li>
+</ul>
+
+<pre><code># Récupérer un modèle et discuter avec, sans quitter la machine
+ollama pull qwen2.5-coder:14b
+ollama run qwen2.5-coder:14b "Résume ce fichier de log"</code></pre>
+
+<p>Rien d'exotique. C'est justement l'intérêt : l'outillage local est devenu assez mûr pour disparaître.</p>
+
+<h2>Ce que ça change concrètement, au quotidien</h2>
+
+<p>Le premier bénéfice est mental. Je ne me demande plus « est-ce que ce document a le droit de partir sur un serveur ? » avant chaque requête. Je copie-colle un contrat, un extrait de code propriétaire, des notes personnelles, sans arbitrage. Cette absence de friction fait que j'utilise mes agents <em>beaucoup</em> plus.</p>
+
+<p>Le deuxième, c'est l'autonomie réelle. Dans le train, dans un avion, chez un client au réseau capricieux : mes agents fonctionnent. Pas de dépendance à une disponibilité tierce, pas de panne d'API qui bloque ma journée, pas de limite de requêtes qui tombe au pire moment.</p>
+
+<p>Le troisième est financier, mais discret. Je ne compte pas les <em>tokens</em>. Je peux lancer un agent qui reformule cinquante fichiers en boucle sans surveiller un compteur qui monte. Le coût est fixe : c'est ma machine, déjà achetée.</p>
+
+<blockquote>Le local ne rend pas l'IA gratuite. Il rend son coût prévisible — et déplace la dépense du variable anxiogène vers le fixe assumé.</blockquote>
+
+<h2>Les compromis, sans les cacher</h2>
+
+<p>Je serais malhonnête de vendre ça comme une solution sans revers. Il y en a, et ils sont réels.</p>
+
+<p><strong>La taille des modèles.</strong> Un modèle qui tient sur mon Mac n'égale pas les plus gros modèles propriétaires du marché sur les tâches de raisonnement les plus exigeantes. Pour du code, de la synthèse, de l'extraction, de la classification, l'écart s'est effondré et ne se voit plus vraiment. Pour un raisonnement long et retors, le cloud garde l'avantage. Je le sais, et je choisis en conséquence.</p>
+
+<p><strong>La latence et le débit.</strong> Sur les gros contextes, mon poste chauffe et ralentit. Ce n'est pas un centre de données. J'ai appris à découper mes tâches, à privilégier des modèles spécialisés plus petits plutôt qu'un généraliste énorme.</p>
+
+<p><strong>L'ergonomie.</strong> Il faut gérer ses modèles, sa mémoire, ses mises à jour. Moins qu'avant, mais plus qu'un simple appel réseau. C'est un coût d'entrée que tout le monde n'a pas envie de payer.</p>
+
+<p>Mon compromis assumé : le local par défaut, le cloud en exception consciente, jamais l'inverse.</p>
+
+<h2>Pour qui c'est un avantage décisif, pas un caprice</h2>
+
+<p>Pour un particulier curieux, le local est un confort. Pour certains métiers, c'est une condition d'existence. Je pense aux données qui, légalement ou déontologiquement, <em>ne peuvent pas</em> aller dans le cloud :</p>
+
+<ul>
+<li>la <strong>santé</strong>, où le moindre dossier patient est encadré et où « on verra plus tard pour la conformité » n'est pas une option ;</li>
+<li>le <strong>juridique</strong>, où le secret professionnel interdit d'exposer une pièce à un tiers, fût-il américain et rassurant ;</li>
+<li>la <strong>R&D</strong> et l'industrie, où un brevet en préparation ou un code source stratégique n'a rien à faire sur une infrastructure qu'on ne maîtrise pas.</li>
+</ul>
+
+<p>Pour ces domaines, le local n'est pas « plus privé » : c'est la seule manière d'utiliser un agent IA sans enfreindre une règle. Et c'est là que mon petit choix de confort personnel rejoint une vraie nécessité professionnelle.</p>
+
+<p>Je ne pense pas que tout le monde doive débrancher le cloud demain matin. Mais je constate une chose : à chaque fois que j'ai basculé un usage en local, je ne suis jamais revenu en arrière. Le jour où faire tourner un bon modèle chez soi deviendra aussi banal qu'ouvrir un tableur, la vraie question ne sera plus « pourquoi en local ? » mais « pourquoi diable envoyer ça ailleurs ? ».</p>
+    </div>
+
+    <div class="post-foot">
+      <a class="back" href="../index.html"><span aria-hidden="true">←</span> Retour aux articles</a>
+      <div class="sign">
+        <span class="av" aria-hidden="true">✍️</span>
+        <span>Écrit par <b>Claude Volny</b> · <a href="https://www.linkedin.com/in/claude-volny-94129894/">LinkedIn</a> · <a href="mailto:volnyclaude@protonmail.com">volnyclaude@protonmail.com</a></span>
+      </div>
+    </div>
+  </article>
+</main>
+
+<footer class="site">
+  <div class="wrap footRow">
+    <span>Le Carnet — un espace du portfolio <strong>klodynlov</strong> · IA privée, local-first.</span>
+    <span class="badge">✍️ Écrit à la main · 100 % statique</span>
+  </div>
+</footer>
+
+<script src="../assets/blog.js"></script>
+</body>
+</html>
