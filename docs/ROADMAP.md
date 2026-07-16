@@ -59,5 +59,12 @@ Aider les entreprises dont les données ne peuvent pas aller dans le cloud.
 
 ---
 
+## 📣 Communication
+
+- [**Posts LinkedIn**](LINKEDIN-POSTS.md) — sept brouillons tirés de ces
+  roadmaps, calés sur les jalons (build in public).
+
+---
+
 *Les dates et le détail des jalons vivent dans le fichier d'ambitions local,
 hors du dépôt. Ce fichier reste volontairement synthétique.*
