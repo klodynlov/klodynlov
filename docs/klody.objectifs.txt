@@ -2,6 +2,7 @@
 //   python3 tools/objectifs.py docs/klody.objectifs.txt --html klody.html
 // Le socle est déjà là (699 tests, client+serveur MCP, routeur adaptatif, CI durcie) ;
 // ce plan couvre les jalons ENCORE OUVERTS, jusqu'à l'horizon 31/12/2026.
+projet: 🧠 Klody Code AI
 
 # 🏆 Jalon A — Best-of-N robuste sur les tâches « hard »
 horizon: 2026-09-15

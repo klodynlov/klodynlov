@@ -1,6 +1,7 @@
 // Suivi SilverBrain pour objectifs.py — jalons découpés en sous-tâches datées.
 //   python3 tools/objectifs.py docs/silverbrain.objectifs.txt --html silverbrain.html
 // Chaque « ambition » ci-dessous est un JALON ; ses « jalons » sont les sous-tâches.
+projet: 🌱 SilverBrain
 
 # 🎙️ Jalon 1 — Socle vocal + intentions (piliers 1 & 3)
 horizon: 2026-08-08

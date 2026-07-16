@@ -75,6 +75,24 @@ python3 tools/objectifs.py mes-objectifs.txt --html road.html
 
 Un exemple prêt à copier : [`objectifs.exemple.txt`](objectifs.exemple.txt).
 
+### Mode portfolio (`--index`)
+
+Agrège **plusieurs** fichiers `*.objectifs.txt` (un par projet) en un seul
+tableau de bord : avancement global, une carte par projet, et les prochaines
+échéances fusionnées tous projets confondus.
+
+```bash
+# tous les projets d'un dossier
+python3 tools/objectifs.py --index docs/ --html portfolio.html
+
+# ou une liste explicite de fichiers
+python3 tools/objectifs.py --index docs/klody.objectifs.txt docs/silverbrain.objectifs.txt
+```
+
+Un dossier passé en argument est développé en ses fichiers `*.objectifs.txt`. Le
+nom affiché de chaque projet vient d'une ligne `projet: …` en tête de fichier
+(sinon il est déduit du nom de fichier).
+
 ### Format du fichier d'ambitions
 
 ```

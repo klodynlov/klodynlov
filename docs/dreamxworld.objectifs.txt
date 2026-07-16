@@ -2,6 +2,7 @@
 //   python3 tools/objectifs.py docs/dreamxworld.objectifs.txt --html dxw.html
 // Le Canon Engine (retrieve → generate → vérif anti-contradiction → Best-of-N) existe déjà ;
 // ce plan couvre les jalons ENCORE OUVERTS, jusqu'à l'horizon 31/03/2027.
+projet: 🌍 Dream × World
 
 # ⏳ Jalon A — Simulation temporelle multi-agents stable
 horizon: 2026-10-15
