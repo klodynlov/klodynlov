@@ -55,11 +55,15 @@ Activation **en un seul clic** (à faire une fois, réglage du dépôt) :
 2. **Build and deployment → Source : _Deploy from a branch_**.
 3. Branche : **`main`** · dossier : **`/docs`** → **Save**.
 
-Le site est alors publié en une minute :
+Le site est alors publié en une minute. Il est servi sous le préfixe
+`/klodynlov/` (le dépôt est publié en tant que site du compte) :
 
-- Racine `https://klodynlov.github.io/` → redirige vers le blog
+- **Blog : `https://klodynlov.github.io/klodynlov/blog/`**
+- Racine `https://klodynlov.github.io/klodynlov/` → redirige vers le blog
   (`docs/index.html`).
-- Blog : `https://klodynlov.github.io/blog/`.
+
+> Tous les liens internes du site sont **relatifs**, donc ils fonctionnent
+> quel que soit le préfixe d'URL.
 
 Le fichier `docs/.nojekyll` garantit que GitHub sert le site statique tel
 quel (sans traitement Jekyll). À chaque `push` sur `main`, GitHub republie
