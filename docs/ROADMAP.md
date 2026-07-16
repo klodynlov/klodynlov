@@ -22,6 +22,8 @@ niveau production.
 - ⏳ Étude de cas technique publiée
 - ⏳ Benchmark public face à un agent cloud
 
+> 🗺️ [**Feuille de route détaillée**](KLODY-ROADMAP.md) — jalons datés jusqu'au 31/12.
+
 ## 🌱 SilverBrain — IA pour un public réfractaire à la technologie · *horizon 2026-10*
 
 Un assistant intuitif, voix d'abord, pour les personnes que la technologie
@@ -31,6 +33,8 @@ intimide.
 - ⏳ Prototype voix bout-en-bout (VocalBrain + Klody)
 - ⏳ Connecteurs MCP « proches » (lien avec la famille)
 - ⏳ Test avec des utilisateurs seniors réels
+
+> 🗺️ [**Feuille de route détaillée**](SILVERBRAIN-ROADMAP.md) — 5 jalons datés jusqu'au 31/10.
 
 ## 🌍 Dream × World — mondes IA persistants & cohérents · *horizon 2027-03*
 
