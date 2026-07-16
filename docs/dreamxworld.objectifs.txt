@@ -1,0 +1,40 @@
+// Suivi Dream × World pour objectifs.py — jalons restants découpés en sous-tâches datées.
+//   python3 tools/objectifs.py docs/dreamxworld.objectifs.txt --html dxw.html
+// Le Canon Engine (retrieve → generate → vérif anti-contradiction → Best-of-N) existe déjà ;
+// ce plan couvre les jalons ENCORE OUVERTS, jusqu'à l'horizon 31/03/2027.
+
+# ⏳ Jalon A — Simulation temporelle multi-agents stable
+horizon: 2026-10-15
+statut: en cours
+> Faire vivre le monde dans le temps : plusieurs agents agissent, le monde avance sans diverger.
+- [ ] Modèle de temps : tours, horloge du monde, événements datés @2026-08-20
+- [ ] Boucle multi-agents : chaque agent agit, le monde avance d'un tour ! @2026-09-05
+- [ ] Canon Engine appelé à chaque tour (anti-contradiction en continu) ! @2026-09-20
+- [ ] Persistance de l'état du monde entre tours (SQLite local) @2026-10-01
+- [ ] Test de stabilité : N agents × M tours sans divergence @2026-10-15
+
+# 🔌 Jalon B — Monde exposé en serveur MCP jouable
+horizon: 2026-12-15
+statut: à venir
+> Ouvrir le monde à des agents extérieurs via MCP : observer, agir, avancer le temps.
+- [ ] Schéma des outils MCP (observer le monde, agir, avancer le temps) @2026-10-30
+- [ ] Serveur MCP : lecture de l'état (lieux, personnages, faits) @2026-11-15
+- [ ] Serveur MCP : actions d'un agent joueur + validation Canon ! @2026-11-30
+- [ ] Session jouable de bout en bout via un client MCP @2026-12-15
+
+# 🎬 Jalon C — Démo publique d'un monde qui tient sur 100+ tours
+horizon: 2027-02-15
+statut: à venir
+> La preuve : un monde qui reste cohérent sur la durée, rejouable et vérifiable.
+- [ ] Scénario de démo (monde initial, agents, objectifs narratifs) @2026-12-30
+- [ ] Run long : 100+ tours, journal des faits + détection de contradictions ! @2027-01-20
+- [ ] Vérification de cohérence sur le run long (0 contradiction canon) ! @2027-02-01
+- [ ] Mise en forme de la démo (rejouable, visualisable) @2027-02-15
+
+# 🚀 Jalon D — Sortie publique & showcase
+horizon: 2027-03-20
+statut: à venir
+> Rendre le projet installable et racontable par un tiers.
+- [ ] Guide de démarrage 100 % local + monde d'exemple @2027-03-01
+- [ ] Article / vidéo de présentation (Canon Engine, run 100+ tours) @2027-03-10
+- [ ] Revue finale + publication ! @2027-03-20

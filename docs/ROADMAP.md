@@ -46,6 +46,8 @@ par un Canon Engine.
 - ⏳ Monde exposé en serveur MCP jouable
 - ⏳ Démo publique tenant sur 100+ tours
 
+> 🗺️ [**Feuille de route détaillée**](DREAMXWORLD-ROADMAP.md) — jalons datés jusqu'au 31/03.
+
 ## 💼 Consulting « IA locale » · *horizon 2026-12*
 
 Aider les entreprises dont les données ne peuvent pas aller dans le cloud.
