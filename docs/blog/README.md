@@ -49,11 +49,18 @@ Ouvrir `docs/blog/index.html` directement dans un navigateur suffit
 
 ## Mise en ligne (GitHub Pages)
 
-Le déploiement est **automatisé** par GitHub Actions
-(`.github/workflows/pages.yml`) : à chaque `push` sur `main` touchant `docs/`,
-le dossier `docs/` est publié sur GitHub Pages (Pages est activé
-automatiquement au premier passage, aucun réglage manuel requis).
+Activation **en un seul clic** (à faire une fois, réglage du dépôt) :
 
-- Blog : `https://klodynlov.github.io/blog/`
-- La racine `https://klodynlov.github.io/` redirige vers le blog
+1. Dépôt `klodynlov/klodynlov` → **Settings → Pages**.
+2. **Build and deployment → Source : _Deploy from a branch_**.
+3. Branche : **`main`** · dossier : **`/docs`** → **Save**.
+
+Le site est alors publié en une minute :
+
+- Racine `https://klodynlov.github.io/` → redirige vers le blog
   (`docs/index.html`).
+- Blog : `https://klodynlov.github.io/blog/`.
+
+Le fichier `docs/.nojekyll` garantit que GitHub sert le site statique tel
+quel (sans traitement Jekyll). À chaque `push` sur `main`, GitHub republie
+`docs/` automatiquement — rien d'autre à faire.
