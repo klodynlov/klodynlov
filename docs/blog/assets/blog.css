@@ -1,0 +1,145 @@
+/* ==========================================================================
+   Le Carnet — feuille de style partagée du blog de Claude Volny (klodynlov)
+   Charte reprise du portfolio SilverBrain : vert/teal, serif pour les titres,
+   thème clair/sombre. Aucune dépendance externe, aucune étape de build.
+   ========================================================================== */
+
+:root{
+  --ground:#EFF3EE; --surface:#FFFFFF; --surface-2:#F5F8F3;
+  --ink:#15201B; --ink-2:#2C3A32; --muted:#5A675F; --line:rgba(20,45,32,.12);
+  --accent:#2F7D6B; --accent-2:#256556; --warm:#C87F2E; --warm-soft:#FBEFD9;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif;
+  --sans:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --mono:'SF Mono',SFMono-Regular,ui-monospace,'JetBrains Mono','Fira Code',Menlo,Consolas,monospace;
+  --maxw:1080px; --readw:720px; --r:20px;
+  --shadow:0 10px 40px rgba(20,45,32,.10);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ground:#0F1613; --surface:#18231E; --surface-2:#1F2C26;
+    --ink:#EAF1EB; --ink-2:#CBD8CF; --muted:#9BA89F; --line:rgba(255,255,255,.12);
+    --accent:#5BC6AB; --accent-2:#7BD6BF; --warm:#E7AC58; --warm-soft:#2A2315;
+    --shadow:0 14px 46px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="light"]{
+  --ground:#EFF3EE; --surface:#FFFFFF; --surface-2:#F5F8F3;
+  --ink:#15201B; --ink-2:#2C3A32; --muted:#5A675F; --line:rgba(20,45,32,.12);
+  --accent:#2F7D6B; --accent-2:#256556; --warm:#C87F2E; --warm-soft:#FBEFD9;
+  --shadow:0 10px 40px rgba(20,45,32,.10);
+}
+:root[data-theme="dark"]{
+  --ground:#0F1613; --surface:#18231E; --surface-2:#1F2C26;
+  --ink:#EAF1EB; --ink-2:#CBD8CF; --muted:#9BA89F; --line:rgba(255,255,255,.12);
+  --accent:#5BC6AB; --accent-2:#7BD6BF; --warm:#E7AC58; --warm-soft:#2A2315;
+  --shadow:0 14px 46px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;font-family:var(--sans);background:var(--ground);color:var(--ink);
+     line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(18px,5vw,40px)}
+a{color:inherit}
+img{max-width:100%;height:auto}
+
+/* ---- header ------------------------------------------------------------ */
+header.site{position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.2) blur(10px);
+       background:color-mix(in srgb,var(--ground) 82%,transparent);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.12rem;letter-spacing:.2px;
+      text-decoration:none}
+.logo .seed{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;
+            background:var(--accent);color:#fff;font-size:.95rem}
+.nav{display:flex;align-items:center;gap:6px}
+.nav a{padding:8px 12px;border-radius:10px;text-decoration:none;color:var(--muted);font-weight:600;font-size:.94rem}
+.nav a:hover,.nav a[aria-current="page"]{color:var(--ink);background:var(--surface-2)}
+.toggle{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+        width:40px;height:40px;border-radius:11px;cursor:pointer;font-size:1.05rem;flex:none}
+.toggle:focus-visible,a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (max-width:560px){.nav a{padding:8px 9px;font-size:.9rem}}
+
+/* ---- hero (accueil) ---------------------------------------------------- */
+.hero{padding:clamp(52px,9vw,96px) 0 clamp(30px,5vw,50px)}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;color:var(--accent-2);font-weight:700;
+         text-transform:uppercase;letter-spacing:.13em;font-size:.8rem;margin-bottom:20px}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--accent-2)}
+.hero h1{font-family:var(--serif);font-weight:600;letter-spacing:-.4px;text-wrap:balance;
+   font-size:clamp(2.4rem,6.5vw,4rem);line-height:1.05;margin:0 0 20px}
+.hero h1 em{font-style:italic;color:var(--accent)}
+.hero .lede{font-size:clamp(1.1rem,2.3vw,1.35rem);color:var(--ink-2);max-width:52ch;margin:0}
+
+/* ---- liste des articles ------------------------------------------------ */
+section{padding:clamp(30px,6vw,56px) 0}
+.kicker{color:var(--accent-2);font-weight:700;text-transform:uppercase;letter-spacing:.12em;
+        font-size:.8rem;margin:0 0 20px}
+.posts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.post{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+      transition:border-color .14s ease,transform .14s ease,box-shadow .14s ease}
+.post:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+            box-shadow:var(--shadow)}
+.post a{display:block;text-decoration:none;padding:24px clamp(20px,4vw,30px)}
+.post .meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+            color:var(--muted);font-size:.82rem;margin-bottom:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;
+      background:var(--surface-2);border:1px solid var(--line);font-weight:700;
+      text-transform:uppercase;letter-spacing:.06em;font-size:.72rem;color:var(--accent-2)}
+.post h2{font-family:var(--serif);font-weight:600;letter-spacing:-.2px;text-wrap:balance;
+         font-size:clamp(1.4rem,3vw,1.9rem);line-height:1.15;margin:0 0 10px}
+.post p{margin:0;color:var(--muted);font-size:1.04rem;max-width:64ch}
+.post .more{display:inline-flex;align-items:center;gap:7px;margin-top:14px;
+            color:var(--accent-2);font-weight:700;font-size:.92rem}
+.empty{color:var(--muted);background:var(--surface);border:1px dashed var(--line);
+       border-radius:var(--r);padding:26px;text-align:center}
+
+/* ---- page article ------------------------------------------------------ */
+article.post-body{max-width:var(--readw);margin:0 auto;padding:clamp(40px,7vw,72px) 0 24px}
+.post-head{margin-bottom:clamp(28px,5vw,44px)}
+.post-head .meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+                 color:var(--muted);font-size:.86rem;margin-bottom:18px}
+.post-head h1{font-family:var(--serif);font-weight:600;letter-spacing:-.4px;text-wrap:balance;
+   font-size:clamp(2.1rem,5.2vw,3.2rem);line-height:1.08;margin:0}
+
+/* prose */
+.prose{font-size:1.14rem;color:var(--ink-2)}
+.prose > p:first-of-type,.prose .lede{font-size:1.24rem;color:var(--ink);line-height:1.55}
+.prose p{margin:0 0 1.25em}
+.prose h2{font-family:var(--serif);font-weight:600;color:var(--ink);letter-spacing:-.2px;
+          font-size:clamp(1.5rem,3.4vw,2rem);line-height:1.2;margin:2em 0 .6em}
+.prose h3{font-weight:700;color:var(--ink);font-size:1.22rem;margin:1.6em 0 .5em}
+.prose a{color:var(--accent-2);text-decoration:underline;text-underline-offset:3px;
+         text-decoration-thickness:1px;text-decoration-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.prose a:hover{text-decoration-color:var(--accent)}
+.prose strong{color:var(--ink);font-weight:700}
+.prose ul,.prose ol{margin:0 0 1.25em;padding-left:1.3em}
+.prose li{margin:.4em 0}
+.prose li::marker{color:var(--accent)}
+.prose blockquote{margin:1.6em 0;padding:2px 0 2px 22px;border-left:3px solid var(--accent);
+                  font-family:var(--serif);font-style:italic;font-size:1.22rem;color:var(--ink);line-height:1.5}
+.prose code{font-family:var(--mono);font-size:.9em;background:var(--surface-2);
+            border:1px solid var(--line);border-radius:6px;padding:.12em .4em}
+.prose pre{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+           padding:18px 20px;overflow-x:auto;margin:0 0 1.4em;box-shadow:var(--shadow)}
+.prose pre code{background:none;border:none;padding:0;font-size:.9rem;line-height:1.6;color:var(--ink)}
+.prose hr{border:none;border-top:1px solid var(--line);margin:2.4em 0}
+
+/* pied d'article */
+.post-foot{max-width:var(--readw);margin:0 auto;padding:24px 0 8px;border-top:1px solid var(--line)}
+.post-foot .back{display:inline-flex;align-items:center;gap:8px;color:var(--accent-2);
+                 font-weight:700;text-decoration:none;font-size:.96rem}
+.sign{display:flex;align-items:center;gap:12px;margin-top:22px;color:var(--muted);font-size:.92rem}
+.sign .av{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;
+          background:var(--warm-soft);font-size:1.1rem}
+.sign b{color:var(--ink)}
+
+/* ---- pages de contenu simple (à propos) -------------------------------- */
+.page{max-width:var(--readw);margin:0 auto;padding:clamp(40px,7vw,72px) 0 24px}
+
+/* ---- footer ------------------------------------------------------------ */
+footer.site{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-size:.92rem;margin-top:40px}
+.footRow{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center}
+.badge{display:inline-flex;gap:8px;align-items:center;background:var(--surface-2);border:1px solid var(--line);
+       padding:6px 12px;border-radius:999px;font-size:.82rem;font-weight:600;color:var(--ink-2)}
+.footRow a{color:var(--accent-2);text-decoration:none;font-weight:600}
+.footRow a:hover{text-decoration:underline}

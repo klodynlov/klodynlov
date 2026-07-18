@@ -80,6 +80,18 @@ Quatre piliers :
 
 ---
 
+## ✍️ Mon carnet — [Le Carnet](https://klodynlov.github.io/klodynlov/blog/)
+
+J'écris, à but informatif, sur ce qui me touche et m'intéresse : IA locale, agents, MCP, ingénierie du quotidien. Un *pseudo LinkedIn, mais pour moi* — des textes qui restent, à une adresse stable.
+
+- 🔒 [Pourquoi je fais tourner mes agents IA à 100 % en local](https://klodynlov.github.io/klodynlov/blog/posts/2026-07-13-agents-ia-100-local.html)
+- 🔌 [MCP, expliqué simplement : donner des mains à un modèle de langage](https://klodynlov.github.io/klodynlov/blog/posts/2026-07-06-mcp-donner-des-mains.html)
+- 🧭 [Faire en sorte qu'un agent de code aille vraiment au bout](https://klodynlov.github.io/klodynlov/blog/posts/2026-06-28-agent-aller-au-bout.html)
+
+> Blog **100 % statique** (aucun build), en ligne sur **[klodynlov.github.io/klodynlov/blog](https://klodynlov.github.io/klodynlov/blog/)** — [comment ça marche](docs/blog/README.md)
+
+---
+
 ## 📬 Me contacter
 
 💼 [LinkedIn](https://www.linkedin.com/in/claude-volny-94129894/) · 📧 **volnyclaude@protonmail.com**

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Faire en sorte qu'un agent de code aille vraiment au bout — Le Carnet</title>
+<meta name="description" content="Routage adaptatif, boucle ReAct, Best-of-N, vérification : les briques qui transforment un modèle local médiocre-en-un-coup en un système têtu qui converge.">
+<link rel="stylesheet" href="../assets/blog.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap bar">
+    <a class="logo" href="../index.html"><span class="seed" aria-hidden="true">✍️</span> Le Carnet</a>
+    <nav class="nav">
+      <a href="../index.html">Articles</a>
+      <a href="../a-propos.html">À propos</a>
+      <a href="https://github.com/klodynlov">← Profil</a>
+      <button class="toggle" id="toggle" type="button" aria-label="Changer de thème">◐</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <article class="post-body">
+    <div class="post-head">
+      <div class="meta">
+        <span class="chip">Agents</span>
+        <time datetime="2026-06-28">28 juin 2026</time>
+        <span aria-hidden="true">·</span><span>7 min de lecture</span>
+      </div>
+      <h1>Faire en sorte qu'un agent de code aille vraiment au bout</h1>
+    </div>
+
+    <div class="prose">
+<p class="lede">J'ai passé des mois à regarder des agents de code démarrer une tâche avec enthousiasme, puis s'arrêter net à mi-chemin : une fonction écrite mais jamais testée, un import oublié, un « voilà, ça devrait marcher » suivi de rien. Sur Klody Code AI, mon agent 100 % local, j'ai fini par comprendre que « aller au bout » n'est pas une question de modèle plus gros, mais d'architecture autour du modèle.</p>
+
+<h2>Pourquoi un agent naïf abandonne</h2>
+
+<p>Un agent naïf, c'est une seule requête au modèle : « voici la tâche, débrouille-toi ». Le problème est structurel. Le modèle génère une réponse plausible et s'arrête dès que le texte <em>ressemble</em> à une solution terminée. Il n'a aucun moyen de savoir si son code compile, si les tests passent, si le fichier existe vraiment. Il optimise la vraisemblance, pas le résultat.</p>
+
+<p>Concrètement, ce qui casse un agent local, je l'ai vu des dizaines de fois :</p>
+
+<ul>
+<li>Il « imagine » une API qui n'existe pas (<code>foo.bar()</code> hallucinée) et ne le vérifie jamais.</li>
+<li>Il modifie un fichier, oublie un <code>import</code>, et déclare la tâche finie.</li>
+<li>Face à une tâche complexe, il produit une réponse trop courte parce qu'il n'a pas « prévu » assez d'étapes.</li>
+<li>Il tourne en rond sur la même erreur sans jamais changer d'approche.</li>
+</ul>
+
+<p>Le point commun : aucune <strong>boucle de rétroaction</strong>. Le modèle ne se confronte jamais au réel. Les briques qui suivent servent toutes à réintroduire ce réel dans la boucle.</p>
+
+<h2>Routage adaptatif : ne pas tirer au canon sur une mouche</h2>
+
+<p>La première erreur serait de traiter chaque tâche avec le même effort. Renommer une variable et refactoriser un module d'authentification ne demandent pas la même profondeur. Sur un modèle local, ce n'est pas anecdotique : chaque itération coûte des secondes bien réelles sur ma machine.</p>
+
+<p>Klody classe donc la tâche en amont — <code>easy</code>, <code>medium</code>, <code>hard</code> — et adapte le budget en conséquence : nombre d'itérations autorisées, nombre de candidats générés, activation ou non de la vérification lourde.</p>
+
+<pre><code>tache = classifier(prompt)
+if tache == "easy":
+    budget = Budget(iterations=3, candidats=1)
+elif tache == "medium":
+    budget = Budget(iterations=8, candidats=3)
+else:  # hard
+    budget = Budget(iterations=20, candidats=5, tests=True)</code></pre>
+
+<p>L'intérêt est double : on ne gaspille pas trois minutes sur un one-liner, et surtout on <em>autorise</em> l'agent à insister sur les tâches difficiles. Un agent qui s'arrête trop tôt, c'est souvent un agent à qui on n'a jamais donné le droit d'itérer vingt fois.</p>
+
+<h2>ReAct : raisonner, agir, observer — puis recommencer</h2>
+
+<p>Le cœur de la persistance, c'est la boucle <strong>ReAct</strong> (<em>Reasoning + Acting</em>). Au lieu d'une réponse d'un bloc, l'agent alterne trois temps : il <em>raisonne</em> sur l'étape suivante, il <em>agit</em> (lance un outil, écrit un fichier, exécute une commande), puis il <em>observe</em> le résultat réel. Et il recommence tant que la tâche n'est pas résolue.</p>
+
+<pre><code>while not resolu and iterations < budget.max:
+    pensee   = modele.reflechir(contexte)
+    action   = modele.choisir_outil(pensee)
+    obs      = executer(action)          # le RÉEL entre ici
+    contexte = contexte + obs
+    resolu   = verifier(contexte)</code></pre>
+
+<p>Ce <code>obs</code> change tout. Quand l'agent hallucine une méthode, l'exécution renvoie une <code>AttributeError</code>, et cette erreur revient dans le contexte. Le modèle voit son propre échec et corrige. L'observation est ce qui empêche de déclarer victoire dans le vide. C'est aussi ce qui transforme un modèle 7B local, individuellement médiocre, en quelque chose qui va au bout : il ne devine pas juste du premier coup, il converge par corrections successives.</p>
+
+<h2>Best-of-N : plusieurs tentatives, on garde la meilleure</h2>
+
+<p>Un modèle local a de la variance. La même invite donne parfois une bonne solution, parfois une bancale. Plutôt que de parier sur un seul tirage, le <strong>Best-of-N</strong> génère plusieurs candidats en parallèle et sélectionne le meilleur selon un critère objectif : est-ce que les tests passent ? le code compile-t-il ? le <em>linter</em> est-il content ?</p>
+
+<pre><code>candidats = [generer(prompt) for _ in range(N)]
+notes     = [scorer(c) for c in candidats]   # tests, lint, compilation
+meilleur  = candidats[argmax(notes)]</code></pre>
+
+<p>La nuance importante : le scoring doit être <strong>mesuré, pas jugé par le modèle lui-même</strong>. Un modèle qui note ses propres réponses se congratule volontiers. Un test qui échoue, lui, ne ment pas. C'est pour ça que Best-of-N et vérification vont de pair — l'un sans l'autre ne sert à rien.</p>
+
+<h2>La vérification : le seul juge qui ne triche pas</h2>
+
+<p>Tout repose au fond sur une conviction : <strong>une tâche n'est finie que si quelque chose de vérifiable le confirme</strong>. Sur Klody, ce « quelque chose » est une combinaison de garde-fous : exécution des tests, vérification de compilation, <em>linting</em>, contrôle que les fichiers annoncés existent bien. Le projet lui-même tourne sur environ <strong>699 tests</strong> — non pas comme trophée, mais parce que ce sont eux qui servent de filet à l'agent quand il travaille sur son propre code.</p>
+
+<p>La vérification agit comme condition de sortie de la boucle ReAct <em>et</em> comme fonction de score du Best-of-N. C'est la même idée déclinée : remplacer « le texte a l'air fini » par « une machine confirme que c'est fini ».</p>
+
+<h2>Le prix à payer, honnêtement</h2>
+
+<p>Rien de tout cela n'est gratuit. Best-of-N à cinq candidats, c'est cinq fois plus de calcul. Une boucle ReAct à vingt itérations peut prendre plusieurs minutes en local. La vérification par tests suppose que ces tests existent et soient rapides. Sur une petite tâche, tout ce dispositif serait un gâchis pur — d'où le routage adaptatif, qui n'est pas un luxe mais le régulateur qui rend l'ensemble soutenable.</p>
+
+<p>Ce que j'ai fini par accepter, c'est qu'un agent local fiable n'est pas un modèle qui a toujours raison. C'est un système médiocre en un coup mais têtu : il se trompe, il l'observe, il recommence, et il ne s'arrête que quand une preuve — pas une impression — lui dit que c'est bon.</p>
+    </div>
+
+    <div class="post-foot">
+      <a class="back" href="../index.html"><span aria-hidden="true">←</span> Retour aux articles</a>
+      <div class="sign">
+        <span class="av" aria-hidden="true">✍️</span>
+        <span>Écrit par <b>Claude Volny</b> · <a href="https://www.linkedin.com/in/claude-volny-94129894/">LinkedIn</a> · <a href="mailto:volnyclaude@protonmail.com">volnyclaude@protonmail.com</a></span>
+      </div>
+    </div>
+  </article>
+</main>
+
+<footer class="site">
+  <div class="wrap footRow">
+    <span>Le Carnet — un espace du portfolio <strong>klodynlov</strong> · IA privée, local-first.</span>
+    <span class="badge">✍️ Écrit à la main · 100 % statique</span>
+  </div>
+</footer>
+
+<script src="../assets/blog.js"></script>
+</body>
+</html>

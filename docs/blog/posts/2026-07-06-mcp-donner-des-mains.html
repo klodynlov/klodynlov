@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCP, expliqué simplement : donner des mains à un modèle de langage — Le Carnet</title>
+<meta name="description" content="Un modèle ne sait que générer du texte. Le Model Context Protocol est la prise standard qui le branche sur le monde réel — client, serveur, et pourquoi ça change tout.">
+<link rel="stylesheet" href="../assets/blog.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap bar">
+    <a class="logo" href="../index.html"><span class="seed" aria-hidden="true">✍️</span> Le Carnet</a>
+    <nav class="nav">
+      <a href="../index.html">Articles</a>
+      <a href="../a-propos.html">À propos</a>
+      <a href="https://github.com/klodynlov">← Profil</a>
+      <button class="toggle" id="toggle" type="button" aria-label="Changer de thème">◐</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <article class="post-body">
+    <div class="post-head">
+      <div class="meta">
+        <span class="chip">MCP</span>
+        <time datetime="2026-07-06">6 juillet 2026</time>
+        <span aria-hidden="true">·</span><span>6 min de lecture</span>
+      </div>
+      <h1>MCP, expliqué simplement : donner des mains à un modèle de langage</h1>
+    </div>
+
+    <div class="prose">
+<p class="lede">Un modèle de langage, aussi brillant soit-il, ne sait rien faire seul : il génère du texte. Il ne lit pas vos courriels, ne cherche pas sur le web, n'exécute aucune action. Le <strong>Model Context Protocol</strong> (MCP) est ce qui lui donne des mains — une façon standard de brancher un cerveau sur le monde réel.</p>
+
+<h2>Le problème : mille intégrations sur-mesure</h2>
+
+<p>Imaginez que vous vouliez donner à votre assistant IA l'accès à Gmail, à votre agenda, à une base de données interne et à un moteur de recherche. Avant MCP, chaque connexion était un projet en soi : une intégration bricolée à la main, avec sa propre logique d'authentification, son format de données, ses conventions. Changez de modèle ou d'outil, et vous recommenciez presque tout.</p>
+
+<p>C'est le classique problème du « N fois M » : <em>N</em> applications d'IA qui doivent se connecter à <em>M</em> sources de données, soit <em>N × M</em> intégrations à écrire et à maintenir. Multiplié par le nombre d'équipes qui réinventent la même roue dans leur coin, cela devient ingérable.</p>
+
+<p>MCP, proposé par Anthropic fin 2024 comme <strong>protocole ouvert</strong>, règle ce nœud de la même manière que l'USB-C a réglé celui des câbles. Au lieu d'un branchement propriétaire par appareil, on définit une prise unique. Un outil parle MCP une fois, et il devient utilisable par n'importe quel agent qui parle MCP. On passe de <em>N × M</em> à <em>N + M</em>.</p>
+
+<h2>Client et serveur : qui parle à qui</h2>
+
+<p>MCP repose sur une distinction simple mais fondamentale, empruntée à l'architecture classique du web.</p>
+
+<ul>
+<li>Le <strong>serveur MCP</strong> expose des capacités. C'est lui qui « sait faire » quelque chose : lire une boîte Gmail, interroger une base, chercher sur le web. Il publie ce qu'il propose de manière standardisée.</li>
+<li>Le <strong>client MCP</strong> consomme ces capacités. Il est intégré dans l'application qui héberge le modèle (l'agent) et se connecte à un ou plusieurs serveurs pour leur demander des choses.</li>
+</ul>
+
+<p>Concrètement, un serveur MCP peut exposer trois types de choses :</p>
+
+<ul>
+<li><strong>Des outils</strong> (<code>tools</code>) : des actions que le modèle peut décider d'appeler, comme <code>envoyer_email</code> ou <code>rechercher_web</code>. C'est l'équivalent des verbes.</li>
+<li><strong>Des ressources</strong> (<code>resources</code>) : des données que l'agent peut lire, comme un fichier, un enregistrement, une page. Les noms.</li>
+<li><strong>Des invites</strong> (<code>prompts</code>) : des modèles de requête réutilisables, préparés côté serveur pour guider une tâche.</li>
+</ul>
+
+<p>La communication passe par un <strong>transport</strong> — typiquement l'entrée/sortie standard (<code>stdio</code>) pour un serveur local, ou HTTP en flux pour un serveur distant — et s'appuie sur des messages JSON-RPC. Le client demande d'abord « que sais-tu faire ? », le serveur répond avec sa liste d'outils et leurs descriptions, et le modèle choisit lesquels appeler.</p>
+
+<pre><code>Agent (hôte)
+  └─ Client MCP ──[transport: stdio / HTTP]──► Serveur MCP Gmail
+                                               ├─ outil: rechercher_messages
+                                               ├─ outil: creer_brouillon
+                                               └─ ressource: fil_de_discussion
+</code></pre>
+
+<h2>Un exemple concret : brancher Gmail</h2>
+
+<p>Prenons le connecteur Gmail. Le serveur MCP correspondant expose un outil <code>rechercher_messages</code> et un outil <code>creer_brouillon</code>. Côté agent, je n'écris aucun code spécifique à Gmail : mon client MCP découvre ces outils automatiquement et les présente au modèle avec leur description.</p>
+
+<p>Quand je demande « résume-moi les courriels non lus de cette semaine », le modèle comprend qu'il doit appeler <code>rechercher_messages</code>, formule les bons paramètres, reçoit les résultats via le serveur, puis les résume. Le même agent, sans une ligne de plus, peut ensuite se brancher à un serveur d'accès web pour vérifier un lien, ou à un serveur d'agenda pour proposer un créneau. Chaque nouvelle capacité est un serveur de plus, pas un chantier de plus.</p>
+
+<blockquote>Le gain n'est pas seulement technique : c'est un découplage. L'auteur de l'outil et l'auteur de l'agent n'ont plus besoin de se connaître ni de se coordonner. Le protocole est leur langage commun.</blockquote>
+
+<h2>Pourquoi je construis Klody Code AI à la fois client <em>et</em> serveur</h2>
+
+<p>C'est là que MCP devient réellement intéressant à mes yeux, dans mon travail sur les agents privés et <em>local-first</em>. Un agent n'est pas condamné à un seul rôle.</p>
+
+<p>Klody Code AI est un <strong>client MCP</strong> : il se connecte aux serveurs qui l'entourent pour lire des fichiers, chercher sur le web, piloter des outils locaux via Ollama ou MLX, sans que rien ne quitte ma machine. Mais il est aussi un <strong>serveur MCP</strong> : il expose ses propres capacités — analyser un dépôt de code, exécuter une tâche d'ingénierie — pour qu'un <em>autre</em> agent puisse les utiliser à son tour.</p>
+
+<p>Autrement dit, mon agent peut être l'outil d'un autre agent. Cette symétrie change la nature de ce qu'on construit : on ne fabrique plus des assistants isolés, mais des briques qui se composent. Un agent orchestrateur délègue à un agent spécialisé, qui délègue lui-même à un serveur de données, et tout ce beau monde parle le même protocole.</p>
+
+<h2>Ce que ça préfigure</h2>
+
+<p>On parle beaucoup d'agents « autonomes ». Mais l'autonomie sans capacité d'action reste une conversation. MCP est la couche discrète qui transforme un générateur de texte en acteur : il standardise le geste par lequel un modèle attrape quelque chose dans le monde.</p>
+
+<p>Et parce que le protocole est ouvert, personne n'en détient les clés. C'est ce qui permet à un écosystème d'exister plutôt qu'un jardin clos par éditeur. Le jour où chaque outil expose une prise MCP et où chaque agent sait s'y brancher, la question n'est plus « à quoi ce modèle a-t-il accès ? », mais « à quoi ne l'ai-je pas encore connecté ? ».</p>
+    </div>
+
+    <div class="post-foot">
+      <a class="back" href="../index.html"><span aria-hidden="true">←</span> Retour aux articles</a>
+      <div class="sign">
+        <span class="av" aria-hidden="true">✍️</span>
+        <span>Écrit par <b>Claude Volny</b> · <a href="https://www.linkedin.com/in/claude-volny-94129894/">LinkedIn</a> · <a href="mailto:volnyclaude@protonmail.com">volnyclaude@protonmail.com</a></span>
+      </div>
+    </div>
+  </article>
+</main>
+
+<footer class="site">
+  <div class="wrap footRow">
+    <span>Le Carnet — un espace du portfolio <strong>klodynlov</strong> · IA privée, local-first.</span>
+    <span class="badge">✍️ Écrit à la main · 100 % statique</span>
+  </div>
+</footer>
+
+<script src="../assets/blog.js"></script>
+</body>
+</html>
