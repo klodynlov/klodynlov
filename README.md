@@ -68,6 +68,14 @@ Quatre piliers :
 - **LibraryBrain** — RAG local de livres (sqlite-vec + FTS5) qui alimente Klody.
 - **VocalBrain** — outil autour de la voix / l'audio.
 - **[Dream × World](https://github.com/klodynlov/dream-x-world)** — générateur de **mondes IA persistants & cohérents**, 100 % local. Un *Canon Engine* (retrieve → generate → vérif anti-contradiction → Best-of-N) garde le monde non-contradictoire dans la durée ; simulation temporelle multi-agents et monde exposé en **MCP** pour que les agents y jouent.
+
+### 🔌 AIoT — l'IA locale rencontre les objets
+
+Prolongement edge de la démarche local-first : l'inférence tourne **sur** l'objet, les données des capteurs ne quittent jamais le réseau. → [**Note de conception & état de l'art AIoT 2025-2026**](docs/aiot-edge-projects.md) (synthèse sourcée + feuilles de route).
+
+- **[EdgeSense](edgesense/)** *(M0 codé ✓)* — passerelle **MCP** exposant capteurs & actionneurs (Raspberry Pi / ESP32) comme des *outils* que les agents locaux lisent et actionnent. Prolonge directement le positionnement *client & serveur MCP*. Le jalon M0 prouve la boucle *percevoir → agir* avec capteur/actionneur simulés (serveur MCP + garde-fous + journal tamper-evident, 9 tests).
+- **TinyGuard** *(conception)* — surveillance vidéo/audio **100 % edge** : détection sur modèle quantifié (INT8), rien dans le cloud, alertes locales exposables en MCP.
+
 - *(et d'autres explorations IA locale, audio, MCP…)*
 
 ## ✍️ Mon carnet — [Le Carnet](https://klodynlov.github.io/klodynlov/blog/)
