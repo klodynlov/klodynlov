@@ -380,14 +380,17 @@ Concept / exploration au sein du portfolio IA locale. Les briques réutilisées
 (VocalBrain, LibraryBrain, Klody, MCP) sont décrites dans le
 [README principal](../README.md).
 
-Jalons envisagés :
+Jalons envisagés (découpés en sous-tâches datées dans la
+[**feuille de route détaillée**](SILVERBRAIN-ROADMAP.md), horizon 31/10/2026) :
 1. **Socle vocal + intentions** (piliers 1 & 3 de base) sur VocalBrain + Klody.
 2. **Profil local + orientation LibraryBrain** (pilier 2) — voir [SILVERBRAIN-PROFIL.md](SILVERBRAIN-PROFIL.md).
 3. **Contrat de style + boucle de calibrage** (pilier 4) — voir [SILVERBRAIN-STYLE.md](SILVERBRAIN-STYLE.md).
 4. **Connecteurs MCP proches** et interface aidant « gros boutons ».
+5. **Test avec 3 seniors réels** et durcissement sur retours.
 
 ### 📚 Documentation
 - [SILVERBRAIN.md](SILVERBRAIN.md) — concept, 4 piliers, scénario, architecture *(ce fichier)*
+- [SILVERBRAIN-ROADMAP.md](SILVERBRAIN-ROADMAP.md) — feuille de route détaillée (jalons datés)
 - [SILVERBRAIN-PROFIL.md](SILVERBRAIN-PROFIL.md) — modèle de données du profil
 - [SILVERBRAIN-STYLE.md](SILVERBRAIN-STYLE.md) — catalogue du contrat de style
 - [SILVERBRAIN-MCP.md](SILVERBRAIN-MCP.md) — connecteurs MCP (appels, messages, agenda)

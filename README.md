@@ -25,6 +25,7 @@ sécurité de niveau production.
 - 🧭 Routeur adaptatif (easy/medium/hard × 6 types), boucle ReAct qui va au bout, Best-of-N
 - 🔌 Extensible via MCP — connecteurs Gmail & web, et Klody s'expose aux autres agents
 - 📐 [**Étude de cas technique**](https://github.com/klodynlov/klody-code-ai/blob/main/docs/CASE-STUDY.md) — les décisions d'ingénierie
+- 🗺️ [**Feuille de route**](docs/KLODY-ROADMAP.md) — jalons datés (Best-of-N, benchmark public, release)
 
 > Frontend desktop associé : [**klody-ui**](https://github.com/klodynlov/klody-ui) — Tauri 2 + React 19 + Tailwind 4 (thème clair/sombre/auto).
 
@@ -57,7 +58,7 @@ Quatre piliers :
 3. 📅 **Accompagnement** — rappels proactifs, aide à la lecture/mémoire, lien avec les proches (**MCP**), socle extensible.
 4. 🗣️ **Formulation adaptative** — ajuste *comment* il parle (vocabulaire, rythme, ton) aux contraintes d'un public réfractaire à la technologie.
 
-📖 [Concept & scénario](docs/SILVERBRAIN.md) · 🧬 [Modèle du profil](docs/SILVERBRAIN-PROFIL.md) · 🗣️ [Contrat de style](docs/SILVERBRAIN-STYLE.md) · 🔌 [Connecteurs MCP](docs/SILVERBRAIN-MCP.md) · 🎨 [Maquettes](docs/ui/landing.html)
+📖 [Concept & scénario](docs/SILVERBRAIN.md) · 🗺️ [Feuille de route](docs/SILVERBRAIN-ROADMAP.md) · 🧬 [Modèle du profil](docs/SILVERBRAIN-PROFIL.md) · 🗣️ [Contrat de style](docs/SILVERBRAIN-STYLE.md) · 🔌 [Connecteurs MCP](docs/SILVERBRAIN-MCP.md) · 🎨 [Maquettes](docs/ui/landing.html)
 
 > Réutilise VocalBrain (voix), LibraryBrain (thématiques/lecture) et Klody (orchestration + MCP) — 100 % local, aucune donnée dans le cloud.
 
@@ -67,8 +68,17 @@ Quatre piliers :
 
 - **LibraryBrain** — RAG local de livres (sqlite-vec + FTS5) qui alimente Klody.
 - **VocalBrain** — outil autour de la voix / l'audio.
-- **[Dream × World](https://github.com/klodynlov/dream-x-world)** — générateur de **mondes IA persistants & cohérents**, 100 % local. Un *Canon Engine* (retrieve → generate → vérif anti-contradiction → Best-of-N) garde le monde non-contradictoire dans la durée ; simulation temporelle multi-agents et monde exposé en **MCP** pour que les agents y jouent.
+- **[Dream × World](https://github.com/klodynlov/dream-x-world)** — générateur de **mondes IA persistants & cohérents**, 100 % local. Un *Canon Engine* (retrieve → generate → vérif anti-contradiction → Best-of-N) garde le monde non-contradictoire dans la durée ; simulation temporelle multi-agents et monde exposé en **MCP** pour que les agents y jouent. — 🗺️ [Feuille de route](docs/DREAMXWORLD-ROADMAP.md)
 - *(et d'autres explorations IA locale, audio, MCP…)*
+
+## 🧰 Outils & feuille de route
+
+- 🎯 [**Feuille de route**](docs/ROADMAP.md) — mes ambitions et leur avancement.
+- 🗂️ [`tools/`](tools/) — petits utilitaires locaux, sans dépendance :
+  [`classer_sessions.py`](tools/classer_sessions.py) (analyse des sessions Claude Code)
+  et [`objectifs.py`](tools/objectifs.py) (suivi d'ambitions → dashboard HTML).
+
+---
 
 ## ✍️ Mon carnet — [Le Carnet](https://klodynlov.github.io/klodynlov/blog/)
 
