@@ -61,6 +61,8 @@ Aider les entreprises dont les données ne peuvent pas aller dans le cloud.
 
 ## 📣 Communication
 
+- [**Page consulting**](CONSULTING.md) — « Pour les entreprises », alignée
+  sur l'angle on-premise (à porter dans le dépôt klody-code-ai).
 - [**Accroche de profil LinkedIn**](LINKEDIN-PROFIL.md) — titre + À propos
   réécrits « on-premise AI » (FR + EN).
 - [**Posts LinkedIn**](LINKEDIN-POSTS.md) — sept brouillons tirés de ces
