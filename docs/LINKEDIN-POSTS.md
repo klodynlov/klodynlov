@@ -5,6 +5,8 @@ Sept posts prêts à publier, tirés des roadmaps [Klody Code AI](KLODY-ROADMAP.
 Chacun sert le positionnement **« ingénieur IA locale / on-premise »** et est calé
 sur un jalon daté — de quoi publier *au fil de l'avancement* (build in public).
 
+> 🇬🇧 Version anglaise : [LINKEDIN-POSTS-EN.md](LINKEDIN-POSTS-EN.md).
+
 > **Format LinkedIn qui marche** : une première ligne qui accroche (elle décide
 > du reste), des paragraphes courts d'une idée, une question ou un appel à
 > l'action à la fin, 3-5 hashtags. Les liens en premier commentaire (pas dans le

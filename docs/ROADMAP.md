@@ -63,6 +63,7 @@ Aider les entreprises dont les données ne peuvent pas aller dans le cloud.
 
 - [**Posts LinkedIn**](LINKEDIN-POSTS.md) — sept brouillons tirés de ces
   roadmaps, calés sur les jalons (build in public).
+  Version anglaise : [LINKEDIN-POSTS-EN.md](LINKEDIN-POSTS-EN.md).
 
 ---
 
