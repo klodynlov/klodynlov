@@ -64,10 +64,40 @@ Branche `claude/aiot-projects-96qbia` · portée par la session `session_01HU6u9
   pub/sub (M2). Angles morts à instrumenter : débit runtimes sur Jetson/Pi, thermique 24-7,
   plancher de précision SLM sub-1B après quantif 4-bit.
 
+### 🚧 micro:bit en Bluetooth — matériel réel (jalon M1 « radio »)
+**Statut : branche `claude/microbit-bluetooth-connection-jb4jwf`, basée sur `main`.**
+Indépendant du code d'EdgeSense (qui vit encore dans la PR #4 non mergée) : aucun import
+croisé, seulement une continuité de récit et de discipline.
+
+- 💻 `microbit/` — connecteur **BLE** pour BBC micro:bit : percevoir (température,
+  accéléromètre, boussole, boutons) et agir (afficheur LED, UART).
+  - `profile.py` (**stdlib pure** : UUIDs, codecs, **allowlist d'écriture** à 7
+    caractéristiques — DFU refusé, une écriture y reprogrammerait la carte à distance).
+  - `ble.py` (session bleak : scan, connexion, notifications, écritures ; client injectable).
+  - `fake.py` (**micro:bit simulé** exposant l'API de bleak → tests et démos sans matériel).
+  - `server.py` (**MCP** : 14 outils + ressource `microbit://state` ; compat SDK **1.x
+    FastMCP et 2.x MCPServer**) · `demo.py` (`scan`/`infos`/`texte`/`icone`/`suivre`/`boucle`,
+    toutes avec `--simule`) · `test_microbit.py` (**33 tests, verts**) · README + requirements.
+  - 📄 `docs/MICROBIT-BLUETOOTH.md` (conception, 2 diagrammes Mermaid) + entrée README.
+- **Vérifié ici** : 33/33 tests ✓ ; démos simulées ✓ ; serveur piloté par un **vrai client
+  MCP en stdio** (initialize, 14 outils, ressource, chemin d'erreur) ✓.
+  **Non vérifiable sans radio** : le chemin bleak vers une carte physique.
+- 🔑 **Pièges du profil encodés et testés** (vérifiés contre la spec Lancaster) :
+  UART **inversé** vs Nordic (écrire `…0003`, écouter `…0002`) · `UART TX` en **indicate**
+  (CCCD `0x0200`), pas notify · service absent = firmware sans le service (on renvoie le bloc
+  MakeCode à activer, pas un timeout) · texte LED = 20 **octets UTF-8** · matrice : bit 4 =
+  colonne de gauche · température = celle du **processeur**, pas de la pièce.
+- ⚠️ Confirme le **risque n°1** : MCP ne peut pas pousser → tampon borné de 200 événements
+  relevé par `evenements_recents`. Vrai temps réel = bus pub/sub (M2), toujours ouvert.
+- Prérequis matériel côté utilisateur : programme **MakeCode + extension Bluetooth**
+  (MicroPython ne fait pas de BLE GATT) ; « No Pairing Required » recommandé.
+
 ### Autres projets (mentionnés au README, hors de ce dépôt)
 Klody Code AI (agent de code local, projet phare) · klody-ui · LibraryBrain (RAG local) ·
 VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : suivi AIoT/EdgeSense au stade PR #4 (M0 codé, M1-M4 + TinyGuard en conception)._
+_Dernière mise à jour mémoire : ajout du connecteur `microbit/` (BLE + MCP, 33 tests) sur la
+branche `claude/microbit-bluetooth-connection-jb4jwf` — premier matériel réel de l'axe AIoT.
+AIoT/EdgeSense reste au stade PR #4 (M0 codé, M2-M4 + TinyGuard en conception)._
