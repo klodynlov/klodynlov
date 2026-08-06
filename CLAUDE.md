@@ -64,10 +64,31 @@ Branche `claude/aiot-projects-96qbia` · portée par la session `session_01HU6u9
   pub/sub (M2). Angles morts à instrumenter : débit runtimes sur Jetson/Pi, thermique 24-7,
   plancher de précision SLM sub-1B après quantif 4-bit.
 
+### 🖥️ Klody Control — maquette du poste de contrôle
+**Statut : branche `claude/interface-alerts-refresh-button-9oq8b2`.**
+Fichier unique `docs/ui/klody-control.html` (autonome, aucune dépendance, thème sombre/clair,
+FR). Reproduit le tableau de bord Klody : 4 tuiles (modèles résidents · RAM · services ·
+alertes), graphe « mémoire dans le temps » en SVG, alertes en direct, journal, table des
+services exposés (port 8790 = l'UI elle-même).
+- **Les 2 alertes sont réellement corrigeables** — chacune porte sa procédure (relance de
+  `com.klody.eval-nightly` → code de sortie 0 ; montage de `/Volumes/Klod Musik` →
+  réindexation Library Brain). La correction affiche ses étapes, bascule l'alerte en RÉSOLU,
+  décrémente la carte + la pastille (2→0), **remet la vraie ligne de service au vert** dans
+  la table (« en échec »→actif, « à vide »→actif ; services actifs 19→20) et écrit au journal.
+  Bouton « Tout corriger » quand il reste >1 alerte.
+- **« Rafraîchir » est fonctionnel** — ré-échantillonne les métriques (4 points × 15 s),
+  avance l'horloge simulée, redessine le graphe, recalcule la tendance sur 10 min réelles,
+  incrémente les compteurs « actif depuis », et flashe les tuiles mises à jour.
+- Aussi vivants : filtre de la barre haute, fenêtres 15 min/1 h/6 h, infobulle au survol,
+  bascule de thème, panneau Journaux. Données simulées via PRNG **déterministe** (même rendu
+  à chaque ouverture). Vérifié au navigateur : **47 contrôles verts, 0 erreur JS**, aucun
+  débordement horizontal de 1680 à 390 px.
+
 ### Autres projets (mentionnés au README, hors de ce dépôt)
 Klody Code AI (agent de code local, projet phare) · klody-ui · LibraryBrain (RAG local) ·
 VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : suivi AIoT/EdgeSense au stade PR #4 (M0 codé, M1-M4 + TinyGuard en conception)._
+_Dernière mise à jour mémoire : ajout de la maquette Klody Control (alertes corrigeables +
+bouton Rafraîchir actif) ; AIoT/EdgeSense toujours au stade PR #4._
