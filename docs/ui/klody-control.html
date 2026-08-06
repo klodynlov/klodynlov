@@ -1,0 +1,1023 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Klody Control — poste de contrôle</title>
+<meta name="description" content="Maquette du poste de contrôle Klody : mémoire, services et alertes d'une machine 100 % locale.">
+<style>
+  :root{
+    --fond:#070B16; --rail:#0A1020; --carte:#0F1729; --carte-2:#141E33;
+    --encre:#E8EEFA; --encre-2:#B7C4DA; --sourdine:#7C8AA6;
+    --bord:rgba(255,255,255,.09); --bord-fort:rgba(255,255,255,.16);
+    --bleu:#4F8DF7; --bleu-vif:#3B82F6; --cyan:#2DD4BF; --ambre:#F5B544;
+    --violet:#A78BFA; --vert:#34D399; --rouge:#F87171;
+    --sans:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;
+    --r:16px; --ombre:0 18px 48px rgba(0,0,0,.45);
+  }
+  :root[data-theme="clair"]{
+    --fond:#EEF2F9; --rail:#FFFFFF; --carte:#FFFFFF; --carte-2:#F4F7FC;
+    --encre:#0E1729; --encre-2:#33415C; --sourdine:#63718C;
+    --bord:rgba(14,23,41,.12); --bord-fort:rgba(14,23,41,.22);
+    --bleu:#2563EB; --bleu-vif:#2563EB; --cyan:#0D9488; --ambre:#B4740D;
+    --violet:#7C3AED; --vert:#0F9D6B; --rouge:#DC2626;
+    --ombre:0 12px 34px rgba(14,23,41,.10);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    font-family:var(--sans); background:var(--fond); color:var(--encre);
+    -webkit-font-smoothing:antialiased; font-size:15px; line-height:1.45;
+    display:grid; grid-template-columns:288px 1fr; min-height:100%;
+  }
+  button{font:inherit;color:inherit}
+  :focus-visible{outline:2px solid var(--bleu);outline-offset:2px;border-radius:8px}
+  .invisible{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* ---------- rail latéral ---------- */
+  .rail{
+    background:var(--rail); border-right:1px solid var(--bord);
+    display:flex; flex-direction:column; gap:18px; padding:20px 16px;
+    position:sticky; top:0; height:100vh;
+  }
+  .marque{display:flex;align-items:center;gap:12px;padding:6px 8px 2px}
+  .marque .sceau{
+    width:42px;height:42px;flex:none;border-radius:13px;display:grid;place-items:center;
+    background:linear-gradient(150deg,#1B2947,#101A2E);border:1px solid var(--bord-fort);
+    color:var(--ambre);font-size:1.3rem;
+  }
+  .marque b{display:block;font-size:1.09rem;letter-spacing:.2px;line-height:1.2}
+  .marque span{display:block;color:var(--sourdine);font-size:.82rem}
+
+  .menu{display:flex;flex-direction:column;gap:3px;margin-top:4px}
+  .menu button{
+    display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+    background:none;border:1px solid transparent;border-radius:12px;
+    padding:11px 13px;cursor:pointer;color:var(--encre-2);font-weight:550;
+    transition:background .12s ease,color .12s ease;
+  }
+  .menu button .ic{width:20px;flex:none;text-align:center;opacity:.85;font-size:1.02rem}
+  .menu button .cpt{margin-left:auto;color:var(--sourdine);font-size:.84rem;font-variant-numeric:tabular-nums}
+  .menu button:hover{background:var(--carte-2);color:var(--encre)}
+  .menu button[aria-current="page"]{
+    background:color-mix(in srgb,var(--bleu) 18%,transparent);
+    border-color:color-mix(in srgb,var(--bleu) 36%,transparent);color:var(--encre);
+  }
+
+  .machine{
+    margin-top:auto;background:var(--carte);border:1px solid var(--bord);
+    border-radius:var(--r);padding:16px 17px;
+  }
+  .machine h2{margin:0 0 11px;font-size:.98rem;font-weight:650}
+  .machine dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:7px 12px;font-size:.87rem}
+  .machine dt{color:var(--sourdine)}
+  .machine dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;color:var(--encre-2)}
+  .machine dd.ok{color:var(--vert)}
+
+  /* ---------- barre haute ---------- */
+  .vue{display:flex;flex-direction:column;min-width:0}
+  .haut{
+    display:flex;align-items:center;gap:16px;padding:16px clamp(16px,2.4vw,28px);
+    position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--fond) 88%,transparent);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--bord);
+  }
+  .fil{display:flex;align-items:center;gap:9px;color:var(--sourdine);font-size:.95rem;white-space:nowrap}
+  .fil b{color:var(--encre);font-weight:600}
+  .recherche{position:relative;flex:1;min-width:120px;max-width:700px}
+  .recherche input{
+    width:100%;background:var(--carte);border:1px solid var(--bord);border-radius:12px;
+    padding:11px 14px 11px 40px;color:var(--encre);font:inherit;font-size:.93rem;
+  }
+  .recherche input::placeholder{color:var(--sourdine)}
+  .recherche input:focus{outline:none;border-color:color-mix(in srgb,var(--bleu) 60%,transparent)}
+  .recherche .loupe{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--sourdine);pointer-events:none}
+  .cloche{
+    position:relative;width:44px;height:44px;flex:none;border-radius:12px;cursor:pointer;
+    background:var(--carte);border:1px solid var(--bord);display:grid;place-items:center;font-size:1.05rem;
+  }
+  .cloche:hover{border-color:var(--bord-fort)}
+  .cloche .pastille{
+    position:absolute;top:-6px;right:-6px;min-width:21px;height:21px;padding:0 5px;border-radius:11px;
+    background:var(--violet);color:#0B1020;font-size:.75rem;font-weight:750;display:grid;place-items:center;
+    border:2px solid var(--fond);font-variant-numeric:tabular-nums;
+  }
+  .cloche[data-alertes="0"] .pastille{display:none}
+  .rafraichir{
+    display:inline-flex;align-items:center;gap:9px;background:var(--bleu-vif);color:#fff;
+    border:1px solid transparent;border-radius:12px;padding:12px 20px;font-weight:650;cursor:pointer;
+    white-space:nowrap;transition:filter .12s ease,transform .12s ease;
+  }
+  .rafraichir:hover:not(:disabled){filter:brightness(1.08)}
+  .rafraichir:active:not(:disabled){transform:translateY(1px)}
+  .rafraichir:disabled{opacity:.72;cursor:progress}
+  .rafraichir .roue{display:inline-block;line-height:1}
+  .rafraichir[aria-busy="true"] .roue{animation:tourne .8s linear infinite}
+  @keyframes tourne{to{transform:rotate(360deg)}}
+  .theme{
+    width:44px;height:44px;flex:none;border-radius:12px;cursor:pointer;
+    background:var(--carte);border:1px solid var(--bord);display:grid;place-items:center;font-size:1rem;
+  }
+  .theme:hover{border-color:var(--bord-fort)}
+
+  /* ---------- contenu ---------- */
+  .corps{padding:clamp(16px,2.4vw,28px);display:flex;flex-direction:column;gap:20px}
+
+  .tuiles{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .tuile{
+    background:var(--carte);border:1px solid color-mix(in srgb,var(--ton) 34%,var(--bord));
+    border-radius:var(--r);padding:18px 19px 16px;display:flex;flex-direction:column;gap:8px;min-width:0;
+  }
+  .tuile .entete{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .tuile .entete h3{margin:0;font-size:.97rem;font-weight:600;color:var(--encre-2)}
+  .tuile .sceau{
+    width:34px;height:34px;flex:none;border-radius:10px;display:grid;place-items:center;font-size:.95rem;
+    background:color-mix(in srgb,var(--ton) 17%,transparent);color:var(--ton);
+    border:1px solid color-mix(in srgb,var(--ton) 30%,transparent);
+  }
+  .tuile .val{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+  .tuile .val strong{font-size:2.3rem;font-weight:700;letter-spacing:-1px;line-height:1.05}
+  .tuile .val .unite{color:var(--sourdine);font-size:.92rem}
+  .tuile .pied{color:var(--sourdine);font-size:.84rem}
+  .tuile .tendance{font-size:.84rem;font-weight:650;font-variant-numeric:tabular-nums}
+  .tuile .tendance.baisse{color:var(--rouge)} .tuile .tendance.hausse{color:var(--vert)}
+  .tuile .tendance.plat{color:var(--sourdine)}
+  .tuile.maj{animation:pulse-maj .7s ease}
+  @keyframes pulse-maj{
+    0%{border-color:color-mix(in srgb,var(--ton) 85%,transparent);
+       box-shadow:0 0 0 3px color-mix(in srgb,var(--ton) 16%,transparent)}
+    100%{border-color:color-mix(in srgb,var(--ton) 34%,var(--bord));box-shadow:none}
+  }
+
+  .duo{display:grid;grid-template-columns:1.62fr 1fr;gap:16px;align-items:start}
+  .bloc{background:var(--carte);border:1px solid var(--bord);border-radius:var(--r);padding:19px 20px}
+  .bloc>header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .bloc h2{margin:0;font-size:1.12rem;font-weight:650;display:flex;align-items:center;gap:10px}
+  .bloc .outils{margin-left:auto;display:flex;gap:6px}
+  .puce{
+    background:var(--carte-2);border:1px solid var(--bord);border-radius:9px;
+    padding:6px 12px;font-size:.85rem;cursor:pointer;color:var(--encre-2);font-weight:550;
+  }
+  .puce:hover{border-color:var(--bord-fort);color:var(--encre)}
+  .puce[aria-pressed="true"]{
+    background:color-mix(in srgb,var(--bleu) 20%,transparent);
+    border-color:color-mix(in srgb,var(--bleu) 45%,transparent);color:var(--encre);
+  }
+
+  /* ---------- graphe ---------- */
+  .graphe{display:grid;grid-template-columns:auto 1fr;gap:10px;margin-top:14px}
+  .ordonnee{
+    display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;
+    height:290px;color:var(--sourdine);font-size:.8rem;font-variant-numeric:tabular-nums;
+    padding-right:2px;
+  }
+  .trace{position:relative;height:290px;min-width:0}
+  .trace svg{width:100%;height:100%;display:block;overflow:visible}
+  .trace .quadrillage line{stroke:var(--bord);stroke-width:1;vector-effect:non-scaling-stroke}
+  .serie{fill:none;stroke-width:2;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
+  .serie.ram{stroke:var(--bleu)} .serie.mod{stroke:var(--ambre)}
+  .curseur{position:absolute;top:0;bottom:0;width:1px;background:var(--bord-fort);display:none;pointer-events:none}
+  .marqueur{position:absolute;width:9px;height:9px;border-radius:50%;border:2px solid var(--carte);
+            transform:translate(-50%,-50%);display:none;pointer-events:none}
+  .marqueur.ram{background:var(--bleu)} .marqueur.mod{background:var(--ambre)}
+  .infobulle{
+    position:absolute;display:none;pointer-events:none;z-index:3;min-width:196px;
+    background:var(--carte-2);border:1px solid var(--bord-fort);border-radius:12px;
+    padding:11px 13px;box-shadow:var(--ombre);font-size:.86rem;
+  }
+  .infobulle .h{color:var(--sourdine);font-variant-numeric:tabular-nums;margin-bottom:7px}
+  .infobulle .l{display:flex;justify-content:space-between;gap:18px;padding:2px 0}
+  .infobulle .l span{color:var(--encre-2)}
+  .infobulle .l b{font-variant-numeric:tabular-nums}
+  .abscisse{
+    display:flex;justify-content:space-between;color:var(--sourdine);font-size:.8rem;
+    font-variant-numeric:tabular-nums;margin:8px 0 0;grid-column:2;
+  }
+  .legende{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:.86rem;color:var(--encre-2)}
+  .legende .cle{display:flex;align-items:center;gap:8px}
+  .legende .jeton{width:10px;height:10px;border-radius:3px;flex:none}
+  .legende .meta{margin-left:auto;color:var(--sourdine);font-variant-numeric:tabular-nums}
+
+  /* ---------- alertes ---------- */
+  .direct h2::before{
+    content:"";width:9px;height:9px;border-radius:50%;background:var(--rouge);flex:none;
+    box-shadow:0 0 0 4px color-mix(in srgb,var(--rouge) 22%,transparent);animation:battement 2s ease-in-out infinite;
+  }
+  .direct[data-vide="oui"] h2::before{background:var(--vert);box-shadow:0 0 0 4px color-mix(in srgb,var(--vert) 22%,transparent);animation:none}
+  @keyframes battement{50%{opacity:.35}}
+  .pile{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+  .alerte{
+    background:var(--carte-2);border:1px solid var(--bord);border-left:3px solid var(--ton);
+    border-radius:12px;padding:14px 15px;display:flex;flex-direction:column;gap:8px;
+  }
+  .alerte>.haut-a{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .etiquette{
+    text-transform:uppercase;letter-spacing:.07em;font-size:.7rem;font-weight:750;
+    padding:4px 9px;border-radius:7px;background:color-mix(in srgb,var(--ton) 20%,transparent);color:var(--ton);
+  }
+  .origine{font-size:.76rem;color:var(--encre-2);background:var(--carte);border:1px solid var(--bord);
+           padding:3px 9px;border-radius:7px;font-family:var(--mono)}
+  .quand{margin-left:auto;color:var(--sourdine);font-size:.82rem;white-space:nowrap}
+  .alerte .titre{font-weight:600;line-height:1.35}
+  .alerte .detail{color:var(--sourdine);font-size:.86rem;font-family:var(--mono)}
+  .alerte .barre{display:flex;align-items:center;gap:9px;margin-top:2px}
+  .corriger{
+    background:color-mix(in srgb,var(--ton) 17%,transparent);color:var(--ton);cursor:pointer;
+    border:1px solid color-mix(in srgb,var(--ton) 40%,transparent);border-radius:9px;
+    padding:7px 14px;font-size:.86rem;font-weight:650;transition:filter .12s ease;
+  }
+  .corriger:hover:not(:disabled){filter:brightness(1.18)}
+  .corriger:disabled{cursor:progress;opacity:.8}
+  .etape{color:var(--sourdine);font-size:.82rem;font-family:var(--mono)}
+  .alerte[data-etat="resolue"]{--ton:var(--vert);opacity:.94}
+  .alerte[data-etat="resolue"] .titre{color:var(--encre-2)}
+  .alerte.part{animation:sortie .45s ease forwards}
+  @keyframes sortie{to{opacity:0;transform:translateX(14px);max-height:0;padding-block:0;margin-top:-12px}}
+  @media (prefers-reduced-motion:reduce){
+    .alerte.part,.tuile.maj,.rafraichir[aria-busy="true"] .roue,.direct h2::before{animation:none}
+  }
+  .vide{
+    display:none;flex-direction:column;align-items:center;gap:6px;text-align:center;
+    padding:26px 16px;border:1px dashed color-mix(in srgb,var(--vert) 40%,transparent);
+    border-radius:12px;background:color-mix(in srgb,var(--vert) 8%,transparent);
+  }
+  .direct[data-vide="oui"] .vide{display:flex}
+  .vide .ic{font-size:1.5rem} .vide b{font-weight:650} .vide span{color:var(--sourdine);font-size:.86rem}
+  .lien-journaux{
+    width:100%;margin-top:14px;background:var(--carte-2);border:1px solid var(--bord);
+    border-radius:11px;padding:11px;cursor:pointer;color:var(--encre-2);font-weight:550;font-size:.9rem;
+  }
+  .lien-journaux:hover{border-color:var(--bord-fort);color:var(--encre)}
+
+  /* ---------- journal ---------- */
+  .journal[hidden]{display:none}
+  .lignes{margin-top:12px;max-height:230px;overflow:auto;border:1px solid var(--bord);border-radius:11px}
+  .ligne{display:grid;grid-template-columns:78px 128px 52px 1fr;gap:12px;padding:9px 13px;
+         font-family:var(--mono);font-size:.81rem;border-bottom:1px solid var(--bord);align-items:baseline}
+  .ligne:last-child{border-bottom:none}
+  .ligne .t{color:var(--sourdine)} .ligne .s{color:var(--encre-2);overflow:hidden;text-overflow:ellipsis}
+  .ligne .n{font-weight:750;font-size:.72rem;letter-spacing:.04em}
+  .ligne .n.ERR{color:var(--rouge)} .ligne .n.AVERT{color:var(--ambre)}
+  .ligne .n.INFO{color:var(--bleu)} .ligne .n.OK{color:var(--vert)}
+  .ligne .m{color:var(--encre-2);min-width:0;overflow-wrap:anywhere}
+  .ligne.neuve{animation:surligne 1.6s ease}
+  @keyframes surligne{from{background:color-mix(in srgb,var(--vert) 20%,transparent)}}
+  @media (prefers-reduced-motion:reduce){.ligne.neuve{animation:none}}
+
+  /* ---------- services ---------- */
+  .tableau{width:100%;border-collapse:collapse;margin-top:14px}
+  .tableau th{
+    text-align:left;font-size:.74rem;text-transform:uppercase;letter-spacing:.09em;
+    color:var(--sourdine);font-weight:650;padding:0 12px 11px;border-bottom:1px solid var(--bord);
+  }
+  .tableau th.fin,.tableau td.fin{text-align:right}
+  .tableau td{padding:13px 12px;border-bottom:1px solid var(--bord);vertical-align:middle}
+  .tableau tr:last-child td{border-bottom:none}
+  .tableau tbody tr:hover{background:var(--carte-2)}
+  .svc b{display:block;font-weight:600}
+  .svc span{color:var(--sourdine);font-size:.82rem;font-family:var(--mono)}
+  .badge{
+    display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;font-size:.83rem;font-weight:600;
+    background:color-mix(in srgb,var(--ton) 15%,transparent);color:var(--ton);
+    border:1px solid color-mix(in srgb,var(--ton) 32%,transparent);white-space:nowrap;
+  }
+  .badge::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+  .port{color:var(--bleu);font-family:var(--mono);font-size:.9rem}
+  .depuis{font-family:var(--mono);font-size:.87rem;color:var(--encre-2);font-variant-numeric:tabular-nums}
+  .actes{display:flex;gap:7px;justify-content:flex-end;flex-wrap:wrap}
+  .acte{background:var(--carte-2);border:1px solid var(--bord);border-radius:9px;padding:6px 12px;
+        font-size:.83rem;cursor:pointer;color:var(--encre-2)}
+  .acte:hover{border-color:var(--bord-fort);color:var(--encre)}
+  .aucun td{padding:26px 12px;text-align:center;color:var(--sourdine)}
+
+  .note-bas{color:var(--sourdine);font-size:.84rem;text-align:center;padding:4px 0 22px}
+  .note-bas code{font-family:var(--mono);color:var(--encre-2)}
+
+  @media (max-width:1180px){
+    .tuiles{grid-template-columns:repeat(2,1fr)}
+    .duo{grid-template-columns:1fr}
+  }
+  @media (max-width:900px){
+    body{grid-template-columns:1fr}
+    .rail{position:static;height:auto;flex-direction:row;align-items:center;flex-wrap:wrap;gap:12px}
+    .menu{flex-direction:row;flex-wrap:wrap;margin:0}
+    .menu button .cpt{margin-left:6px}
+    .machine{margin:0;width:100%}
+    .haut{flex-wrap:wrap}
+    .fil{order:-1}
+  }
+  @media (max-width:620px){
+    .tuiles{grid-template-columns:1fr}
+    .ligne{grid-template-columns:70px 1fr;gap:6px}
+    .ligne .n,.ligne .s{grid-column:2}
+    .tableau thead{display:none}
+    .tableau td{display:block;border:none;padding:5px 12px}
+    .tableau td.fin{text-align:left}
+    .tableau tr{display:block;border-bottom:1px solid var(--bord);padding:10px 0}
+    .actes{justify-content:flex-start}
+  }
+</style>
+</head>
+<body>
+
+<!-- ======================= RAIL ======================= -->
+<aside class="rail">
+  <div class="marque">
+    <span class="sceau" aria-hidden="true">◕</span>
+    <span><b>Klody Control</b><span>poste de contrôle</span></span>
+  </div>
+
+  <nav class="menu" aria-label="Sections">
+    <button type="button" aria-current="page" data-vers="tuiles"><span class="ic" aria-hidden="true">▦</span> Tableau de bord</button>
+    <button type="button" data-vers="memoire"><span class="ic" aria-hidden="true">◈</span> Modèles MLX <span class="cpt" id="cptModeles">0/4</span></button>
+    <button type="button" data-vers="services"><span class="ic" aria-hidden="true">▤</span> Services <span class="cpt" id="cptServices">19/33</span></button>
+    <button type="button" data-vers="journal"><span class="ic" aria-hidden="true">▣</span> Journaux</button>
+  </nav>
+
+  <div class="machine">
+    <h2>Cette machine</h2>
+    <dl>
+      <dt>RAM</dt><dd>128 Go</dd>
+      <dt>disque /</dt><dd>756.9 Go libres</dd>
+      <dt>gateway</dt><dd class="ok">en ligne</dd>
+      <dt>relevé</dt><dd id="releve">17:37</dd>
+    </dl>
+  </div>
+</aside>
+
+<!-- ======================= VUE ======================= -->
+<div class="vue">
+
+  <header class="haut">
+    <p class="fil">Klody <span aria-hidden="true">›</span> <b>Tableau de bord</b></p>
+
+    <div class="recherche">
+      <span class="loupe" aria-hidden="true">⌕</span>
+      <label class="invisible" for="filtre">Filtrer les services</label>
+      <input id="filtre" type="search" placeholder="Filtrer un service, un port, un label…" autocomplete="off">
+    </div>
+
+    <button class="cloche" id="cloche" type="button" data-alertes="2" aria-label="2 alertes ouvertes">
+      <span aria-hidden="true">◔</span><span class="pastille" id="pastille">2</span>
+    </button>
+
+    <button class="theme" id="theme" type="button" aria-label="Changer de thème">◐</button>
+
+    <button class="rafraichir" id="rafraichir" type="button">
+      <span>Rafraîchir</span><span class="roue" aria-hidden="true">↻</span>
+    </button>
+  </header>
+
+  <main class="corps">
+
+    <!-- ---------- tuiles ---------- -->
+    <section class="tuiles" id="tuiles" aria-label="Indicateurs">
+      <article class="tuile" style="--ton:var(--ambre)" id="tuileModeles">
+        <div class="entete"><h3>Modèles résidents</h3><span class="sceau" aria-hidden="true">◈</span></div>
+        <p class="val"><strong id="modGo">0</strong><span class="unite">Go / 80 Go</span><span class="tendance plat">stable</span></p>
+        <p class="pied" id="modPied">0 modèle(s) chargé(s) · 80 Go libres</p>
+      </article>
+
+      <article class="tuile" style="--ton:var(--cyan)" id="tuileRam">
+        <div class="entete"><h3>RAM machine disponible</h3><span class="sceau" aria-hidden="true">▭</span></div>
+        <p class="val"><strong id="ramGo">101.9</strong><span class="unite">Go / 128 Go</span><span class="tendance baisse" id="ramTendance">↘ 0.4 Go / 10 min</span></p>
+        <p class="pied" id="ramPied">compressée 9 Go · swap 14.79 Go</p>
+      </article>
+
+      <article class="tuile" style="--ton:var(--bleu)" id="tuileServices">
+        <div class="entete"><h3>Services actifs</h3><span class="sceau" aria-hidden="true">▤</span></div>
+        <p class="val"><strong id="svcActifs">19</strong><span class="unite">/ 33</span><span class="tendance plat" id="svcTendance">stable</span></p>
+        <p class="pied" id="svcPied">13 planifiés · 360 points d'historique</p>
+      </article>
+
+      <article class="tuile" style="--ton:var(--violet)" id="tuileAlertes">
+        <div class="entete"><h3>Alertes ouvertes</h3><span class="sceau" aria-hidden="true">⚠</span></div>
+        <p class="val"><strong id="nbAlertes">2</strong><span class="unite">signalements</span></p>
+        <p class="pied" id="alertesPied">rien de critique</p>
+      </article>
+    </section>
+
+    <!-- ---------- graphe + alertes ---------- -->
+    <div class="duo">
+
+      <section class="bloc" id="memoire" aria-label="Mémoire dans le temps">
+        <header>
+          <h2>Mémoire dans le temps</h2>
+          <div class="outils" role="group" aria-label="Fenêtre d'observation">
+            <button class="puce" type="button" data-min="15" aria-pressed="false">15 min</button>
+            <button class="puce" type="button" data-min="60" aria-pressed="true">1 h</button>
+            <button class="puce" type="button" data-min="360" aria-pressed="false">6 h</button>
+          </div>
+        </header>
+
+        <div class="graphe">
+          <div class="ordonnee" aria-hidden="true"><span>112</span><span>84</span><span>56</span><span>28</span><span>0</span></div>
+          <div class="trace" id="trace">
+            <svg id="svg" viewBox="0 0 1000 290" preserveAspectRatio="none" role="img"
+                 aria-label="Courbes de la mémoire disponible et des modèles résidents sur la fenêtre observée">
+              <g class="quadrillage" id="quadrillage"></g>
+              <path class="serie ram" id="serieRam"></path>
+              <path class="serie mod" id="serieMod"></path>
+            </svg>
+            <div class="curseur" id="curseur"></div>
+            <div class="marqueur ram" id="mqRam"></div>
+            <div class="marqueur mod" id="mqMod"></div>
+            <div class="infobulle" id="infobulle" role="status"></div>
+          </div>
+          <p class="abscisse" id="abscisse"></p>
+        </div>
+
+        <div class="legende">
+          <span class="cle"><span class="jeton" style="background:var(--ambre)"></span> modèles résidents</span>
+          <span class="cle"><span class="jeton" style="background:var(--bleu)"></span> RAM machine disponible</span>
+          <span class="meta" id="metaGraphe">236 points · échantillon toutes les 15 s</span>
+        </div>
+      </section>
+
+      <section class="bloc direct" id="direct" data-vide="non" aria-label="Alertes en direct">
+        <header><h2>Alertes en direct</h2>
+          <div class="outils"><button class="puce" id="toutCorriger" type="button">Tout corriger</button></div>
+        </header>
+
+        <div class="pile" id="pile" aria-live="polite"></div>
+
+        <div class="vide">
+          <span class="ic" aria-hidden="true">✓</span>
+          <b>Aucune alerte ouverte</b>
+          <span>Les deux signalements ont été corrigés — tout est au vert.</span>
+        </div>
+
+        <button class="lien-journaux" id="voirJournaux" type="button" aria-expanded="false" aria-controls="journal">
+          Voir les journaux ↗
+        </button>
+      </section>
+    </div>
+
+    <!-- ---------- journal ---------- -->
+    <section class="bloc journal" id="journal" hidden aria-label="Journaux">
+      <header><h2>Journaux</h2>
+        <div class="outils"><button class="puce" id="fermerJournal" type="button">Masquer</button></div>
+      </header>
+      <div class="lignes" id="lignes"></div>
+    </section>
+
+    <!-- ---------- services ---------- -->
+    <section class="bloc" id="services" aria-label="Services exposés">
+      <header>
+        <h2>Services exposés <span style="color:var(--sourdine);font-weight:400;font-size:.9rem">ceux qui servent une UI ou une sonde</span></h2>
+        <div class="outils"><button class="puce" type="button">Tous les services ↗</button></div>
+      </header>
+
+      <table class="tableau">
+        <thead>
+          <tr><th>Service</th><th>État</th><th>Ports</th><th>Actif depuis</th><th class="fin">Actions</th></tr>
+        </thead>
+        <tbody id="corpsTable"></tbody>
+      </table>
+    </section>
+
+    <p class="note-bas">
+      Maquette du poste de contrôle <strong>Klody</strong> — données simulées, 100 % local, aucun appel réseau.
+      Les alertes sont réellement corrigeables et <code>Rafraîchir</code> ré-échantillonne les métriques.
+    </p>
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============================================================
+     Générateur déterministe : la maquette s'ouvre toujours pareil.
+     ============================================================ */
+  function graine(a){
+    return function(){
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  var alea = graine(20260806);
+
+  var PAS = 15;                 // secondes entre deux échantillons
+  var FENETRE = 236;            // points conservés
+  var RAM_TOTALE = 128, MOD_TOTAL = 80, PLAFOND = 112;
+
+  /* ============================================================
+     État
+     ============================================================ */
+  var etat = {
+    horloge: 17 * 3600 + 37 * 60,   // 17:37, heure simulée du dernier relevé
+    hist: [],
+    modeles: { charges: 0, max: 4, go: 0 },
+    ram: { dispo: 101.9, compressee: 9, swap: 14.79 },
+    services: { actifs: 19, total: 33, planifies: 13 },
+    minutes: 60
+  };
+
+  // Historique initial : dérive douce, ~0.4 Go perdus toutes les 10 min.
+  (function initHistorique(){
+    var depart = 104.35;   // ~2.35 Go de dérive sur la fenêtre → 101.9 Go au dernier relevé
+    for (var i = 0; i < FENETRE; i++){
+      etat.hist.push({
+        t:   etat.horloge - (FENETRE - 1 - i) * PAS,
+        ram: depart - i * 0.01 + (alea() - .5) * .55,
+        mod: 0,
+        srv: 19
+      });
+    }
+    etat.ram.dispo = etat.hist[etat.hist.length - 1].ram;
+  })();
+
+  /* ============================================================
+     Services — les deux alertes pointent vers de vraies lignes.
+     ============================================================ */
+  var services = [
+    { id:'core-gateway',  nom:'Gateway MLX (RAM-aware)', label:'com.klody.core-gateway',
+      etat:'actif', port:'8090', depuis:(2*86400)+(1*3600)+(32*60)+32, ouvrable:false },
+    { id:'localsuno',     nom:'Local Suno', label:'com.klody.localsuno-daemon',
+      etat:'actif', port:'8766', depuis:(4*86400)+(7*3600)+(56*60)+26, ouvrable:true },
+    { id:'librarybrain',  nom:'Library Brain — recherche', label:'com.klody.librarybrain-search',
+      etat:'a-vide', port:'8770', depuis:(1*86400)+(19*3600)+(4*60)+11, ouvrable:true },
+    { id:'vocalbrain',    nom:'VocalBrain — transcription', label:'com.klody.vocalbrain-asr',
+      etat:'actif', port:'8712', depuis:(6*3600)+(41*60)+53, ouvrable:false },
+    { id:'eval-nightly',  nom:'Éval nocturne', label:'com.klody.eval-nightly',
+      etat:'echec', port:'—', depuis:null, ouvrable:false },
+    { id:'control-ui',    nom:'Klody Control (cette UI)', label:'com.klody.control-ui',
+      etat:'actif', port:'8790', depuis:(2*3600)+(18*60)+44, ouvrable:true }
+  ];
+
+  var ETATS = {
+    'actif':  { texte:'actif',   ton:'var(--vert)' },
+    'a-vide': { texte:'à vide',  ton:'var(--ambre)' },
+    'echec':  { texte:'en échec',ton:'var(--rouge)' }
+  };
+
+  /* ============================================================
+     Alertes — chacune porte sa procédure de correction.
+     ============================================================ */
+  var alertes = [
+    {
+      id:'eval-nocturne', niveau:'ATTENTION', ton:'var(--ambre)', origine:'journal', depuis:'depuis 2 h',
+      titre:"Éval nocturne (03h30) : dernière exécution en échec",
+      detail:'code de sortie 1',
+      action:"Relancer l'éval", enCours:'Relance…',
+      etapes:['réveil de com.klody.eval-nightly…', 'exécution de la suite (41 tâches)…', 'lecture du code de sortie…'],
+      resolu:{ titre:'Éval nocturne relancée : exécution réussie', detail:'code de sortie 0 · 41/41 tâches' },
+      ouvert:true,
+      appliquer:function(){
+        majService('eval-nightly', { etat:'actif', depuis:0 });
+        etat.services.actifs += 1;
+        ajouterJournal([
+          { src:'eval-nightly', niv:'INFO', msg:'relance manuelle depuis le poste de contrôle' },
+          { src:'eval-nightly', niv:'OK',   msg:'suite terminée — 41/41 réussies, code de sortie 0' }
+        ]);
+      }
+    },
+    {
+      id:'volume-musik', niveau:'INFO', ton:'var(--bleu)', origine:'montage', depuis:'depuis 11 h',
+      titre:'/Volumes/Klod Musik non monté',
+      detail:"les services qui l'indexent tournent à vide",
+      action:'Monter le volume', enCours:'Montage…',
+      etapes:['montage de /Volumes/Klod Musik…', 'vérification des permissions…', 'réindexation de Library Brain…'],
+      resolu:{ titre:'/Volumes/Klod Musik monté', detail:'Library Brain réindexe — 12 480 pistes vues' },
+      ouvert:true,
+      appliquer:function(){
+        majService('librarybrain', { etat:'actif' });
+        ajouterJournal([
+          { src:'mount',        niv:'OK',   msg:'/Volumes/Klod Musik monté (lecture seule)' },
+          { src:'librarybrain', niv:'INFO', msg:'réindexation démarrée — 12 480 pistes vues' }
+        ]);
+      }
+    }
+  ];
+
+  var journal = [
+    { t:'17:31:02', src:'core-gateway',  niv:'INFO',  msg:'sonde RAM : 101.9 Go disponibles, aucun modèle résident' },
+    { t:'17:12:48', src:'librarybrain',  niv:'AVERT', msg:'racine d’index absente — 0 document parcouru' },
+    { t:'06:38:15', src:'mount',         niv:'AVERT', msg:'/Volumes/Klod Musik introuvable au démarrage' },
+    { t:'03:30:07', src:'eval-nightly',  niv:'ERR',   msg:'suite interrompue — code de sortie 1' },
+    { t:'03:30:00', src:'eval-nightly',  niv:'INFO',  msg:'démarrage planifié (03h30)' }
+  ];
+
+  /* ============================================================
+     Utilitaires
+     ============================================================ */
+  var $ = function(id){ return document.getElementById(id); };
+
+  function hhmmss(sec){
+    sec = ((sec % 86400) + 86400) % 86400;
+    var h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = Math.floor(sec % 60);
+    return [h, m, s].map(function(n){ return String(n).padStart(2, '0'); }).join(':');
+  }
+  function hhmm(sec){ return hhmmss(sec).slice(0, 5); }
+  function duree(sec){
+    if (sec === null || sec === undefined) return '—';
+    var j = Math.floor(sec / 86400);
+    return String(j).padStart(2, '0') + '-' + hhmmss(sec % 86400);
+  }
+  function dec(n, d){ return Number(n).toFixed(d === undefined ? 1 : d); }
+
+  function majService(id, champs){
+    services.forEach(function(s){ if (s.id === id) Object.assign(s, champs); });
+  }
+
+  function ajouterJournal(entrees){
+    entrees.forEach(function(e){
+      journal.unshift({ t:hhmmss(etat.horloge), src:e.src, niv:e.niv, msg:e.msg, neuve:true });
+    });
+    if (journal.length > 40) journal.length = 40;
+    rendreJournal();
+  }
+
+  function flash(el){
+    if (!el) return;
+    el.classList.remove('maj');
+    void el.offsetWidth;              // relance l'animation
+    el.classList.add('maj');
+  }
+
+  /* ============================================================
+     Rendu — tuiles & rail
+     ============================================================ */
+  function rendreTuiles(){
+    var ouvertes = alertes.filter(function(a){ return a.ouvert; }).length;
+
+    $('modGo').textContent   = dec(etat.modeles.go, 0);
+    $('modPied').textContent = etat.modeles.charges + ' modèle(s) chargé(s) · ' +
+                               dec(MOD_TOTAL - etat.modeles.go, 0) + ' Go libres';
+
+    $('ramGo').textContent   = dec(etat.ram.dispo);
+    $('ramPied').textContent = 'compressée ' + dec(etat.ram.compressee, 0) + ' Go · swap ' + dec(etat.ram.swap, 2) + ' Go';
+
+    // Tendance calculée sur les 10 dernières minutes réellement échantillonnées.
+    var recul = Math.min(etat.hist.length - 1, Math.round(600 / PAS));
+    var delta = etat.hist[etat.hist.length - 1].ram - etat.hist[etat.hist.length - 1 - recul].ram;
+    var tEl = $('ramTendance');
+    if (Math.abs(delta) < 0.1){ tEl.className = 'tendance plat'; tEl.textContent = 'stable'; }
+    else if (delta < 0){ tEl.className = 'tendance baisse'; tEl.textContent = '↘ ' + dec(Math.abs(delta)) + ' Go / 10 min'; }
+    else { tEl.className = 'tendance hausse'; tEl.textContent = '↗ ' + dec(delta) + ' Go / 10 min'; }
+
+    $('svcActifs').textContent = etat.services.actifs;
+    $('svcPied').textContent   = etat.services.planifies + ' planifiés · ' + (etat.hist.length + 124) + " points d'historique";
+
+    $('nbAlertes').textContent    = ouvertes;
+    $('alertesPied').textContent  = ouvertes === 0 ? 'tout est au vert'
+                                  : (alertes.some(function(a){ return a.ouvert && a.niveau === 'ATTENTION'; })
+                                     ? 'rien de critique' : 'information seulement');
+    $('tuileAlertes').style.setProperty('--ton', ouvertes === 0 ? 'var(--vert)' : 'var(--violet)');
+
+    $('pastille').textContent = ouvertes;
+    $('cloche').dataset.alertes = String(ouvertes);
+    $('cloche').setAttribute('aria-label', ouvertes === 0 ? 'Aucune alerte ouverte' : ouvertes + ' alerte(s) ouverte(s)');
+
+    $('cptModeles').textContent  = etat.modeles.charges + '/' + etat.modeles.max;
+    $('cptServices').textContent = etat.services.actifs + '/' + etat.services.total;
+    $('releve').textContent      = hhmm(etat.horloge);
+  }
+
+  /* ============================================================
+     Rendu — graphe
+     ============================================================ */
+  var L = 1000, H = 290;
+
+  function fenetre(){
+    var n = Math.min(etat.hist.length, Math.max(4, Math.round(etat.minutes * 60 / PAS)));
+    return etat.hist.slice(etat.hist.length - n);
+  }
+  function versY(v){ return H - (v / PLAFOND) * H; }
+  function versX(i, n){ return n < 2 ? 0 : (i / (n - 1)) * L; }
+
+  function chemin(pts, cle){
+    var n = pts.length;
+    return pts.map(function(p, i){
+      return (i ? 'L' : 'M') + dec(versX(i, n), 2) + ' ' + dec(versY(p[cle]), 2);
+    }).join(' ');
+  }
+
+  function rendreGraphe(){
+    var pts = fenetre();
+
+    var g = '';
+    [0, .25, .5, .75, 1].forEach(function(f){
+      var y = dec(f * H, 2);
+      g += '<line x1="0" y1="' + y + '" x2="' + L + '" y2="' + y + '"/>';
+    });
+    $('quadrillage').innerHTML = g;
+
+    $('serieRam').setAttribute('d', chemin(pts, 'ram'));
+    $('serieMod').setAttribute('d', chemin(pts, 'mod'));
+
+    // Abscisse : 5 repères régulièrement espacés.
+    var abs = [];
+    for (var k = 0; k < 5; k++){
+      abs.push('<span>' + hhmm(pts[Math.round(k / 4 * (pts.length - 1))].t) + '</span>');
+    }
+    $('abscisse').innerHTML = abs.join('');
+
+    var mn = Math.round(pts.length * PAS / 60);
+    $('metaGraphe').textContent = pts.length + ' points · échantillon toutes les ' + PAS + ' s · ' + mn + ' min';
+  }
+
+  /* --- survol du graphe : curseur + infobulle --- */
+  var trace = $('trace'), bulle = $('infobulle'), curseur = $('curseur');
+  var mqRam = $('mqRam'), mqMod = $('mqMod');
+
+  function surTrace(ev){
+    var pts = fenetre(), r = trace.getBoundingClientRect();
+    if (!pts.length || !r.width) return;
+    var f = Math.min(1, Math.max(0, (ev.clientX - r.left) / r.width));
+    var i = Math.round(f * (pts.length - 1));
+    var p = pts[i];
+    var x = (pts.length < 2 ? 0 : i / (pts.length - 1)) * r.width;
+
+    curseur.style.display = 'block'; curseur.style.left = x + 'px';
+    mqRam.style.display = 'block'; mqRam.style.left = x + 'px';
+    mqRam.style.top = (versY(p.ram) / H * r.height) + 'px';
+    mqMod.style.display = 'block'; mqMod.style.left = x + 'px';
+    mqMod.style.top = (versY(p.mod) / H * r.height) + 'px';
+
+    bulle.innerHTML =
+      '<p class="h">' + hhmmss(p.t) + '</p>' +
+      '<p class="l"><span>modèles</span><b>' + dec(p.mod, 0) + ' Go</b></p>' +
+      '<p class="l"><span>RAM dispo</span><b>' + dec(p.ram) + ' Go</b></p>' +
+      '<p class="l"><span>services actifs</span><b>' + p.srv + '</b></p>';
+    bulle.style.display = 'block';
+    var lb = bulle.offsetWidth;
+    bulle.style.left = Math.min(Math.max(x - lb / 2, 0), r.width - lb) + 'px';
+    bulle.style.top = '10px';
+  }
+  function quitteTrace(){
+    bulle.style.display = curseur.style.display = mqRam.style.display = mqMod.style.display = 'none';
+  }
+  trace.addEventListener('mousemove', surTrace);
+  trace.addEventListener('mouseleave', quitteTrace);
+
+  /* ============================================================
+     Rendu — alertes
+     ============================================================ */
+  function rendreAlertes(){
+    var pile = $('pile');
+    pile.innerHTML = '';
+
+    alertes.forEach(function(a){
+      if (!a.ouvert && !a.affichee) return;   // masquée après résolution
+
+      var el = document.createElement('article');
+      el.className = 'alerte';
+      el.style.setProperty('--ton', a.ouvert ? a.ton : 'var(--vert)');
+      el.dataset.etat = a.ouvert ? 'ouverte' : 'resolue';
+      el.dataset.id = a.id;
+
+      el.innerHTML =
+        '<div class="haut-a">' +
+          '<span class="etiquette">' + (a.ouvert ? a.niveau : 'RÉSOLU') + '</span>' +
+          '<span class="origine">' + a.origine + '</span>' +
+          '<span class="quand">' + (a.ouvert ? a.depuis : "à l'instant") + '</span>' +
+        '</div>' +
+        '<p class="titre">' + (a.ouvert ? a.titre : a.resolu.titre) + '</p>' +
+        '<p class="detail">' + (a.ouvert ? a.detail : a.resolu.detail) + '</p>';
+
+      if (a.ouvert){
+        var barre = document.createElement('div');
+        barre.className = 'barre';
+        var bouton = document.createElement('button');
+        bouton.className = 'corriger';
+        bouton.type = 'button';
+        bouton.textContent = a.action;
+        bouton.addEventListener('click', function(){ corriger(a.id); });
+        barre.appendChild(bouton);
+        var etape = document.createElement('span');
+        etape.className = 'etape';
+        barre.appendChild(etape);
+        el.appendChild(barre);
+      }
+      pile.appendChild(el);
+    });
+
+    var ouvertes = alertes.filter(function(a){ return a.ouvert; }).length;
+    $('direct').dataset.vide = (ouvertes === 0 && !alertes.some(function(a){ return a.affichee; })) ? 'oui' : 'non';
+    $('toutCorriger').style.display = ouvertes > 1 ? '' : 'none';
+  }
+
+  /* --- la correction elle-même : étapes visibles, puis résolution --- */
+  var enCours = {};
+
+  function corriger(id){
+    var a = alertes.filter(function(x){ return x.id === id; })[0];
+    if (!a || !a.ouvert || enCours[id]) return;
+    enCours[id] = true;
+
+    var el = $('pile').querySelector('[data-id="' + id + '"]');
+    var bouton = el.querySelector('.corriger');
+    var etape = el.querySelector('.etape');
+    bouton.disabled = true;
+    bouton.textContent = a.enCours;
+    el.setAttribute('aria-busy', 'true');
+
+    var lent = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var duree_etape = lent ? 60 : 420;
+
+    a.etapes.forEach(function(txt, i){
+      setTimeout(function(){ etape.textContent = txt; }, i * duree_etape);
+    });
+
+    setTimeout(function(){
+      a.ouvert = false;
+      a.affichee = true;
+      a.appliquer();
+      enCours[id] = false;
+
+      rendreAlertes();
+      rendreServices();
+      rendreTuiles();
+      flash($('tuileAlertes'));
+      flash($('tuileServices'));
+
+      // La ligne résolue reste visible quelques secondes, puis s'efface.
+      setTimeout(function(){
+        var reste = $('pile').querySelector('[data-id="' + id + '"]');
+        if (reste){
+          reste.classList.add('part');
+          setTimeout(function(){ a.affichee = false; rendreAlertes(); }, lent ? 0 : 450);
+        }
+      }, lent ? 900 : 3200);
+    }, a.etapes.length * duree_etape + (lent ? 60 : 260));
+  }
+
+  $('toutCorriger').addEventListener('click', function(){
+    alertes.forEach(function(a, i){
+      if (a.ouvert) setTimeout(function(){ corriger(a.id); }, i * 220);
+    });
+  });
+
+  /* ============================================================
+     Rendu — journal
+     ============================================================ */
+  function rendreJournal(){
+    $('lignes').innerHTML = journal.map(function(e){
+      return '<div class="ligne' + (e.neuve ? ' neuve' : '') + '">' +
+               '<span class="t">' + e.t + '</span>' +
+               '<span class="s">' + e.src + '</span>' +
+               '<span class="n ' + e.niv + '">' + e.niv + '</span>' +
+               '<span class="m">' + e.msg + '</span>' +
+             '</div>';
+    }).join('');
+    journal.forEach(function(e){ delete e.neuve; });
+  }
+
+  function basculeJournal(ouvrir){
+    var j = $('journal'), b = $('voirJournaux');
+    var veut = (ouvrir === undefined) ? j.hidden : ouvrir;
+    j.hidden = !veut;
+    b.setAttribute('aria-expanded', String(veut));
+    b.textContent = veut ? 'Masquer les journaux' : 'Voir les journaux ↗';
+    if (veut) j.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+  $('voirJournaux').addEventListener('click', function(){ basculeJournal(); });
+  $('fermerJournal').addEventListener('click', function(){ basculeJournal(false); });
+
+  /* ============================================================
+     Rendu — services (+ filtre)
+     ============================================================ */
+  function rendreServices(){
+    var q = $('filtre').value.trim().toLowerCase();
+    var visibles = services.filter(function(s){
+      return !q || (s.nom + ' ' + s.label + ' ' + s.port + ' ' + ETATS[s.etat].texte).toLowerCase().indexOf(q) >= 0;
+    });
+
+    if (!visibles.length){
+      $('corpsTable').innerHTML = '<tr class="aucun"><td colspan="5">Aucun service ne correspond à « ' + q +' ».</td></tr>';
+      return;
+    }
+
+    $('corpsTable').innerHTML = visibles.map(function(s){
+      var e = ETATS[s.etat];
+      return '<tr>' +
+        '<td class="svc"><b>' + s.nom + '</b><span>' + s.label + '</span></td>' +
+        '<td><span class="badge" style="--ton:' + e.ton + '">' + e.texte + '</span></td>' +
+        '<td><span class="port">' + s.port + '</span></td>' +
+        '<td><span class="depuis">' + duree(s.depuis) + '</span></td>' +
+        '<td class="fin"><div class="actes">' +
+          (s.ouvrable ? '<button class="acte" type="button">Ouvrir</button>' : '') +
+          '<button class="acte" type="button" data-journal="' + s.label + '">Journal</button>' +
+          '<button class="acte" type="button">Redémarrer</button>' +
+        '</div></td>' +
+      '</tr>';
+    }).join('');
+
+    Array.prototype.forEach.call($('corpsTable').querySelectorAll('[data-journal]'), function(b){
+      b.addEventListener('click', function(){
+        $('filtre').value = '';
+        rendreServices();
+        basculeJournal(true);
+      });
+    });
+  }
+
+  $('filtre').addEventListener('input', rendreServices);
+
+  /* ============================================================
+     Rafraîchir — ré-échantillonne vraiment les métriques
+     ============================================================ */
+  function echantillonner(nbPoints){
+    for (var k = 0; k < nbPoints; k++){
+      etat.horloge += PAS;
+      var precedent = etat.hist[etat.hist.length - 1];
+      // Dérive douce + bruit : la RAM disponible respire autour de sa pente.
+      var suivant = precedent.ram - 0.01 + (alea() - .5) * .7;
+      suivant = Math.min(RAM_TOTALE - 6, Math.max(60, suivant));
+      etat.hist.push({ t:etat.horloge, ram:suivant, mod:etat.modeles.go, srv:etat.services.actifs });
+      if (etat.hist.length > FENETRE * 3) etat.hist.shift();
+    }
+
+    var dernier = etat.hist[etat.hist.length - 1];
+    etat.ram.dispo    = dernier.ram;
+    etat.ram.compressee = Math.max(6, Math.min(14, etat.ram.compressee + (alea() - .5) * .6));
+    etat.ram.swap     = Math.max(0, etat.ram.swap + (alea() - .45) * .25);
+
+    // Les compteurs d'ancienneté avancent du temps simulé écoulé.
+    var ecoule = nbPoints * PAS;
+    services.forEach(function(s){ if (s.depuis !== null && s.etat !== 'echec') s.depuis += ecoule; });
+  }
+
+  var bouton = $('rafraichir');
+
+  function rafraichir(){
+    if (bouton.disabled) return;
+    bouton.disabled = true;
+    bouton.setAttribute('aria-busy', 'true');
+    bouton.querySelector('span').textContent = 'Actualisation…';
+
+    var lent = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setTimeout(function(){
+      echantillonner(4);                 // une minute de plus
+
+      rendreTuiles();
+      rendreGraphe();
+      rendreServices();
+      quitteTrace();
+      flash($('tuileRam'));
+      flash($('tuileModeles'));
+      flash($('tuileServices'));
+
+      bouton.disabled = false;
+      bouton.removeAttribute('aria-busy');
+      bouton.querySelector('span').textContent = 'Rafraîchir';
+    }, lent ? 60 : 620);
+  }
+
+  bouton.addEventListener('click', rafraichir);
+
+  /* ============================================================
+     Fenêtres d'observation, navigation, thème
+     ============================================================ */
+  Array.prototype.forEach.call(document.querySelectorAll('.puce[data-min]'), function(p){
+    p.addEventListener('click', function(){
+      Array.prototype.forEach.call(document.querySelectorAll('.puce[data-min]'), function(q){
+        q.setAttribute('aria-pressed', String(q === p));
+      });
+      etat.minutes = Number(p.dataset.min);
+      rendreGraphe();
+      quitteTrace();
+    });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.menu button'), function(b){
+    b.addEventListener('click', function(){
+      Array.prototype.forEach.call(document.querySelectorAll('.menu button'), function(o){
+        o.removeAttribute('aria-current');
+      });
+      b.setAttribute('aria-current', 'page');
+      if (b.dataset.vers === 'journal') basculeJournal(true);
+      var cible = $(b.dataset.vers);
+      if (cible) cible.scrollIntoView({ behavior:'smooth', block:'start' });
+    });
+  });
+
+  $('cloche').addEventListener('click', function(){
+    $('direct').scrollIntoView({ behavior:'smooth', block:'center' });
+  });
+
+  $('theme').addEventListener('click', function(){
+    var r = document.documentElement;
+    var clair = r.getAttribute('data-theme') === 'clair';
+    r.setAttribute('data-theme', clair ? 'sombre' : 'clair');
+    this.setAttribute('aria-label', clair ? 'Passer en thème clair' : 'Passer en thème sombre');
+  });
+
+  window.addEventListener('resize', quitteTrace);
+
+  /* ============================================================
+     Premier rendu
+     ============================================================ */
+  rendreTuiles();
+  rendreGraphe();
+  rendreAlertes();
+  rendreServices();
+  rendreJournal();
+})();
+</script>
+</body>
+</html>

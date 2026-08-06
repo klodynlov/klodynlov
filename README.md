@@ -26,6 +26,7 @@ sécurité de niveau production.
 - 🔌 Extensible via MCP — connecteurs Gmail & web, et Klody s'expose aux autres agents
 - 📐 [**Étude de cas technique**](https://github.com/klodynlov/klody-code-ai/blob/main/docs/CASE-STUDY.md) — les décisions d'ingénierie
 - 🗺️ [**Feuille de route**](docs/KLODY-ROADMAP.md) — jalons datés (Best-of-N, benchmark public, release)
+- 🖥️ [**Klody Control**](docs/ui/klody-control.html) — maquette du poste de contrôle : mémoire, services, alertes corrigeables
 
 > Frontend desktop associé : [**klody-ui**](https://github.com/klodynlov/klody-ui) — Tauri 2 + React 19 + Tailwind 4 (thème clair/sombre/auto).
 
