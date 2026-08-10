@@ -69,6 +69,7 @@ Quatre piliers :
 - **LibraryBrain** — RAG local de livres (sqlite-vec + FTS5) qui alimente Klody.
 - **VocalBrain** — outil autour de la voix / l'audio.
 - **[Dream × World](https://github.com/klodynlov/dream-x-world)** — générateur de **mondes IA persistants & cohérents**, 100 % local. Un *Canon Engine* (retrieve → generate → vérif anti-contradiction → Best-of-N) garde le monde non-contradictoire dans la durée ; simulation temporelle multi-agents et monde exposé en **MCP** pour que les agents y jouent. — 🗺️ [Feuille de route](docs/DREAMXWORLD-ROADMAP.md)
+- 📡 **[micro:bit en Bluetooth](docs/MICROBIT-BLUETOOTH.md)** — l'IA locale qui touche le monde physique : une carte **BBC micro:bit** connectée en **BLE** depuis Python (température, accéléromètre, boussole, boutons ⟶ afficheur LED, UART), exposée en **MCP** pour qu'un agent perçoive et agisse. Cœur sans dépendance + carte simulée ⟶ [33 tests](microbit/test_microbit.py) qui tournent sans matériel. — 🔌 [`microbit/`](microbit/)
 - *(et d'autres explorations IA locale, audio, MCP…)*
 
 ## 🧰 Outils & feuille de route
