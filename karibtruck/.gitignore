@@ -9,6 +9,9 @@ Package.resolved
 xcuserdata/
 DerivedData/
 
+# Généré par XcodeGen (source de vérité : App/project.yml)
+App/KaribTruck/Info.plist
+
 # Généré par l'oracle (reproductible : python3 tools/oracle.py)
 tools/fixture_vectors.json
 
