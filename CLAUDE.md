@@ -92,6 +92,30 @@ croisé, seulement une continuité de récit et de discipline.
 - Prérequis matériel côté utilisateur : programme **MakeCode + extension Bluetooth**
   (MicroPython ne fait pas de BLE GATT) ; « No Pairing Required » recommandé.
 
+### 🚧 KaribTruck — app iPad de gestion pour food truck (HACCP + caisse)
+**Statut : note de cadrage livrée, branche `claude/foodtruck-ipad-app-rnq12x`. Aucun code
+encore — cadrage avant construction.**
+Besoin utilisateur réel : food truck caribéen (`karibtruck.fr`, ~6 mois), faiblesse HACCP /
+contrôle d'hygiène, veut une app iPad « pour tout gérer », exigence pro (sécurité, tests,
+audit, harnais). A entendu parler d'une obligation « caisse au 1er septembre ».
+
+- 📄 `docs/KARIBTRUCK.md` — analyse sourcée (août 2026) + reco d'architecture **hybride**.
+- 🔑 Tranché juridiquement (le piège) : **la caisse ne se code pas soi-même** (domaine
+  réglementé, 4 conditions ISCA, responsabilité éditeur) → **on achète** un logiciel conforme
+  avec attestation/certificat. **La double bascule** LF 2025 (art. 43, supprime
+  l'auto-attestation) → LF 2026 (art. 125, applicable 21 fév. 2026, **la rétablit**) **annule
+  l'échéance couperet du 1er sept. 2026**. **Dispense** si **franchise en base de TVA**
+  (micro-entreprise) → **bloquant n°1 : faire confirmer le régime TVA par le comptable**.
+- 🟢 Là où l'app maison gagne : **HACCP / PMS** (aucune certif requise) — relevés de
+  température, traçabilité, DLC, nettoyage, non-conformités, export « dossier de contrôle ».
+- Le « pro » = réutilise l'ADN du dépôt : **journal append-only chaîné SHA-256** (déjà dans
+  edgesense/microbit) pour des enregistrements inviolables/non rétro-datables, cœur métier
+  stdlib testé, CI, local-first, allowlist. Piste techno : **PWA local-first** (reco) vs
+  natif SwiftUI.
+- MVP **M0** proposé (relevés T° + checklists + traçabilité réception + incidents + export +
+  socle testé) → M1 exploitation → M2 intégration caisse → M3 terrain → M4 IA locale on-device.
+- **Décision en attente** : régime TVA · piste techno · feu vert M0. Ne pas coder avant.
+
 ### Autres projets (mentionnés au README, hors de ce dépôt)
 Klody Code AI (agent de code local, projet phare) · klody-ui · LibraryBrain (RAG local) ·
 VocalBrain (voix) · Dream × World (mondes IA persistants).
