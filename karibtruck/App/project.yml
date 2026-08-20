@@ -50,7 +50,4 @@ targets:
         TARGETED_DEVICE_FAMILY: "1,2"   # iPhone + iPad (l'app cible l'iPad)
         SWIFT_VERSION: "5.9"
         CODE_SIGN_STYLE: Automatic
-        # DEVELOPMENT_TEAM : laissez vide et choisissez votre équipe dans Xcode
-        # (Signing & Capabilities), ou renseignez ici votre Team ID (10 caractères)
-        # pour une signature 100 % automatique :
-        # DEVELOPMENT_TEAM: XXXXXXXXXX
+        DEVELOPMENT_TEAM: GM9K95VYY4   # Team ID Apple Developer (Claude Volny)

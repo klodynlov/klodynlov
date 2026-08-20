@@ -131,6 +131,11 @@ audit, harnais). A entendu parler d'une obligation « caisse au 1er septembre »
   Swift** — `download.swift.org` est bloqué par le proxy. Preuve d'exécution du cœur = **la CI**
   (`swift:6`) + **l'oracle Python** (lancé ici : oracle 5/5 ✓, check_sync 7 vecteurs ✓). L'UI
   SwiftUI se compile côté Mac.
+- 🍏 **Apple Developer** : compte payant (99 €/an) souscrit par l'utilisateur. **Team ID =
+  `GM9K95VYY4`** (Claude Volny) — figé dans `karibtruck/App/project.yml`
+  (`DEVELOPMENT_TEAM`) pour signature auto. Projet Xcode généré via **XcodeGen**
+  (`App/project.yml` + `App/generate.sh`, bundle id `fr.karibtruck.haccp`). Non secret
+  (apparaît dans chaque app) → à réutiliser tel quel pour les futures sessions.
 - **Décision en attente (pour la suite)** : régime TVA (bloquant caisse, indépendant du M0) ·
   brancher les écrans SwiftUI restants · export PDF · Face ID.
 
