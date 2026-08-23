@@ -12,6 +12,8 @@ serveur), Python/Rust, MLX/Ollama.
 ## Workflow
 - Développement sur branches `claude/*`, PR (brouillon par défaut) vers `main`.
 - Squash-merge. `main` est la référence.
+- **Langue : répondre et documenter en français par défaut** — réponses de chat
+  comprises, y compris les mises à jour automatiques de suivi de PR.
 
 ---
 
