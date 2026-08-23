@@ -121,8 +121,14 @@ sans matériel, honnêteté PROUVÉ/FAISABLE).
   (DWT, Teensy-only), `midi/midi_io` (DIN FortySevenEffects + usbMIDI, Teensy-only,
   correspondances API « à vérifier »), `queue/event_queue.h` (**file bornée,
   allocation statique, TESTÉE EN NATIF g++ → 15045 vérifs vertes**), `metrics.h`,
-  `config.h`, `platformio.ini`. ⚠️ Seule la file est vérifiée ici ; DWT/MIDI ne
-  compilent que sous Teensyduino → **BENCHMARKS.md reste à produire sur matériel**.
+  `config.h`, `platformio.ini` · `sketches/` (croquis Arduino de bring-up :
+  `i2c_scan` + `klod_lcd_hello` pour le LCD 2004 I²C, biblio hd44780, non flashés
+  ici). ⚠️ Seule la file est vérifiée ici ; DWT/MIDI/sketches ne compilent que
+  sous Teensyduino → **BENCHMARKS.md reste à produire sur matériel**.
+- 🖥️ Matériel utilisateur (session en cours) : Teensy 4.1 + **Audio Shield Rev D**
+  empilé + **LCD 2004 I²C (PCF8574)**. Câblage LCD tranché : **3,3 V** (Teensy non
+  tolérant 5 V), 4 fils `VCC→3V · GND→G · SDA→18 · SCL→19`, bus I²C partagé avec le
+  SGTL5000 (0x0A ; LCD 0x27/0x3F). 2 schémas publiés en Artifact.
 - ✅ **Prouvé ici** : capture d'offsets mesurables (microtiming en fraction de
   noire, **indépendant du tempo**) ; transfert `amount` **linéaire** (0/25/50/
   75/100 %) vélocité comprise ; **aucune note perdue** ; morphing aux **bornes
