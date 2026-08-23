@@ -118,17 +118,22 @@ klod-live-brain/
 │   ├── TECHNICAL_REALITY.md   ← audit Phase 0 (statuts PROUVÉ/FAISABLE/…)
 │   ├── GROOVEDNA_SPEC.md       ← format KLOD_GROOVE_V1 + maths
 │   └── ARCHITECTURE.md         ← ce document
-└── host/
-    └── groovedna/              ← moteur « musical », stdlib pur ✅ 35 tests
-        ├── groove.py           ← NoteEvent, GrooveDNA, capture/apply/morph
-        ├── demo.py             ← preuve exécutable du critère §38
-        └── test_groove.py
+├── host/
+│   └── groovedna/              ← moteur « musical », stdlib pur ✅ 35 tests
+│       ├── groove.py           ← NoteEvent, GrooveDNA, capture/apply/morph
+│       ├── demo.py             ← preuve exécutable du critère §38
+│       └── test_groove.py
+└── firmware/                   ← couche réflexe Teensy — 🟢 squelette FAISABLE, non mesuré
+    ├── src/{config,midi,timing,queue,metrics}  ← file bornée ✅ testée en natif
+    └── test/                   ← test natif (g++) de la file, sans Teensy
 ```
 
-On n'ajoute `firmware/`, `mcp/`, `integrations/`, `ml/` **que lorsque leurs
-backends existent réellement**. Ordre imposé par le cahier (§31) : MIDI core →
-GrooveDNA → transfert → morphing → **pont Mac** → UI → MCP → IA. Chaque jalon
-n'ouvre qu'après validation du précédent.
+`mcp/`, `integrations/`, `ml/` n'arrivent **que lorsque leurs backends existent
+réellement**. Le `firmware/` est un **squelette de référence** : sa seule pièce
+indépendante du matériel (la file bornée) est testée en natif ; le reste (DWT,
+E/S MIDI) ne compile que sous Teensyduino et attend la **mesure** (§6). Ordre
+imposé par le cahier (§31) : MIDI core → GrooveDNA → transfert → morphing →
+**pont Mac** → UI → MCP → IA. Chaque jalon n'ouvre qu'après validation du précédent.
 
 ---
 

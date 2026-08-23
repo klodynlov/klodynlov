@@ -17,7 +17,7 @@
 |---|---|---|
 | **Moteur GrooveDNA** (capture · apply · morph · format versionné) | ✅ **PROUVÉ** | [`host/groovedna/`](host/groovedna/) — **35 tests verts**, démo §38 chiffrée |
 | Audit de faisabilité V0 (Teensy, MIDI, timing) | ✅ **PRODUIT** | [`docs/TECHNICAL_REALITY.md`](docs/TECHNICAL_REALITY.md) |
-| Couche réflexe Teensy (timing, scheduler, MIDI) | 🟢 FAISABLE | documentée, **non encore mesurée** |
+| Couche réflexe Teensy (timing, scheduler, MIDI) | 🟢 FAISABLE | [`firmware/`](firmware/) — squelette de référence ; **file bornée testée en natif**, reste **non mesuré** sur carte |
 | IA / MCP / MPC / DAW | ⏳ à venir | pas de backend ⇒ pas d'annonce |
 
 Autrement dit : le **pari central** du projet — *peut-on représenter et
@@ -69,12 +69,15 @@ klod-live-brain/
 │   ├── TECHNICAL_REALITY.md   audit Phase 0 — statuts, preuves, risques, sources
 │   ├── GROOVEDNA_SPEC.md       format KLOD_GROOVE_V1 + base mathématique
 │   └── ARCHITECTURE.md         4 niveaux, frontière temps réel, flux V0
-└── host/
-    └── groovedna/              moteur musical, stdlib pur — ✅ 35 tests
+├── host/
+│   └── groovedna/              moteur musical, stdlib pur — ✅ 35 tests
+└── firmware/                   couche réflexe Teensy — squelette ; file bornée ✅ testée en natif
 ```
 
-On n'ajoute `firmware/`, `mcp/`, `integrations/`, `ml/` **que lorsque leurs
-backends existent** (§32, « commencer minimal »).
+On n'ajoute `mcp/`, `integrations/`, `ml/` **que lorsque leurs backends
+existent** (§32, « commencer minimal »). Le `firmware/` est un squelette de
+référence : voir son [README](firmware/) pour ce qui est testé (la file) et ce
+qui attend le matériel (timing, MIDI, benchmarks).
 
 ---
 

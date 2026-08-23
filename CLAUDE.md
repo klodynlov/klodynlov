@@ -116,6 +116,13 @@ sans matériel, honnêteté PROUVÉ/FAISABLE).
   `TECHNICAL_REALITY.md` (statuts + preuves + risques + 10 sources vérifiées),
   `GROOVEDNA_SPEC.md` (format + base maths des métriques), `ARCHITECTURE.md`
   (4 niveaux + frontière temps réel, 3 diagrammes Mermaid).
+- 🔌 `klod-live-brain/firmware/` — **squelette réflexe Teensy 4.1 (FAISABLE, non
+  mesuré)** : `main.cpp` (boucle passthrough horodatée), `timing/cycle_clock`
+  (DWT, Teensy-only), `midi/midi_io` (DIN FortySevenEffects + usbMIDI, Teensy-only,
+  correspondances API « à vérifier »), `queue/event_queue.h` (**file bornée,
+  allocation statique, TESTÉE EN NATIF g++ → 15045 vérifs vertes**), `metrics.h`,
+  `config.h`, `platformio.ini`. ⚠️ Seule la file est vérifiée ici ; DWT/MIDI ne
+  compilent que sous Teensyduino → **BENCHMARKS.md reste à produire sur matériel**.
 - ✅ **Prouvé ici** : capture d'offsets mesurables (microtiming en fraction de
   noire, **indépendant du tempo**) ; transfert `amount` **linéaire** (0/25/50/
   75/100 %) vélocité comprise ; **aucune note perdue** ; morphing aux **bornes
@@ -131,8 +138,9 @@ sans matériel, honnêteté PROUVÉ/FAISABLE).
 
 **Reste à faire (non codé) :** styles caribéens (zouk/shatta/kompa…) appris
 depuis de **vrais fichiers MIDI** (jamais des clichés inventés, §7) · **groove
-personnel** du musicien (calculé sur perfs accumulées) · **portage Teensy** +
-`BENCHMARKS.md` (jitter/latence/overruns à **mesurer** — statut FAISABLE non
+personnel** du musicien (calculé sur perfs accumulées) · **portage Teensy amorcé**
+(squelette + file bornée testée en natif) → reste timing/MIDI/scheduler sur
+matériel + `BENCHMARKS.md` (jitter/latence/overruns à **mesurer** — FAISABLE non
 mesuré) · puis IA / MCP / MPC / REAPER / Logic **seulement après** backends
 réels. ⛔ NON VIABLE (à ne pas réutiliser) : LLM sur Teensy, Demucs sur Teensy,
 API Akai/Logic inventées, « MCP pilote le DAW » sans adaptateur. 🟡 Beat tracking

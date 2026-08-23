@@ -134,9 +134,12 @@ LLM prépare, il ne joue pas dans la boucle.
   façon mesurable et reproductible ? » — est **gagné sur le fond** (voir
   `GROOVEDNA_SPEC.md` et les 35 tests).
 - La **couche réflexe** (Teensy : timing, MIDI, scheduler) est **FAISABLE** sur
-  la base d'une documentation solide, mais sa qualité temps réel
-  (**jitter, overruns, latence**) reste **à mesurer** — c'est le prochain jalon,
-  et il exige du matériel + des benchmarks (`BENCHMARKS.md`, à produire).
+  la base d'une documentation solide. Un **squelette de référence** existe
+  désormais (`../firmware/`), *grounded* sur les vraies API ; sa seule pièce
+  indépendante du matériel — la **file bornée** — est **testée en natif** (g++).
+  Mais sa qualité temps réel (**jitter, overruns, latence**) reste **à mesurer**
+  — c'est le prochain jalon, et il exige du matériel + des benchmarks
+  (`BENCHMARKS.md`, à produire).
 - Rien n'autorise encore à parler d'IA, de MPC, de DAW « pilotés » : ces couches
   attendent leurs backends réels (§37, §38 : *ne pas passer à l'IA* tant que la
   chaîne n'est pas bouclée sur matériel).
