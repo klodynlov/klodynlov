@@ -125,10 +125,18 @@ sans matériel, honnêteté PROUVÉ/FAISABLE).
   `i2c_scan` + `klod_lcd_hello` pour le LCD 2004 I²C, biblio hd44780, non flashés
   ici). ⚠️ Seule la file est vérifiée ici ; DWT/MIDI/sketches ne compilent que
   sous Teensyduino → **BENCHMARKS.md reste à produire sur matériel**.
-- 🖥️ Matériel utilisateur (session en cours) : Teensy 4.1 + **Audio Shield Rev D**
-  empilé + **LCD 2004 I²C (PCF8574)**. Câblage LCD tranché : **3,3 V** (Teensy non
-  tolérant 5 V), 4 fils `VCC→3V · GND→G · SDA→18 · SCL→19`, bus I²C partagé avec le
-  SGTL5000 (0x0A ; LCD 0x27/0x3F). 2 schémas publiés en Artifact.
+- 🖥️ Matériel utilisateur : Teensy 4.1 + **LCD 2004 I²C (PCF8574)** câblé et
+  **alimenté en 3,3 V** (rétroéclairage OK) ; Audio Shield Rev D **posé à part**
+  (non empilé pour l'instant). Câblage LCD : 4 fils `VCC→3V · GND→G · SDA→18 ·
+  SCL→19` (Teensy non tolérant 5 V ; bus I²C partageable avec le SGTL5000 0x0A ;
+  LCD 0x27/0x3F). 2 schémas publiés en Artifact.
+- ▶️ **REPRISE (en local sur le Mac — accès USB requis)** : flasher
+  `klod-live-brain/firmware/sketches/i2c_scan` (attendu : `0x27`/`0x3F` au
+  Moniteur série 115200) puis `klod_lcd_hello` (biblio **hd44780**) → « KLOD Live
+  Brain » à l'écran. Prérequis : Arduino IDE + support Teensy (URL
+  `package_teensy_index.json`), carte « Teensy 4.1 », USB Type « Serial ».
+  Ensuite : MIDI DIN (broches 0/1) + affichage des vrais compteurs `metrics.h`.
+  (Session passée du serveur distant au Mac ; contexte porté par ce fichier.)
 - ✅ **Prouvé ici** : capture d'offsets mesurables (microtiming en fraction de
   noire, **indépendant du tempo**) ; transfert `amount` **linéaire** (0/25/50/
   75/100 %) vélocité comprise ; **aucune note perdue** ; morphing aux **bornes
