@@ -6,13 +6,13 @@
 
 **IA locale · RAG sourcé · agents contrôlés · Apple Silicon**
 
-[Voir le site](https://karaibart.fr) · [Voir la vidéo — 31 s](https://karaibart.fr/#demo-video) · [Cadrer un projet](https://karaibart.fr/contact/)
+[Voir le site](https://karaibart.fr) · [Voir la vidéo — 31 s](assets/karaibart-demo.mp4) · [Cadrer un projet](https://karaibart.fr/contact/)
 
 </div>
 
 ---
 
-[![Présentation vidéo de Karaibart](https://karaibart.fr/assets/img/karaibart-demo-poster.png)](https://karaibart.fr/#demo-video)
+[![Présentation vidéo de Karaibart](assets/karaibart-demo-poster.png)](assets/karaibart-demo.mp4)
 
 ## Ce que je déploie
 
