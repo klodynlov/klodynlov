@@ -1,43 +1,58 @@
 <div align="center">
 
-# Claude Volny  ·  `klodynlov`
+# Claude Volny · Karaibart
 
-### Je construis des **agents IA privés / local-first** — orchestration, sécurité, et code qui tient en production.
+### J'aide les équipes qui manipulent des données sensibles à utiliser l'IA sans les envoyer dans le cloud.
 
-*Ingénieur logiciel · IA locale (MLX/Ollama) · MCP · Python · Rust/Tauri · React*
+**IA locale · RAG sourcé · agents contrôlés · Apple Silicon**
+
+[Voir le site](https://karaibart.fr) · [Voir la vidéo — 31 s](https://karaibart.fr/#demo-video) · [Cadrer un projet](https://karaibart.fr/contact/)
 
 </div>
 
 ---
 
-## 🧠 Projet phare — [Klody Code AI](https://github.com/klodynlov/klody-code-ai)
+[![Présentation vidéo de Karaibart](https://karaibart.fr/assets/img/karaibart-demo-poster.png)](https://karaibart.fr/#demo-video)
 
-Un agent de code **100 % local** (aucune donnée ne quitte la machine) qui rivalise avec un
-agent cloud sur une machine perso. Orchestration adaptative, client **et** serveur MCP,
-sécurité de niveau production.
+## Ce que je déploie
 
-![Tests](https://img.shields.io/badge/tests-699%20passing-success)
-![AI](https://img.shields.io/badge/IA-100%25%20local-orange)
+- **Assistants documentaires privés** : réponses reliées à leurs sources, refus explicite quand la preuve manque.
+- **Agents métier contrôlés** : lecture seule par défaut et approbation humaine avant toute écriture sensible.
+- **Infrastructure d'inférence locale** : plusieurs modèles, un budget RAM unique, services supervisés et mesures à froid comme à chaud.
+- **Garde-fous de production** : sandbox, anti-SSRF, audit des dépendances, gates CI et évaluation continue.
+
+## Projet phare — [Klody Code AI](https://github.com/klodynlov/klody-code-ai)
+
+Un agent de code **100 % local** : modèle, outils, mémoire, RAG et connecteurs tournent sur la machine. Il combine une boucle ReAct, 69 schémas d'outils natifs, MCP client/serveur et un dashboard desktop Tauri.
+
+![Tests](https://img.shields.io/badge/tests-2779%20passing-success)
+![AI](https://img.shields.io/badge/IA-100%25%20locale-orange)
 ![MCP](https://img.shields.io/badge/MCP-client%20%2B%20serveur-blueviolet)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
-- 🔒 100 % privé (MLX / Apple Silicon) · sandbox multi-racines · anti-SSRF · commits signés
-- 🧭 Routeur adaptatif (easy/medium/hard × 6 types), boucle ReAct qui va au bout, Best-of-N
-- 🔌 Extensible via MCP — connecteurs Gmail & web, et Klody s'expose aux autres agents
-- 📐 [**Étude de cas technique**](https://github.com/klodynlov/klody-code-ai/blob/main/docs/CASE-STUDY.md) — les décisions d'ingénierie
-- 🗺️ [**Feuille de route**](docs/KLODY-ROADMAP.md) — jalons datés (Best-of-N, benchmark public, release)
+- [Étude de cas technique](https://github.com/klodynlov/klody-code-ai/blob/main/docs/CASE-STUDY.md)
+- [Architecture locale](https://github.com/klodynlov/klody-code-ai/blob/main/README-local-ai.md)
+- [Frontend Tauri + React](https://github.com/klodynlov/klody-ui)
+- [Feuille de route](docs/KLODY-ROADMAP.md)
 
-> Frontend desktop associé : [**klody-ui**](https://github.com/klodynlov/klody-ui) — Tauri 2 + React 19 + Tailwind 4 (thème clair/sombre/auto).
+## Preuves mesurées
 
----
+| Écosystème | Mesure actuelle |
+|---|---:|
+| Dépôts suivis | **17** |
+| Commits | **1 300+** |
+| Fonctions de test déclarées | **6 700+** |
+| Documents dans Library Brain | **25 376** |
+| Chunks RAG indexés | **1 824 420** |
+| Requêtes tierces sur karaibart.fr | **0** |
 
-## 🛠️ Stack
+Mesures du **3 septembre 2026**. Les commandes et la distinction entre chiffres mesurés et déclarés sont publiées sur la page [Les mesures](https://karaibart.fr/laboratoire/mesures/).
 
-**Langages** — Python · TypeScript · Rust
-**IA / Agents** — MLX-LM · Ollama · ReAct · routage adaptatif · retrieval (tree-sitter + embeddings) · **MCP** (client & serveur)
-**Backend** — FastAPI · WebSocket · SQLite (FTS5 + sqlite-vec)
-**Front / Desktop** — React 19 · Tailwind 4 · Tauri 2
-**Qualité** — pytest · CI durcie (bandit / gitleaks / pip-audit / CodeQL) · commits signés
+## Stack utile
+
+**Python · FastAPI · MLX · SQLite/FTS5/sqlite-vec · MCP · React · TypeScript · Rust/Tauri · pytest · CI sécurité**
+
+Autres briques : [ram-aware-scheduler](https://github.com/klodynlov/ram-aware-scheduler), [Library Brain](https://karaibart.fr/projets/library-brain/), [TabICL local](https://github.com/klodynlov/tabicl-calibration-gate), [Libretto](https://github.com/klodynlov/Libretto) et [SampleBrain](https://github.com/klodynlov/SampleBrain).
 
 ---
 
@@ -93,8 +108,10 @@ J'écris, à but informatif, sur ce qui me touche et m'intéresse : IA locale, a
 
 ---
 
-## 📬 Me contacter
+## Travailler ensemble
 
-💼 [LinkedIn](https://www.linkedin.com/in/claude-volny-94129894/) · 📧 **volnyclaude@protonmail.com**
+Vous avez des documents, du code ou des procédures qui **ne peuvent pas quitter votre infrastructure** ? Décrivez le cas d'usage et le matériel disponible : je réponds personnellement sous 48 h ouvrées.
 
-> Vous avez un cas d'usage IA dont les données **ne peuvent pas aller dans le cloud** ? C'est mon terrain — voir [Pour les entreprises](https://github.com/klodynlov/klody-code-ai/blob/main/docs/CONSULTING.md).
+**[Cadrer mon projet →](https://karaibart.fr/contact/)**
+
+[LinkedIn](https://www.linkedin.com/in/claude-volny-94129894/) · [volnyclaude@protonmail.com](mailto:volnyclaude@protonmail.com)
