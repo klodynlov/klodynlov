@@ -25,7 +25,7 @@
 
 Un agent de code **100 % local** : modèle, outils, mémoire, RAG et connecteurs tournent sur la machine. Il combine une boucle ReAct, 69 schémas d'outils natifs, MCP client/serveur et un dashboard desktop Tauri.
 
-![Tests](https://img.shields.io/badge/tests-2779%20passing-success)
+![Tests](https://img.shields.io/badge/tests-2829%20passing-success)
 ![AI](https://img.shields.io/badge/IA-100%25%20locale-orange)
 ![MCP](https://img.shields.io/badge/MCP-client%20%2B%20serveur-blueviolet)
 ![License](https://img.shields.io/badge/license-MIT-blue)
