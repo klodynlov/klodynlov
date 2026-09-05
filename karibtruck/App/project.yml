@@ -1,0 +1,53 @@
+# Spec XcodeGen : génère KaribTruck.xcodeproj automatiquement.
+#
+#   cd karibtruck/App
+#   brew install xcodegen      # une seule fois
+#   xcodegen generate          # crée KaribTruck.xcodeproj
+#   open KaribTruck.xcodeproj  # puis choisir l'équipe dans Signing & Capabilities
+#
+# Le .xcodeproj est régénérable (et gitignoré) : la source de vérité, c'est ce fichier.
+
+name: KaribTruck
+
+options:
+  bundleIdPrefix: fr.karibtruck
+  deploymentTarget:
+    iOS: "16.0"          # NavigationStack / ShareLink exigent iOS 16+
+  createIntermediateGroups: true
+
+# Le cœur métier est un package Swift local (dossier parent, où vit Package.swift).
+packages:
+  KaribTruckCore:
+    path: ..
+
+targets:
+  KaribTruck:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: KaribTruck            # KaribTruckApp.swift, Store.swift, ContentView.swift
+    dependencies:
+      - package: KaribTruckCore
+        product: KaribTruckCore
+    info:
+      path: KaribTruck/Info.plist   # généré par XcodeGen à partir des propriétés ci-dessous
+      properties:
+        CFBundleDisplayName: KaribTruck
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: fr.karibtruck.haccp
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"   # iPhone + iPad (l'app cible l'iPad)
+        SWIFT_VERSION: "5.9"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: GM9K95VYY4   # Team ID Apple Developer (Claude Volny)

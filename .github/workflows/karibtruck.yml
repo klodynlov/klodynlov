@@ -1,0 +1,45 @@
+name: KaribTruck CI
+
+on:
+  push:
+    paths:
+      - 'karibtruck/**'
+      - '.github/workflows/karibtruck.yml'
+  pull_request:
+    paths:
+      - 'karibtruck/**'
+      - '.github/workflows/karibtruck.yml'
+
+jobs:
+  # Cœur métier Swift : c'est ici qu'on COMPILE et qu'on EXÉCUTE réellement les
+  # tests XCTest (impossible sur l'environnement de dev Linux sans toolchain).
+  core-swift:
+    runs-on: ubuntu-latest
+    container: swift:6.0
+    defaults:
+      run:
+        working-directory: karibtruck
+    steps:
+      - uses: actions/checkout@v4
+      - name: Version Swift
+        run: swift --version
+      - name: Build
+        run: swift build -v
+      - name: Tests
+        run: swift test -v
+
+  # Oracle de référence Python + garde-fou anti-dérive des vecteurs.
+  oracle-python:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: karibtruck
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Oracle (self-test + génération des vecteurs)
+        run: python3 tools/oracle.py
+      - name: Garde-fou (vecteurs Swift == oracle)
+        run: python3 tools/check_sync.py
