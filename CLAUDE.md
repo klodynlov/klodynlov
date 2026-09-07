@@ -25,7 +25,29 @@ serveur), Python/Rust, MLX/Ollama.
 - Fichiers : `docs/SILVERBRAIN.md` (concept, scénario, Mermaid, archi), `-PROFIL.md`
   (modèle de données du profil), `-STYLE.md` (contrat de style), `-MCP.md` (connecteurs),
   `docs/ui/landing.html` + `ecran-accessible.html` (maquettes). README : « Projet en lumière ».
-- Reste possible (non demandé) : dashboard aidant, captures PNG dans le README.
+- Reste possible (non demandé) : captures PNG dans le README.
+
+#### 💼 Volet SaaS — `docs/SILVERBRAIN-SAAS.md` (branche `claude/saas-potential-apps-83bt61`)
+Analyse : SilverBrain = **seul projet du portfolio avec payeur ≠ utilisateur** → candidat
+produit récurrent. Modèle retenu : **calcul local + plan de contrôle distant** (le serveur
+route des événements typés chiffrés E2E ; audio, transcriptions et profil ne quittent
+jamais la box). Le **portail aidant** (jalon 4) devient le composant commercial.
+- Segments, dans l'ordre : **A** famille B2C (apprendre) → **B** résidences services /
+  SAAD B2B2C (**le modèle viable** : matériel en CAPEX exploitant + support N1 délégué)
+  → **C** B2G (APA, CCAS ; long mais l'argument « données locales » y devient éligibilité).
+- Ancrages sourcés : téléassistance 15-30 €/mois et **900 k abonnés** FR · **crédit
+  d'impôt SAP 50 %** (⇒ 29 € ressentis 14,50 €) · 108 286 logements en résidences services ·
+  **ElliQ** 249 $ + ~59 $/mois, 800+ unités via NY Office for the Aging (valide prix +
+  canal public, mais cloud & anglophone → créneau européen/francophone libre).
+- Économie unitaire (hypothèses) : le **support** et le **matériel** décident, pas le prix ;
+  ~22 mois de récupération en B2C, immédiate en B2B2C ; équilibre ≈ 800 logements actifs.
+- Risques n°1-3 : **latence/coût du matériel local** (MLX ≠ carte à 300 €) · rejet par le
+  senior · **churn structurel 20-30 %/an** (décès, entrée en établissement).
+- Garde-fous : rester **hors dispositif médical** (accompagner, pas secourir), AIPD
+  obligatoire, périmètre v1 verrouillé contre la dérive « mouchard » (pas de transcriptions).
+- **Prochaine action recommandée : jalon 0 « banc matériel »** (STT+SLM+TTS sur 3 cibles,
+  latence < 1,2 s, coût) — il peut invalider le projet seul — puis porte 1 : 10 entretiens
+  aidants (script en annexe du dossier). Aucun code produit avant.
 
 ### 🚧 AIoT / EdgeSense — l'IA locale rencontre les objets
 **Statut : PR #4 OUVERTE (brouillon), `clean`, non mergée.**
