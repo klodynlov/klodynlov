@@ -12,6 +12,8 @@ serveur), Python/Rust, MLX/Ollama.
 ## Workflow
 - Développement sur branches `claude/*`, PR (brouillon par défaut) vers `main`.
 - Squash-merge. `main` est la référence.
+- **Langue : répondre et documenter en français par défaut** — réponses de chat
+  comprises, y compris les mises à jour automatiques de suivi de PR.
 
 ---
 
@@ -92,12 +94,82 @@ croisé, seulement une continuité de récit et de discipline.
 - Prérequis matériel côté utilisateur : programme **MakeCode + extension Bluetooth**
   (MicroPython ne fait pas de BLE GATT) ; « No Pairing Required » recommandé.
 
+### 🎵 KLOD Live Brain / KLOD GrooveDNA — coprocesseur musical temps réel
+**Statut : branche `claude/klod-live-brain-groovedna-hmm1nu`, basée sur `main`.**
+Nouvel axe (musique temps réel + agentique). Indépendant des autres modules :
+aucun import croisé, seulement la continuité de discipline (stdlib pur, tests
+sans matériel, honnêteté PROUVÉ/FAISABLE).
+
+- 🎯 Vision : **le Mac réfléchit, le Teensy exécute en temps réel.** Teensy 4.1 =
+  réflexe (horloge, MIDI, scheduler) ; Mac Apple Silicon = cerveau (IA, mémoire,
+  génération, MCP). Le LLM **jamais** dans la boucle temporelle critique.
+- 💻 `klod-live-brain/host/groovedna/` — **GrooveDNA M0 PROUVÉ ✓** (couche
+  « musical », **stdlib pure**, testée sans Teensy) :
+  - `groove.py` (cœur : `NoteEvent`, `Grid`, `GrooveDNA`, `capture_groove`,
+    `apply_groove(pattern, dna, amount)`, `morph_grooves(a, b, alpha)`,
+    `groove_distance`, format **versionné `KLOD_GROOVE_V1`**).
+  - `demo.py` (preuve exécutable du **critère §38**, chiffrée, reproductible) ·
+    `test_groove.py` (**35 tests unittest, verts**) · README module + `__init__`.
+  - Vérif : `cd klod-live-brain/host && python3 -m unittest groovedna.test_groove`
+    → **35/35 ✓** ; `python3 -m groovedna.demo` ✓ (aucune dépendance).
+- 📄 `klod-live-brain/docs/` — **audit Phase 0 produit** :
+  `TECHNICAL_REALITY.md` (statuts + preuves + risques + 10 sources vérifiées),
+  `GROOVEDNA_SPEC.md` (format + base maths des métriques), `ARCHITECTURE.md`
+  (4 niveaux + frontière temps réel, 3 diagrammes Mermaid).
+- 🔌 `klod-live-brain/firmware/` — **squelette réflexe Teensy 4.1 (FAISABLE, non
+  mesuré)** : `main.cpp` (boucle passthrough horodatée), `timing/cycle_clock`
+  (DWT, Teensy-only), `midi/midi_io` (DIN FortySevenEffects + usbMIDI, Teensy-only,
+  correspondances API « à vérifier »), `queue/event_queue.h` (**file bornée,
+  allocation statique, TESTÉE EN NATIF g++ → 15045 vérifs vertes**), `metrics.h`,
+  `config.h`, `platformio.ini` · `sketches/` (croquis Arduino de bring-up :
+  `i2c_scan` + `klod_lcd_hello` pour le LCD 2004 I²C, biblio hd44780, non flashés
+  ici). ⚠️ Seule la file est vérifiée ici ; DWT/MIDI/sketches ne compilent que
+  sous Teensyduino → **BENCHMARKS.md reste à produire sur matériel**.
+- 🖥️ Matériel utilisateur : Teensy 4.1 + **LCD 2004 I²C (PCF8574)** câblé et
+  **alimenté en 3,3 V** (rétroéclairage OK) ; Audio Shield Rev D **posé à part**
+  (non empilé pour l'instant). Câblage LCD : 4 fils `VCC→3V · GND→G · SDA→18 ·
+  SCL→19` (Teensy non tolérant 5 V ; bus I²C partageable avec le SGTL5000 0x0A ;
+  LCD 0x27/0x3F). 2 schémas publiés en Artifact.
+- ▶️ **REPRISE (en local sur le Mac — accès USB requis)** : flasher
+  `klod-live-brain/firmware/sketches/i2c_scan` (attendu : `0x27`/`0x3F` au
+  Moniteur série 115200) puis `klod_lcd_hello` (biblio **hd44780**) → « KLOD Live
+  Brain » à l'écran. Prérequis : Arduino IDE + support Teensy (URL
+  `package_teensy_index.json`), carte « Teensy 4.1 », USB Type « Serial ».
+  Ensuite : MIDI DIN (broches 0/1) + affichage des vrais compteurs `metrics.h`.
+  (Session passée du serveur distant au Mac ; contexte porté par ce fichier.)
+- ✅ **Prouvé ici** : capture d'offsets mesurables (microtiming en fraction de
+  noire, **indépendant du tempo**) ; transfert `amount` **linéaire** (0/25/50/
+  75/100 %) vélocité comprise ; **aucune note perdue** ; morphing aux **bornes
+  exactes** ; sérialisation versionnée **sans perte** ; métriques (swing,
+  syncope=proxy grille métrique LHL, densité, variation=Jaccard, accents)
+  cohérentes. Représentation = **groove template** (pas de params inventés),
+  **rien d'aléatoire** (reproductible).
+- 🔑 **Décisions clés encodées** : capture haute précision via **MIDI DIN**
+  (UART, jitter sub-ms) **et non USB** (batching ~2,2 ms) → **risque n°1**
+  confirmé et tranché par la doc. Horodatage Teensy = `ARM_DWT_CYCCNT`
+  (1,667 ns, wrap ~7,16 s, à déverrouiller sur M7). Confirme **encore** le
+  verrou micro:bit/EdgeSense : MCP ne pousse pas → plan de contrôle only.
+
+**Reste à faire (non codé) :** styles caribéens (zouk/shatta/kompa…) appris
+depuis de **vrais fichiers MIDI** (jamais des clichés inventés, §7) · **groove
+personnel** du musicien (calculé sur perfs accumulées) · **portage Teensy amorcé**
+(squelette + file bornée testée en natif) → reste timing/MIDI/scheduler sur
+matériel + `BENCHMARKS.md` (jitter/latence/overruns à **mesurer** — FAISABLE non
+mesuré) · puis IA / MCP / MPC / REAPER / Logic **seulement après** backends
+réels. ⛔ NON VIABLE (à ne pas réutiliser) : LLM sur Teensy, Demucs sur Teensy,
+API Akai/Logic inventées, « MCP pilote le DAW » sans adaptateur. 🟡 Beat tracking
+audio = EXPÉRIMENTAL. **On ne passe pas à l'IA tant que la chaîne matérielle §38
+n'est pas bouclée et chiffrée.**
+
 ### Autres projets (mentionnés au README, hors de ce dépôt)
 Klody Code AI (agent de code local, projet phare) · klody-ui · LibraryBrain (RAG local) ·
 VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : ajout du connecteur `microbit/` (BLE + MCP, 33 tests) sur la
-branche `claude/microbit-bluetooth-connection-jb4jwf` — premier matériel réel de l'axe AIoT.
-AIoT/EdgeSense reste au stade PR #4 (M0 codé, M2-M4 + TinyGuard en conception)._
+_Dernière mise à jour mémoire : nouvel axe **KLOD Live Brain / GrooveDNA** sur la branche
+`claude/klod-live-brain-groovedna-hmm1nu` — moteur de *feel* rythmique (capture/transfert/
+morphing, format versionné `KLOD_GROOVE_V1`), **couche musical prouvée en Python stdlib pur
+(35 tests)** + audit Phase 0 (`TECHNICAL_REALITY.md`). Couche réflexe Teensy = FAISABLE, à
+mesurer. Précédemment : connecteur `microbit/` (BLE + MCP, 33 tests) ; AIoT/EdgeSense au stade
+PR #4 (M0 codé, M2-M4 + TinyGuard en conception)._

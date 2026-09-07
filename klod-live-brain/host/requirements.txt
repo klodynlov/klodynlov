@@ -1,0 +1,14 @@
+# KLOD Live Brain — dépendances côté hôte (Mac)
+#
+# Le moteur GrooveDNA (groovedna/) est en STDLIB PURE : la démo et les 35 tests
+# tournent sans rien installer.
+#
+#     cd klod-live-brain/host
+#     python3 -m groovedna.demo
+#     python3 -m unittest groovedna.test_groove -v
+#
+# Les dépendances ci-dessous ne servent qu'au futur pont MIDI live (lecture d'un
+# vrai port MIDI / d'un Teensy), pas au cœur prouvé. Décommenter au moment venu.
+
+# mido>=1.3            # messages et fichiers MIDI (.mid) en Python
+# python-rtmidi>=1.5   # E/S MIDI temps réel multiplateforme (CoreMIDI/ALSA/WinMM)
