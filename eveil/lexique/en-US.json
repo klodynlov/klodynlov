@@ -1,0 +1,35 @@
+{
+  "schema": "eveil.lexique.v1",
+  "locale": "en-US",
+  "status": "PROPOSAL — to be validated by a panel of speech-language pathologists (content validity, I-CVI ≥ 0.78) before any use with children",
+  "clinical_target": "Presence of the word-final sibilant fricative (/ʃ/, /s/). Targeted process: final consonant deletion. This is NOT a diagnostic tool.",
+  "principles": [
+    "Designed for English, never translated from French: English lexical stress (often word-initial) changes which syllables children drop.",
+    "Voiceless final /s/ only: after a vowel, English plural -s is voiced /z/ (bees), a different, weaker target — kept out of v0.",
+    "One process at a time (the final consonant): place errors (/ʃ/ said as /s/) are noted for the adult, never penalized.",
+    "Concrete, picturable, early nouns; level 1 = one syllable with a simple onset, level 2 = two syllables, level 3 = clusters.",
+    "'contrast' = (near-)minimal pair with the form lacking the final consonant, when one exists and can be drawn: basis for misunderstanding games (minimal pairs)."
+  ],
+  "caboose_sounds": {
+    "S": {"label": "sh", "icon": "steam", "cue": "the steam train goes \"shhh\""},
+    "s": {"label": "s", "icon": "snake", "cue": "the snake goes \"sss\""}
+  },
+  "words": [
+    {"id": "en.fish", "text": "fish", "ipa": "fɪʃ", "level": 1, "wagons": ["fi"], "caboose": "sh", "nuclei": 1, "coda": "S"},
+    {"id": "en.dish", "text": "dish", "ipa": "dɪʃ", "level": 1, "wagons": ["di"], "caboose": "sh", "nuclei": 1, "coda": "S"},
+    {"id": "en.push", "text": "push", "ipa": "pʊʃ", "level": 1, "wagons": ["pu"], "caboose": "sh", "nuclei": 1, "coda": "S"},
+    {"id": "en.wash", "text": "wash", "ipa": "wɑʃ", "level": 1, "wagons": ["wa"], "caboose": "sh", "nuclei": 1, "coda": "S"},
+    {"id": "en.goose", "text": "goose", "ipa": "ɡus", "level": 1, "wagons": ["goo"], "caboose": "se", "nuclei": 1, "coda": "s",
+     "contrast": {"text": "goo", "ipa": "ɡu", "picturable": true}},
+    {"id": "en.moose", "text": "moose", "ipa": "mus", "level": 1, "wagons": ["moo"], "caboose": "se", "nuclei": 1, "coda": "s",
+     "contrast": {"text": "moo", "ipa": "mu", "picturable": true}},
+    {"id": "en.ice", "text": "ice", "ipa": "aɪs", "level": 1, "wagons": ["i"], "caboose": "ce", "nuclei": 1, "coda": "s",
+     "contrast": {"text": "eye", "ipa": "aɪ", "picturable": true}},
+    {"id": "en.piece", "text": "piece", "ipa": "pis", "level": 1, "wagons": ["pie"], "caboose": "ce", "nuclei": 1, "coda": "s",
+     "contrast": {"text": "pea", "ipa": "pi", "picturable": true}},
+    {"id": "en.bus", "text": "bus", "ipa": "bʌs", "level": 1, "wagons": ["bu"], "caboose": "s", "nuclei": 1, "coda": "s"},
+    {"id": "en.radish", "text": "radish", "ipa": "ˈɹæ.dɪʃ", "level": 2, "wagons": ["ra", "di"], "caboose": "sh", "nuclei": 2, "coda": "S"},
+    {"id": "en.tennis", "text": "tennis", "ipa": "ˈtɛ.nɪs", "level": 2, "wagons": ["te", "nni"], "caboose": "s", "nuclei": 2, "coda": "s"},
+    {"id": "en.brush", "text": "brush", "ipa": "bɹʌʃ", "level": 3, "wagons": ["bru"], "caboose": "sh", "nuclei": 1, "coda": "S"}
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "schema": "eveil.lexique.v1",
+  "locale": "fr-FR",
+  "status": "PROPOSITION — à valider par un panel d'orthophonistes (validité de contenu, I-CVI ≥ 0,78) avant tout usage auprès d'enfants",
+  "clinical_target": "Présence de la consonne finale fricative sibilante (/ʃ/, /s/). Processus visé : effacement de consonne finale. Ce n'est PAS un outil de diagnostic.",
+  "principles": [
+    "Mots conçus pour le français, jamais traduits de l'anglais : l'accent final du français et le « e muet » changent la structure des mots.",
+    "Syllabes ORALES : « douche » = 1 syllabe orale /duʃ/ (le -e ne se prononce pas en français standard) ⇒ 1 wagon + le fourgon « ch ».",
+    "Un seul processus travaillé à la fois (la consonne finale) : le lieu d'articulation (/ʃ/ prononcé /s/) est noté pour l'adulte, pas sanctionné.",
+    "Noms concrets, imageables, connus tôt ; niveau 1 = 1 syllabe à attaque simple, niveau 2 = 2 syllabes, niveau 3 = groupe consonantique.",
+    "« contrast » = paire (quasi) minimale avec la forme sans consonne finale, quand elle existe et se dessine : base des jeux de malentendu (paires minimales)."
+  ],
+  "caboose_sounds": {
+    "S": {"label": "ch", "icon": "vapeur", "cue": "le train à vapeur fait « chhh »"},
+    "s": {"label": "s", "icon": "serpent", "cue": "le serpent fait « sss »"}
+  },
+  "words": [
+    {"id": "fr.douche", "text": "douche", "ipa": "duʃ", "level": 1, "wagons": ["dou"], "caboose": "ch", "nuclei": 1, "coda": "S",
+     "contrast": {"text": "doux", "ipa": "du", "picturable": false}},
+    {"id": "fr.bouche", "text": "bouche", "ipa": "buʃ", "level": 1, "wagons": ["bou"], "caboose": "ch", "nuclei": 1, "coda": "S",
+     "contrast": {"text": "boue", "ipa": "bu", "picturable": true}},
+    {"id": "fr.niche", "text": "niche", "ipa": "niʃ", "level": 1, "wagons": ["ni"], "caboose": "ch", "nuclei": 1, "coda": "S",
+     "contrast": {"text": "nid", "ipa": "ni", "picturable": true}},
+    {"id": "fr.ruche", "text": "ruche", "ipa": "ʁyʃ", "level": 1, "wagons": ["ru"], "caboose": "ch", "nuclei": 1, "coda": "S",
+     "contrast": {"text": "rue", "ipa": "ʁy", "picturable": true}},
+    {"id": "fr.mouche", "text": "mouche", "ipa": "muʃ", "level": 1, "wagons": ["mou"], "caboose": "ch", "nuclei": 1, "coda": "S",
+     "contrast": {"text": "mou", "ipa": "mu", "picturable": false}},
+    {"id": "fr.vache", "text": "vache", "ipa": "vaʃ", "level": 1, "wagons": ["va"], "caboose": "ch", "nuclei": 1, "coda": "S"},
+    {"id": "fr.biche", "text": "biche", "ipa": "biʃ", "level": 1, "wagons": ["bi"], "caboose": "ch", "nuclei": 1, "coda": "S"},
+    {"id": "fr.tasse", "text": "tasse", "ipa": "tas", "level": 1, "wagons": ["ta"], "caboose": "sse", "nuclei": 1, "coda": "s",
+     "contrast": {"text": "tas", "ipa": "ta", "picturable": true}},
+    {"id": "fr.minouche", "text": "minouche", "ipa": "mi.nuʃ", "level": 2, "wagons": ["mi", "nou"], "caboose": "ch", "nuclei": 2, "coda": "S",
+     "contrast": {"text": "minou", "ipa": "mi.nu", "picturable": true},
+     "notes": "Exemple du cahier des charges ; souvent un prénom de chat — typiquement un mot PERSONNEL, à proposer via les mots de la famille."},
+    {"id": "fr.perruche", "text": "perruche", "ipa": "pe.ʁyʃ", "level": 2, "wagons": ["pe", "ru"], "caboose": "ch", "nuclei": 2, "coda": "S"},
+    {"id": "fr.saucisse", "text": "saucisse", "ipa": "so.sis", "level": 2, "wagons": ["sau", "ci"], "caboose": "sse", "nuclei": 2, "coda": "s"},
+    {"id": "fr.trousse", "text": "trousse", "ipa": "tʁus", "level": 3, "wagons": ["trou"], "caboose": "sse", "nuclei": 1, "coda": "s",
+     "contrast": {"text": "trou", "ipa": "tʁu", "picturable": true}}
+  ]
+}
