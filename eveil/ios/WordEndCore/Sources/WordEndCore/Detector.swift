@@ -301,10 +301,11 @@ func median(_ values: [Double]) -> Double {
     return s.count % 2 == 1 ? s[m] : 0.5 * (s[m - 1] + s[m])
 }
 
-/// Arrondi décimal (≈ `round(x, n)` de Python, au pair).
+/// Arrondi décimal identique à `round(x, n)` de Python : `printf` arrondit la valeur
+/// binaire EXACTE (Darwin comme glibc), alors que `(x * 10ⁿ).rounded()` arrondirait un
+/// produit déjà arrondi (ex. 2,675 → 2,68 au lieu de 2,67).
 func roundTo(_ x: Double, _ digits: Int) -> Double {
-    let p = pow(10.0, Double(digits))
-    return (x * p).rounded(.toNearestOrEven) / p
+    Double(String(format: "%.\(digits)f", x)) ?? x
 }
 
 /// Compare l'analyse au mot cible. Voir le principe d'asymétrie en tête de fichier.

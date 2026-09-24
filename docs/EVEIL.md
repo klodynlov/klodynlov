@@ -23,7 +23,7 @@
 |---|---|---|
 | Détecteur de fin de mot — référence Python stdlib | ✅ PROUVÉ *sur signaux synthétiques* | 69 tests verts, démo exécutable ([`eveil/reference/`](../eveil/reference/)) |
 | Asymétrie : jamais « il manque la fin » sans preuve d'absence | ✅ PROUVÉ *sur signaux synthétiques* | 0 fausse alerte sur 30 énoncés complets bruités (SNR 35 → 5 dB), 0 faux « complet » |
-| Portage Swift `WordEndCore` (+ tests de parité) | 🟢 FAISABLE | Syntaxe vérifiée (tree-sitter, 22/22 fichiers) ; **non compilé ici** (pas de toolchain Swift) → `swift test` sur Mac |
+| Portage Swift `WordEndCore` (+ tests de parité) | 🟢 FAISABLE | Syntaxe vérifiée (tree-sitter, 23/23 fichiers) ; relecture indépendante : aucune erreur de compilation certaine, parité 17/17 reproduite ; **non compilé ici** → `swift test` sur Mac |
 | Couche iOS (AVAudioEngine, SwiftUI, SwiftData) | 🟢 FAISABLE | Noms d'API vérifiés dans la doc Apple ; non compilé ici |
 | « Rien ne quitte l'iPad » | ✅ PROUVÉ *statiquement* | Garde-fou [`verifier_confidentialite.py`](../eveil/outils/verifier_confidentialite.py) : 0 violation sur 22 fichiers |
 | Validité sur de **vraies voix d'enfants de 3-5 ans** | 🟡 EXPÉRIMENTAL | À mesurer avec le banc et le protocole §8 — **aucun chiffre avant** |
@@ -224,8 +224,10 @@ dit ! ») — utile tant que le détecteur n'a pas passé la porte de validation
 
 ```mermaid
 flowchart LR
-    subgraph Paquet["Paquet Swift eveil/ios"]
+    subgraph Coeur["Paquet autonome eveil/ios/WordEndCore"]
         CORE["WordEndCore<br/>Swift pur · iOS/macOS/Linux<br/>DSP · détecteur · flux<br/>pédagogie · lexiques · synthèse"]
+    end
+    subgraph Paquet["Paquet app eveil/ios"]
         AUDIO["WordEndAudio<br/>AVFoundation · Speech<br/>session .measurement<br/>micro 24 kHz · écoute"]
         UI["TrainPracticeUI<br/>SwiftUI · SwiftData<br/>train · mascotte · séance<br/>espace parent"]
     end
@@ -241,10 +243,14 @@ flowchart LR
 
 | Module | Contenu | Dépend de |
 |---|---|---|
-| `WordEndCore` | `DSP.swift` (FFT radix-2, trames, F0, rééchantillonnage, PRNG) · `Detector.swift` · `Streaming.swift` · `Policy.swift` (feedback, séance, garde-fou lexical) · `Lexicon.swift` · `Synth.swift` · `AccelerateSpectrum.swift` (vDSP optionnel) | Foundation |
+| `WordEndCore` — **paquet autonome** | `DSP.swift` (FFT radix-2, trames, F0, rééchantillonnage, PRNG) · `Detector.swift` · `Streaming.swift` · `Policy.swift` (feedback, séance, garde-fou lexical) · `Lexicon.swift` · `Synth.swift` · `AccelerateSpectrum.swift` (vDSP optionnel) | Foundation |
 | `WordEndAudio` | `AudioSessionConfigurator` · `MicrophoneStream` (tap → `AVAudioConverter` 24 kHz, **en mémoire**) · `ListeningController` (`@MainActor @Observable`) · `ModelVoicePlayer` · `OnDeviceLexicalCheck` (optionnel) | AVFoundation, Speech |
 | `TrainPracticeUI` | `TrainView` · `MascotView` · `PracticeView` (boucle de séance) · `ParentGateView` · `ParentZoneView` · `PracticeLog` (SwiftData local) | SwiftUI, SwiftData |
 | App | `EveilTrainApp` (lexiques embarqués, `UIGuidedAccessRestrictionDelegate`), `PrivacyInfo.xcprivacy`, clés Info.plist | — |
+
+Pourquoi deux paquets : `swift test` compile **toutes** les cibles d'un paquet (vérifié dans le code
+source de SwiftPM : `.allIncludingTests`). Isolé, le cœur et ses tests de parité tournent seuls — sur
+macOS, iOS ou Linux — quel que soit l'état de la couche AVFoundation/SwiftUI.
 
 ### 5.2 La chaîne audio
 
@@ -362,7 +368,12 @@ ne s'éteint pas pendant que l'enfant parle.
 2. **Vecteurs de parité** (`golden_vectors.json`) : 17 cas figés (sommes de contrôle du signal,
    descripteurs, analyse, verdict) ; `GoldenVectorsTests.swift` régénère les mêmes signaux (même
    SplitMix64, même synthèse) et exige les mêmes résultats → **`swift test` sur Mac** tranche.
-3. **Syntaxe Swift** vérifiée par tree-sitter (22/22 fichiers) ; relecture adversariale indépendante.
+3. **Syntaxe Swift** vérifiée par tree-sitter (23/23 fichiers) ; **relecture adversariale
+   indépendante** : aucune erreur de compilation certaine dans le cœur ; la logique Swift a été
+   retranscrite mécaniquement (sémantique Swift) et retrouve les 17 cas **bit à bit** ; marges des
+   décisions ≥ 3·10⁻⁷ en relatif (robustes aux écarts de libm Darwin/glibc). Correctifs appliqués :
+   isolation `@MainActor` (Xcode 15), arrondi identique à Python, événements d'une écoute périmée
+   ignorés, convertisseur audio non réinitialisé hors de son fil, attentes de lecture jamais perdues.
 4. **Garde-fou de confidentialité** : réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur
    interdits ; `requiresOnDeviceRecognition = true` et `cloudKitDatabase: .none` exigés.
 
@@ -372,7 +383,8 @@ ne s'éteint pas pendant que l'enfant parle.
 plus récent ; iPadOS 17 garde les **iPad de famille « hérités »** (souvent ceux que l'on confie aux
 enfants). `SpeechAnalyzer` (26), `UICanvasFeedbackGenerator` (17.5) et les nouveautés 27
 (`installAudioTap`, `CaptureInputSequenceProvider`, `PKStrokeRecognizer`) restent derrière
-`#available`. *Décision à confirmer (§10).*
+`#available`. **Xcode 16+ recommandé** (vues SwiftUI isolées sur le MainActor). *Décision à
+confirmer (§10).*
 
 ---
 
@@ -576,5 +588,5 @@ python3 -m unittest discover -s wordend -t . -v        # 69 tests, aucune dépen
 python3 -m wordend.bench --demo                        # le banc de validation, sur un corpus synthétique
 python3 ../outils/verifier_confidentialite.py          # « rien ne quitte l'iPad »
 
-cd ../ios && swift test                                # sur Mac : parité Swift ↔ Python
+cd ../ios/WordEndCore && swift test                    # sur Mac : parité Swift ↔ Python
 ```

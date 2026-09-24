@@ -54,7 +54,8 @@ public final class MicrophoneStream {
         guard isRunning else { return }
         engine.inputNode.removeTap(onBus: 0)
         engine.stop()
-        converter?.reset()
+        // Pas de `converter.reset()` ici : AVAudioConverter n'est pas thread-safe et le tap
+        // peut encore l'utiliser sur le fil audio ; `start()` en recrée un de toute façon.
         isRunning = false
     }
 

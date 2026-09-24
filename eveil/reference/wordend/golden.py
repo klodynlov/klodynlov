@@ -21,8 +21,8 @@ from .detector import DetectorConfig, Shape, analyze, evaluate
 from .dsp import ANALYSIS_RATE, FRAME_SIZE, HANN, HOP_SIZE, Bands, SplitMix64, band_bins, fft
 from .synth import LIBRARY, synthesize, utterance
 
-GOLDEN_PATH = (Path(__file__).resolve().parents[2]
-               / "ios" / "Tests" / "WordEndCoreTests" / "Resources" / "golden_vectors.json")
+GOLDEN_PATH = (Path(__file__).resolve().parents[2] / "ios" / "WordEndCore"
+               / "Tests" / "WordEndCoreTests" / "Resources" / "golden_vectors.json")
 
 # (nom du cas, spec, paramètres d'énoncé, cible)
 CASES: list[tuple[str, str, dict, Shape]] = [

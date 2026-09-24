@@ -31,11 +31,10 @@ public final class ListeningController {
     public private(set) var cabooseHeard = false
     public private(set) var childIsSpeaking = false
 
-    @ObservationIgnored private let microphone = MicrophoneStream()
-    @ObservationIgnored private let analysisQueue = DispatchQueue(label: "eveil.wordend.analysis",
-                                                                  qos: .userInitiated)
+    private let microphone = MicrophoneStream()
+    private let analysisQueue = DispatchQueue(label: "eveil.wordend.analysis", qos: .userInitiated)
     @ObservationIgnored private var tracker: StreamingTracker?
-    @ObservationIgnored private let config: DetectorConfig
+    private let config: DetectorConfig
 
     public init(config: DetectorConfig = DetectorConfig()) {
         self.config = config
@@ -66,7 +65,7 @@ public final class ListeningController {
                 queue.async {
                     let events = tracker.push(samples)
                     guard !events.isEmpty else { return }
-                    Task { @MainActor in self?.apply(events) }
+                    Task { @MainActor in self?.apply(events, from: tracker) }
                 }
             }
         } catch {
@@ -80,19 +79,22 @@ public final class ListeningController {
         microphone.stop()
         analysisQueue.async {
             let events = tracker.stop()
-            Task { @MainActor [weak self] in self?.apply(events) }
+            Task { @MainActor [weak self] in self?.apply(events, from: tracker) }
         }
     }
 
     public func reset() {
         microphone.stop()
+        tracker = nil                      // les événements encore en vol seront ignorés
         phase = .idle
         litWagons = 0
         cabooseHeard = false
         childIsSpeaking = false
     }
 
-    private func apply(_ events: [TrackerEvent]) {
+    private func apply(_ events: [TrackerEvent], from source: StreamingTracker) {
+        // Une écoute relancée (reset + listen) ne doit jamais recevoir le verdict de la précédente.
+        guard source === tracker else { return }
         for event in events {
             switch event {
             case .speechStarted:

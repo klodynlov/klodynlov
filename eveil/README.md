@@ -9,7 +9,7 @@ Tout est calculé **sur l'appareil**, sans modèle opaque, avec une règle d'or 
 | Dossier | Contenu | Statut |
 |---|---|---|
 | [`reference/wordend/`](reference/wordend/) | Détecteur de référence **Python stdlib** : DSP, détecteur, flux temps réel, pédagogie, lexiques, **banc de validation**, vecteurs de parité, démo | ✅ 69 tests verts |
-| [`ios/`](ios/) | Paquet **Swift** : `WordEndCore` (portage ligne à ligne, Swift pur), `WordEndAudio` (AVFoundation), `TrainPracticeUI` (SwiftUI/SwiftData) + coquille d'app | 🟢 syntaxe vérifiée, **non compilé ici** |
+| [`ios/`](ios/) | **Swift** : paquet autonome [`WordEndCore`](ios/WordEndCore/) (portage ligne à ligne, Swift pur, testable seul) + paquet app `WordEndAudio` (AVFoundation) / `TrainPracticeUI` (SwiftUI/SwiftData) + coquille d'app | 🟢 syntaxe vérifiée, relu, **non compilé ici** |
 | [`lexique/`](lexique/) | Mots cibles **FR** et **EN** conçus séparément (propositions à valider par un panel) | 🟡 à valider |
 | [`outils/`](outils/) | Garde-fou « rien ne quitte l'iPad » (analyse statique du code Swift) | ✅ 6 tests, 0 violation |
 | [`librarybrain/`](librarybrain/) | Relais vers LibraryBrain : sources en accès libre, veille arXiv, questions à poser | ✅ 2 tests |
@@ -53,12 +53,12 @@ Flux temps réel — « minouche », blocs de 10 ms :
 ## Sur Mac (Xcode 16+ / Swift 5.9+)
 
 ```bash
-cd eveil/ios
+cd eveil/ios/WordEndCore
 swift test            # parité Swift ↔ Python (golden_vectors.json) + propriétés pédagogiques
 ```
 
-App iPad : Xcode › New › App (iPadOS 17+, SwiftUI) → *Add Local Package* `eveil/ios` → lier
-`TrainPracticeUI` → copier [`ios/App/EveilTrainApp.swift`](ios/App/EveilTrainApp.swift),
+App iPad : Xcode 16+ › New › App (iPadOS 17+, SwiftUI) → *Add Local Package* `eveil/ios` **et**
+`eveil/ios/WordEndCore` → lier `TrainPracticeUI` et `WordEndCore` → copier [`ios/App/EveilTrainApp.swift`](ios/App/EveilTrainApp.swift),
 [`PrivacyInfo.xcprivacy`](ios/App/PrivacyInfo.xcprivacy), les clés
 d'[`Info-additions.plist`](ios/App/Info-additions.plist), et embarquer `lexique/*.json`.
 Aucun entitlement iCloud, aucun SDK tiers.
@@ -98,5 +98,5 @@ recherche**, distinct de l'app publique (qui ne produit ni score ni rapport).
 Faute de compilateur Swift dans l'environnement de développement, la parité est tenue **par
 construction** : même PRNG (SplitMix64), même synthèse, mêmes constantes. `python3 -m wordend.golden`
 fige 17 cas (sommes de contrôle du signal, descripteurs, analyse, verdict) dans
-`ios/Tests/WordEndCoreTests/Resources/golden_vectors.json` ; `GoldenVectorsTests.swift` doit les
+`ios/WordEndCore/Tests/WordEndCoreTests/Resources/golden_vectors.json` ; `GoldenVectorsTests.swift` doit les
 retrouver. Un test Python échoue si le fichier est périmé.

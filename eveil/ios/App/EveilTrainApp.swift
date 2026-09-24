@@ -1,8 +1,8 @@
 // EveilTrainApp.swift — coquille de l'app iPad (cible Xcode, hors paquet Swift).
 //
-// Création du projet : Xcode › New › App (iPad, SwiftUI, iPadOS 17+), ajouter le
-// paquet local `eveil/ios` (File › Add Package Dependencies › Add Local…),
-// lier `TrainPracticeUI`, copier ce fichier + `PrivacyInfo.xcprivacy`, ajouter
+// Création du projet : Xcode 16+ › New › App (iPad, SwiftUI, iPadOS 17+), ajouter
+// les paquets locaux `eveil/ios` et `eveil/ios/WordEndCore` (File › Add Package
+// Dependencies › Add Local…), lier `TrainPracticeUI` et `WordEndCore`, copier ce fichier + `PrivacyInfo.xcprivacy`, ajouter
 // les clés de `Info-additions.plist`, et embarquer `eveil/lexique/*.json` dans
 // les ressources de l'app. AUCUN entitlement iCloud, AUCUN SDK tiers.
 
@@ -58,6 +58,9 @@ enum LexiconLoader {
 /// Accès guidé : l'app ne peut pas le DÉCLENCHER (réservé aux appareils supervisés
 /// par MDM — vérifié dans la doc Apple), mais elle propose au parent une
 /// restriction personnalisée dans les options de l'Accès guidé.
+/// À VALIDER SUR iPAD : avec `@UIApplicationDelegateAdaptor`, le délégué d'application
+/// est un objet SwiftUI qui relaie vers celui-ci ; vérifier que l'écran d'options de
+/// l'Accès guidé affiche bien la restriction « Espace des grands ».
 final class AppDelegate: NSObject, UIApplicationDelegate, UIGuidedAccessRestrictionDelegate {
     static let parentAreaRestriction = "eveil.restriction.parentArea"
     static let guidedAccessChanged = Notification.Name("eveil.guidedAccessChanged")

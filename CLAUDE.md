@@ -188,12 +188,14 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
   alerte + IC95 Wilson, porte GO/NO GO), `golden.py` (vecteurs de parité Python↔Swift), `demo.py`.
   Vérif : `cd eveil/reference && python3 -m unittest discover -s wordend -t .` → **69/69 ✓** ;
   0 fausse alerte sur 30 énoncés complets bruités (35→5 dB).
-- 📱 `eveil/ios/` — paquet Swift : `WordEndCore` (portage **ligne à ligne**, Swift pur, testable
+- 📱 `eveil/ios/` — Swift : paquet **autonome** `eveil/ios/WordEndCore` (portage **ligne à ligne**, Swift pur, testable
   Linux/Mac), `WordEndAudio` (session `.measurement`, micro→24 kHz en mémoire, `ListeningController`),
   `TrainPracticeUI` (train, mascotte, séance, contrôle parental, espace parent, SwiftData local
   `cloudKitDatabase: .none`) + `App/` (coquille, Accès guidé, `PrivacyInfo.xcprivacy`).
   ⚠️ **Non compilé ici** (download.swift.org bloqué par le proxy) : syntaxe vérifiée tree-sitter
-  22/22 + relecture adversariale ; **à faire sur Mac : `cd eveil/ios && swift test`**.
+  23/23 + relecture adversariale (0 erreur certaine, parité 17/17 retranscrite bit à bit ; correctifs
+  appliqués) ; **à faire sur Mac : `cd eveil/ios/WordEndCore && swift test`** (le cœur est isolé car
+  `swift test` compile toutes les cibles d'un paquet).
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur interdits) → 0 violation, 6 tests.
 - 📚 LibraryBrain = RAG **local sur le Mac** (non joignable depuis le cloud) → relais

@@ -86,7 +86,8 @@ public func customWord(text: String, wagons: [String], coda: String?, locale: St
     guard !text.isEmpty else { throw LexiconError.emptyWord }
     guard (1...Lexicon.maxWagons).contains(wagons.count) else { throw LexiconError.wagonCount }
     if let coda, !Lexicon.supportedCodas.contains(coda) { throw LexiconError.unsupportedCoda(coda) }
-    let label = caboose ?? coda.map { $0 == "S" ? (locale.hasPrefix("fr") ? "ch" : "sh") : "s" }
+    let given = (caboose?.isEmpty == false) ? caboose : nil          // "" ⇒ son par défaut
+    let label = given ?? coda.map { $0 == "S" ? (locale.hasPrefix("fr") ? "ch" : "sh") : "s" }
     var slug = text.lowercased().filter { $0.isLetter || $0.isNumber }
     if slug.isEmpty { slug = "mot" }
     let lang = locale.split(separator: "-").first.map(String.init) ?? locale

@@ -27,7 +27,7 @@ public final class ModelVoicePlayer: NSObject, AVAudioPlayerDelegate, AVSpeechSy
             p.delegate = self
             player = p
             await withCheckedContinuation { (c: CheckedContinuation<Void, Never>) in
-                continuation = c
+                store(c)
                 if !p.play() { resume() }
             }
         } catch {
@@ -42,10 +42,16 @@ public final class ModelVoicePlayer: NSObject, AVAudioPlayerDelegate, AVSpeechSy
         utterance.voice = AVSpeechSynthesisVoice(language: locale)
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate * 0.8
         await withCheckedContinuation { (c: CheckedContinuation<Void, Never>) in
-            continuation = c
+            store(c)
             synthesizer.speak(utterance)
         }
         try? await Task.sleep(nanoseconds: 150_000_000)
+    }
+
+    /// Une nouvelle lecture libère d'abord l'éventuelle attente précédente (jamais perdue).
+    private func store(_ c: CheckedContinuation<Void, Never>) {
+        resume()
+        continuation = c
     }
 
     private func resume() {
@@ -57,8 +63,17 @@ public final class ModelVoicePlayer: NSObject, AVAudioPlayerDelegate, AVSpeechSy
         Task { @MainActor in self.resume() }
     }
 
+    nonisolated public func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
+        Task { @MainActor in self.resume() }
+    }
+
     nonisolated public func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer,
                                               didFinish utterance: AVSpeechUtterance) {
+        Task { @MainActor in self.resume() }
+    }
+
+    nonisolated public func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer,
+                                              didCancel utterance: AVSpeechUtterance) {
         Task { @MainActor in self.resume() }
     }
 }

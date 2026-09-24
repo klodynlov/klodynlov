@@ -86,9 +86,11 @@ final class LexicalGuardTests: XCTestCase {
 
 final class LexiconTests: XCTestCase {
     private func load(_ locale: String) throws -> Lexicon {
+        // …/eveil/ios/WordEndCore/Tests/WordEndCoreTests/BehaviourTests.swift → …/eveil/lexique/
         let url = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-            .deletingLastPathComponent().appendingPathComponent("lexique/\(locale).json")
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("lexique/\(locale).json")
         return try Lexicon.decode(Data(contentsOf: url))
     }
 

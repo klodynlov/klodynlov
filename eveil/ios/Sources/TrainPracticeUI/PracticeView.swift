@@ -13,6 +13,7 @@ import SwiftUI
 import WordEndAudio
 import WordEndCore
 
+@MainActor
 public struct PracticeView: View {
     public let words: [TargetWord]
     public let locale: String
