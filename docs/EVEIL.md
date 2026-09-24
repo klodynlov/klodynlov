@@ -10,7 +10,7 @@
 > affirmation une source ([état de l'art sourcé](EVEIL-SOURCES.md)), et ce qui est dit « prouvé »
 > l'est par du code exécuté.
 
-**Date :** 2026-09-24 · **Code :** [`eveil/`](../eveil/) · **Sources :** [EVEIL-SOURCES.md](EVEIL-SOURCES.md)
+**Date :** 2026-09-24 · **Code :** [`eveil/`](../eveil/) · **Sources :** [EVEIL-SOURCES.md](EVEIL-SOURCES.md) · **Maquette :** [les états du train](ui/eveil-train.html)
 
 | Statut | Sens |
 |---|---|
@@ -143,6 +143,7 @@ médecin ou à un orthophoniste. »*
 - Pendant que l'enfant parle, les wagons **s'allument en direct** (un noyau vocalique entendu = un
   wagon), et le fourgon **s'accroche** quand la friction finale arrive.
 - Les lettres sont affichées pour l'adulte ; l'enfant, non-lecteur, lit les **couleurs et le mouvement**.
+- 🎨 Maquette de discussion pour le panel : [`ui/eveil-train.html`](ui/eveil-train.html).
 
 ### 4.2 La boucle d'un mot
 
