@@ -14,6 +14,16 @@ import Foundation
 import Observation
 import WordEndCore
 
+/// Le traqueur n'est pas thread-safe : `push` et `stop` ne tournent que sur
+/// `analysisQueue` (file série), et le MainActor ne s'en sert que pour comparer
+/// des identités (`===`). Le compilateur ne sait pas prouver un confinement par
+/// file : cette boîte porte le contrat, au lieu de déclarer `StreamingTracker`
+/// Sendable dans le cœur (ce qu'il n'est pas).
+private final class ConfinedTracker: @unchecked Sendable {
+    let tracker: StreamingTracker
+    init(_ tracker: StreamingTracker) { self.tracker = tracker }
+}
+
 @MainActor
 @Observable
 public final class ListeningController {
@@ -60,12 +70,13 @@ public final class ListeningController {
             #endif
             phase = .listening
             let queue = analysisQueue
+            let confined = ConfinedTracker(tracker)
             try microphone.start { [weak self] chunk in
                 let samples = chunk.map(Double.init)
                 queue.async {
-                    let events = tracker.push(samples)
+                    let events = confined.tracker.push(samples)
                     guard !events.isEmpty else { return }
-                    Task { @MainActor in self?.apply(events, from: tracker) }
+                    Task { @MainActor in self?.apply(events, from: confined.tracker) }
                 }
             }
         } catch {
@@ -77,9 +88,10 @@ public final class ListeningController {
     public func stop() {
         guard phase == .listening, let tracker else { return }
         microphone.stop()
-        analysisQueue.async {
-            let events = tracker.stop()
-            Task { @MainActor [weak self] in self?.apply(events, from: tracker) }
+        let confined = ConfinedTracker(tracker)
+        analysisQueue.async { [weak self] in
+            let events = confined.tracker.stop()
+            Task { @MainActor in self?.apply(events, from: confined.tracker) }
         }
     }
 

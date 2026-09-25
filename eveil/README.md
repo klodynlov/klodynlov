@@ -9,9 +9,9 @@ Tout est calculé **sur l'appareil**, sans modèle opaque, avec une règle d'or 
 | Dossier | Contenu | Statut |
 |---|---|---|
 | [`reference/wordend/`](reference/wordend/) | Détecteur de référence **Python stdlib** : DSP, détecteur, flux temps réel, pédagogie, lexiques, **banc de validation**, vecteurs de parité, démo | ✅ 69 tests verts |
-| [`ios/`](ios/) | **Swift** : paquet autonome [`WordEndCore`](ios/WordEndCore/) (portage ligne à ligne, Swift pur, testable seul) + paquet app `WordEndAudio` (AVFoundation) / `TrainPracticeUI` (SwiftUI/SwiftData) + coquille d'app | 🟢 syntaxe vérifiée, relu, **non compilé ici** |
+| [`ios/`](ios/) | **Swift** : paquet autonome [`WordEndCore`](ios/WordEndCore/) (portage ligne à ligne, Swift pur, testable seul) + paquet app `WordEndAudio` (AVFoundation) / `TrainPracticeUI` (SwiftUI/SwiftData) + coquille d'app | ✅ **compilé et testé sur Mac** : cœur 19/19, app 0 avertissement ([détail](#sur-mac--compilé-et-testé-le-25092026)) |
 | [`lexique/`](lexique/) | Mots cibles **FR** et **EN** conçus séparément (propositions à valider par un panel) | 🟡 à valider |
-| [`outils/`](outils/) | Garde-fou « rien ne quitte l'iPad » (analyse statique du code Swift) | ✅ 6 tests, 0 violation |
+| [`outils/`](outils/) | Garde-fou « rien ne quitte l'iPad » (analyse statique du code Swift) | ✅ 7 tests, 0 violation |
 | [`librarybrain/`](librarybrain/) | Relais vers LibraryBrain : sources en accès libre, veille arXiv, questions à poser, [protocole de comparaison](librarybrain/COMPARAISON.md) avec la passe cloud | ✅ 6 tests |
 
 ---
@@ -50,12 +50,35 @@ Flux temps réel — « minouche », blocs de 10 ms :
 > d'enfants. Celle-ci se mesure avec le banc, dans le protocole de validation
 > ([docs/EVEIL.md §8](../docs/EVEIL.md#8-validation-par-les-pairs--le-protocole)).
 
-## Sur Mac (Xcode 16+ / Swift 5.9+)
+## Sur Mac — compilé et testé le 25/09/2026
+
+macOS 27.0 (26A428) · Xcode 27.0 (27A266a) · Swift 6.4 (swiftlang-6.4.0.34.1) · SDK iOS 27.0.
+Prérequis : `xcode-select -p` → `/Applications/Xcode.app/…` (avec les seuls CommandLineTools, XCTest manque).
 
 ```bash
-cd eveil/ios/WordEndCore
-swift test            # parité Swift ↔ Python (golden_vectors.json) + propriétés pédagogiques
+cd eveil/ios/WordEndCore && swift test        # 19 tests, 0 échec, 0 avertissement
+cd eveil/ios && xcodebuild -scheme EveilTrain-Package \
+    -destination 'generic/platform=iOS Simulator' build   # ** BUILD SUCCEEDED **, 0 avertissement
 ```
+
+- **Cœur** : 19/19 dès la première compilation, dont les 5 tests de parité (17 cas golden, les
+  5 verdicts représentés). La parité **mord** — vérifié par mutation d'une copie : plancher de bruit
+  au 12ᵉ centile au lieu du 10ᵉ → 83 assertions rouges ; seuil de friction à 100 ms au lieu de 50 →
+  rouge. Limite : aucune friction des 17 cas ne dure moins de 80 ms, la bande 50–80 ms du seuil n'est
+  donc pas sondée par les vecteurs golden (un seuil à 80 ms passerait).
+- **Couche app** : `EveilTrain-Package` compile pour le simulateur iOS, l'appareil iOS (sans
+  signature) et macOS, aussi en mode de langage Swift 6. Les 4 avertissements de concurrence du
+  premier build (`ListeningController`) sont corrigés : le traqueur, confiné à la file d'analyse,
+  passe par une boîte locale qui porte ce contrat (plutôt que de déclarer `StreamingTracker`
+  Sendable dans le cœur, ce qu'il n'est pas), et le `[weak self]` de `stop()` est remonté au bloc
+  englobant, qui capturait `self` fortement.
+- **Coquille** [`App/EveilTrainApp.swift`](ios/App/EveilTrainApp.swift) : type-checkée seule contre
+  les modules compilés (simulateur iOS 17, Swift 5 et 6). Le projet Xcode reste à créer.
+- **SDK iOS 27** : `installTap(onBus:…)` y est bien déprécié, remplacé en Swift par
+  `installAudioTap(onBus:bufferSize:format:tapProvider:)` — la note de `MicrophoneStream.swift` est
+  exacte ; la bascule dépend de la cible retenue (iPadOS 17 ou 26).
+- **Garde de confidentialité** : elle ignore désormais les produits de compilation (`.build/`,
+  `.swiftpm/`, `DerivedData/`) ; après `swift test`, elle comptait un fichier Swift généré de plus.
 
 > **Reprendre en local** (compilation Swift + comparaison LibraryBrain) : prompt prêt à coller dans
 > [`REPRISE-LOCALE.md`](REPRISE-LOCALE.md).
@@ -98,8 +121,8 @@ recherche**, distinct de l'app publique (qui ne produit ni score ni rapport).
 
 ## Parité Python ↔ Swift
 
-Faute de compilateur Swift dans l'environnement de développement, la parité est tenue **par
-construction** : même PRNG (SplitMix64), même synthèse, mêmes constantes. `python3 -m wordend.golden`
-fige 17 cas (sommes de contrôle du signal, descripteurs, analyse, verdict) dans
-`ios/WordEndCore/Tests/WordEndCoreTests/Resources/golden_vectors.json` ; `GoldenVectorsTests.swift` doit les
-retrouver. Un test Python échoue si le fichier est périmé.
+La parité est tenue **par construction** — même PRNG (SplitMix64), même synthèse, mêmes constantes —
+et **vérifiée à la compilation** depuis le 25/09/2026. `python3 -m wordend.golden` fige 17 cas
+(sommes de contrôle du signal, descripteurs, analyse, verdict) dans
+`ios/WordEndCore/Tests/WordEndCoreTests/Resources/golden_vectors.json` ; `GoldenVectorsTests.swift` les
+retrouve (`swift test`). Un test Python échoue si le fichier est périmé.

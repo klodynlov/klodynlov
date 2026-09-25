@@ -2,11 +2,12 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from verifier_confidentialite import check_source, check_tree, strip_comments  # noqa: E402
+from verifier_confidentialite import check_source, check_tree, strip_comments, swift_sources  # noqa: E402
 
 IOS = Path(__file__).resolve().parents[1] / "ios"
 
@@ -40,6 +41,20 @@ class TestRules(unittest.TestCase):
         self.assertEqual(self.rules("// voir https://developer.apple.com\nlet x = 1"), [])
         self.assertEqual(self.rules("/* URLSession est interdit */\nlet x = 1"), [])
         self.assertEqual(strip_comments("a\n/* b\nc */\nd").count("\n"), 3)   # lignes préservées
+
+
+class TestTree(unittest.TestCase):
+    def test_build_products_are_not_sources(self):
+        # `swift test` génère du Swift dans .build/ : ni compté, ni jugé.
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            for rel in ("Sources/A.swift", ".build/out/DerivedSources/test_entry_point.swift",
+                        ".swiftpm/x.swift", "DerivedData/y.swift"):
+                (root / rel).parent.mkdir(parents=True, exist_ok=True)
+                (root / rel).write_text("let s = URLSession.shared\n", encoding="utf-8")
+            self.assertEqual([p.relative_to(root).as_posix() for p in swift_sources(root)],
+                             ["Sources/A.swift"])
+            self.assertEqual(len(check_tree(root)), 1)
 
 
 class TestRealCode(unittest.TestCase):

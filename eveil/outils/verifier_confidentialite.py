@@ -82,9 +82,21 @@ def check_source(path: str, source: str) -> list[Violation]:
     return out
 
 
+def swift_sources(root: Path) -> list[Path]:
+    """Les sources Swift du dépôt, sans les produits de compilation.
+
+    `swift test` et Xcode génèrent du Swift dans `.build/`, `.swiftpm/` ou
+    `DerivedData/` (point d'entrée des tests, dépendances clonées) : ce n'est
+    pas notre code, et le verdict ne doit pas dépendre d'une compilation passée.
+    """
+    return sorted(p for p in root.rglob("*.swift")
+                  if not any(part.startswith(".") or part == "DerivedData"
+                             for part in p.relative_to(root).parts[:-1]))
+
+
 def check_tree(root: Path) -> list[Violation]:
     out: list[Violation] = []
-    for p in sorted(root.rglob("*.swift")):
+    for p in swift_sources(root):
         out.extend(check_source(str(p), p.read_text(encoding="utf-8")))
     return out
 
@@ -92,7 +104,7 @@ def check_tree(root: Path) -> list[Violation]:
 def main(argv: list[str]) -> int:
     root = Path(argv[1]) if len(argv) > 1 else Path(__file__).resolve().parents[1] / "ios"
     violations = check_tree(root)
-    files = len(list(root.rglob("*.swift")))
+    files = len(swift_sources(root))
     if violations:
         for v in violations:
             print(v)

@@ -192,12 +192,18 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
   Linux/Mac), `WordEndAudio` (session `.measurement`, micro→24 kHz en mémoire, `ListeningController`),
   `TrainPracticeUI` (train, mascotte, séance, contrôle parental, espace parent, SwiftData local
   `cloudKitDatabase: .none`) + `App/` (coquille, Accès guidé, `PrivacyInfo.xcprivacy`).
-  ⚠️ **Non compilé ici** (download.swift.org bloqué par le proxy) : syntaxe vérifiée tree-sitter
-  23/23 + relecture adversariale (0 erreur certaine, parité 17/17 retranscrite bit à bit ; correctifs
-  appliqués) ; **à faire sur Mac : `cd eveil/ios/WordEndCore && swift test`** (le cœur est isolé car
-  `swift test` compile toutes les cibles d'un paquet).
+  ✅ **Compilé et testé sur le Mac le 25/09/2026** (macOS 27.0, Xcode 27.0, Swift 6.4, SDK iOS 27.0) :
+  `cd eveil/ios/WordEndCore && swift test` → **19/19** dès la 1re compilation, dont parité 17 cas
+  (mutation vérifiée : la parité mord ; limite : bande 50–80 ms du seuil de friction non sondée par
+  les golden) · `cd eveil/ios && xcodebuild -scheme EveilTrain-Package -destination 'generic/platform=iOS
+  Simulator' build` → **BUILD SUCCEEDED**, aussi appareil iOS, macOS et mode Swift 6, **0 avertissement**
+  (4 avertissements de concurrence de `ListeningController` corrigés) · coquille `App/` type-checkée
+  seule ; **projet Xcode + iPad réel : avec l'utilisateur, pas à pas** (signature, micro).
+  Dépréciation `installTap` → `installAudioTap(…)` confirmée dans le SDK iOS 27 (bascule liée au choix
+  iPadOS 17/26).
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
-  (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur interdits) → 0 violation, 6 tests.
+  (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur interdits) → 0 violation, 7 tests ;
+  ignore les produits de compilation (`.build/`, `.swiftpm/`, `DerivedData/`).
 - 📚 LibraryBrain = RAG **local sur le Mac** (non joignable depuis le cloud) → relais
   `eveil/librarybrain/` : 28 sources en accès libre + `recuperer_sources.py` (à lancer en local),
   thèmes arXiv, 18 questions `/ask`·`/consensus` pour fermer les NON VÉRIFIÉ + 15 **témoins** déjà
@@ -211,10 +217,10 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
   WebSearch (200) épuisé → beaucoup de verdicts sur résumés ; Apple lu directement (DocC JSON via curl).
 
 - ▶️ **REPRISE (en local sur le Mac)** : prompt prêt à coller dans **`eveil/REPRISE-LOCALE.md`** →
-  (1) `swift test` du cœur + build iOS du paquet app (`xcodebuild`), (2) comparaison **LibraryBrain ↔
-  passe cloud** selon le protocole, rapport attendu `docs/EVEIL-SOURCES-LIBRARYBRAIN.md`.
+  (1) ✅ `swift test` du cœur + build iOS du paquet app (fait le 25/09/2026), (2) comparaison
+  **LibraryBrain ↔ passe cloud** selon le protocole, rapport attendu `docs/EVEIL-SOURCES-LIBRARYBRAIN.md`.
 
-**Reste à faire :** `swift test` + app sur iPad réel (M1) · panel Delphi (mots, messages, nom,
+**Reste à faire :** projet Xcode + app sur iPad réel (M1, avec l'utilisateur) · panel Delphi (mots, messages, nom,
 mascotte, voix) · protocole V1 (Jardé/CPP/CNIL à qualifier, corpus, calibration via le banc) ·
 App 2 (mode **papier** d'abord : VisionKit `VNDocumentCameraViewController` + SpriteKit ; mode
 écran : pochoir `PKStroke(mask:)`) · décisions ouvertes : nom, iPadOS 17 vs 26, mode par défaut
@@ -226,9 +232,10 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : Suite Éveil — **prompt de reprise locale** (`eveil/REPRISE-LOCALE.md`)
-et **protocole figé de comparaison LibraryBrain ↔ passe cloud** (33 questions, 2 passes, à l'aveugle).
-Avant : nouvel axe **Suite Éveil** (apps iPad 3 ans et +) sur la branche
+_Dernière mise à jour mémoire : Suite Éveil — **Swift compilé et testé sur le Mac** (25/09/2026 :
+cœur 19/19, paquet app 0 avertissement ; projet Xcode + iPad à faire avec l'utilisateur).
+Avant : **prompt de reprise locale** (`eveil/REPRISE-LOCALE.md`) et **protocole figé de comparaison
+LibraryBrain ↔ passe cloud** (33 questions, 2 passes, à l'aveugle). Avant : nouvel axe **Suite Éveil** (apps iPad 3 ans et +) sur la branche
 `claude/ios-educational-apps-suite-dljtt6` — blueprint + état de l'art sourcé (6 axes), détecteur
 de fin de mot **prouvé sur signaux synthétiques (69 tests)** avec banc de validation, portage Swift
 non compilé ici (syntaxe vérifiée). Précédemment : KLOD Live Brain / GrooveDNA (35 tests), connecteur

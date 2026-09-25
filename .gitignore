@@ -5,6 +5,12 @@ __pycache__/
 .venv/
 venv/
 
+# Swift / Xcode : produits de compilation
+.build/
+.swiftpm/
+DerivedData/
+xcuserdata/
+
 # Réponses brutes de LibraryBrain : extraits d'ouvrages sous droits, jamais publiés
 eveil/librarybrain/resultats/
 
