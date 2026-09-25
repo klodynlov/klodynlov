@@ -1,6 +1,7 @@
 """Tests du relais LibraryBrain (sans réseau : le téléchargement est simulé)."""
 from __future__ import annotations
 
+import http.client
 import sys
 import tempfile
 import unittest
@@ -50,6 +51,23 @@ class TestRun(unittest.TestCase):
             rep2 = run(dest, manifest, fetch=fake, pause=0.0)
             self.assertEqual([s["id"] for s in rep2["present"]], ["bon"])
         self.assertEqual(calls.count("https://x/bon.pdf"), 1)       # jamais retéléchargé
+
+    def test_a_truncated_transfer_does_not_stop_the_batch(self):
+        manifest = {"sources": [
+            {"id": "gros", "axis": "F", "kind": "pdf", "url": "https://x/gros.pdf", "title": "t"},
+            {"id": "petit", "axis": "A", "kind": "pdf", "url": "https://x/petit.pdf", "title": "t"},
+        ]}
+
+        def fake(url):
+            if "gros" in url:
+                raise http.client.IncompleteRead(b"%PDF-", 1000)
+            return b"%PDF-1.7 contenu"
+
+        with tempfile.TemporaryDirectory() as d:
+            rep = run(Path(d), manifest, fetch=fake, pause=0.0)
+            self.assertEqual([s["id"] for s in rep["ok"]], ["petit"])
+            self.assertEqual([s["id"] for s in rep["echec"]], ["gros"])
+            self.assertFalse((Path(d) / "gros.pdf").exists())
 
 
 if __name__ == "__main__":

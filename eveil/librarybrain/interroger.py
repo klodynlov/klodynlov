@@ -15,6 +15,7 @@ d'après ces passages que l'on code (phase 2), jamais d'après le résumé gén�
 
     python3 eveil/librarybrain/interroger.py --passe P0
     python3 eveil/librarybrain/interroger.py --passe P1 --questions 1-18
+    python3 eveil/librarybrain/interroger.py --passe P0b      # contrôle après redémarrage, avant P1
 
 Sorties LOCALES, jamais poussées (extraits d'ouvrages sous droits, dépôt public) :
 `resultats/reponses.jsonl` (une ligne par question × passe ; la dernière fait foi) et
@@ -290,7 +291,9 @@ def recalculer_citations(sortie: Path, passe: str, conn: sqlite3.Connection) -> 
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    p.add_argument("--passe", required=True, choices=["P0", "P1"])
+    p.add_argument("--passe", required=True, choices=["P0", "P0b", "P1"],
+                   help="P0 : bibliothèque telle quelle ; P0b : idem après redémarrage du serveur "
+                        "(contrôle de l'effet du code, écart déclaré) ; P1 : + PDF de sources.json")
     p.add_argument("--questions", help="sélection, ex. « 1-18 » ou « 3,19-21 » (défaut : toutes)")
     p.add_argument("--base", default="http://127.0.0.1:8765")
     p.add_argument("--config", type=Path, default=LB_CONFIG, help="config.yaml de LibraryBrain")

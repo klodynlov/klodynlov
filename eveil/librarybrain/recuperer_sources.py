@@ -21,6 +21,7 @@ Stdlib uniquement.
 from __future__ import annotations
 
 import argparse
+import http.client
 import json
 import shutil
 import sys
@@ -67,7 +68,9 @@ def run(dest: Path, manifest: dict, fetch=fetch_pdf, pause: float = 1.0) -> dict
         try:
             target.write_bytes(fetch(src["url"]))
             report["ok"].append(src)
-        except (urllib.error.URLError, ValueError, TimeoutError, OSError) as exc:
+        # http.client.HTTPException : transfert tronqué (IncompleteRead) sur un gros PDF — un échec
+        # isolé ne doit jamais interrompre le lot.
+        except (urllib.error.URLError, http.client.HTTPException, ValueError, TimeoutError, OSError) as exc:
             report["echec"].append({**src, "erreur": str(exc)})
         time.sleep(pause)
     return report
