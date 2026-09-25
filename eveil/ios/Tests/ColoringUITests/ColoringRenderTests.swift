@@ -105,14 +105,29 @@ final class ColoringRenderTests: XCTestCase {
         }
     }
 
-    func testPagePickerShowsEveryPageAtOnce() {
+    func testPagePickerShowsEveryAlbumAtOnce() {
+        // Toutes les pages d'un album visibles d'un coup, sans défiler, sur chaque iPad ; la rangée
+        // des albums tient en largeur, avec des boutons assez grands pour un doigt.
         for size in Self.iPadSizes {
             let width = min(size.width - 40, 1100) - 2 * GridPlan.padding
-            let height = size.height - 40 - 2 * GridPlan.padding - GridPlan.titleHeight - 18
-            let plan = GridPlan(count: ColoringPages.all.count, width: width, height: height)
-            XCTAssertTrue(plan.fits, "\(size) : il faudrait défiler")
-            XCTAssertGreaterThanOrEqual(plan.thumb, 140, "\(size) : vignettes de \(plan.thumb) pt")
-            XCTAssertGreaterThanOrEqual(plan.columns * plan.rows, ColoringPages.all.count)
+            let height = GridPlan.gridHeight(panel: size.height - 40, albums: true)
+            for album in ColoringPages.albums {
+                let plan = GridPlan(count: album.pages.count, width: width, height: height)
+                XCTAssertTrue(plan.fits, "\(size) \(album.id) : il faudrait défiler")
+                XCTAssertGreaterThanOrEqual(plan.thumb, 140, "\(size) \(album.id) : vignettes de \(plan.thumb) pt")
+                XCTAssertGreaterThanOrEqual(plan.columns * plan.rows, album.pages.count)
+            }
+            XCTAssertGreaterThanOrEqual(AlbumBar.buttonWidth(count: ColoringPages.albums.count, width: width), 76,
+                                        "\(size) : boutons d'album trop étroits")
+        }
+    }
+
+    func testPagePickerGroupsFollowTheAlbums() {
+        let groups = PageGroup.groups(for: ColoringPages.all)
+        XCTAssertEqual(groups.count, ColoringPages.albums.count, "aucune page hors album")
+        XCTAssertEqual(groups.flatMap(\.pages).sorted(), Array(ColoringPages.all.indices))
+        for (k, album) in ColoringPages.albums.enumerated() {
+            XCTAssertEqual(groups[k].pages.map { ColoringPages.all[$0].id }, album.pages.map(\.id))
         }
     }
 }

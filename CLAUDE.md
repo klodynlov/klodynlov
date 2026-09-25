@@ -223,6 +223,19 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     aucun fichier son, sonie égalisée) ; **tout se tait pendant le mot modèle et l'écoute** ;
   - coloriage : **15 pages au trait, chaque zone fermée par des traits = une zone** (carte des zones
     1024² : remplir + pinceau-pochoir par zone, traits nets par-dessus, choix des dessins) ;
+    **puis 70 pages (session cloud, 25/09/2026, demande « beaucoup d'images, toutes celles du petit
+    train et plus, bien tracées »)** : +55 pages **dessinées en Python** dans `eveil/outils/coloriages/`
+    (`pages_*.py` par album ; `traits.py` = même algorithme que `LineClipper` → traits visibles ;
+    `zones.py` = carte des zones simulée comme `ZoneMap` → témoins/détails ; `analyse.py` = contrôles :
+    toute zone < 0,3 % doit appartenir à un élément `detail`, sinon « miette », robustesse ± 1 px de
+    trait et décalage sous-pixel, encres jamais recouvertes, contours sans croisement) → génère
+    `ColoringUI/PagesDessins.swift` (`s.line(G.data(…))`, `s.ink`, `s.expectAll` ; lecteur
+    `SketchPathData.swift`). **Un dessin par mot des 45** (même sujet que `WordArt`), éléments du
+    train, et d'autres. **7 albums** (`ColoringAlbums.swift`, 12 pages max : tout visible d'un coup
+    même en 11" paysage) ; `PagePicker` = rangée d'albums + grille de l'album. `ColoringPages.all` =
+    albums aplatis. Python : 25 tests verts, `generer --check` ; **Swift NON compilé ici** (tree-sitter
+    OK) → `swift test` à relancer sur le Mac (tests d'albums ajoutés, `testPagePickerShowsEveryAlbumAtOnce`).
+    Planche : `docs/ui/eveil-app/7-coloriages.png`. Doublons évités : les 15 sujets Mac gardés tels quels ;
   - piège SwiftUI vu deux fois : une boucle `repeatForever` lancée dans `onAppear` « capture » la
     transition ou l'animation d'un parent (train qui clignote, qui tremble) → **tout mouvement est piloté
     par l'horloge** (`TimelineView`), train compris.
@@ -280,7 +293,9 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : Suite Éveil — **app sur l'iPad réel + second tour** (25/09/2026 : micro
+_Dernière mise à jour mémoire : Suite Éveil — **atelier de coloriage : 70 pages en 7 albums** (25/09/2026,
+session cloud : 55 pages dessinées et vérifiées en Python dans `eveil/outils/coloriages/`, un dessin par mot
+du petit train ; Swift à tester sur le Mac). Avant : **app sur l'iPad réel + second tour** (25/09/2026 : micro
 « essai par un adulte » et test du micro, voyage de monde en monde, 45 mots dessinés, bestioles et
 bruitages calculés, coloriage à zones sur 15 pages). Avant : **ébauche jouable** (accueil, petit train,
 mode démo, coloriage ; mascotte provisoire chat chef de gare). Avant :

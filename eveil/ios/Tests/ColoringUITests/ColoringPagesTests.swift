@@ -16,7 +16,7 @@ import XCTest
 final class ColoringPagesTests: XCTestCase {
     func testPagesHaveUniqueIdsAndTitles() {
         let pages = ColoringPages.all
-        XCTAssertGreaterThanOrEqual(pages.count, 12)
+        XCTAssertGreaterThanOrEqual(pages.count, 60)
         XCTAssertEqual(Set(pages.map(\.id)).count, pages.count)
         XCTAssertEqual(Set(pages.map(\.titleFR)).count, pages.count)
         for page in pages {
@@ -24,6 +24,23 @@ final class ColoringPagesTests: XCTestCase {
             XCTAssertFalse(page.title(locale: "en-US").isEmpty)
             XCTAssertNotEqual(page.title(locale: "fr-FR"), page.title(locale: "en-US"), page.id)
         }
+    }
+
+    func testEveryPageIsInExactlyOneAlbum() {
+        var seen: [String: String] = [:]
+        for album in ColoringPages.albums {
+            XCTAssertFalse(album.pages.isEmpty, album.id)
+            XCTAssertLessThanOrEqual(album.pages.count, ColoringPages.albumCapacity, "\(album.id) : trop de pages")
+            XCTAssertNotEqual(album.title(locale: "fr-FR"), album.title(locale: "en-US"), album.id)
+            for page in album.pages {
+                if let other = seen[page.id] { XCTFail("\(page.id) est dans \(other) et \(album.id)") }
+                seen[page.id] = album.id
+            }
+        }
+        XCTAssertEqual(seen.count, ColoringPages.all.count)
+        // Chaque album des pages générées existe (sinon ses pages seraient perdues).
+        let ids = Set(ColoringPages.albums.map(\.id))
+        for key in DrawnPages.byAlbum.keys { XCTAssertTrue(ids.contains(key), "album inconnu : \(key)") }
     }
 
     func testEveryDrawnShapeIsItsOwnZone() {

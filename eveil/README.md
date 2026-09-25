@@ -9,9 +9,9 @@ Tout est calculé **sur l'appareil**, sans modèle opaque, avec une règle d'or 
 | Dossier | Contenu | Statut |
 |---|---|---|
 | [`reference/wordend/`](reference/wordend/) | Détecteur de référence **Python stdlib** : DSP, détecteur, flux temps réel, pédagogie, lexiques, **banc de validation**, vecteurs de parité, démo | ✅ 69 tests verts |
-| [`ios/`](ios/) | **Swift** : paquet autonome [`WordEndCore`](ios/WordEndCore/) (portage ligne à ligne, Swift pur, testable seul) + paquet app `WordEndAudio` (AVFoundation) / `TrainPracticeUI` (SwiftUI/SwiftData) / `EveilDesign` (mondes, dessins des mots, bestioles, mascotte) / `EveilSounds` (bruitages calculés) / `ColoringUI` (atelier) + **projet Xcode** [`App/EveilTrain.xcodeproj`](ios/App/) | ✅ **app jouable, installée sur un iPad réel** ([captures](#lapp-ipad--ébauche-jouable-essayée-sur-un-vrai-ipad-25092026)) · cœur 19/19 · app 98 tests |
+| [`ios/`](ios/) | **Swift** : paquet autonome [`WordEndCore`](ios/WordEndCore/) (portage ligne à ligne, Swift pur, testable seul) + paquet app `WordEndAudio` (AVFoundation) / `TrainPracticeUI` (SwiftUI/SwiftData) / `EveilDesign` (mondes, dessins des mots, bestioles, mascotte) / `EveilSounds` (bruitages calculés) / `ColoringUI` (atelier) + **projet Xcode** [`App/EveilTrain.xcodeproj`](ios/App/) | ✅ **app jouable, installée sur un iPad réel** ([captures](#lapp-ipad--ébauche-jouable-essayée-sur-un-vrai-ipad-25092026)) · cœur 19/19 · app 98 tests (+ 2 pour les albums de l'atelier : à relancer sur le Mac) |
 | [`lexique/`](lexique/) | Mots cibles **FR** et **EN** conçus séparément (propositions à valider par un panel) | 🟡 à valider |
-| [`outils/`](outils/) | Garde-fou « rien ne quitte l'iPad » (analyse statique du code Swift) | ✅ 7 tests, 0 violation |
+| [`outils/`](outils/) | Garde-fou « rien ne quitte l'iPad » (analyse statique du code Swift) + [`coloriages/`](outils/coloriages/) : les pages de l'atelier **dessinées en Python** (traits visibles, carte des zones simulée, témoins) → [`PagesDessins.swift`](ios/Sources/ColoringUI/PagesDessins.swift) | ✅ 25 tests, 0 violation, 55 pages générées |
 | [`librarybrain/`](librarybrain/) | Relais vers LibraryBrain : sources en accès libre, veille arXiv, questions à poser, [protocole de comparaison](librarybrain/COMPARAISON.md) avec la passe cloud, [`interroger.py`](librarybrain/interroger.py) (les 33 questions, scriptées), [`mesurer.py`](librarybrain/mesurer.py) — comparaison faite : [rapport](../docs/EVEIL-SOURCES-LIBRARYBRAIN.md) | ✅ 20 tests |
 
 ---
@@ -88,11 +88,22 @@ iPadOS 27) l'après-midi. Ses retours ont fait le second tour :
 - **Bruitages** ([`EveilSounds`](ios/Sources/EveilSounds/)) : 53 sons **calculés sur l'appareil**
   (aucun fichier son, rien d'enregistré), même niveau perçu, jamais pendant l'écoute. Provisoires :
   jugés à la mesure, à l'oreille sur l'iPad ensuite.
-- **Atelier de coloriage** (app 2, « mode écran ») : 15 pages au trait. **Chaque zone fermée par
-  des traits se colorie à part**, comme sur papier (carte des zones 1024², calculée à l'ouverture) ;
-  les couleurs passent sous les traits, qui restent nets. Toucher = remplir ; le pinceau reste dans
-  la zone où il a commencé (pochoir) ; annuler, tout effacer, choisir un dessin parmi les vignettes.
-  Rien n'est enregistré ni envoyé.
+- **Atelier de coloriage** (app 2, « mode écran ») : **70 pages au trait**, rangées en **7 albums**
+  (le petit train, les animaux, le jardin, à la maison, miam !, en route !, la fête). **Chaque zone
+  fermée par des traits se colorie à part**, comme sur papier (carte des zones 1024², calculée à
+  l'ouverture) ; les couleurs passent sous les traits, qui restent nets. Toucher = remplir ; le
+  pinceau reste dans la zone où il a commencé (pochoir) ; annuler, tout effacer, choisir un dessin :
+  les albums en haut (un grand bouton-image chacun), **toutes** les pages de l'album d'un coup, sans
+  défiler (12 au plus par album). Rien n'est enregistré ni envoyé.
+  - **Un dessin pour chacun des 45 mots du petit train** (le même sujet que son image dans le jeu :
+    la pêche est le fruit, la brosse à dents a son dentifrice, « wash » se lave les mains…), plus
+    les éléments du train et d'autres pages. 15 pages sont écrites à la main en Swift ; **55 sont
+    dessinées avec [`outils/coloriages/`](outils/coloriages/)** : formes empilées du fond vers
+    l'avant, traits visibles calculés avec le même algorithme que l'app, carte des zones simulée
+    avec ses règles (rastérisation, étiquetage, miettes). Chaque zone reçoit un point-témoin ;
+    chaque petite zone doit être un détail voulu (œil, bouton), sinon c'est une miette de dessin, à
+    corriger ; et tout doit tenir si le trait est 1 px plus fin, plus épais ou décalé.
+    [Planche des 55 pages](../docs/ui/eveil-app/7-coloriages.png).
 - **Mode démo** (espace des grands › Présentation, ou argument de lancement `-eveil.demoMode 1`) :
   micro fermé ; le présentateur fait « entendre » au train un mot entier, un mot sans la fin ou une
   syllabe en moins — une pseudo-parole de `Synth` qui passe par le **vrai** détecteur — puis
@@ -103,7 +114,9 @@ iPadOS 27) l'après-midi. Ses retours ont fait le second tour :
 
 ```bash
 open eveil/ios/App/EveilTrain.xcodeproj           # schéma EveilTrain, un iPad du simulateur, ▶︎
-cd eveil/ios && swift test                         # 98 tests : démo, écoute, sons, dessins, coloriage
+cd eveil/ios && swift test                         # 100 tests : démo, écoute, sons, dessins, coloriage
+cd eveil/outils && python3 -m coloriages.generer --check        # les 55 pages générées sont à jour
+python3 -m coloriages.generer --apercu /tmp/coloriages          # planche + traits/zones de chaque page
 ```
 
 Sur un **iPad réel** (mode développeur activé sur la tablette, équipe de signature Apple

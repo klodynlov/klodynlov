@@ -46,9 +46,9 @@ public struct ColoringPage: Identifiable, Sendable {
 }
 
 public enum ColoringPages {
-    public static let all: [ColoringPage] = [
-        train, cat, house, fly, cow, hive, fish, butterfly, flowers, iceCream, boat, rocket, snail, dogHouse, bell,
-    ]
+    /// Toutes les pages, album par album (cf. ColoringAlbums.swift) : les 15 écrites à la main
+    /// (PagesClassics/Animals/Things.swift) et les pages générées (PagesDessins.swift).
+    public static let all: [ColoringPage] = albums.flatMap(\.pages)
 }
 
 // MARK: Éléments de décor partagés
