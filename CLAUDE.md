@@ -94,6 +94,80 @@ croisé, seulement une continuité de récit et de discipline.
 - Prérequis matériel côté utilisateur : programme **MakeCode + extension Bluetooth**
   (MicroPython ne fait pas de BLE GATT) ; « No Pairing Required » recommandé.
 
+### 🚧 KaribTruck — app iPad de gestion pour food truck (HACCP + caisse)
+**Statut : cadrage livré + M0 codé (cœur métier Swift testé), branche
+`claude/foodtruck-ipad-app-rnq12x`.** Décisions utilisateur : **pas de caisse** (achat),
+**natif SwiftUI**, feu vert M0 avec périmètre ajusté (vente à emporter ; 1 vitrine chaude
++ 1 frigo ; **+ huile de friture, + planning marché**).
+Besoin utilisateur réel : food truck caribéen (`karibtruck.fr`, ~6 mois), faiblesse HACCP /
+contrôle d'hygiène, veut une app iPad « pour tout gérer », exigence pro (sécurité, tests,
+audit, harnais). A entendu parler d'une obligation « caisse au 1er septembre ».
+
+- 📄 `docs/KARIBTRUCK.md` — analyse sourcée (août 2026) + reco d'architecture **hybride**.
+- 🔑 Tranché juridiquement (le piège) : **la caisse ne se code pas soi-même** (domaine
+  réglementé, 4 conditions ISCA, responsabilité éditeur) → **on achète** un logiciel conforme
+  avec attestation/certificat. **La double bascule** LF 2025 (art. 43, supprime
+  l'auto-attestation) → LF 2026 (art. 125, applicable 21 fév. 2026, **la rétablit**) **annule
+  l'échéance couperet du 1er sept. 2026**. **Dispense** si **franchise en base de TVA**
+  (micro-entreprise) → **bloquant n°1 : faire confirmer le régime TVA par le comptable**.
+- 🟢 Là où l'app maison gagne : **HACCP / PMS** (aucune certif requise) — relevés de
+  température, traçabilité, DLC, nettoyage, non-conformités, export « dossier de contrôle ».
+- Le « pro » = réutilise l'ADN du dépôt : **journal append-only chaîné SHA-256** (déjà dans
+  edgesense/microbit) pour des enregistrements inviolables/non rétro-datables, cœur métier
+  stdlib testé, CI, local-first, allowlist. Piste techno : **PWA local-first** (reco) vs
+  natif SwiftUI.
+- MVP **M0** proposé (relevés T° + checklists + traçabilité réception + incidents + export +
+  socle testé) → M1 exploitation → M2 intégration caisse → M3 terrain → M4 IA locale on-device.
+- 💻 `karibtruck/` — **M0 codé** : `KaribTruckCore` (Swift pur, **sans dépendance**) =
+  `SHA256.swift` (FIPS 180-4 en Swift pur), `Journal.swift` (**append-only chaîné SHA-256**,
+  tamper-evident, sérialisation **préfixée en longueur**), `Thresholds.swift` (règle
+  **max=froid / min=chaud** — le piège vitrine chaude/frigo), `Enclosures.swift` (préréglages
+  frigo ≤4 °C + vitrine ≥63 °C), `KaribTruck.swift` (façade : 6 actions → relevés, checklists,
+  réception, huile friture, non-conformités, planning marché), `Export.swift` (CSV + résumé
+  « dossier de contrôle »). Tests XCTest (SHA-256, journal, seuils, **altération**, export).
+  `App/` = échafaudage **SwiftUI** (à compiler sur Mac/Xcode). `tools/oracle.py` = implémentation
+  de **référence Python** (vecteurs figés, self-test 5/5 ✓) + `check_sync.py` (garde-fou
+  anti-dérive ✓). CI `.github/workflows/karibtruck.yml` (conteneur `swift:6` : `swift test`
+  + oracle Python).
+- ⚠️ **Non vérifiable ici** : cet env (Linux, sans toolchain Swift ni macOS) **ne compile pas
+  Swift** — `download.swift.org` est bloqué par le proxy. Preuve d'exécution du cœur = **la CI**
+  (`swift:6`) + **l'oracle Python** (lancé ici : oracle 5/5 ✓, check_sync 7 vecteurs ✓). L'UI
+  SwiftUI se compile côté Mac.
+- 🍏 **Apple Developer** : compte payant (99 €/an) souscrit par l'utilisateur. **Team ID =
+  `GM9K95VYY4`** (Claude Volny) — figé dans `karibtruck/App/project.yml`
+  (`DEVELOPMENT_TEAM`) pour signature auto. Projet Xcode généré via **XcodeGen**
+  (`App/project.yml` + `App/generate.sh`, bundle id `fr.karibtruck.haccp`). Non secret
+  (apparaît dans chaque app) → à réutiliser tel quel pour les futures sessions.
+- ✅ **2026-09-25 (session locale, Mac)** : 1re compilation réelle → cœur 28/28 puis **39/39**
+  (champs optionnels : points manquants de checklist, empreinte photo, % composés polaires
+  ≤ 25 %, lectures par période ; clés ajoutées seulement si présentes → hash fixture/oracle
+  inchangé). **App complète** : accueil terrain (état du jour + tuiles), pavé numérique géant,
+  action corrective en 1 tap, checklists, réception + photo, huile, incident, planning,
+  historique, **dossier de contrôle PDF A4** + CSV par période. Correctif : journal illisible
+  au lancement = mis de côté, plus jamais écrasé. Testé au simulateur, **installé sur l'iPad
+  réel** (profil joker de l'équipe, pas d'App ID créé). Démo = simulateur seulement.
+- ✅ **2026-09-25 — traçabilité viande** (choix utilisateur : suivi **par fournée** ; volaille,
+  porc, bœuf, mouton, cabri) : `Meat.swift` (cœur, 14 tests → **53/53**) + `MeatView.swift`
+  (réception en 4 étapes avec reprise du dernier lot de l'espèce, fournée qui re-sélectionne
+  les lots d'une préparation connue, lots en cours, rappel avec confirmation, affiche origine
+  plein écran + PDF). Sections viande dans le dossier PDF. **UX** (demande utilisateur
+  « intuitif et ergo ») : barre d'enregistrement fixe partout, accueil « Au quotidien / Au
+  besoin », champs lisibles dans les cartes. Règles sourcées dans `karibtruck/README.md`.
+- ✅ **2026-09-25 — logo de marque** : logo réel « Karib Truck — Saveurs Créoles » (fourni en
+  photo par l'utilisateur) **redessiné en vectoriel propre** (fond rose, soleil couchant,
+  palmiers/cocotiers à frondes retombantes, case créole, vagues, lettrage brush
+  **Kaushan Script** via `npm @fontsource/kaushan-script`). Rendu SVG→PNG par **Chromium
+  headless** (`/opt/pw-browsers`, le seul chemin ici : pas de rsvg/cairo/PIL, et
+  github/jsdelivr bloqués — npm/pypi OK). `AppIcon` = version sans sous-titre ; asset
+  `KaribLogo` (`Image("KaribLogo")`) = logo complet pour l'accueil. Sources dans
+  `karibtruck/App/icon/` (icon.svg, logo-full.svg, README). Itérations validées : frondes
+  « cocotier » (pas cannabis), « Saveurs Créoles » descendu. **Logo complet affiché en haut de
+  l'accueil** (`HomeView` : `Image("KaribLogo")`, bandeau hauteur 150, coins arrondis ; titre
+  de navigation passé en `.inline` pour éviter la redondance).
+- **Décision en attente (pour la suite)** : régime TVA (bloquant caisse, indépendant du M0) ·
+  Face ID + sauvegarde chiffrée · réglages éditables (enceintes, limites, checklists) ·
+  écriture rectificative · valider les valeurs de départ avec le PMS.
+
 ### 🎵 KLOD Live Brain / KLOD GrooveDNA — coprocesseur musical temps réel
 **Statut : branche `claude/klod-live-brain-groovedna-hmm1nu`, basée sur `main`.**
 Nouvel axe (musique temps réel + agentique). Indépendant des autres modules :
@@ -167,7 +241,7 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : nouvel axe **KLOD Live Brain / GrooveDNA** sur la branche
+_Dernière mise à jour mémoire : **KaribTruck** (branche `claude/foodtruck-ipad-app-rnq12x`, PR #14) — app iPad HACCP complète + traçabilité viande par fournée, cœur Swift 53/53, installée sur iPad réel. Avant : nouvel axe **KLOD Live Brain / GrooveDNA** sur la branche
 `claude/klod-live-brain-groovedna-hmm1nu` — moteur de *feel* rythmique (capture/transfert/
 morphing, format versionné `KLOD_GROOVE_V1`), **couche musical prouvée en Python stdlib pur
 (35 tests)** + audit Phase 0 (`TECHNICAL_REALITY.md`). Couche réflexe Teensy = FAISABLE, à
