@@ -23,9 +23,13 @@ public enum InspectionExport {
     }
 
     /// Journal complet en CSV, une ligne par entrée, en-tête inclus.
-    public static func csv(_ journal: Journal) -> String {
+    public static func csv(_ journal: Journal) -> String { csv(journal.entries) }
+
+    /// CSV d'un extrait du journal (ex. une période). Chaque ligne garde son
+    /// `previous_hash` : l'extrait reste vérifiable contre le journal complet.
+    public static func csv(_ entries: [JournalEntry]) -> String {
         var lines = ["index,timestamp,kind,status,details,previous_hash,hash"]
-        for e in journal.entries {
+        for e in entries {
             let row = [
                 "\(e.index)",
                 csvField(e.timestamp),
