@@ -35,6 +35,27 @@
     {"id": "fr.perruche", "text": "perruche", "ipa": "pe.ʁyʃ", "level": 2, "wagons": ["pe", "ru"], "caboose": "ch", "nuclei": 2, "coda": "S"},
     {"id": "fr.saucisse", "text": "saucisse", "ipa": "so.sis", "level": 2, "wagons": ["sau", "ci"], "caboose": "sse", "nuclei": 2, "coda": "s"},
     {"id": "fr.trousse", "text": "trousse", "ipa": "tʁus", "level": 3, "wagons": ["trou"], "caboose": "sse", "nuclei": 1, "coda": "s",
-     "contrast": {"text": "trou", "ipa": "tʁu", "picturable": true}}
+     "contrast": {"text": "trou", "ipa": "tʁu", "picturable": true}},
+    {"id": "fr.mousse", "text": "mousse", "ipa": "mus", "level": 1, "wagons": ["mou"], "caboose": "sse", "nuclei": 1, "coda": "s",
+     "contrast": {"text": "mou", "ipa": "mu", "picturable": false}},
+    {"id": "fr.buche", "text": "bûche", "ipa": "byʃ", "level": 1, "wagons": ["bû"], "caboose": "ch", "nuclei": 1, "coda": "S"},
+    {"id": "fr.tache", "text": "tache", "ipa": "taʃ", "level": 1, "wagons": ["ta"], "caboose": "ch", "nuclei": 1, "coda": "S",
+     "contrast": {"text": "tas", "ipa": "ta", "picturable": true}},
+    {"id": "fr.peche", "text": "pêche", "ipa": "pɛʃ", "level": 1, "wagons": ["pê"], "caboose": "ch", "nuclei": 1, "coda": "S",
+     "notes": "Le fruit (pas la pêche à la ligne) : l'image doit lever l'ambiguïté."},
+    {"id": "fr.os", "text": "os", "ipa": "ɔs", "level": 1, "wagons": ["o"], "caboose": "s", "nuclei": 1, "coda": "s",
+     "notes": "Sans attaque. Singulier /ɔs/ (le pluriel « des os » se dit /o/) : l'image montre UN os."},
+    {"id": "fr.police", "text": "police", "ipa": "pɔ.lis", "level": 2, "wagons": ["po", "li"], "caboose": "ce", "nuclei": 2, "coda": "s",
+     "contrast": {"text": "poli", "ipa": "pɔ.li", "picturable": false}},
+    {"id": "fr.caniche", "text": "caniche", "ipa": "ka.niʃ", "level": 2, "wagons": ["ca", "ni"], "caboose": "ch", "nuclei": 2, "coda": "S"},
+    {"id": "fr.limace", "text": "limace", "ipa": "li.mas", "level": 2, "wagons": ["li", "ma"], "caboose": "ce", "nuclei": 2, "coda": "s"},
+    {"id": "fr.carrosse", "text": "carrosse", "ipa": "ka.ʁɔs", "level": 2, "wagons": ["ca", "rro"], "caboose": "sse", "nuclei": 2, "coda": "s"},
+    {"id": "fr.cactus", "text": "cactus", "ipa": "kak.tys", "level": 2, "wagons": ["cac", "tu"], "caboose": "s", "nuclei": 2, "coda": "s"},
+    {"id": "fr.cloche", "text": "cloche", "ipa": "klɔʃ", "level": 3, "wagons": ["clo"], "caboose": "ch", "nuclei": 1, "coda": "S"},
+    {"id": "fr.glace", "text": "glace", "ipa": "ɡlas", "level": 3, "wagons": ["gla"], "caboose": "ce", "nuclei": 1, "coda": "s"},
+    {"id": "fr.fleche", "text": "flèche", "ipa": "flɛʃ", "level": 3, "wagons": ["flè"], "caboose": "ch", "nuclei": 1, "coda": "S"},
+    {"id": "fr.brosse", "text": "brosse", "ipa": "bʁɔs", "level": 3, "wagons": ["bro"], "caboose": "sse", "nuclei": 1, "coda": "s"},
+    {"id": "fr.autruche", "text": "autruche", "ipa": "o.tʁyʃ", "level": 3, "wagons": ["au", "tru"], "caboose": "ch", "nuclei": 2, "coda": "S"},
+    {"id": "fr.princesse", "text": "princesse", "ipa": "pʁɛ̃.sɛs", "level": 3, "wagons": ["prin", "ce"], "caboose": "sse", "nuclei": 2, "coda": "s"}
   ]
 }

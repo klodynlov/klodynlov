@@ -30,6 +30,12 @@
     {"id": "en.bus", "text": "bus", "ipa": "bʌs", "level": 1, "wagons": ["bu"], "caboose": "s", "nuclei": 1, "coda": "s"},
     {"id": "en.radish", "text": "radish", "ipa": "ˈɹæ.dɪʃ", "level": 2, "wagons": ["ra", "di"], "caboose": "sh", "nuclei": 2, "coda": "S"},
     {"id": "en.tennis", "text": "tennis", "ipa": "ˈtɛ.nɪs", "level": 2, "wagons": ["te", "nni"], "caboose": "s", "nuclei": 2, "coda": "s"},
-    {"id": "en.brush", "text": "brush", "ipa": "bɹʌʃ", "level": 3, "wagons": ["bru"], "caboose": "sh", "nuclei": 1, "coda": "S"}
+    {"id": "en.brush", "text": "brush", "ipa": "bɹʌʃ", "level": 3, "wagons": ["bru"], "caboose": "sh", "nuclei": 1, "coda": "S"},
+    {"id": "en.mouse", "text": "mouse", "ipa": "maʊs", "level": 1, "wagons": ["mou"], "caboose": "se", "nuclei": 1, "coda": "s"},
+    {"id": "en.juice", "text": "juice", "ipa": "dʒus", "level": 1, "wagons": ["jui"], "caboose": "ce", "nuclei": 1, "coda": "s"},
+    {"id": "en.house", "text": "house", "ipa": "haʊs", "level": 1, "wagons": ["hou"], "caboose": "se", "nuclei": 1, "coda": "s"},
+    {"id": "en.circus", "text": "circus", "ipa": "ˈsɝ.kəs", "level": 2, "wagons": ["cir", "cu"], "caboose": "s", "nuclei": 2, "coda": "s",
+     "notes": "Unstressed second syllable: children often reduce it — a good level-2 target, not a probe word."},
+    {"id": "en.splash", "text": "splash", "ipa": "splæʃ", "level": 3, "wagons": ["spla"], "caboose": "sh", "nuclei": 1, "coda": "S"}
   ]
 }
