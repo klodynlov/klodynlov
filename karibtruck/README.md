@@ -13,18 +13,19 @@ rétro-datable, la preuve qu'on présente en contrôle DDPP.
 
 | Module | Statut |
 |---|---|
-| 🌡️ Relevés de température (frigo `≤ 4 °C`, vitrine chaude `≥ 63 °C`, alerte hors-plage) | ✅ cœur + UI |
-| ✅ Checklists ouverture / fermeture / nettoyage | ✅ cœur |
-| 📦 Traçabilité réception (fournisseur, lot, DLC, produit) | ✅ cœur |
-| ⚠️ Non-conformités + action corrective | ✅ cœur |
-| 🍟 Huile de friture (contrôle / changement) | ✅ cœur |
-| 🗺️ Planning marché (date, emplacement, créneau) | ✅ cœur |
-| 📄 Export « dossier de contrôle » (CSV + résumé Markdown) | ✅ cœur + partage UI |
+| 🏠 Accueil terrain : état du jour (relevés, checklists, alertes) + tuiles | ✅ UI |
+| 🌡️ Relevés de température (frigo `≤ 4 °C`, vitrine chaude `≥ 63 °C`), pavé numérique géant, action corrective en 1 tap si alerte | ✅ cœur + UI |
+| ✅ Checklists ouverture / fermeture / nettoyage — points non faits scellés, signature en alerte | ✅ cœur + UI |
+| 📦 Traçabilité réception (produit, fournisseur, lot, DLC) + **photo d'étiquette liée par empreinte SHA-256** | ✅ cœur + UI |
+| ⚠️ Non-conformités + action corrective (modèles en un tap) | ✅ cœur + UI |
+| 🍟 Huile de friture (contrôle / changement, % composés polaires `≤ 25 %`) | ✅ cœur + UI |
+| 🗺️ Planning marché (date, emplacement, créneau) | ✅ cœur + UI |
+| 🕘 Historique filtrable + détail scellé d'une entrée (contrôle d'intégrité de la photo) | ✅ UI |
+| 📄 Dossier de contrôle par période : **PDF A4** (alertes d'abord, une table par registre, empreintes) + CSV | ✅ cœur + UI |
 | 🔒 Journal inviolable SHA-256 + vérification d'intégrité | ✅ cœur |
 
-Les modules avec UI complète au-delà des relevés (checklists, réception, huile,
-non-conformités, planning) suivent le même patron que `ContentView` : ils sont
-prêts côté cœur, à brancher sur des formulaires SwiftUI.
+Les valeurs de départ (limites, points de checklist, modèles d'incident) sont à
+ajuster avec le PMS du camion.
 
 ## Structure
 
@@ -36,7 +37,8 @@ karibtruck/
 │   ├── Journal.swift             #   journal append-only chaîné, tamper-evident
 │   ├── Thresholds.swift          #   règle de seuil (max=froid / min=chaud)
 │   ├── Enclosures.swift          #   enceintes + préréglages M0
-│   ├── KaribTruck.swift          #   façade métier (les 6 actions)
+│   ├── Checklists.swift          #   modèles de checklists (préréglages M0)
+│   ├── KaribTruck.swift          #   façade métier (les 6 actions + lectures par période)
 │   └── Export.swift              #   export dossier de contrôle (CSV + résumé)
 ├── Tests/KaribTruckCoreTests/    # XCTest (SHA-256, journal, seuils, altération, export)
 ├── tools/
@@ -72,7 +74,5 @@ python3 tools/oracle.py       # self-test 5/5 + génère les vecteurs
 python3 tools/check_sync.py   # vérifie que les tests Swift == oracle
 ```
 
-> Note : l'environnement de développement (Linux, sans toolchain Swift ni
-> macOS/Xcode) ne compile pas Swift. La preuve d'exécution du cœur passe donc par
-> **la CI** (`swift:6`) et par **l'oracle Python** (lancé en local), qui figent
-> indépendamment les mêmes empreintes. L'UI SwiftUI se compile sur Mac.
+> Vérifié sur Mac (Xcode 27, Swift 6.4) : `swift test` 39/39, oracle + garde-fou
+> OK, app compilée sans avertissement, testée au simulateur et installée sur iPad.

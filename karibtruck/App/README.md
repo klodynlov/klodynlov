@@ -9,9 +9,17 @@ pas sur Linux). Le cœur métier `KaribTruckCore` est, lui, testé en CI.
 - `generate.sh` — script d'aide (installe XcodeGen au besoin, puis génère).
 - `KaribTruck/KaribTruckApp.swift` — point d'entrée (`@main`).
 - `KaribTruck/Store.swift` — liaison UI ↔ cœur : horloge (`Date()`), persistance
-  JSON chiffrée au repos (`.completeFileProtection`), les 6 actions métier.
-- `KaribTruck/ContentView.swift` — écran de saisie d'un relevé de température +
-  bandeau d'intégrité + historique + export (`ShareLink`).
+  JSON chiffrée au repos (`.completeFileProtection`), photos liées par empreinte.
+  Un journal illisible au lancement est **mis de côté**, jamais écrasé.
+- `KaribTruck/HomeView.swift` — accueil : état du jour + tuiles.
+- `KaribTruck/TemperatureView.swift` — relevé au pavé numérique géant.
+- `KaribTruck/ChecklistsView.swift`, `ReceptionView.swift`, `OperationsViews.swift`
+  (huile, incident, planning), `HistoryView.swift`.
+- `KaribTruck/InspectionView.swift` + `InspectionPDF.swift` — dossier de contrôle PDF/CSV.
+- `KaribTruck/Theme.swift` — charte terrain (gros boutons, puces), libellés, formats.
+
+Démo au **simulateur uniquement** (jamais compilée pour l'iPad réel) :
+lancer avec l'argument `-karibtruck.seedDemo YES` sur un journal vide.
 
 ## Option A — Génération automatique (recommandé)
 
@@ -55,11 +63,8 @@ Le bundle identifier par défaut est **`fr.karibtruck.haccp`** (modifiable dans
    `karibtruck/` (celui du `Package.swift`), lier le produit **`KaribTruckCore`**.
 4. Build & Run.
 
-## À suivre (au-delà du M0)
+## À suivre
 
-- Écrans dédiés pour checklists, réception (photo d'étiquette via `PhotosPicker` /
-  caméra), huile de friture, non-conformités, planning marché — chacun appelle une
-  action déjà prête du `Store`.
-- Export **PDF** du dossier de contrôle (mise en page côté app, la donnée vient de
-  `InspectionExport`).
 - Verrouillage Face ID (LocalAuthentication) et sauvegarde chiffrée exportable.
+- Réglages : enceintes, limites, points de checklist éditables (aujourd'hui en code).
+- Écriture rectificative (corriger une saisie sans effacer).

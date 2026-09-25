@@ -136,8 +136,17 @@ audit, harnais). A entendu parler d'une obligation « caisse au 1er septembre »
   (`DEVELOPMENT_TEAM`) pour signature auto. Projet Xcode généré via **XcodeGen**
   (`App/project.yml` + `App/generate.sh`, bundle id `fr.karibtruck.haccp`). Non secret
   (apparaît dans chaque app) → à réutiliser tel quel pour les futures sessions.
+- ✅ **2026-09-25 (session locale, Mac)** : 1re compilation réelle → cœur 28/28 puis **39/39**
+  (champs optionnels : points manquants de checklist, empreinte photo, % composés polaires
+  ≤ 25 %, lectures par période ; clés ajoutées seulement si présentes → hash fixture/oracle
+  inchangé). **App complète** : accueil terrain (état du jour + tuiles), pavé numérique géant,
+  action corrective en 1 tap, checklists, réception + photo, huile, incident, planning,
+  historique, **dossier de contrôle PDF A4** + CSV par période. Correctif : journal illisible
+  au lancement = mis de côté, plus jamais écrasé. Testé au simulateur, **installé sur l'iPad
+  réel** (profil joker de l'équipe, pas d'App ID créé). Démo = simulateur seulement.
 - **Décision en attente (pour la suite)** : régime TVA (bloquant caisse, indépendant du M0) ·
-  brancher les écrans SwiftUI restants · export PDF · Face ID.
+  Face ID + sauvegarde chiffrée · réglages éditables (enceintes, limites, checklists) ·
+  écriture rectificative · valider les valeurs de départ avec le PMS.
 
 ### Autres projets (mentionnés au README, hors de ce dépôt)
 Klody Code AI (agent de code local, projet phare) · klody-ui · LibraryBrain (RAG local) ·

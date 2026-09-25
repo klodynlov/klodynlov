@@ -34,6 +34,7 @@ targets:
       path: KaribTruck/Info.plist   # généré par XcodeGen à partir des propriétés ci-dessous
       properties:
         CFBundleDisplayName: KaribTruck
+        NSCameraUsageDescription: "Photographier l'étiquette d'un produit à la réception (traçabilité HACCP). La photo reste sur l'iPad."
         UILaunchScreen: {}
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
