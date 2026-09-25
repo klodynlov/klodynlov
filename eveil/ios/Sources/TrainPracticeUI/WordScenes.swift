@@ -93,7 +93,7 @@ struct WordScene: Equatable {
         "en.ice": WordScene(sound: .iceClink, critter: .snowflake, count: 5),
         "en.piece": WordScene(sound: .click, critter: .star, count: 4),
         "en.bus": WordScene(sound: .horn, critter: .star, count: 3),
-        "en.radish": WordScene(sound: .crunch, critter: .leaf, count: 4),
+        "en.radish": WordScene(sound: .pop, critter: .leaf, count: 4),          // il saute hors de terre
         "en.tennis": WordScene(sound: .pok, critter: .star, count: 3),
         "en.brush": WordScene(sound: .brushing, critter: .heart, count: 3),
         "en.mouse": WordScene(sound: .squeak, critter: .butterfly, count: 3),
