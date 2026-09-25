@@ -22,7 +22,7 @@ Les étapes 2 et 3 sont indépendantes : si l'une attend une réponse de ma part
 - depuis eveil/reference : python3 -m unittest discover -s wordend -t .  → 69 tests verts
 - depuis eveil/reference : python3 -m wordend.golden --check
 - depuis eveil/reference : python3 ../outils/verifier_confidentialite.py  → 0 violation
-- depuis la racine : python3 -m unittest discover -s eveil/librarybrain  → 6 tests verts
+- depuis la racine : python3 -m unittest discover -s eveil/librarybrain  → 14 tests verts
 Si quelque chose est rouge, arrête-toi et montre-moi.
 
 2. Swift : première vraie compilation
