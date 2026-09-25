@@ -153,9 +153,19 @@ audit, harnais). A entendu parler d'une obligation « caisse au 1er septembre »
   plein écran + PDF). Sections viande dans le dossier PDF. **UX** (demande utilisateur
   « intuitif et ergo ») : barre d'enregistrement fixe partout, accueil « Au quotidien / Au
   besoin », champs lisibles dans les cartes. Règles sourcées dans `karibtruck/README.md`.
+- ✅ **2026-09-25 — logo de marque** : logo réel « Karib Truck — Saveurs Créoles » (fourni en
+  photo par l'utilisateur) **redessiné en vectoriel propre** (fond rose, soleil couchant,
+  palmiers/cocotiers à frondes retombantes, case créole, vagues, lettrage brush
+  **Kaushan Script** via `npm @fontsource/kaushan-script`). Rendu SVG→PNG par **Chromium
+  headless** (`/opt/pw-browsers`, le seul chemin ici : pas de rsvg/cairo/PIL, et
+  github/jsdelivr bloqués — npm/pypi OK). `AppIcon` = version sans sous-titre ; asset
+  `KaribLogo` (`Image("KaribLogo")`) = logo complet pour l'accueil. Sources dans
+  `karibtruck/App/icon/` (icon.svg, logo-full.svg, README). Itérations validées : frondes
+  « cocotier » (pas cannabis), « Saveurs Créoles » descendu.
 - **Décision en attente (pour la suite)** : régime TVA (bloquant caisse, indépendant du M0) ·
   Face ID + sauvegarde chiffrée · réglages éditables (enceintes, limites, checklists) ·
-  écriture rectificative · valider les valeurs de départ avec le PMS.
+  écriture rectificative · valider les valeurs de départ avec le PMS · afficher `KaribLogo`
+  sur l'écran d'accueil de l'app.
 
 ### 🎵 KLOD Live Brain / KLOD GrooveDNA — coprocesseur musical temps réel
 **Statut : branche `claude/klod-live-brain-groovedna-hmm1nu`, basée sur `main`.**
