@@ -200,9 +200,19 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur interdits) → 0 violation, 6 tests.
 - 📚 LibraryBrain = RAG **local sur le Mac** (non joignable depuis le cloud) → relais
   `eveil/librarybrain/` : 28 sources en accès libre + `recuperer_sources.py` (à lancer en local),
-  thèmes arXiv, 18 questions `/ask`·`/consensus` pour fermer les NON VÉRIFIÉ.
+  thèmes arXiv, 18 questions `/ask`·`/consensus` pour fermer les NON VÉRIFIÉ + 15 **témoins** déjà
+  tranchés (confirmés, nuancés et réfutés mêlés, sans dire lesquels) → **protocole de comparaison
+  figé** `eveil/librarybrain/COMPARAISON.md` : passe P0 (bibliothèque telle quelle) puis P1 (+ PDF
+  de `sources.json`), codage à l'aveugle d'après les passages cités, κ/Wilson via `wordend.bench`,
+  **jamais `--avec-notes` avant la fin** (sinon LibraryBrain retrouve nos conclusions), réponses
+  brutes locales `eveil/librarybrain/resultats/` (gitignoré : extraits sous droits, dépôt public).
+  `test_questions.py` fige l'empreinte des 33 formulations.
 - ⚠️ Limite de la passe documentaire : proxy bloquant la plupart des sites académiques + quota
   WebSearch (200) épuisé → beaucoup de verdicts sur résumés ; Apple lu directement (DocC JSON via curl).
+
+- ▶️ **REPRISE (en local sur le Mac)** : prompt prêt à coller dans **`eveil/REPRISE-LOCALE.md`** →
+  (1) `swift test` du cœur + build iOS du paquet app (`xcodebuild`), (2) comparaison **LibraryBrain ↔
+  passe cloud** selon le protocole, rapport attendu `docs/EVEIL-SOURCES-LIBRARYBRAIN.md`.
 
 **Reste à faire :** `swift test` + app sur iPad réel (M1) · panel Delphi (mots, messages, nom,
 mascotte, voix) · protocole V1 (Jardé/CPP/CNIL à qualifier, corpus, calibration via le banc) ·
@@ -216,7 +226,9 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : nouvel axe **Suite Éveil** (apps iPad 3 ans et +) sur la branche
+_Dernière mise à jour mémoire : Suite Éveil — **prompt de reprise locale** (`eveil/REPRISE-LOCALE.md`)
+et **protocole figé de comparaison LibraryBrain ↔ passe cloud** (33 questions, 2 passes, à l'aveugle).
+Avant : nouvel axe **Suite Éveil** (apps iPad 3 ans et +) sur la branche
 `claude/ios-educational-apps-suite-dljtt6` — blueprint + état de l'art sourcé (6 axes), détecteur
 de fin de mot **prouvé sur signaux synthétiques (69 tests)** avec banc de validation, portage Swift
 non compilé ici (syntaxe vérifiée). Précédemment : KLOD Live Brain / GrooveDNA (35 tests), connecteur

@@ -7,6 +7,9 @@ LibraryBrain indexe ensuite automatiquement les PDF et le Markdown déposés.
     python3 eveil/librarybrain/recuperer_sources.py --dest "/Volumes/MonDisque/Livres/Santé/Orthophonie/Suite Éveil"
     python3 eveil/librarybrain/recuperer_sources.py --dest … --avec-notes   # + blueprint et état de l'art (Markdown)
 
+`--avec-notes` seulement APRÈS la comparaison des deux passes (COMPARAISON.md) : indexées plus
+tôt, nos propres conclusions reviendraient comme « sources » et la comparaison tournerait en rond.
+
 Garde-fous (mêmes principes que `fetch_medical_fr.py` de LibraryBrain) :
 - un fichier n'est accepté que si le serveur renvoie VRAIMENT un PDF
   (Content-Type `application/pdf` ET signature `%PDF-`) — une page d'erreur HTML
@@ -74,7 +77,7 @@ def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     p.add_argument("--dest", type=Path, help="dossier surveillé par LibraryBrain")
     p.add_argument("--list", action="store_true", help="inventorier sans rien télécharger")
-    p.add_argument("--avec-notes", action="store_true", help="copier aussi docs/EVEIL*.md (Markdown indexé)")
+    p.add_argument("--avec-notes", action="store_true", help="copier aussi docs/EVEIL*.md (Markdown indexé) — seulement APRÈS la comparaison")
     args = p.parse_args(argv)
     manifest = load_manifest()
     if args.list or not args.dest:

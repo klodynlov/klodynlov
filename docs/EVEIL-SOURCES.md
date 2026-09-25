@@ -383,7 +383,7 @@ Coloring World) · [21] Sago Mini (Crayon Club) · [22] Kid Doodle · [23] Magne
 
 LibraryBrain (RAG local, 25 000+ documents) tourne **sur le Mac** (`127.0.0.1:8765`, base sur disque
 externe) : il n'est pas joignable depuis la session cloud qui a produit ce document. Le relais est
-donc organisé en trois gestes, à faire en local :
+donc organisé en quatre gestes, à faire en local :
 
 1. **Enrichir le corpus** avec les sources en accès libre de cette passe : manifeste
    [`eveil/librarybrain/sources.json`](../eveil/librarybrain/sources.json) et script
@@ -394,3 +394,9 @@ donc organisé en trois gestes, à faire en local :
    [`eveil/librarybrain/arxiv_topics.eveil.txt`](../eveil/librarybrain/arxiv_topics.eveil.txt).
 3. **Questions à poser** (pages `/ask` et `/consensus`) pour fermer les NON VÉRIFIÉ :
    [`eveil/librarybrain/questions.md`](../eveil/librarybrain/questions.md).
+4. **Comparer les deux passes** selon un protocole figé d'avance
+   ([`eveil/librarybrain/COMPARAISON.md`](../eveil/librarybrain/COMPARAISON.md)) : aux 18 questions
+   s'ajoutent 15 **témoins** déjà tranchés ici (confirmés, nuancés et réfutés mêlés), posés en deux
+   passes — bibliothèque telle quelle, puis avec les PDF ci-dessus — et codés à l'aveugle. Ce
+   document n'est **pas** indexé avant la fin (pas de `--avec-notes`). Rapport attendu :
+   `docs/EVEIL-SOURCES-LIBRARYBRAIN.md`.

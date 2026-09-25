@@ -12,7 +12,7 @@ Tout est calculé **sur l'appareil**, sans modèle opaque, avec une règle d'or 
 | [`ios/`](ios/) | **Swift** : paquet autonome [`WordEndCore`](ios/WordEndCore/) (portage ligne à ligne, Swift pur, testable seul) + paquet app `WordEndAudio` (AVFoundation) / `TrainPracticeUI` (SwiftUI/SwiftData) + coquille d'app | 🟢 syntaxe vérifiée, relu, **non compilé ici** |
 | [`lexique/`](lexique/) | Mots cibles **FR** et **EN** conçus séparément (propositions à valider par un panel) | 🟡 à valider |
 | [`outils/`](outils/) | Garde-fou « rien ne quitte l'iPad » (analyse statique du code Swift) | ✅ 6 tests, 0 violation |
-| [`librarybrain/`](librarybrain/) | Relais vers LibraryBrain : sources en accès libre, veille arXiv, questions à poser | ✅ 2 tests |
+| [`librarybrain/`](librarybrain/) | Relais vers LibraryBrain : sources en accès libre, veille arXiv, questions à poser, [protocole de comparaison](librarybrain/COMPARAISON.md) avec la passe cloud | ✅ 6 tests |
 
 ---
 
@@ -56,6 +56,9 @@ Flux temps réel — « minouche », blocs de 10 ms :
 cd eveil/ios/WordEndCore
 swift test            # parité Swift ↔ Python (golden_vectors.json) + propriétés pédagogiques
 ```
+
+> **Reprendre en local** (compilation Swift + comparaison LibraryBrain) : prompt prêt à coller dans
+> [`REPRISE-LOCALE.md`](REPRISE-LOCALE.md).
 
 App iPad : Xcode 16+ › New › App (iPadOS 17+, SwiftUI) → *Add Local Package* `eveil/ios` **et**
 `eveil/ios/WordEndCore` → lier `TrainPracticeUI` et `WordEndCore` → copier [`ios/App/EveilTrainApp.swift`](ios/App/EveilTrainApp.swift),

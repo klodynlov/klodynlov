@@ -5,6 +5,9 @@ __pycache__/
 .venv/
 venv/
 
+# Réponses brutes de LibraryBrain : extraits d'ouvrages sous droits, jamais publiés
+eveil/librarybrain/resultats/
+
 # Sorties locales de l'outil de classement
 rapport.md
 sessions.csv
