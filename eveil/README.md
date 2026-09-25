@@ -9,7 +9,7 @@ Tout est calculé **sur l'appareil**, sans modèle opaque, avec une règle d'or 
 | Dossier | Contenu | Statut |
 |---|---|---|
 | [`reference/wordend/`](reference/wordend/) | Détecteur de référence **Python stdlib** : DSP, détecteur, flux temps réel, pédagogie, lexiques, **banc de validation**, vecteurs de parité, démo | ✅ 69 tests verts |
-| [`ios/`](ios/) | **Swift** : paquet autonome [`WordEndCore`](ios/WordEndCore/) (portage ligne à ligne, Swift pur, testable seul) + paquet app `WordEndAudio` (AVFoundation) / `TrainPracticeUI` (SwiftUI/SwiftData) + coquille d'app | ✅ **compilé et testé sur Mac** : cœur 19/19, app 0 avertissement ([détail](#sur-mac--compilé-et-testé-le-25092026)) |
+| [`ios/`](ios/) | **Swift** : paquet autonome [`WordEndCore`](ios/WordEndCore/) (portage ligne à ligne, Swift pur, testable seul) + paquet app `WordEndAudio` (AVFoundation) / `TrainPracticeUI` (SwiftUI/SwiftData) / `EveilDesign` (décor, mascotte) / `ColoringUI` (atelier) + **projet Xcode** [`App/EveilTrain.xcodeproj`](ios/App/) | ✅ **app jouable dans le simulateur** ([captures](#lapp-ipad--ébauche-jouable-25092026)) · cœur 19/19 · démo 52 cas |
 | [`lexique/`](lexique/) | Mots cibles **FR** et **EN** conçus séparément (propositions à valider par un panel) | 🟡 à valider |
 | [`outils/`](outils/) | Garde-fou « rien ne quitte l'iPad » (analyse statique du code Swift) | ✅ 7 tests, 0 violation |
 | [`librarybrain/`](librarybrain/) | Relais vers LibraryBrain : sources en accès libre, veille arXiv, questions à poser, [protocole de comparaison](librarybrain/COMPARAISON.md) avec la passe cloud, [`interroger.py`](librarybrain/interroger.py) (les 33 questions, scriptées), [`mesurer.py`](librarybrain/mesurer.py) — comparaison faite : [rapport](../docs/EVEIL-SOURCES-LIBRARYBRAIN.md) | ✅ 20 tests |
@@ -50,6 +50,36 @@ Flux temps réel — « minouche », blocs de 10 ms :
 > d'enfants. Celle-ci se mesure avec le banc, dans le protocole de validation
 > ([docs/EVEIL.md §8](../docs/EVEIL.md#8-validation-par-les-pairs--le-protocole)).
 
+## L'app iPad — ébauche jouable (25/09/2026)
+
+| Accueil | Le fourgon s'accroche | Le fourgon reste en gare | Atelier de coloriage |
+|---|---|---|---|
+| <img src="../docs/ui/eveil-app/1-accueil.png" width="200" alt="Accueil : le chat chef de gare propose deux jeux"> | <img src="../docs/ui/eveil-app/2-fourgon-accroche.png" width="200" alt="Mot entier : le wagon s'allume, le fourgon s'accroche"> | <img src="../docs/ui/eveil-app/3-fourgon-en-gare.png" width="200" alt="Sans la fin : le fourgon reste en gare, le chat le montre"> | <img src="../docs/ui/eveil-app/4-coloriage.png" width="200" alt="Atelier : page du petit train coloriée"> |
+
+- **Accueil** : le chat chef de gare (mascotte **provisoire**) propose deux jeux, en grandes cartes.
+- **Le petit train des mots** : plein écran ; le train entre en gare à chaque mot ; un wagon par
+  syllabe orale s'allume pendant que l'enfant parle ; le fourgon de la consonne finale s'accroche
+  (vapeur « chhh ») ou reste en gare, sur son quai ; le chat écoute, fait la fête ou montre
+  gentiment le fourgon ; un seul gros bouton « À toi ! ». Aucun message négatif.
+- **Mode démo** (espace des grands › Présentation, ou argument de lancement `-eveil.demoMode 1`) :
+  micro fermé ; le présentateur fait « entendre » au train un mot entier, un mot sans la fin ou une
+  syllabe en moins — une pseudo-parole de `Synth` qui passe par le **vrai** détecteur — puis
+  « Mot suivant ». Rien n'est écrit dans le journal local. `swift test` (dans `ios/`) vérifie que
+  chaque bouton produit le verdict annoncé, pour tous les mots FR et EN (52 cas).
+- **Atelier de coloriage** (app 2, « mode écran ») : trois pages (le petit train, le chat, la
+  maison) ; toucher une forme la remplit, le pinceau ne déborde jamais (pochoir) ; dix grosses
+  couleurs ; annuler, tout effacer, page suivante. Rien n'est enregistré ni envoyé.
+
+```bash
+open eveil/ios/App/EveilTrain.xcodeproj          # schéma EveilTrain, un iPad du simulateur, ▶︎
+cd eveil/ios && swift test                        # le mode démo montre ce qu'il annonce
+```
+
+Provisoire, à trancher : nom affiché « Petit Train » et identifiant `fr.klodynlov.eveil.petittrain`,
+cible iPadOS 17 (celle du paquet), toutes orientations, mascotte, dessins vectoriels (en attendant
+un illustrateur), voix du mot = synthèse système (en attendant les enregistrements). Reste : l'iPad
+réel (signature, micro, Accès guidé), les illustrations, les voix, les sons, le panel.
+
 ## Sur Mac — compilé et testé le 25/09/2026
 
 macOS 27.0 (26A428) · Xcode 27.0 (27A266a) · Swift 6.4 (swiftlang-6.4.0.34.1) · SDK iOS 27.0.
@@ -83,11 +113,10 @@ cd eveil/ios && xcodebuild -scheme EveilTrain-Package \
 > **Reprendre en local** (compilation Swift + comparaison LibraryBrain) : prompt prêt à coller dans
 > [`REPRISE-LOCALE.md`](REPRISE-LOCALE.md).
 
-App iPad : Xcode 16+ › New › App (iPadOS 17+, SwiftUI) → *Add Local Package* `eveil/ios` **et**
-`eveil/ios/WordEndCore` → lier `TrainPracticeUI` et `WordEndCore` → copier [`ios/App/EveilTrainApp.swift`](ios/App/EveilTrainApp.swift),
-[`PrivacyInfo.xcprivacy`](ios/App/PrivacyInfo.xcprivacy), les clés
-d'[`Info-additions.plist`](ios/App/Info-additions.plist), et embarquer `lexique/*.json`.
-Aucun entitlement iCloud, aucun SDK tiers.
+App iPad : le projet [`ios/App/EveilTrain.xcodeproj`](ios/App/) est prêt — paquets locaux `eveil/ios` et
+`eveil/ios/WordEndCore`, coquille et accueil ([`App/`](ios/App/)), lexiques FR/EN, `PrivacyInfo.xcprivacy`,
+clés micro dans les réglages de la cible. Sur un iPad réel, il ne manque que l'équipe de signature (à
+choisir dans Xcode). Aucun entitlement iCloud, aucun SDK tiers.
 
 ---
 

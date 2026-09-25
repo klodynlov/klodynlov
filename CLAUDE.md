@@ -201,6 +201,17 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
   seule ; **projet Xcode + iPad réel : avec l'utilisateur, pas à pas** (signature, micro).
   Dépréciation `installTap` → `installAudioTap(…)` confirmée dans le SDK iOS 27 (bascule liée au choix
   iPadOS 17/26).
+- 🎨 **App iPad — ébauche JOUABLE dans le simulateur (25/09/2026)**, construite avec l'utilisateur :
+  projet `eveil/ios/App/EveilTrain.xcodeproj` (cible iPad, paquets locaux, lexiques, confidentialité) ·
+  **accueil** (2 jeux en grandes cartes) · **petit train** plein écran (train qui entre en gare, wagons
+  qui s'allument, fourgon qui s'accroche ou reste en gare sur son quai, gros bouton « À toi ! ») ·
+  **mode démo** (espace des grands ou `-eveil.demoMode 1` : pseudo-parole `Synth` dans le VRAI détecteur,
+  le présentateur avance ; rien dans le journal) · **atelier de coloriage** `ColoringUI` (3 pages,
+  toucher = remplir, pinceau pochoir, 10 couleurs). Nouveaux modules `EveilDesign` (décor, gros boutons,
+  mascotte) et `ColoringUI` ; `cd eveil/ios && swift test` → 2 tests, **52 cas** mot × scénario de démo.
+  Captures : `docs/ui/eveil-app/*.png`. **Mascotte provisoire choisie par l'utilisateur : un chat chef
+  de gare** (dessin vectoriel, le panel pourra en changer). Provisoire aussi : nom affiché « Petit
+  Train », identifiant `fr.klodynlov.eveil.petittrain`, cible iPadOS 17, toutes orientations.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur interdits) → 0 violation, 7 tests ;
   ignore les produits de compilation (`.build/`, `.swiftpm/`, `DerivedData/`).
@@ -235,11 +246,13 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
   (1) ✅ `swift test` du cœur + build iOS du paquet app, (2) ✅ comparaison **LibraryBrain ↔ passe
   cloud** (rapport `docs/EVEIL-SOURCES-LIBRARYBRAIN.md`) — les deux faits le 25/09/2026.
 
-**Reste à faire :** projet Xcode + app sur iPad réel (M1, avec l'utilisateur) · acquérir les sources du rapport (§ 7) puis rejouer (P2) · alors
+**Reste à faire :** app sur iPad réel (signature, micro, Accès guidé ; avec l'utilisateur) · illustrations,
+voix enregistrées et sons à la place des placeholders · acquérir les sources du rapport (§ 7) puis
+rejouer (P2) · alors
 seulement `--avec-notes` + veille arXiv · panel Delphi (mots, messages, nom,
 mascotte, voix) · protocole V1 (Jardé/CPP/CNIL à qualifier, corpus, calibration via le banc) ·
-App 2 (mode **papier** d'abord : VisionKit `VNDocumentCameraViewController` + SpriteKit ; mode
-écran : pochoir `PKStroke(mask:)`) · décisions ouvertes : nom, iPadOS 17 vs 26, mode par défaut
+App 2 : ébauche « mode écran » faite (`ColoringUI`, pochoir SwiftUI) ; reste le mode **papier**
+(VisionKit `VNDocumentCameraViewController` + SpriteKit) · décisions ouvertes : nom, iPadOS 17 vs 26, mode par défaut
 avant validation (écoute auto vs juge adulte).
 
 ### Autres projets (mentionnés au README, hors de ce dépôt)
@@ -248,7 +261,9 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : Suite Éveil — **comparaison LibraryBrain ↔ passe cloud faite**
+_Dernière mise à jour mémoire : Suite Éveil — **ébauche jouable de l'app iPad** (25/09/2026 : accueil,
+petit train, mode démo, atelier de coloriage ; mascotte provisoire chat chef de gare). Avant :
+**comparaison LibraryBrain ↔ passe cloud faite**
 (25/09/2026 : couverture 11/33 → 15/33, aucune contradiction, A22 fermé, rapport
 `docs/EVEIL-SOURCES-LIBRARYBRAIN.md`) et **Swift compilé et testé sur le Mac** (cœur 19/19, paquet
 app 0 avertissement ; projet Xcode + iPad à faire avec l'utilisateur).
