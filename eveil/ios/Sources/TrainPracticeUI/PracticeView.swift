@@ -194,11 +194,11 @@ public struct PracticeView: View {
             let card = min(wide ? 300 : 250, h * 0.26)
             let cat = min(wide ? 250 : 210, h * 0.24)
             let trainBase = TrainView.baseWidth(wagons: word.wagons.count, hasCaboose: word.coda != nil)
-            let trainScale = min(wide ? 1.75 : 1.5, (w - 60) / trainBase)
+            let trainScale = min(wide ? 1.45 : 1.5, (w - 60) / trainBase)   // paysage : le train ne mord pas sur la carte
             VStack(spacing: 0) {
                 Spacer(minLength: 90)
                 HStack(alignment: .center, spacing: wide ? 44 : 22) {
-                    WordPicture(word: word, size: card, pulse: picturePulse, onTap: tapPicture)
+                    WordPicture(word: word, size: card, pulse: picturePulse, onDark: world.isDark, onTap: tapPicture)
                     HStack(alignment: .center, spacing: 6) {
                         MascotView(action: feedback?.mascot, isListening: listening, size: cat)
                         SpeechBubble(bubbleText)
@@ -411,6 +411,8 @@ struct WordPicture: View {
     let word: TargetWord
     var size: CGFloat = 280
     var pulse = 0
+    /// Ciel sombre (l'espace) : le mot écrit sous la carte passe en clair.
+    var onDark = false
     var onTap: () -> Void = {}
 
     var body: some View {
@@ -433,7 +435,7 @@ struct WordPicture: View {
                 .animation(.spring(duration: 0.3, bounce: 0.5), value: pulse)
             Text(word.text)
                 .font(.system(size: 26, weight: .semibold, design: .rounded))
-                .foregroundStyle(EveilPalette.ink.opacity(0.7))          // pour l'adulte qui accompagne
+                .foregroundStyle(onDark ? Color.white.opacity(0.85) : EveilPalette.ink.opacity(0.7))   // pour l'adulte
         }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
