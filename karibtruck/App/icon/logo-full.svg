@@ -47,5 +47,5 @@
 
 <text x="150" y="452" text-anchor="start" font-family="Kaushan Script" font-size="210" fill="rgba(90,0,45,0.35)" transform="translate(6,7)">Karib</text><text x="150" y="452" text-anchor="start" font-family="Kaushan Script" font-size="210" fill="#FFFFFF">Karib</text>
 <text x="300" y="632" text-anchor="start" font-family="Kaushan Script" font-size="210" fill="rgba(90,0,45,0.35)" transform="translate(6,7)">Truck</text><text x="300" y="632" text-anchor="start" font-family="Kaushan Script" font-size="210" fill="#FFFFFF">Truck</text>
-
+<text x="512" y="902" text-anchor="middle" font-family="Kaushan Script" font-size="80" fill="rgba(90,0,45,0.35)" transform="translate(6,7)">Saveurs Créoles</text><text x="512" y="902" text-anchor="middle" font-family="Kaushan Script" font-size="80" fill="#FFFFFF">Saveurs Créoles</text>
 </svg>
