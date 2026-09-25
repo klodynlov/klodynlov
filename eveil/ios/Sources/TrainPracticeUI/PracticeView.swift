@@ -217,8 +217,15 @@ public struct PracticeView: View {
                 Button {
                     Task { await present(word) }
                 } label: {
-                    Label(listening ? (fr ? "Je t'écoute…" : "Listening…") : (fr ? "À toi !" : "Your turn!"),
-                          systemImage: listening ? "waveform" : "ear.fill")
+                    if listening {
+                        // Le train entend : des barres qui bougent avec la voix (le niveau, jamais le son).
+                        HStack(spacing: 14) {
+                            LevelBars(db: listener.inputLevelDb)
+                            Text(fr ? "Je t'écoute…" : "Listening…")
+                        }
+                    } else {
+                        Label(fr ? "À toi !" : "Your turn!", systemImage: "ear.fill")
+                    }
                 }
                 .buttonStyle(KidButtonStyle())
                 .disabled(listening || modelPlaying || traveling)
@@ -431,6 +438,26 @@ struct WordPicture: View {
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
         .accessibilityHint(word.id.hasPrefix("fr") ? "Touche l'image pour entendre son bruit" : "Tap the picture to hear its sound")
+    }
+}
+
+/// Cinq barres qui dansent avec la voix pendant l'écoute : « le train t'entend ».
+struct LevelBars: View {
+    let db: Double
+
+    var body: some View {
+        // −55 dBFS (silence d'une pièce calme) → barres basses ; −15 dBFS (voix proche) → hautes.
+        let level = min(1, max(0, (db + 55) / 40))
+        HStack(alignment: .center, spacing: 4) {
+            ForEach(0..<5, id: \.self) { i in
+                let shape = [0.55, 0.8, 1.0, 0.8, 0.55][i]
+                Capsule().fill(.white)
+                    .frame(width: 6, height: 8 + 26 * CGFloat(level * shape))
+            }
+        }
+        .frame(height: 36)
+        .animation(.easeOut(duration: 0.12), value: level)
+        .accessibilityHidden(true)
     }
 }
 
