@@ -2,9 +2,10 @@
 //
 // Pour les 3 ans et + : réussir à tous les coups. Une page est un DESSIN AU
 // TRAIT : chaque aire fermée par les traits est une zone, comme sur papier.
-// Deux gestes seulement — TOUCHER remplit la zone sous le doigt (réglable par
-// l'adulte : « Remplir d'un toucher », `SuiteSettings`) ; le PINCEAU peint au doigt
-// sans jamais déborder (pochoir : le trait reste dans la zone où il a commencé). Les couleurs passent SOUS les traits, qui restent nets et visibles :
+// Le PINCEAU peint au doigt sans jamais déborder (pochoir : le trait reste dans la
+// zone où il a commencé). TOUCHER pour remplir la zone d'un coup est un réglage de
+// l'adulte (« Remplir d'un toucher », `SuiteSettings`), désactivé par défaut : les
+// mouvements de la main font l'intérêt du coloriage. Les couleurs passent SOUS les traits, qui restent nets et visibles :
 // rien ne fusionne. Grosses pastilles, annuler, tout effacer (annulable), choisir
 // une page parmi de grandes vignettes, page suivante. Rien n'est enregistré ni
 // envoyé. Le « mode papier » (photo d'un coloriage réel) viendra ensuite.

@@ -91,9 +91,9 @@ iPadOS 27) l'après-midi. Ses retours ont fait le second tour :
 - **Atelier de coloriage** (app 2, « mode écran ») : **70 pages au trait**, rangées en **7 albums**
   (le petit train, les animaux, le jardin, à la maison, miam !, en route !, la fête). **Chaque zone
   fermée par des traits se colorie à part**, comme sur papier (carte des zones 1024², calculée à
-  l'ouverture) ; les couleurs passent sous les traits, qui restent nets. Toucher = remplir (réglable :
-  espace des grands › « Remplir d'un toucher » ; désactivé, pinceau seul) ; le pinceau reste dans la
-  zone où il a commencé (pochoir) ; annuler, tout effacer, choisir un dessin :
+  l'ouverture) ; les couleurs passent sous les traits, qui restent nets. Le pinceau reste dans la
+  zone où il a commencé (pochoir) ; toucher pour remplir une zone d'un coup est possible, mais
+  **désactivé par défaut** (espace des grands › « Remplir d'un toucher ») ; annuler, tout effacer, choisir un dessin :
   les albums en haut (un grand bouton-image chacun), **toutes** les pages de l'album d'un coup, sans
   défiler (12 au plus par album). Rien n'est enregistré ni envoyé.
   - **Un dessin pour chacun des 45 mots du petit train** (le même sujet que son image dans le jeu :

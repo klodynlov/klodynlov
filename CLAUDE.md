@@ -249,7 +249,8 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
   dessins et bruitages (en attendant illustrateur et vrais sons). `docs/EVEIL.md` § 6 **mis à jour le
   25/09 avec l'accord de l'utilisateur** (zones comme sur papier, pochoir par zone sans PencilKit, pages
   vérifiables). **Décidé par l'utilisateur** : « Remplir d'un toucher » **réglable** dans l'espace des
-  grands (`SuiteSettings.tapToFillKey`, activé par défaut) ; désactivé → pinceau seul.
+  grands (`SuiteSettings.tapToFillKey`) et **désactivé par défaut** → pinceau seul tant que l'adulte ne
+  l'active pas.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur interdits) → 0 violation, 7 tests ;
   ignore les produits de compilation (`.build/`, `.swiftpm/`, `DerivedData/`).

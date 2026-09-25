@@ -430,9 +430,9 @@ confirmer (§10).*
   des allers-retours (motricité), sans jamais « abîmer » le dessin.
 - **Toucher = remplir** : l'ébauche remplit aussi une zone d'un toucher. Face au § 6.1 (le
   remplissage automatique est la norme du marché ; s'en passer est notre point fort), **décision de
-  l'utilisateur (25/09/2026) : réglable par l'adulte** — espace des grands › Atelier de coloriage ›
-  « Remplir d'un toucher » (activé par défaut, comme dans l'ébauche). Désactivé, l'enfant n'a que le
-  pinceau-pochoir : plus de mouvements de la main.
+  l'utilisateur (25/09/2026) : réglable par l'adulte, désactivé par défaut** — espace des grands ›
+  Atelier de coloriage › « Remplir d'un toucher ». Par défaut, l'enfant n'a donc que le
+  pinceau-pochoir : plus de mouvements de la main ; l'adulte peut activer le remplissage.
 - **Des pages vérifiables** : chaque forme dessinée porte un **point-témoin** ; les tests vérifient
   qu'aucune zone ne fuit dans sa voisine ni dans le fond, que toute petite zone (< 0,3 %) est un
   détail voulu (œil, bouton) et que les pages tiennent à ± 1 px de trait. 70 pages en 7 albums, dont

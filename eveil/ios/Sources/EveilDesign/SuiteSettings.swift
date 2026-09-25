@@ -7,9 +7,9 @@
 public enum SuiteSettings {
     /// Atelier de coloriage : « Remplir d'un toucher ». Désactivé, l'enfant colorie au
     /// pinceau seul (qui reste dans sa zone) : plus de mouvements de la main, ce qui
-    /// fait l'intérêt du coloriage (docs/EVEIL.md § 6.1). Décision de l'utilisateur
-    /// (25/09/2026) : réglable par l'adulte ; activé par défaut, comme dans l'ébauche.
+    /// fait l'intérêt du coloriage (docs/EVEIL.md § 6.1). Décisions de l'utilisateur
+    /// (25/09/2026) : réglable par l'adulte, et DÉSACTIVÉ par défaut — pinceau seul.
     public static let tapToFillKey = "eveil.coloring.tapToFill"
-    public static let tapToFillDefault = true
+    public static let tapToFillDefault = false
 }
 #endif

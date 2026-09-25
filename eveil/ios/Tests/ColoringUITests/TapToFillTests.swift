@@ -20,8 +20,10 @@ final class TapToFillTests: XCTestCase {
         XCTAssertEqual(ColoringView.activeTool(.brush, tapToFill: false), .brush)
     }
 
-    func testDefaultKeepsTheDraftBehaviour() {
-        XCTAssertTrue(SuiteSettings.tapToFillDefault)
+    /// Par défaut, pinceau seul (décision de l'utilisateur) : l'adulte active le remplissage s'il le veut.
+    func testDefaultIsBrushOnly() {
+        XCTAssertFalse(SuiteSettings.tapToFillDefault)
+        XCTAssertEqual(ColoringView.tools(tapToFill: SuiteSettings.tapToFillDefault), [.brush])
         XCTAssertEqual(SuiteSettings.tapToFillKey, "eveil.coloring.tapToFill")
     }
 }
