@@ -104,6 +104,19 @@ class TestTraitsVisibles(unittest.TestCase):
         self.assertEqual(len(a.temoins.details), 1)
 
 
+class TestDetailsRobustes(unittest.TestCase):
+    def test_blanc_d_oeil_trop_mince_refuse(self):
+        """Régression : l'ancien œil du caniche (pupille qui mangeait le blanc) fondait sur le Mac."""
+        from . import pages_animaux
+        from .dessin import Page
+        from .motifs import oeil
+        p = pages_animaux.CANICHE
+        ancien = Page(p.id, p.album, p.fr, p.en, p.elements[:-2] + oeil(232, 262, 24, dx=-5, dy=2, p=0.58))
+        erreurs = analyse.analyser(ancien, variantes=False).erreurs
+        self.assertTrue(any("détail trop mince" in e for e in erreurs), erreurs)
+        self.assertEqual(analyse.analyser(p, variantes=False).erreurs, [])
+
+
 class TestCarteDesZones(unittest.TestCase):
     def test_largeur_raster_comme_zonemap(self):
         # ZoneMap.rasterize : max(3, min(0,8 × e, e − 3)), e = trait affiché en pixels

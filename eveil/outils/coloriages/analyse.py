@@ -22,6 +22,11 @@ from .zones import COIN, PETITE, Carte, Temoins
 # Épreuves de robustesse : (épaisseur en plus, en px ; décalage en px).
 VARIANTES = ((-1.0, (0.0, 0.0)), (1.0, (0.0, 0.0)), (0.0, (0.37, 0.61)))
 MARGE_TEMOINS = 1.05   # une zone-témoin doit dépasser le seuil de 0,3 % d'au moins 5 %
+# Un détail doit avoir un cœur d'au moins 4 px (distance au trait le plus proche) : le blanc de
+# l'œil du caniche, un croissant de 3,7 px (0,026 %), passait ici mais CoreGraphics en faisait une
+# miette rattachée à la tête (premier `swift test` sur le Mac, 25/09/2026). Les détails validés
+# sur le Mac ont tous 4 px ou plus.
+PROFONDEUR_DETAIL = 4.0
 
 
 @dataclass
@@ -78,6 +83,9 @@ def analyser(p: Page, variantes: bool = True) -> Analyse:
         if o < 0 or p.elements[o].genre != "detail":
             quoi = "le fond" if o < 0 else f"élément {o} ({p.elements[o].genre})"
             err.append(f"miette de {100 * c.part(z):.3f} % vers {zones.centre(c, z)} — {quoi}")
+        elif tem.profondeur.get(z, 0) < PROFONDEUR_DETAIL:
+            err.append(f"détail trop mince ({tem.profondeur.get(z, 0):.1f} px) vers {zones.centre(c, z)} : "
+                       "CoreGraphics peut le fondre dans sa voisine")
     for i, el in enumerate(p.elements):
         if el.genre != "encre":
             continue
