@@ -8,7 +8,8 @@
 //
 // États du fourgon (cf. `CabooseState`) : accroché, montré (seulement sur un
 // verdict SÛR), en attente (neutre), absent (mot sans consonne finale).
-// Le train entre en gare à chaque nouveau mot (la vue est recréée par mot).
+// Le train entre en gare à chaque nouveau mot (la vue est recréée par mot), et
+// repart vers la gauche (`departing`) pour rejoindre un autre monde.
 
 #if canImport(SwiftUI)
 import EveilDesign
@@ -22,19 +23,29 @@ public struct TrainView: View {
     public let caboose: CabooseState
     public var showsLetters = true            // lettres pour l'adulte ; l'enfant voit les couleurs
     public var scale: CGFloat = 1
+    /// Vrai : le train quitte la gare (vers la gauche) — le voyage vers un autre monde.
+    public var departing = false
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var arrived = false
-    @State private var pulse = false
+    /// Mouvement piloté par l'HORLOGE : l'instant d'entrée en gare et de départ.
+    /// Pas d'animation SwiftUI sur le déplacement — combinée aux horloges internes
+    /// (vapeur, fourgon qui respire), elle faisait trembler ou clignoter le train.
+    @State private var enteredAt: Date?
+    @State private var leftAt: Date?
+    @State private var moving = true
+
+    static let enterDuration = 1.5
+    static let leaveDuration = 1.1
 
     public init(wagons: [String], lit: [Bool], cabooseLabel: String?, caboose: CabooseState,
-                showsLetters: Bool = true, scale: CGFloat = 1) {
+                showsLetters: Bool = true, scale: CGFloat = 1, departing: Bool = false) {
         self.wagons = wagons
         self.lit = lit
         self.cabooseLabel = cabooseLabel
         self.caboose = caboose
         self.showsLetters = showsLetters
         self.scale = scale
+        self.departing = departing
     }
 
     // Dimensions de base (avant `scale`).
@@ -60,41 +71,72 @@ public struct TrainView: View {
     private var baseWidth: CGFloat { Self.baseWidth(wagons: wagons.count, hasCaboose: hasCaboose) }
 
     public var body: some View {
-        ZStack(alignment: .bottomLeading) {
-            RailsView(width: baseWidth)
-            HStack(alignment: .bottom, spacing: 0) {
-                LocomotiveView(rolling: !arrived, steaming: !arrived || caboose == .hooked)
-                ForEach(Array(wagons.enumerated()), id: \.offset) { index, label in
-                    WagonCar(label: label, lit: lit.indices.contains(index) && lit[index],
-                             showsLetters: showsLetters, rolling: !arrived)
-                }
-                if let cabooseLabel, hasCaboose {
-                    CabooseCar(label: cabooseLabel, state: caboose, showsLetters: showsLetters, rolling: !arrived)
+        TimelineView(.animation(minimumInterval: 1.0 / 60.0, paused: !moving || reduceMotion)) { context in
+            let x = offset(at: context.date)
+            ZStack(alignment: .bottomLeading) {
+                RailsView(width: baseWidth)
+                HStack(alignment: .bottom, spacing: 0) {
+                    LocomotiveView(travel: x, steaming: moving || caboose == .hooked)
+                    ForEach(Array(wagons.enumerated()), id: \.offset) { index, label in
+                        WagonCar(label: label, lit: lit.indices.contains(index) && lit[index],
+                                 showsLetters: showsLetters, travel: x)
+                    }
+                    .animation(reduceMotion ? nil : .spring(duration: 0.45), value: lit)
+                    if let cabooseLabel, hasCaboose {
+                        // Le fourgon resté en gare « respire » doucement (horloge, pas de boucle d'animation).
+                        TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: caboose != .pointed || reduceMotion)) { inner in
+                            let breath = caboose == .pointed && !reduceMotion
+                                ? (1 - cos(inner.date.timeIntervalSinceReferenceDate * 2 * .pi / 1.6)) / 2 : 0
+                            CabooseCar(label: cabooseLabel, state: caboose, showsLetters: showsLetters, travel: x)
+                                .scaleEffect(1 + 0.06 * breath, anchor: .bottom)
+                        }
                         .padding(.leading, cabooseGap)
-                        .scaleEffect(caboose == .pointed && pulse && !reduceMotion ? 1.06 : 1.0, anchor: .bottom)
+                        .animation(reduceMotion ? nil : .spring(duration: 0.55, bounce: 0.35), value: caboose)
+                    }
                 }
+                .padding(.leading, 20)
+                .padding(.bottom, 10)
+                .offset(x: x)
+                .opacity(reduceMotion && leftAt != nil ? 0 : 1)
             }
-            .padding(.leading, 20)
-            .padding(.bottom, 10)
-            .offset(x: arrived || reduceMotion ? 0 : 1400)
         }
         .frame(width: baseWidth, height: Self.height, alignment: .bottomLeading)
         .scaleEffect(scale, anchor: .bottomLeading)
         .frame(width: baseWidth * scale, height: Self.height * scale, alignment: .bottomLeading)
-        .animation(reduceMotion ? nil : .spring(duration: 0.45), value: lit)
-        .animation(reduceMotion ? nil : .spring(duration: 0.55, bounce: 0.35), value: caboose)
         .onAppear {
-            guard !reduceMotion else { arrived = true; return }
-            withAnimation(.easeOut(duration: 1.5)) { arrived = true }
+            guard enteredAt == nil else { return }
+            enteredAt = Date()
+            settle(after: Self.enterDuration)
         }
-        .onChange(of: caboose) { _, newValue in
-            pulse = false
-            if newValue == .pointed && !reduceMotion {
-                withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) { pulse = true }
-            }
+        .onChange(of: departing) { _, leaving in
+            guard leaving, leftAt == nil else { return }
+            leftAt = Date()
+            moving = true
+            settle(after: Self.leaveDuration)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityDescription)
+    }
+
+    /// Décalage horizontal (repère de base) : entrée par la droite en freinant,
+    /// départ par la gauche en accélérant. « Réduire les animations » : pas de trajet.
+    private func offset(at date: Date) -> CGFloat {
+        if let leftAt {
+            if reduceMotion { return -(1400 + baseWidth) }
+            let p = min(1, max(0, date.timeIntervalSince(leftAt) / Self.leaveDuration))
+            return -(1400 + baseWidth) * CGFloat(p * p * p)
+        }
+        guard let enteredAt, !reduceMotion else { return reduceMotion ? 0 : 1400 }
+        let p = min(1, max(0, date.timeIntervalSince(enteredAt) / Self.enterDuration))
+        return 1400 * CGFloat(pow(1 - p, 3))
+    }
+
+    /// Arrête l'horloge du trajet une fois le mouvement fini (le train est à quai, ou parti).
+    private func settle(after seconds: Double) {
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64((seconds + 0.1) * 1_000_000_000))
+            moving = false
+        }
     }
 
     private var accessibilityDescription: String {
@@ -136,9 +178,10 @@ struct RailsView: View {
     }
 }
 
+/// Une roue qui ROULE sans glisser : son angle suit la distance parcourue.
 struct Wheel: View {
     let diameter: CGFloat
-    let rolling: Bool
+    let travel: CGFloat
 
     var body: some View {
         ZStack {
@@ -151,32 +194,37 @@ struct Wheel: View {
             Circle().fill(EveilPalette.sun).frame(width: diameter * 0.26, height: diameter * 0.26)
         }
         .frame(width: diameter, height: diameter)
-        .rotationEffect(.degrees(rolling ? 900 : 0))
+        .rotationEffect(.degrees(-Double(travel) / (Double.pi * Double(diameter)) * 360))
     }
 }
 
 /// Bouffées de vapeur au-dessus de la cheminée (ou du fourgon accroché).
+///
+/// Mouvement piloté par l'HORLOGE (TimelineView), pas par une animation
+/// `repeatForever` lancée dans `onAppear` : insérée pendant une transition,
+/// celle-ci « capturait » l'entrée du train, qui clignotait alors sans fin.
 struct SteamPuffs: View {
     let active: Bool
-    @State private var rise = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        ZStack {
-            ForEach(0..<3, id: \.self) { i in
-                Circle().fill(.white.opacity(active ? 0.9 - Double(i) * 0.2 : 0))
-                    .frame(width: CGFloat(22 + i * 10), height: CGFloat(22 + i * 10))
-                    .offset(x: CGFloat(i) * 18 + (rise ? 10 : 0), y: -CGFloat(i) * 22 - (rise ? 16 : 0))
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: reduceMotion || !active)) { context in
+            let t = context.date.timeIntervalSinceReferenceDate
+            let rise = reduceMotion ? 0 : (1 - cos(t * 2 * .pi / 2.2)) / 2      // 0 → 1 → 0 en 2,2 s
+            ZStack {
+                ForEach(0..<3, id: \.self) { i in
+                    Circle().fill(.white.opacity(active ? 0.9 - Double(i) * 0.2 : 0))
+                        .frame(width: CGFloat(22 + i * 10), height: CGFloat(22 + i * 10))
+                        .offset(x: CGFloat(i) * 18 + 10 * rise, y: -CGFloat(i) * 22 - 16 * rise)
+                }
             }
-        }
-        .onAppear {
-            withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { rise = true }
         }
         .accessibilityHidden(true)
     }
 }
 
 struct LocomotiveView: View {
-    let rolling: Bool
+    let travel: CGFloat
     let steaming: Bool
 
     var body: some View {
@@ -208,9 +256,9 @@ struct LocomotiveView: View {
             }.fill(Color(white: 0.3))
             RoundedRectangle(cornerRadius: 4).fill(Color(white: 0.25))
                 .frame(width: 176, height: 14).offset(x: 20, y: 122)
-            Wheel(diameter: 40, rolling: rolling).offset(x: 34, y: 126)
-            Wheel(diameter: 40, rolling: rolling).offset(x: 84, y: 126)
-            Wheel(diameter: 52, rolling: rolling).offset(x: 134, y: 114)
+            Wheel(diameter: 40, travel: travel).offset(x: 34, y: 126)
+            Wheel(diameter: 40, travel: travel).offset(x: 84, y: 126)
+            Wheel(diameter: 52, travel: travel).offset(x: 134, y: 114)
         }
         .frame(width: TrainView.locoWidth, height: TrainView.height, alignment: .topLeading)
         .accessibilityHidden(true)
@@ -230,7 +278,7 @@ struct WagonCar: View {
     let label: String
     let lit: Bool
     let showsLetters: Bool
-    let rolling: Bool
+    let travel: CGFloat
 
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -248,8 +296,8 @@ struct WagonCar: View {
                 .frame(width: 116, height: 70).offset(x: 8, y: 56)
             RoundedRectangle(cornerRadius: 4).fill(Color(white: 0.25))
                 .frame(width: 110, height: 10).offset(x: 11, y: 124)
-            Wheel(diameter: 34, rolling: rolling).offset(x: 22, y: 128)
-            Wheel(diameter: 34, rolling: rolling).offset(x: 80, y: 128)
+            Wheel(diameter: 34, travel: travel).offset(x: 22, y: 128)
+            Wheel(diameter: 34, travel: travel).offset(x: 80, y: 128)
             if lit {
                 Image(systemName: "sparkles").font(.system(size: 30))
                     .foregroundStyle(EveilPalette.sun)
@@ -265,7 +313,7 @@ struct CabooseCar: View {
     let label: String
     let state: CabooseState
     let showsLetters: Bool
-    let rolling: Bool
+    let travel: CGFloat
 
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -300,8 +348,8 @@ struct CabooseCar: View {
                 .frame(width: 108, height: 72).offset(x: 8, y: 52)
             RoundedRectangle(cornerRadius: 4).fill(Color(white: 0.25))
                 .frame(width: 100, height: 10).offset(x: 12, y: 124)
-            Wheel(diameter: 34, rolling: rolling).offset(x: 20, y: 128)
-            Wheel(diameter: 34, rolling: rolling).offset(x: 72, y: 128)
+            Wheel(diameter: 34, travel: travel).offset(x: 20, y: 128)
+            Wheel(diameter: 34, travel: travel).offset(x: 72, y: 128)
             if state == .hooked {
                 // La vapeur du « chhh » quand le fourgon s'accroche.
                 SteamPuffs(active: true).offset(x: 30, y: 8)

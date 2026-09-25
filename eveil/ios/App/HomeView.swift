@@ -14,6 +14,7 @@ import WordEndCore
 struct HomeView: View {
     let parentAreaLocked: Bool
     @AppStorage("eveil.language") private var language = "fr-FR"
+    @AppStorage(WordDeck.maxLevelKey) private var maxLevel = 3
     @State private var destination: Destination?
     @State private var showGate = false
     @State private var showParentZone = false
@@ -79,8 +80,9 @@ struct HomeView: View {
         .fullScreenCover(item: $destination) { dest in
             switch dest {
             case .train:
-                if let lexicon = LexiconLoader.load(locale) {
-                    PracticeView(words: lexicon.words.filter { ($0.level ?? 1) == 1 },
+                if let lexicon = LexiconLoader.load(locale),
+                   case let deck = WordDeck.ordered(lexicon.words, maxLevel: maxLevel), !deck.isEmpty {
+                    PracticeView(words: deck,
                                  locale: lexicon.locale,
                                  cabooseSounds: lexicon.cabooseSounds,
                                  parentButtonHidden: parentAreaLocked,

@@ -1,8 +1,9 @@
 // ParentZoneView.swift — l'espace parent (derrière le contrôle parental).
 //
 // On y règle : la langue (FR, EN, ou les deux en alternance pour les familles
-// bilingues), le temps d'écran quotidien, les mots de la famille. On y trouve :
-// comment jouer AVEC l'enfant, et quand demander l'avis d'un professionnel.
+// bilingues), le micro (accès, test, essai par un adulte), les mots du train
+// (jusqu'à quel niveau), le temps d'écran quotidien, les mots de la famille. On
+// y trouve : comment jouer AVEC l'enfant, et quand demander l'avis d'un professionnel.
 // On n'y trouve PAS de score de langage : l'app est un jeu d'éveil, pas un bilan.
 
 #if canImport(SwiftUI)
@@ -15,6 +16,8 @@ public struct ParentZoneView: View {
     @AppStorage("eveil.dailyMinutes") private var dailyMinutes = 15.0
     @AppStorage("eveil.lexicalCheck") private var lexicalCheck = false  // expérimental, OFF
     @AppStorage("eveil.demoMode") private var demoMode = false          // présentation, sans micro
+    @AppStorage(ListeningSettings.adultTrialKey) private var adultTrial = false
+    @AppStorage(WordDeck.maxLevelKey) private var maxLevel = 3
     @State private var familyText = ""
     @State private var familyWagons = ""
     @State private var familyCoda = "S"
@@ -34,6 +37,33 @@ public struct ParentZoneView: View {
                         Text(fr ? "Les deux (alterner)" : "Both (alternate)").tag("both")
                     }
                     .pickerStyle(.segmented)
+                }
+                Section {
+                    NavigationLink {
+                        MicTestView(locale: locale)
+                    } label: {
+                        Label(fr ? "Tester le micro" : "Test the microphone", systemImage: "mic.fill")
+                    }
+                    Toggle(fr ? "Essai par un adulte (voix grave acceptée)" : "Adult trial (deep voices accepted)",
+                           isOn: $adultTrial)
+                } header: {
+                    Text(fr ? "Micro" : "Microphone")
+                } footer: {
+                    Text(fr ? "Le train écarte exprès les voix graves d'adulte, pour ne pas prendre votre modèle pour la réponse de l'enfant. Pour essayer le jeu vous-même, activez « Essai par un adulte », puis coupez-le avant de laisser jouer l'enfant."
+                            : "The train deliberately ignores deep adult voices, so your model is never taken for the child's answer. To try the game yourself, turn on \"Adult trial\", then turn it off before your child plays.")
+                }
+                Section {
+                    Picker(fr ? "Mots du train" : "Train words", selection: $maxLevel) {
+                        Text(fr ? "1 syllabe" : "1 syllable").tag(1)
+                        Text(fr ? "+ 2 syllabes" : "+ 2 syllables").tag(2)
+                        Text(fr ? "Tous" : "All").tag(3)
+                    }
+                    .pickerStyle(.segmented)
+                } header: {
+                    Text(fr ? "Mots du train" : "Train words")
+                } footer: {
+                    Text(fr ? "« Tous » ajoute les mots à groupe de consonnes (cloche, glace, brosse…). Les listes sont des propositions, à valider par des orthophonistes."
+                            : "\"All\" adds words with consonant clusters (splash, brush…). The lists are proposals, to be validated by speech-language pathologists.")
                 }
                 Section(fr ? "Présentation" : "Showcase") {
                     Toggle(fr ? "Mode démo (sans micro)" : "Demo mode (no microphone)", isOn: $demoMode)

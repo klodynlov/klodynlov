@@ -48,7 +48,8 @@ let package = Package(
         // Le mode démo montre ce qu'il annonce, pour chaque mot (macOS : `swift test` ici).
         .testTarget(
             name: "EveilTrainTests",
-            dependencies: ["TrainPracticeUI", .product(name: "WordEndCore", package: "WordEndCore")]
+            dependencies: ["TrainPracticeUI", "EveilSounds", "EveilDesign",
+                           .product(name: "WordEndCore", package: "WordEndCore")]
         ),
         // Chaque bruitage se calcule, reste fini, audible et sans saturation.
         .testTarget(name: "EveilSoundsTests", dependencies: ["EveilSounds"]),

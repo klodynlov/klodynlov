@@ -4,6 +4,10 @@
 // casquette de chef de gare, clin d'œil à « minouche ». Dessin vectoriel en
 // attendant un illustrateur. Il ne dit jamais « faux » : il salue, écoute, fait
 // la fête, montre le fourgon resté en gare, répète le mot, ou s'endort.
+//
+// Mouvements pilotés par l'HORLOGE (TimelineView) et non par des animations
+// `repeatForever` lancées dans `onAppear` : celles-ci peuvent « capturer » une
+// transition en cours (fondu, entrée du train) et la rejouer sans fin.
 
 #if canImport(SwiftUI)
 import SwiftUI
@@ -22,7 +26,6 @@ public struct CatStationMaster: View {
     public let mood: CatMood
     public let size: CGFloat
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var swing = false
     @State private var blink = false
 
     public init(mood: CatMood, size: CGFloat = 240) {
@@ -38,24 +41,31 @@ public struct CatStationMaster: View {
 
     public var body: some View {
         let k = size / 240
-        ZStack {
-            tail
-            body_
-            feet
-            arms
-            head
-                .rotationEffect(.degrees(mood == .puzzled ? -9 : 0), anchor: UnitPoint(x: 0.5, y: 0.7))
-            extras
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: reduceMotion)) { context in
+            let s = reduceMotion ? 0 : swing(at: context.date)
+            ZStack {
+                tail
+                body_
+                feet
+                arms(s)
+                head
+                    .rotationEffect(.degrees(mood == .puzzled ? -9 : 0), anchor: UnitPoint(x: 0.5, y: 0.7))
+                extras(s)
+            }
+            .frame(width: 200, height: 240)
+            .offset(y: mood == .cheering ? -12 * s : 0)
+            .scaleEffect(k)
+            .frame(width: 200 * k, height: 240 * k)
         }
-        .frame(width: 200, height: 240)
-        .offset(y: mood == .cheering && swing && !reduceMotion ? -12 : 0)
-        .scaleEffect(k)
-        .frame(width: 200 * k, height: 240 * k)
-        .onAppear(perform: startMotion)
-        .onChange(of: mood) { _, _ in startMotion() }
         .task { await blinkLoop() }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityText)
+    }
+
+    /// Balancement 0 → 1 → 0, plus vif pour la fête, très lent pour le sommeil.
+    private func swing(at date: Date) -> Double {
+        let period: Double = mood == .cheering ? 0.7 : (mood == .sleeping ? 3.2 : 1.2)
+        return (1 - cos(date.timeIntervalSinceReferenceDate * 2 * .pi / period)) / 2
     }
 
     // MARK: Parties du corps (repère 200 × 240)
@@ -94,14 +104,14 @@ public struct CatStationMaster: View {
         }
     }
 
-    @ViewBuilder private var arms: some View {
+    @ViewBuilder private func arms(_ s: Double) -> some View {
         switch mood {
         case .hello:
             paw(at: CGPoint(x: 50, y: 206))
-            raisedArm(angle: swing ? -8 : 22, at: CGPoint(x: 166, y: 150))
+            raisedArm(angle: 22 - 30 * s, at: CGPoint(x: 166, y: 150))
         case .cheering:
-            raisedArm(angle: swing ? 30 : 18, at: CGPoint(x: 34, y: 150), mirrored: true)
-            raisedArm(angle: swing ? -30 : -18, at: CGPoint(x: 166, y: 150))
+            raisedArm(angle: 18 + 12 * s, at: CGPoint(x: 34, y: 150), mirrored: true)
+            raisedArm(angle: -18 - 12 * s, at: CGPoint(x: 166, y: 150))
         case .listening:
             paw(at: CGPoint(x: 50, y: 206))
             // La patte en cornet derrière l'oreille.
@@ -118,7 +128,7 @@ public struct CatStationMaster: View {
                 Capsule().fill(Self.furDark).frame(width: 18, height: 8).offset(x: 70, y: -2)
             }
             .frame(width: 96, height: 30, alignment: .leading)
-            .rotationEffect(.degrees(swing ? 38 : 30), anchor: .leading)
+            .rotationEffect(.degrees(30 + 8 * s), anchor: .leading)
             .position(x: 190, y: 184)
         case .puzzled:
             paw(at: CGPoint(x: 50, y: 206))
@@ -141,7 +151,6 @@ public struct CatStationMaster: View {
         .frame(width: 30, height: 70)
         .rotationEffect(.degrees(angle), anchor: .bottom)
         .position(x: p.x, y: p.y - 10)
-        .animation(reduceMotion ? nil : .easeInOut(duration: 0.45), value: swing)
     }
 
     private var head: some View {
@@ -247,7 +256,7 @@ public struct CatStationMaster: View {
         }
     }
 
-    @ViewBuilder private var extras: some View {
+    @ViewBuilder private func extras(_ s: Double) -> some View {
         switch mood {
         case .listening:
             ForEach(0..<2, id: \.self) { i in
@@ -255,7 +264,7 @@ public struct CatStationMaster: View {
                     .stroke(Color.teal, style: StrokeStyle(lineWidth: 4, lineCap: .round))
                     .frame(width: CGFloat(34 + i * 22), height: CGFloat(34 + i * 22))
                     .rotationEffect(.degrees(95))
-                    .opacity(swing ? 1 : 0.35)
+                    .opacity(0.35 + 0.65 * s)
                     .position(x: 184, y: 80)
             }
         case .cheering:
@@ -264,13 +273,13 @@ public struct CatStationMaster: View {
                     .font(.system(size: CGFloat(18 + (i % 2) * 8)))
                     .foregroundStyle(Self.gold)
                     .position(x: [12, 188, 30, 176][i], y: [40, 36, 100, 104][i])
-                    .scaleEffect(swing ? 1.15 : 0.85)
+                    .scaleEffect(0.85 + 0.3 * s)
             }
         case .sleeping:
             Text("z Z")
                 .font(.system(size: 30, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white.opacity(0.9))
-                .position(x: 176, y: swing ? 18 : 30)
+                .position(x: 176, y: 30 - 12 * s)
         case .puzzled:
             Text("?")
                 .font(.system(size: 44, weight: .heavy, design: .rounded))
@@ -282,13 +291,6 @@ public struct CatStationMaster: View {
     }
 
     // MARK: Mouvement
-
-    private func startMotion() {
-        swing = false
-        guard !reduceMotion else { return }
-        let duration: Double = mood == .cheering ? 0.35 : (mood == .sleeping ? 1.6 : 0.6)
-        withAnimation(.easeInOut(duration: duration).repeatForever(autoreverses: true)) { swing = true }
-    }
 
     private func blinkLoop() async {
         while !Task.isCancelled {

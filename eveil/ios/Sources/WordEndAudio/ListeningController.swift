@@ -40,15 +40,23 @@ public final class ListeningController {
     /// Aperçu en direct : une friction finale a été entendue (le fourgon s'accroche).
     public private(set) var cabooseHeard = false
     public private(set) var childIsSpeaking = false
+    /// Niveau du micro (dBFS, RMS du dernier bloc) : le vumètre du test micro de
+    /// l'espace des grands. Un nombre, jamais le son.
+    public private(set) var inputLevelDb = -120.0
+
+    /// Seuils du détecteur et réglages du flux, pris en compte à la PROCHAINE écoute
+    /// (l'espace des grands peut, par exemple, accepter les voix d'adulte pour un essai).
+    public var config: DetectorConfig
+    public var stream: StreamingConfig
 
     private let microphone = MicrophoneStream()
     private let analysisQueue = DispatchQueue(label: "eveil.wordend.analysis", qos: .userInitiated)
     @ObservationIgnored private var tracker: StreamingTracker?
     @ObservationIgnored private var demoTask: Task<Void, Never>?
-    private let config: DetectorConfig
 
-    public init(config: DetectorConfig = DetectorConfig()) {
+    public init(config: DetectorConfig = DetectorConfig(), stream: StreamingConfig = StreamingConfig()) {
         self.config = config
+        self.stream = stream
     }
 
     /// Autorisation micro (iOS 17 : `AVAudioApplication`). À demander depuis
@@ -60,7 +68,7 @@ public final class ListeningController {
     /// Écoute l'enfant dire `word` ; le verdict final arrive dans `phase`.
     public func listen(for word: TargetWord) {
         guard phase != .listening else { return }
-        let tracker = StreamingTracker(target: word, config: config)
+        let tracker = StreamingTracker(target: word, config: config, stream: stream)
         self.tracker = tracker
         litWagons = 0
         cabooseHeard = false
@@ -75,9 +83,12 @@ public final class ListeningController {
             try microphone.start { [weak self] chunk in
                 let samples = chunk.map(Double.init)
                 queue.async {
+                    let level = Self.rmsDb(samples)
                     let events = confined.tracker.push(samples)
-                    guard !events.isEmpty else { return }
-                    Task { @MainActor in self?.apply(events, from: confined.tracker) }
+                    Task { @MainActor in
+                        self?.inputLevelDb = level
+                        if !events.isEmpty { self?.apply(events, from: confined.tracker) }
+                    }
                 }
             }
         } catch {
@@ -90,7 +101,7 @@ public final class ListeningController {
     /// Aucun micro n'est ouvert ; le train réagit comme avec un enfant.
     public func listenDemo(for word: TargetWord, samples: [Double]) {
         guard phase != .listening else { return }
-        let tracker = StreamingTracker(target: word, config: config)
+        let tracker = StreamingTracker(target: word, config: config, stream: stream)
         self.tracker = tracker
         litWagons = 0
         cabooseHeard = false
@@ -140,6 +151,14 @@ public final class ListeningController {
         litWagons = 0
         cabooseHeard = false
         childIsSpeaking = false
+        inputLevelDb = -120
+    }
+
+    /// RMS d'un bloc en dBFS (plancher −120).
+    nonisolated static func rmsDb(_ x: [Double]) -> Double {
+        guard !x.isEmpty else { return -120 }
+        let power = x.reduce(0) { $0 + $1 * $1 } / Double(x.count)
+        return max(-120, 10 * log10(max(power, 1e-12)))
     }
 
     private func apply(_ events: [TrackerEvent], from source: StreamingTracker) {
