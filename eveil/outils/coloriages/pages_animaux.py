@@ -202,7 +202,9 @@ CANICHE = page(
     trait(arc(170, 330, 34, 40, 130)),
     zone(_pompon(292, 186, 86, 56)),
     zone(_pompon(348, 342, 52, 90, bosses=6)),
-    *oeil(232, 262, 24, dx=-5, dy=2, p=0.58),
+    # Œil : la pupille ne doit pas manger le blanc — un croissant trop fin (< 0,02 % de la page)
+    # est rattaché à la tête par la carte des zones de l'app (vu au premier swift test sur le Mac).
+    *oeil(232, 264, 26, dx=-3, dy=2, p=0.48),
 )
 
 
