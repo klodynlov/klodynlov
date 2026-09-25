@@ -1,116 +1,184 @@
-// ColoringPages.swift — les pages à colorier : des formes fermées dans un carré unité.
+// ColoringPages.swift — les pages à colorier : des dessins au trait pour les 3-5 ans.
 //
-// Chaque page est une liste de régions (`Path` en coordonnées 0…1), de la plus
-// basse à la plus haute : la région 0 est le fond. Toucher une région la remplit ;
-// un trait de pinceau reste dans la région où il a commencé (pochoir). Tracés
-// provisoires, en attendant les dessins d'un illustrateur.
+// Chaque page est un croquis (cf. Sketch) : des formes empilées du fond vers
+// l'avant, dont on ne garde que les traits visibles. Règles de dessin :
+// - traits épais (≈ 1,2 % de la page), grandes zones, peu de petites ;
+// - un trait n'existe que là où une zone s'arrête (sauf quelques détails ouverts
+//   — moustaches, sourires, rayons — qui ne ferment rien) ;
+// - toute aire visible se remplit ; les petites zones (< 0,3 % de la page) sont
+//   des détails VOULUS (yeux, boutons) et déclarés comme tels ;
+// - chaque zone dessinée porte un point-témoin : les tests vérifient qu'aucune ne
+//   fuit dans sa voisine ni dans le fond.
+// Tracés provisoires, en attendant les dessins d'un illustrateur.
 
-#if canImport(SwiftUI)
-import SwiftUI
+#if canImport(CoreGraphics)
+import CoreGraphics
+import Foundation
 
 public struct ColoringPage: Identifiable, Sendable {
     public let id: String
     public let titleFR: String
     public let titleEN: String
-    let regions: [Path]
+    /// Épaisseur du trait affiché, en unité de page.
+    let lineWidth: CGFloat
+    let draw: @Sendable (inout Sketch) -> Void
+
+    init(_ id: String, fr: String, en: String, lineWidth: CGFloat = 0.012,
+         draw: @escaping @Sendable (inout Sketch) -> Void) {
+        self.id = id
+        self.titleFR = fr
+        self.titleEN = en
+        self.lineWidth = lineWidth
+        self.draw = draw
+    }
 
     public func title(locale: String) -> String { locale.hasPrefix("fr") ? titleFR : titleEN }
 
-    /// Région la plus haute sous le point (coordonnées unité), ou `nil`.
-    func region(at p: CGPoint) -> Int? {
-        regions.indices.reversed().first { regions[$0].contains(p) }
+    /// Le croquis (formes, témoins) — recalculé à chaque appel : réservé aux tests et au cache.
+    var sketch: Sketch {
+        var s = Sketch()
+        draw(&s)
+        return s
     }
+
+    /// Les traits visibles (calculés une fois, puis gardés).
+    public var lineArt: LineArt { LineArtCache.shared.art(for: self) }
 }
 
 public enum ColoringPages {
-    public static let all: [ColoringPage] = [train, cat, house]
+    public static let all: [ColoringPage] = [
+        train, cat, house, fly, cow, hive, fish, butterfly, flowers, iceCream, boat, rocket, snail, dogHouse, bell,
+    ]
+}
 
-    // MARK: Primitives (carré unité)
+// MARK: Éléments de décor partagés
 
-    static func rect(_ x: CGFloat, _ y: CGFloat, _ w: CGFloat, _ h: CGFloat, r: CGFloat = 0) -> Path {
-        Path(roundedRect: CGRect(x: x, y: y, width: w, height: h), cornerRadius: r, style: .continuous)
+extension Sketch {
+    /// Soleil : un disque et des rayons (traits ouverts : ils ne ferment rien).
+    mutating func sun(_ cx: CGFloat, _ cy: CGFloat, _ r: CGFloat, rays: Int = 8) {
+        shape(G.circle(cx, cy, r), at: (cx, cy))
+        for k in 0..<rays {
+            let a = (CGFloat(k) / CGFloat(rays) * 360 + 22.5) * .pi / 180
+            line(G.line([(cx + (r + 0.022) * cos(a), cy + (r + 0.022) * sin(a)),
+                         (cx + (r + 0.055) * cos(a), cy + (r + 0.055) * sin(a))]))
+        }
     }
 
-    /// Rectangle arrondi à gauche seulement (une chaudière qui s'appuie sur la cabine).
-    static func roundedLeft(_ x: CGFloat, _ y: CGFloat, _ w: CGFloat, _ h: CGFloat, r: CGFloat) -> Path {
-        UnevenRoundedRectangle(topLeadingRadius: r, bottomLeadingRadius: r,
-                               bottomTrailingRadius: 0, topTrailingRadius: 0, style: .continuous)
-            .path(in: CGRect(x: x, y: y, width: w, height: h))
+    /// Nuage d'un seul contour (ses bosses sont réunies).
+    mutating func cloud(_ cx: CGFloat, _ cy: CGFloat, _ w: CGFloat) {
+        shape(G.cloud(cx, cy, w), at: (cx, cy + w * 0.06))
     }
 
-    static func circle(_ cx: CGFloat, _ cy: CGFloat, _ r: CGFloat) -> Path {
-        Path(ellipseIn: CGRect(x: cx - r, y: cy - r, width: 2 * r, height: 2 * r))
+    /// Ligne d'horizon d'un bord à l'autre : l'herbe dessous est une zone.
+    mutating func ground(_ y: CGFloat, wave: CGFloat = 0.012) {
+        line(G.spline([(-0.05, y), (0.18, y - wave), (0.42, y + wave * 0.6), (0.66, y - wave * 0.8),
+                       (0.86, y + wave * 0.4), (1.05, y)]))
     }
 
-    static func ellipse(_ cx: CGFloat, _ cy: CGFloat, _ rx: CGFloat, _ ry: CGFloat) -> Path {
-        Path(ellipseIn: CGRect(x: cx - rx, y: cy - ry, width: 2 * rx, height: 2 * ry))
+    /// Touffes d'herbe (petits « v » ouverts, sous l'horizon).
+    mutating func grass(_ spots: [(CGFloat, CGFloat)]) {
+        for (x, y) in spots {
+            line(G.line([(x - 0.022, y - 0.028), (x - 0.006, y), (x, y - 0.034), (x + 0.006, y), (x + 0.022, y - 0.028)]))
+        }
     }
 
-    static func polygon(_ pts: [(CGFloat, CGFloat)]) -> Path {
-        var p = Path()
-        p.addLines(pts.map { CGPoint(x: $0.0, y: $0.1) })
-        p.closeSubpath()
-        return p
+    /// Une abeille, tête vers la gauche (`flip` : vers la droite) ; `k` = échelle.
+    /// Corps long à deux rayures (trois anneaux de même largeur), deux grandes ailes.
+    mutating func bee(_ cx: CGFloat, _ cy: CGFloat, _ k: CGFloat = 1, flip: Bool = false) {
+        let d: CGFloat = flip ? -1 : 1
+        let wingBack = G.ellipse(cx + d * 0.035 * k, cy - 0.072 * k, 0.036 * k, 0.056 * k, deg: 22 * d)
+        let wingFront = G.ellipse(cx - d * 0.015 * k, cy - 0.078 * k, 0.036 * k, 0.056 * k, deg: -16 * d)
+        shape(wingBack, at: (cx + d * 0.052 * k, cy - 0.098 * k))
+        shape(wingFront, at: (cx - d * 0.022 * k, cy - 0.105 * k))
+        let body = G.ellipse(cx, cy, 0.09 * k, 0.052 * k)
+        shape(body)
+        for sx in [CGFloat(-0.005), 0.042] {
+            let x = cx + d * sx * k
+            line(G.spline([(x + d * 0.006 * k, cy - 0.07 * k), (x - d * 0.006 * k, cy), (x + d * 0.006 * k, cy + 0.07 * k)]),
+                 in: body)
+        }
+        expect(cx - d * 0.03 * k, cy + 0.012 * k)
+        expect(cx + d * 0.018 * k, cy)
+        expect(cx + d * 0.065 * k, cy)
+        let hx = cx - d * 0.09 * k
+        line(G.spline([(hx, cy - 0.03 * k), (hx - d * 0.02 * k, cy - 0.075 * k), (hx - d * 0.045 * k, cy - 0.085 * k)]))
+        ink(G.circle(hx - d * 0.045 * k, cy - 0.085 * k, 0.011 * k))
+        shape(G.circle(hx, cy, 0.04 * k), at: (hx + d * 0.012 * k, cy - 0.02 * k))
+        ink(G.circle(hx - d * 0.012 * k, cy - 0.01 * k, 0.009 * k))
+        line(G.arc(hx - d * 0.006 * k, cy + 0.006 * k, 0.017 * k, from: 30, to: 150))
     }
 
-    static func cloud(_ cx: CGFloat, _ cy: CGFloat, _ s: CGFloat) -> Path {
-        var p = Path()
-        p.addEllipse(in: CGRect(x: cx - 1.0 * s, y: cy - 0.3 * s, width: 1.0 * s, height: 0.7 * s))
-        p.addEllipse(in: CGRect(x: cx - 0.55 * s, y: cy - 0.62 * s, width: 1.05 * s, height: 1.0 * s))
-        p.addEllipse(in: CGRect(x: cx + 0.05 * s, y: cy - 0.32 * s, width: 0.95 * s, height: 0.7 * s))
-        return p
+    /// Fleur ronde sur sa tige : un contour festonné (pétales) et un cœur (petit détail).
+    mutating func flower(_ cx: CGFloat, _ cy: CGFloat, _ r: CGFloat, stemTo groundY: CGFloat) {
+        line(G.line([(cx, cy), (cx, groundY + 0.02)]))
+        var bumps: [CGPath] = []
+        for k in 0..<6 {
+            let a = CGFloat(k) * .pi / 3
+            bumps.append(G.circle(cx + r * 0.62 * cos(a), cy + r * 0.62 * sin(a), r * 0.48))
+        }
+        shape(G.union(bumps), at: (cx + r * 0.8, cy))
+        detail(G.circle(cx, cy, r * 0.42), at: (cx, cy))
+    }
+}
+
+extension G {
+    /// Un cœur centré en (cx, cy), de largeur ≈ 2 × `r`.
+    static func heart(_ cx: CGFloat, _ cy: CGFloat, _ r: CGFloat) -> CGPath {
+        path { p in
+            p.move(to: CGPoint(x: cx, y: cy + r * 0.95))
+            p.addCurve(to: CGPoint(x: cx - r, y: cy - r * 0.15), control1: CGPoint(x: cx - r * 0.55, y: cy + r * 0.55),
+                       control2: CGPoint(x: cx - r, y: cy + r * 0.25))
+            p.addCurve(to: CGPoint(x: cx, y: cy - r * 0.45), control1: CGPoint(x: cx - r, y: cy - r * 0.75),
+                       control2: CGPoint(x: cx - r * 0.2, y: cy - r * 0.8))
+            p.addCurve(to: CGPoint(x: cx + r, y: cy - r * 0.15), control1: CGPoint(x: cx + r * 0.2, y: cy - r * 0.8),
+                       control2: CGPoint(x: cx + r, y: cy - r * 0.75))
+            p.addCurve(to: CGPoint(x: cx, y: cy + r * 0.95), control1: CGPoint(x: cx + r, y: cy + r * 0.25),
+                       control2: CGPoint(x: cx + r * 0.55, y: cy + r * 0.55))
+            p.closeSubpath()
+        }
     }
 
-    // MARK: Pages
+    /// Une feuille en amande, de `a` à `b`, de largeur `w`.
+    static func leaf(_ a: (CGFloat, CGFloat), _ b: (CGFloat, CGFloat), width w: CGFloat) -> CGPath {
+        let mx = (a.0 + b.0) / 2, my = (a.1 + b.1) / 2
+        let dx = b.0 - a.0, dy = b.1 - a.1
+        let len = max(hypot(dx, dy), 0.0001)
+        let nx = -dy / len * w, ny = dx / len * w
+        return path { p in
+            p.move(to: CGPoint(x: a.0, y: a.1))
+            p.addQuadCurve(to: CGPoint(x: b.0, y: b.1), control: CGPoint(x: mx + nx, y: my + ny))
+            p.addQuadCurve(to: CGPoint(x: a.0, y: a.1), control: CGPoint(x: mx - nx, y: my - ny))
+            p.closeSubpath()
+        }
+    }
 
-    static let train = ColoringPage(id: "train", titleFR: "Le petit train", titleEN: "The little train", regions: [
-        rect(0, 0, 1, 1),                                   // fond (ciel)
-        circle(0.84, 0.15, 0.085),                           // soleil
-        cloud(0.5, 0.17, 0.12),                              // nuage
-        rect(0, 0.78, 1, 0.22),                              // herbe
-        polygon([(0.15, 0.25), (0.27, 0.25), (0.25, 0.44), (0.17, 0.44)]),   // cheminée
-        roundedLeft(0.10, 0.44, 0.295, 0.22, r: 0.07),       // chaudière (bord droit contre la cabine)
-        rect(0.39, 0.30, 0.17, 0.36, r: 0.025),              // cabine
-        rect(0.42, 0.35, 0.11, 0.10, r: 0.02),               // fenêtre
-        rect(0.60, 0.42, 0.32, 0.24, r: 0.035),              // wagon
-        circle(0.19, 0.70, 0.058),                           // roues
-        circle(0.33, 0.70, 0.058),
-        circle(0.49, 0.69, 0.068),
-        circle(0.68, 0.71, 0.052),
-        circle(0.85, 0.71, 0.052),
-    ])
+    /// Rectangle aux coins arrondis un par un (haut-gauche, haut-droit, bas-droit, bas-gauche).
+    static func roundRect(_ x: CGFloat, _ y: CGFloat, _ w: CGFloat, _ h: CGFloat,
+                          tl: CGFloat, tr: CGFloat, br: CGFloat, bl: CGFloat) -> CGPath {
+        path { p in
+            p.move(to: CGPoint(x: x + tl, y: y))
+            p.addLine(to: CGPoint(x: x + w - tr, y: y))
+            if tr > 0 { p.addArc(tangent1End: CGPoint(x: x + w, y: y), tangent2End: CGPoint(x: x + w, y: y + h), radius: tr) }
+            p.addLine(to: CGPoint(x: x + w, y: y + h - br))
+            if br > 0 { p.addArc(tangent1End: CGPoint(x: x + w, y: y + h), tangent2End: CGPoint(x: x, y: y + h), radius: br) }
+            p.addLine(to: CGPoint(x: x + bl, y: y + h))
+            if bl > 0 { p.addArc(tangent1End: CGPoint(x: x, y: y + h), tangent2End: CGPoint(x: x, y: y), radius: bl) }
+            p.addLine(to: CGPoint(x: x, y: y + tl))
+            if tl > 0 { p.addArc(tangent1End: CGPoint(x: x, y: y), tangent2End: CGPoint(x: x + w, y: y), radius: tl) }
+            p.closeSubpath()
+        }
+    }
 
-    static let cat = ColoringPage(id: "chat", titleFR: "Le chat chef de gare", titleEN: "The station master cat", regions: [
-        rect(0, 0, 1, 1),                                   // fond
-        rect(0.28, 0.80, 0.44, 0.22, r: 0.08),               // veste
-        polygon([(0.20, 0.42), (0.26, 0.10), (0.44, 0.30)]),  // oreille gauche
-        polygon([(0.80, 0.42), (0.74, 0.10), (0.56, 0.30)]),  // oreille droite
-        ellipse(0.5, 0.56, 0.33, 0.28),                      // tête
-        polygon([(0.30, 0.12), (0.70, 0.12), (0.67, 0.32), (0.33, 0.32)]),   // casquette
-        rect(0.31, 0.32, 0.44, 0.06, r: 0.03),               // visière
-        circle(0.5, 0.21, 0.035),                            // insigne
-        ellipse(0.39, 0.54, 0.045, 0.06),                    // yeux
-        ellipse(0.61, 0.54, 0.045, 0.06),
-        polygon([(0.46, 0.63), (0.54, 0.63), (0.50, 0.68)]), // nez
-        circle(0.31, 0.66, 0.045),                           // joues
-        circle(0.69, 0.66, 0.045),
-    ])
-
-    static let house = ColoringPage(id: "maison", titleFR: "La maison", titleEN: "The house", regions: [
-        rect(0, 0, 1, 1),                                   // ciel
-        circle(0.14, 0.14, 0.08),                            // soleil
-        cloud(0.62, 0.14, 0.10),                             // nuage
-        rect(0, 0.82, 1, 0.18),                              // herbe
-        rect(0.60, 0.22, 0.07, 0.16),                        // cheminée
-        polygon([(0.14, 0.44), (0.47, 0.18), (0.80, 0.44)]),  // toit
-        rect(0.19, 0.44, 0.56, 0.40),                        // mur
-        rect(0.41, 0.62, 0.13, 0.22, r: 0.02),               // porte
-        rect(0.24, 0.52, 0.12, 0.11, r: 0.015),              // fenêtres
-        rect(0.59, 0.52, 0.12, 0.11, r: 0.015),
-        rect(0.84, 0.60, 0.04, 0.24),                        // tronc
-        circle(0.86, 0.52, 0.10),                            // feuillage
-        circle(0.10, 0.86, 0.035),                           // fleurs
-        circle(0.20, 0.90, 0.03),
-    ])
+    /// Porte en arche : bas en `bottom`, largeur `w`, haut du montant en `springY`.
+    static func archDoor(_ x: CGFloat, _ springY: CGFloat, _ w: CGFloat, bottom: CGFloat) -> CGPath {
+        path { p in
+            p.move(to: CGPoint(x: x, y: bottom))
+            p.addLine(to: CGPoint(x: x, y: springY))
+            p.addArc(center: CGPoint(x: x + w / 2, y: springY), radius: w / 2, startAngle: .pi, endAngle: 2 * .pi,
+                     clockwise: false)
+            p.addLine(to: CGPoint(x: x + w, y: bottom))
+            p.closeSubpath()
+        }
+    }
 }
 #endif
