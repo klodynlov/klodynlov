@@ -44,6 +44,7 @@ public final class ListeningController {
     private let microphone = MicrophoneStream()
     private let analysisQueue = DispatchQueue(label: "eveil.wordend.analysis", qos: .userInitiated)
     @ObservationIgnored private var tracker: StreamingTracker?
+    @ObservationIgnored private var demoTask: Task<Void, Never>?
     private let config: DetectorConfig
 
     public init(config: DetectorConfig = DetectorConfig()) {
@@ -84,9 +85,45 @@ public final class ListeningController {
         }
     }
 
+    /// « Micro simulé » (mode démo) : pousse un signal déjà prêt (pseudo-parole de
+    /// `Synth`) dans le VRAI traqueur, par blocs de 20 ms au rythme du temps réel.
+    /// Aucun micro n'est ouvert ; le train réagit comme avec un enfant.
+    public func listenDemo(for word: TargetWord, samples: [Double]) {
+        guard phase != .listening else { return }
+        let tracker = StreamingTracker(target: word, config: config)
+        self.tracker = tracker
+        litWagons = 0
+        cabooseHeard = false
+        childIsSpeaking = false
+        phase = .listening
+        let queue = analysisQueue
+        let confined = ConfinedTracker(tracker)
+        demoTask?.cancel()
+        demoTask = Task { [weak self] in
+            let step = WordEnd.analysisRate / 50
+            var start = 0
+            while start < samples.count, !Task.isCancelled {
+                let chunk = Array(samples[start..<min(start + step, samples.count)])
+                start += step
+                queue.async {
+                    let events = confined.tracker.push(chunk)
+                    guard !events.isEmpty else { return }
+                    Task { @MainActor in self?.apply(events, from: confined.tracker) }
+                }
+                try? await Task.sleep(nanoseconds: 20_000_000)
+            }
+            guard !Task.isCancelled else { return }
+            queue.async {                       // sans effet si l'énoncé est déjà clos
+                let events = confined.tracker.stop()
+                Task { @MainActor in self?.apply(events, from: confined.tracker) }
+            }
+        }
+    }
+
     /// Arrêt anticipé (l'enfant quitte l'écran…) : le verdict reste « incertain » au besoin.
     public func stop() {
         guard phase == .listening, let tracker else { return }
+        demoTask?.cancel()
         microphone.stop()
         let confined = ConfinedTracker(tracker)
         analysisQueue.async { [weak self] in
@@ -96,6 +133,7 @@ public final class ListeningController {
     }
 
     public func reset() {
+        demoTask?.cancel()
         microphone.stop()
         tracker = nil                      // les événements encore en vol seront ignorés
         phase = .idle

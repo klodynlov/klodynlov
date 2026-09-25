@@ -5,8 +5,11 @@
 //                    pédagogie, lexiques, synthèse de test) — c'est LUI qu'on teste :
 //                    `cd WordEndCore && swift test`.
 //   WordEndAudio     AVFoundation : session `.measurement`, micro 24 kHz, écoute.
-//   TrainPracticeUI  SwiftUI : le train, la mascotte, l'écran d'entraînement,
+//   TrainPracticeUI  SwiftUI : le train, l'écran d'entraînement, le mode démo,
 //                    l'espace parent, le journal local (SwiftData).
+//   EveilDesign      l'univers visuel commun : décor, gros boutons, la mascotte
+//                    (chat chef de gare, choix provisoire).
+//   ColoringUI       l'Atelier de coloriage (app 2) : pochoirs à colorier au doigt.
 //
 // Les cibles sont protégées par `#if canImport(...)` : hors plateformes Apple
 // elles compilent à vide. Xcode 16+ recommandé (SwiftUI `View` isolée MainActor).
@@ -19,6 +22,8 @@ let package = Package(
     products: [
         .library(name: "WordEndAudio", targets: ["WordEndAudio"]),
         .library(name: "TrainPracticeUI", targets: ["TrainPracticeUI"]),
+        .library(name: "EveilDesign", targets: ["EveilDesign"]),
+        .library(name: "ColoringUI", targets: ["ColoringUI"]),
     ],
     dependencies: [
         .package(path: "WordEndCore"),
@@ -28,9 +33,16 @@ let package = Package(
             name: "WordEndAudio",
             dependencies: [.product(name: "WordEndCore", package: "WordEndCore")]
         ),
+        .target(name: "EveilDesign"),
         .target(
             name: "TrainPracticeUI",
-            dependencies: [.product(name: "WordEndCore", package: "WordEndCore"), "WordEndAudio"]
+            dependencies: [.product(name: "WordEndCore", package: "WordEndCore"), "WordEndAudio", "EveilDesign"]
+        ),
+        .target(name: "ColoringUI", dependencies: ["EveilDesign"]),
+        // Le mode démo montre ce qu'il annonce, pour chaque mot (macOS : `swift test` ici).
+        .testTarget(
+            name: "EveilTrainTests",
+            dependencies: ["TrainPracticeUI", .product(name: "WordEndCore", package: "WordEndCore")]
         ),
     ]
 )

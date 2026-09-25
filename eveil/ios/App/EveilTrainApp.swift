@@ -1,10 +1,10 @@
 // EveilTrainApp.swift — coquille de l'app iPad (cible Xcode, hors paquet Swift).
 //
-// Création du projet : Xcode 16+ › New › App (iPad, SwiftUI, iPadOS 17+), ajouter
-// les paquets locaux `eveil/ios` et `eveil/ios/WordEndCore` (File › Add Package
-// Dependencies › Add Local…), lier `TrainPracticeUI` et `WordEndCore`, copier ce fichier + `PrivacyInfo.xcprivacy`, ajouter
-// les clés de `Info-additions.plist`, et embarquer `eveil/lexique/*.json` dans
-// les ressources de l'app. AUCUN entitlement iCloud, AUCUN SDK tiers.
+// Projet : `eveil/ios/App/EveilTrain.xcodeproj` (paquets locaux `eveil/ios` et
+// `eveil/ios/WordEndCore` ; produits TrainPracticeUI, WordEndCore, EveilDesign,
+// ColoringUI ; ressources : `PrivacyInfo.xcprivacy` et `eveil/lexique/*.json`).
+// L'app s'ouvre sur l'accueil de la suite (`HomeView`). AUCUN entitlement
+// iCloud, AUCUN SDK tiers.
 
 import SwiftData
 import SwiftUI
@@ -29,16 +29,7 @@ struct EveilTrainApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Group {
-                if let lexicon = LexiconLoader.load(language == "en-US" ? "en-US" : "fr-FR") {
-                    PracticeView(words: lexicon.words.filter { ($0.level ?? 1) == 1 },
-                                 locale: lexicon.locale,
-                                 cabooseSounds: lexicon.cabooseSounds,
-                                 parentButtonHidden: parentAreaLocked)
-                } else {
-                    Text("Lexique introuvable dans le paquet de l'app.")
-                }
-            }
+            HomeView(parentAreaLocked: parentAreaLocked)
             .onReceive(NotificationCenter.default.publisher(for: AppDelegate.guidedAccessChanged)) { _ in
                 parentAreaLocked = AppDelegate.parentAreaLocked
             }

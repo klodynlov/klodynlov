@@ -14,6 +14,7 @@ public struct ParentZoneView: View {
     @AppStorage("eveil.language") private var language = "fr-FR"      // fr-FR | en-US | both
     @AppStorage("eveil.dailyMinutes") private var dailyMinutes = 15.0
     @AppStorage("eveil.lexicalCheck") private var lexicalCheck = false  // expérimental, OFF
+    @AppStorage("eveil.demoMode") private var demoMode = false          // présentation, sans micro
     @State private var familyText = ""
     @State private var familyWagons = ""
     @State private var familyCoda = "S"
@@ -33,6 +34,12 @@ public struct ParentZoneView: View {
                         Text(fr ? "Les deux (alterner)" : "Both (alternate)").tag("both")
                     }
                     .pickerStyle(.segmented)
+                }
+                Section(fr ? "Présentation" : "Showcase") {
+                    Toggle(fr ? "Mode démo (sans micro)" : "Demo mode (no microphone)", isOn: $demoMode)
+                    Text(fr ? "Pour montrer le jeu : le micro reste fermé, et une barre fait « parler » le train avec une voix synthétique. Ce n'est pas une mesure de votre enfant."
+                            : "To show the game: the microphone stays off, and a bar makes the train \"hear\" a synthetic voice. It does not measure your child.")
+                        .font(.footnote).foregroundStyle(.secondary)
                 }
                 Section(fr ? "Temps d'écran" : "Screen time") {
                     Stepper(value: $dailyMinutes, in: 5...30, step: 5) {
