@@ -161,15 +161,156 @@ API Akai/Logic inventées, « MCP pilote le DAW » sans adaptateur. 🟡 Beat tr
 audio = EXPÉRIMENTAL. **On ne passe pas à l'IA tant que la chaîne matérielle §38
 n'est pas bouclée et chiffrée.**
 
+### 🚂 Suite Éveil — apps iPad d'éveil (langage + motricité fine), 3 ans et +
+**Statut : branche `claude/ios-educational-apps-suite-dljtt6`, basée sur `main`, PR brouillon.**
+Nouvel axe (EdTech petite enfance, iPad, Swift/SwiftUI, 100 % on-device). Indépendant des autres
+modules : aucun import croisé ; même discipline (référence stdlib testée, statuts honnêtes).
+
+- 🎯 Deux apps gratuites, sans pub/achat/traçage : **App 1 « le Petit Train des mots »** (nom de
+  code *OrthoSpeech* — **à renommer** : « orthophoniste » est un titre protégé, risque DM) et
+  **App 2 « Atelier de coloriage »**. Blueprint : `docs/EVEIL.md` ; état de l'art sourcé :
+  `docs/EVEIL-SOURCES.md` (168 affirmations, 6 axes, réfutés listés).
+- 🔑 **Corrections du cahier des charges** (à ne pas réintroduire) : « minouche→minou » = effacement
+  de **consonne finale** (coda /ʃ/), pas de syllabe → train = 1 wagon par syllabe **orale** + un
+  **fourgon** pour la consonne finale · le **juge = l'acoustique**, l'ASR ne peut que rendre un
+  verdict plus prudent (biais vers mots réels, WER énorme en maternelle) · **pas d'haptique au doigt
+  sur iPad** (Pencil Pro seulement, `UICanvasFeedbackGenerator` 17.5) · SceneKit déprécié (iOS 26) ·
+  **pas de score de langage ni de rapport pour professionnel** dans l'app publique (donnée de santé,
+  MDR règle 11 → IIa) · Core ML « clarté phonétique » NON VIABLE en v1 (aucun corpus 3-5 ans FR
+  sous licence) · Accès guidé : détectable, pas déclenchable (MDM).
+- 💻 `eveil/reference/wordend/` — **détecteur de fin de mot PROUVÉ sur signaux synthétiques**
+  (stdlib pure) : `dsp.py` (FFT, trames 21,3 ms/10 ms à 24 kHz, F0, SplitMix64), `detector.py`
+  (noyaux à la de Jong & Wempe + friction finale + **asymétrie** : « fin absente » seulement sur
+  preuve d'absence, sinon INCERTAIN avec raison), `streaming.py` (wagons allumés en direct, verdict
+  final = chemin par lots), `policy.py` (jamais « faux », pointer seulement sur verdict sûr, pas de
+  boucle d'échec, séances courtes), `lexicon.py` + `eveil/lexique/{fr-FR,en-US}.json` (conçus par
+  langue, **propositions à valider**), `bench.py` (**banc de validation** orthophonistes : κ, fausse
+  alerte + IC95 Wilson, porte GO/NO GO), `golden.py` (vecteurs de parité Python↔Swift), `demo.py`.
+  Vérif : `cd eveil/reference && python3 -m unittest discover -s wordend -t .` → **69/69 ✓** ;
+  0 fausse alerte sur 30 énoncés complets bruités (35→5 dB).
+- 📱 `eveil/ios/` — Swift : paquet **autonome** `eveil/ios/WordEndCore` (portage **ligne à ligne**, Swift pur, testable
+  Linux/Mac), `WordEndAudio` (session `.measurement`, micro→24 kHz en mémoire, `ListeningController`),
+  `TrainPracticeUI` (train, mascotte, séance, contrôle parental, espace parent, SwiftData local
+  `cloudKitDatabase: .none`) + `App/` (coquille, Accès guidé, `PrivacyInfo.xcprivacy`).
+  ✅ **Compilé et testé sur le Mac le 25/09/2026** (macOS 27.0, Xcode 27.0, Swift 6.4, SDK iOS 27.0) :
+  `cd eveil/ios/WordEndCore && swift test` → **19/19** dès la 1re compilation, dont parité 17 cas
+  (mutation vérifiée : la parité mord ; limite : bande 50–80 ms du seuil de friction non sondée par
+  les golden) · `cd eveil/ios && xcodebuild -scheme EveilTrain-Package -destination 'generic/platform=iOS
+  Simulator' build` → **BUILD SUCCEEDED**, aussi appareil iOS, macOS et mode Swift 6, **0 avertissement**
+  (4 avertissements de concurrence de `ListeningController` corrigés) · coquille `App/` type-checkée
+  seule ; **projet Xcode + iPad réel faits avec l'utilisateur, pas à pas** (25/09/2026 : signature, micro).
+  Dépréciation `installTap` → `installAudioTap(…)` confirmée dans le SDK iOS 27 (bascule liée au choix
+  iPadOS 17/26).
+- 🎨 **App iPad — ébauche JOUABLE, installée sur l'iPad réel de l'utilisateur (25/09/2026)**, construite
+  avec lui : projet `eveil/ios/App/EveilTrain.xcodeproj` (cible iPad, paquets locaux, lexiques,
+  confidentialité) · **accueil** · **petit train** plein écran · **mode démo** (`-eveil.demoMode 1` :
+  pseudo-parole `Synth` dans le VRAI détecteur, rien dans le journal) · **atelier de coloriage**.
+  **iPad réel** (iPad Pro 11" M1, iPadOS 27) : mode développeur activé par l'utilisateur, signature
+  automatique avec son accord (profil d'équipe, **l'ID d'équipe ne va pas dans le dépôt public**),
+  install/lancement par `xcrun devicectl` (commandes dans `eveil/README.md`).
+  **Second tour, sur ses retours** (« plus de mots », « micro plus réceptif », « un mot bien dit on
+  enchaîne », « un autre monde à chaque mot », « la mouche : on l'attrape, elle fait bzzz »,
+  « coloriage : ne pas fusionner les formes ») :
+  - micro : le détecteur écarte EXPRÈS les voix graves d'adulte (F0 < 165 Hz ⇒ incertain) → réglage
+    **« Essai par un adulte »** (ne lève que cette garde) + **« Tester le micro »** (espace des grands :
+    accès, vumètre, petit train, `ListeningDiagnosis` en clair) ; 10 s pour commencer à parler (6 dans la
+    référence) ; `DetectorConfig()` et les vecteurs de parité **inchangés** ;
+  - voyage : mot bien dit → fourgon accroché (« chhh »/« sss »), sifflet, départ vers le **monde
+    suivant** (8 mondes, ordre fixe, `EveilDesign/World*`) ; ligne du voyage (6 gares/séance) ;
+  - 45 mots (28 FR + 17 EN, propositions), tous niveaux mêlés (`WordDeck`, curseur mémorisé) ;
+    un **dessin vivant par mot** (`WordArt*`, action au toucher) + **bestioles** qui volent derrière
+    (`CritterLayer` ; on les attrape, elles font leur bruit) ; **53 bruitages calculés** (`EveilSounds`,
+    aucun fichier son, sonie égalisée) ; **tout se tait pendant le mot modèle et l'écoute** ;
+  - coloriage : **15 pages au trait, chaque zone fermée par des traits = une zone** (carte des zones
+    1024² : remplir + pinceau-pochoir par zone, traits nets par-dessus, choix des dessins) ;
+    **puis 70 pages (session cloud, 25/09/2026, demande « beaucoup d'images, toutes celles du petit
+    train et plus, bien tracées »)** : +55 pages **dessinées en Python** dans `eveil/outils/coloriages/`
+    (`pages_*.py` par album ; `traits.py` = même algorithme que `LineClipper` → traits visibles ;
+    `zones.py` = carte des zones simulée comme `ZoneMap` → témoins/détails ; `analyse.py` = contrôles :
+    toute zone < 0,3 % doit appartenir à un élément `detail`, sinon « miette », robustesse ± 1 px de
+    trait et décalage sous-pixel, encres jamais recouvertes, contours sans croisement) → génère
+    `ColoringUI/PagesDessins.swift` (`s.line(G.data(…))`, `s.ink`, `s.expectAll` ; lecteur
+    `SketchPathData.swift`). **Un dessin par mot des 45** (même sujet que `WordArt`), éléments du
+    train, et d'autres. **7 albums** (`ColoringAlbums.swift`, 12 pages max : tout visible d'un coup
+    même en 11" paysage) ; `PagePicker` = rangée d'albums + grille de l'album. `ColoringPages.all` =
+    albums aplatis. Python : 25 tests verts, `generer --check`. **Compilé et testé sur le Mac le 25/09** :
+    0 avertissement ; `testEveryDrawnShapeIsItsOwnZone` a trouvé une fuite que la simulation Python
+    laissait passer (blanc de l'œil du caniche rattaché à la tête : croissant < miette) → œil corrigé
+    dans `pages_animaux.py`, page régénérée → ColoringUITests 30/30. La vérification finale = l'app.
+    Planche : `docs/ui/eveil-app/7-coloriages.png`. Doublons évités : les 15 sujets Mac gardés tels quels ;
+  - piège SwiftUI vu deux fois : une boucle `repeatForever` lancée dans `onAppear` « capture » la
+    transition ou l'animation d'un parent (train qui clignote, qui tremble) → **tout mouvement est piloté
+    par l'horloge** (`TimelineView`), train compris.
+  Réalisé en partie par 4 sous-agents en worktrees (mondes/bestioles, dessins des mots, sons,
+  coloriage), relus sur planches PNG (`EVEIL_RENDER_DIR`, `EVEIL_SOUNDS_DIR`) puis fusionnés.
+  `cd eveil/ios && swift test` → **103 tests** (démo, écoute, sons, rendus, coloriage). Captures :
+  `docs/ui/eveil-app/*.png`. **Mascotte provisoire choisie par l'utilisateur : un chat chef de gare.**
+  Provisoire aussi : nom « Petit Train », identifiant `fr.klodynlov.eveil.petittrain`, iPadOS 17,
+  dessins et bruitages (en attendant illustrateur et vrais sons). `docs/EVEIL.md` § 6 **mis à jour le
+  25/09 avec l'accord de l'utilisateur** (zones comme sur papier, pochoir par zone sans PencilKit, pages
+  vérifiables). **Décidé par l'utilisateur** : « Remplir d'un toucher » **réglable** dans l'espace des
+  grands (`SuiteSettings.tapToFillKey`) et **désactivé par défaut** → pinceau seul tant que l'adulte ne
+  l'active pas.
+- 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
+  (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur interdits) → 0 violation, 7 tests ;
+  ignore les produits de compilation (`.build/`, `.swiftpm/`, `DerivedData/`).
+- 📚 LibraryBrain = RAG **local sur le Mac** (non joignable depuis le cloud) → relais
+  `eveil/librarybrain/` : 28 sources en accès libre + `recuperer_sources.py` (à lancer en local),
+  thèmes arXiv, 18 questions `/ask`·`/consensus` pour fermer les NON VÉRIFIÉ + 15 **témoins** déjà
+  tranchés (confirmés, nuancés et réfutés mêlés, sans dire lesquels) → **protocole de comparaison
+  figé** `eveil/librarybrain/COMPARAISON.md` : passe P0 (bibliothèque telle quelle) puis P1 (+ PDF
+  de `sources.json`), codage à l'aveugle d'après les passages cités, κ/Wilson via `wordend.bench`,
+  **jamais `--avec-notes` avant la fin** (sinon LibraryBrain retrouve nos conclusions), réponses
+  brutes locales `eveil/librarybrain/resultats/` (gitignoré : extraits sous droits, dépôt public).
+  `test_questions.py` fige l'empreinte des 33 formulations.
+  ✅ **Comparaison faite le 25/09/2026** → `docs/EVEIL-SOURCES-LIBRARYBRAIN.md` : P0 (bibliothèque
+  telle quelle), **P0b** (contrôle après redémarrage : P1 l'exige car le routage par livre est
+  mémoïsé, et le code servi changeait), P1 (+ 17 des 28 PDF ; 11 refusés/pages déclarés absents).
+  Couverture **11/33 → 15/33** ; **aucune contradiction** des verdicts cloud (témoins P1 : 3/6 strict,
+  κ 0,33 ; 6/6 souple) ; **A22 fermé** (HAS BSEM avril 2026 + ANAES 2001, vérifié dans le texte) ;
+  17 sources nouvelles ; P0 = P0b au caractère près (génération reproductible, code sans effet).
+  **Validé par l'utilisateur le 25/09/2026** : précisions B25 (limites de réalisation d'Allen 2013) et
+  C6 (l'ASR « corrige ou ignore » l'erreur ; données d'enfants lecteurs) reportées dans la colonne
+  *Affirmation* — verdicts inchangés, et jamais « LibraryBrain, vérifié dans le texte » dans la colonne
+  *Verdict* (`mesurer.py` y lit une fermeture) ; ligne HAS/ANAES d'`EVEIL.md` mise à jour [A22].
+  Outils : `interroger.py` (routes des pages, passages relus en lecture seule dans la base),
+  `mesurer.py` (couverture/Wilson, accord/κ). Codage par 12 codeurs aveugles (sous-agents lancés hors
+  du dépôt), codes figés avant ouverture des verdicts. Pièges LibraryBrain vus : l'API ne rend pas le
+  texte des passages ; `/api/consensus` ne journalise pas ; chemins de fichiers en NFD (voire mixtes) ;
+  livres ajoutés invisibles sans redémarrage (`book_routing`).
+- ⚠️ Limite de la passe documentaire : proxy bloquant la plupart des sites académiques + quota
+  WebSearch (200) épuisé → beaucoup de verdicts sur résumés ; Apple lu directement (DocC JSON via curl).
+
+- ▶️ **REPRISE (en local sur le Mac)** : prompt prêt à coller dans **`eveil/REPRISE-LOCALE.md`** →
+  (1) ✅ `swift test` du cœur + build iOS du paquet app, (2) ✅ comparaison **LibraryBrain ↔ passe
+  cloud** (rapport `docs/EVEIL-SOURCES-LIBRARYBRAIN.md`) — les deux faits le 25/09/2026.
+
+**Reste à faire :** iPad réel : Accès guidé à vérifier (signature et micro faits le 25/09/2026) · voix
+enregistrées, illustrations et sons définitifs à la place des provisoires · acquérir les sources du rapport
+(§ 7) puis rejouer (P2) · alors seulement `--avec-notes` + veille arXiv · panel Delphi (mots, messages,
+nom, mascotte, voix) · protocole V1 (Jardé/CPP/CNIL à qualifier, corpus, calibration via le banc) ·
+App 2 : mode **papier** (VisionKit `VNDocumentCameraViewController` + SpriteKit) · décisions ouvertes :
+nom, iPadOS 17 vs 26, mode par défaut avant validation (écoute auto vs juge adulte).
+
 ### Autres projets (mentionnés au README, hors de ce dépôt)
 Klody Code AI (agent de code local, projet phare) · klody-ui · LibraryBrain (RAG local) ·
 VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : nouvel axe **KLOD Live Brain / GrooveDNA** sur la branche
-`claude/klod-live-brain-groovedna-hmm1nu` — moteur de *feel* rythmique (capture/transfert/
-morphing, format versionné `KLOD_GROOVE_V1`), **couche musical prouvée en Python stdlib pur
-(35 tests)** + audit Phase 0 (`TECHNICAL_REALITY.md`). Couche réflexe Teensy = FAISABLE, à
-mesurer. Précédemment : connecteur `microbit/` (BLE + MCP, 33 tests) ; AIoT/EdgeSense au stade
-PR #4 (M0 codé, M2-M4 + TinyGuard en conception)._
+_Dernière mise à jour mémoire : Suite Éveil — **atelier de coloriage : 70 pages en 7 albums** (25/09/2026,
+session cloud : 55 pages dessinées et vérifiées en Python dans `eveil/outils/coloriages/`, un dessin par mot
+du petit train ; Swift à tester sur le Mac). Avant : **app sur l'iPad réel + second tour** (25/09/2026 : micro
+« essai par un adulte » et test du micro, voyage de monde en monde, 45 mots dessinés, bestioles et
+bruitages calculés, coloriage à zones sur 15 pages). Avant : **ébauche jouable** (accueil, petit train,
+mode démo, coloriage ; mascotte provisoire chat chef de gare). Avant :
+**comparaison LibraryBrain ↔ passe cloud faite**
+(25/09/2026 : couverture 11/33 → 15/33, aucune contradiction, A22 fermé, rapport
+`docs/EVEIL-SOURCES-LIBRARYBRAIN.md`) et **Swift compilé et testé sur le Mac** (cœur 19/19, paquet
+app 0 avertissement ; projet Xcode + iPad à faire avec l'utilisateur).
+Avant : **prompt de reprise locale** (`eveil/REPRISE-LOCALE.md`) et **protocole figé de comparaison
+LibraryBrain ↔ passe cloud** (33 questions, 2 passes, à l'aveugle). Avant : nouvel axe **Suite Éveil** (apps iPad 3 ans et +) sur la branche
+`claude/ios-educational-apps-suite-dljtt6` — blueprint + état de l'art sourcé (6 axes), détecteur
+de fin de mot **prouvé sur signaux synthétiques (69 tests)** avec banc de validation, portage Swift
+non compilé ici (syntaxe vérifiée). Précédemment : KLOD Live Brain / GrooveDNA (35 tests), connecteur
+`microbit/` (33 tests), AIoT/EdgeSense au stade PR #4._

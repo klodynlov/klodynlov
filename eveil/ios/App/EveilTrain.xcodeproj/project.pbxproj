@@ -1,0 +1,331 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FC7623C0D2A9AA590F7D387E /* EveilTrainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181B76DAABFA8EEE3D15127F /* EveilTrainApp.swift */; };
+		E094F9F26D9A1B0B93E81073 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A9BBC34E02E48FB7F8BDC5 /* HomeView.swift */; };
+		34741193E2D5BD13196E3EDA /* EveilDesign in Frameworks */ = {isa = PBXBuildFile; productRef = D036B3C0FAE1882ACF3B62F4 /* EveilDesign */; };
+		ACFED3D4933AE951C99D3B62 /* ColoringUI in Frameworks */ = {isa = PBXBuildFile; productRef = 717E309EE040C74232350078 /* ColoringUI */; };
+		026C0A2F04A268605438BC71 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 454A225EB0301291AC85C576 /* PrivacyInfo.xcprivacy */; };
+		F394DFF97B6E348D5615EC85 /* fr-FR.json in Resources */ = {isa = PBXBuildFile; fileRef = 88886F586AEDA8925C8C6A01 /* fr-FR.json */; };
+		C9C0CDE2C9F311350202B19F /* en-US.json in Resources */ = {isa = PBXBuildFile; fileRef = 47263293B0FDFC8A96EF5805 /* en-US.json */; };
+		C723635E4D238AF8B1CC6C65 /* TrainPracticeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 71ADFFED007CD7ACDC272751 /* TrainPracticeUI */; };
+		BB0FCF4D636D8BF75E3C8AE2 /* WordEndCore in Frameworks */ = {isa = PBXBuildFile; productRef = 6A394A3ADE23523C5E3A52F9 /* WordEndCore */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F4367E757CEEAD52A1E872FE /* EveilTrain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EveilTrain.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		181B76DAABFA8EEE3D15127F /* EveilTrainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EveilTrainApp.swift; sourceTree = "<group>"; };
+		32A9BBC34E02E48FB7F8BDC5 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		454A225EB0301291AC85C576 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B98F4F3809C45EE04DDA6207 /* Info-additions.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-additions.plist"; sourceTree = "<group>"; };
+		88886F586AEDA8925C8C6A01 /* fr-FR.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "fr-FR.json"; sourceTree = "<group>"; };
+		47263293B0FDFC8A96EF5805 /* en-US.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "en-US.json"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F071358CBDA83E89000A63F7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C723635E4D238AF8B1CC6C65 /* TrainPracticeUI in Frameworks */,
+				BB0FCF4D636D8BF75E3C8AE2 /* WordEndCore in Frameworks */,
+				34741193E2D5BD13196E3EDA /* EveilDesign in Frameworks */,
+				ACFED3D4933AE951C99D3B62 /* ColoringUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3C115B6843EF3814F376DB0E = {
+			isa = PBXGroup;
+			children = (
+				1E484DE8BDA16C3FD703362C /* App */,
+				3E515CA661F506AB2308F7ED /* Lexiques */,
+				D41C468F2AB7879F79DA9E9C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		1E484DE8BDA16C3FD703362C /* App */ = {
+			isa = PBXGroup;
+			children = (
+				181B76DAABFA8EEE3D15127F /* EveilTrainApp.swift */,
+				32A9BBC34E02E48FB7F8BDC5 /* HomeView.swift */,
+				454A225EB0301291AC85C576 /* PrivacyInfo.xcprivacy */,
+				B98F4F3809C45EE04DDA6207 /* Info-additions.plist */,
+			);
+			name = App;
+			sourceTree = "<group>";
+		};
+		3E515CA661F506AB2308F7ED /* Lexiques */ = {
+			isa = PBXGroup;
+			children = (
+				88886F586AEDA8925C8C6A01 /* fr-FR.json */,
+				47263293B0FDFC8A96EF5805 /* en-US.json */,
+			);
+			name = Lexiques;
+			path = ../../lexique;
+			sourceTree = "<group>";
+		};
+		D41C468F2AB7879F79DA9E9C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F4367E757CEEAD52A1E872FE /* EveilTrain.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F65C141DF9BE4D24580C4A36 /* EveilTrain */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F6F0D34EEA5328893428DDCC /* Build configuration list for PBXNativeTarget "EveilTrain" */;
+			buildPhases = (
+				FEC8F43EDC80540DB3AA1102 /* Sources */,
+				F071358CBDA83E89000A63F7 /* Frameworks */,
+				6718944592FDEF7BF6020D98 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EveilTrain;
+			packageProductDependencies = (
+				71ADFFED007CD7ACDC272751 /* TrainPracticeUI */,
+				6A394A3ADE23523C5E3A52F9 /* WordEndCore */,
+				D036B3C0FAE1882ACF3B62F4 /* EveilDesign */,
+				717E309EE040C74232350078 /* ColoringUI */,
+			);
+			productName = EveilTrain;
+			productReference = F4367E757CEEAD52A1E872FE /* EveilTrain.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EC838ADB41B472679AC8A97B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					F65C141DF9BE4D24580C4A36 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = 0ED2A3D735DF7B25D6496B85 /* Build configuration list for PBXProject "EveilTrain" */;
+			compatibilityVersion = "Xcode 15.0";
+			developmentRegion = fr;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				fr,
+				en,
+				Base,
+			);
+			mainGroup = 3C115B6843EF3814F376DB0E;
+			packageReferences = (
+				1A76C4DDA813A8B87E08025C /* XCLocalSwiftPackageReference ".." */,
+				EDBC2DA13709F91ECDA76F18 /* XCLocalSwiftPackageReference "../WordEndCore" */,
+			);
+			productRefGroup = D41C468F2AB7879F79DA9E9C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F65C141DF9BE4D24580C4A36 /* EveilTrain */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6718944592FDEF7BF6020D98 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				026C0A2F04A268605438BC71 /* PrivacyInfo.xcprivacy in Resources */,
+				F394DFF97B6E348D5615EC85 /* fr-FR.json in Resources */,
+				C9C0CDE2C9F311350202B19F /* en-US.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FEC8F43EDC80540DB3AA1102 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC7623C0D2A9AA590F7D387E /* EveilTrainApp.swift in Sources */,
+				E094F9F26D9A1B0B93E81073 /* HomeView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		BC37F3400376E00A772118B6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				SDKROOT = iphoneos;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		D5BCAE8DC095D9FF6ACD770F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				SDKROOT = iphoneos;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		1F32ABDF901782B2C1E93126 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Petit Train";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Le petit train écoute votre enfant pour allumer ses wagons. Le son est analysé sur l'iPad, en mémoire : il n'est jamais enregistré ni envoyé.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Option expérimentale, désactivée par défaut : vérifier sur l'iPad que votre enfant a bien tenté le mot demandé. Rien n'est envoyé.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = fr.klodynlov.eveil.petittrain;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Debug;
+		};
+		B667AD5BCBBAA548967C54C6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Petit Train";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Le petit train écoute votre enfant pour allumer ses wagons. Le son est analysé sur l'iPad, en mémoire : il n'est jamais enregistré ni envoyé.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Option expérimentale, désactivée par défaut : vérifier sur l'iPad que votre enfant a bien tenté le mot demandé. Rien n'est envoyé.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = fr.klodynlov.eveil.petittrain;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0ED2A3D735DF7B25D6496B85 /* Build configuration list for PBXProject "EveilTrain" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC37F3400376E00A772118B6 /* Debug */,
+				D5BCAE8DC095D9FF6ACD770F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F6F0D34EEA5328893428DDCC /* Build configuration list for PBXNativeTarget "EveilTrain" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F32ABDF901782B2C1E93126 /* Debug */,
+				B667AD5BCBBAA548967C54C6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		1A76C4DDA813A8B87E08025C /* XCLocalSwiftPackageReference ".." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ..;
+		};
+		EDBC2DA13709F91ECDA76F18 /* XCLocalSwiftPackageReference "../WordEndCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../WordEndCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		71ADFFED007CD7ACDC272751 /* TrainPracticeUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A76C4DDA813A8B87E08025C /* XCLocalSwiftPackageReference ".." */;
+			productName = TrainPracticeUI;
+		};
+		6A394A3ADE23523C5E3A52F9 /* WordEndCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EDBC2DA13709F91ECDA76F18 /* XCLocalSwiftPackageReference "../WordEndCore" */;
+			productName = WordEndCore;
+		};
+		D036B3C0FAE1882ACF3B62F4 /* EveilDesign */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A76C4DDA813A8B87E08025C /* XCLocalSwiftPackageReference ".." */;
+			productName = EveilDesign;
+		};
+		717E309EE040C74232350078 /* ColoringUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A76C4DDA813A8B87E08025C /* XCLocalSwiftPackageReference ".." */;
+			productName = ColoringUI;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = EC838ADB41B472679AC8A97B /* Project object */;
+}

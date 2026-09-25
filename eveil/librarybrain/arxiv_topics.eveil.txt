@@ -1,0 +1,8 @@
+# --- Suite Éveil : parole d'enfant, troubles des sons de la parole, dessins d'enfants ---
+# À ajouter à scripts/arxiv_topics.txt de LibraryBrain (même syntaxe : API arXiv, une requête par ligne).
+(cat:eess.AS OR cat:cs.CL) AND (abs:"child speech" OR abs:"children's speech")
+(cat:eess.AS OR cat:cs.SD) AND (abs:"speech sound disorder" OR abs:"mispronunciation detection")
+cat:eess.AS AND (abs:"syllable nuclei" OR abs:"syllable detection")
+cat:eess.AS AND abs:"fricative" AND (abs:"child" OR abs:"children")
+cat:cs.CV AND abs:"children's drawings"
+cat:cs.HC AND (abs:"preschool" OR abs:"young children") AND (abs:"tablet" OR abs:"touchscreen")

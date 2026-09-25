@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Clés à fusionner dans l'Info.plist de l'app (textes destinés à l'ADULTE :
+  la demande d'autorisation est déclenchée depuis l'espace parent).
+  Traductions anglaises : InfoPlist.xcstrings.
+-->
+<plist version="1.0">
+<dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Le petit train écoute votre enfant pour allumer ses wagons. Le son est analysé sur l'iPad, en mémoire : il n'est jamais enregistré ni envoyé.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Option expérimentale, désactivée par défaut : vérifier sur l'iPad que votre enfant a bien tenté le mot demandé. Rien n'est envoyé.</string>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+</dict>
+</plist>
