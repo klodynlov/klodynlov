@@ -2,11 +2,13 @@
 //
 // On y règle : la langue (FR, EN, ou les deux en alternance pour les familles
 // bilingues), le micro (accès, test, essai par un adulte), les mots du train
-// (jusqu'à quel niveau), le temps d'écran quotidien, les mots de la famille. On
+// (jusqu'à quel niveau), le coloriage (remplir d'un toucher, ou pinceau seul), le
+// temps d'écran quotidien, les mots de la famille. On
 // y trouve : comment jouer AVEC l'enfant, et quand demander l'avis d'un professionnel.
 // On n'y trouve PAS de score de langage : l'app est un jeu d'éveil, pas un bilan.
 
 #if canImport(SwiftUI)
+import EveilDesign
 import SwiftUI
 import WordEndCore
 
@@ -18,6 +20,7 @@ public struct ParentZoneView: View {
     @AppStorage("eveil.demoMode") private var demoMode = false          // présentation, sans micro
     @AppStorage(ListeningSettings.adultTrialKey) private var adultTrial = false
     @AppStorage(WordDeck.maxLevelKey) private var maxLevel = 3
+    @AppStorage(SuiteSettings.tapToFillKey) private var tapToFill = SuiteSettings.tapToFillDefault
     @State private var familyText = ""
     @State private var familyWagons = ""
     @State private var familyCoda = "S"
@@ -64,6 +67,14 @@ public struct ParentZoneView: View {
                 } footer: {
                     Text(fr ? "« Tous » ajoute les mots à groupe de consonnes (cloche, glace, brosse…). Les listes sont des propositions, à valider par des orthophonistes."
                             : "\"All\" adds words with consonant clusters (splash, brush…). The lists are proposals, to be validated by speech-language pathologists.")
+                }
+                Section {
+                    Toggle(fr ? "Remplir d'un toucher" : "Tap to fill", isOn: $tapToFill)
+                } header: {
+                    Text(fr ? "Atelier de coloriage" : "Coloring workshop")
+                } footer: {
+                    Text(fr ? "Activé : toucher une zone la remplit d'un coup. Désactivé : l'enfant colorie au pinceau, qui ne déborde jamais de sa zone — plus de mouvements de la main, c'est tout l'intérêt du coloriage."
+                            : "On: tapping an area fills it at once. Off: the child colors with the brush, which never leaves its area — more hand movement, which is the whole point of coloring.")
                 }
                 Section(fr ? "Présentation" : "Showcase") {
                     Toggle(fr ? "Mode démo (sans micro)" : "Demo mode (no microphone)", isOn: $demoMode)

@@ -243,12 +243,13 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     par l'horloge** (`TimelineView`), train compris.
   Réalisé en partie par 4 sous-agents en worktrees (mondes/bestioles, dessins des mots, sons,
   coloriage), relus sur planches PNG (`EVEIL_RENDER_DIR`, `EVEIL_SOUNDS_DIR`) puis fusionnés.
-  `cd eveil/ios && swift test` → **100 tests** (démo, écoute, sons, rendus, coloriage). Captures :
+  `cd eveil/ios && swift test` → **103 tests** (démo, écoute, sons, rendus, coloriage). Captures :
   `docs/ui/eveil-app/*.png`. **Mascotte provisoire choisie par l'utilisateur : un chat chef de gare.**
   Provisoire aussi : nom « Petit Train », identifiant `fr.klodynlov.eveil.petittrain`, iPadOS 17,
   dessins et bruitages (en attendant illustrateur et vrais sons). `docs/EVEIL.md` § 6 **mis à jour le
   25/09 avec l'accord de l'utilisateur** (zones comme sur papier, pochoir par zone sans PencilKit, pages
-  vérifiables ; question ouverte : garder « toucher = remplir » face au § 6.1 ?).
+  vérifiables). **Décidé par l'utilisateur** : « Remplir d'un toucher » **réglable** dans l'espace des
+  grands (`SuiteSettings.tapToFillKey`, activé par défaut) ; désactivé → pinceau seul.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur interdits) → 0 violation, 7 tests ;
   ignore les produits de compilation (`.build/`, `.swiftpm/`, `DerivedData/`).

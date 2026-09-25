@@ -428,9 +428,11 @@ confirmer (§10).*
 - **Pochoir** : un coup de pinceau ne peint **que la zone où il a commencé** (`PaintLayer`) — le
   principe prévu avec `PKStroke.mask`, obtenu sans PencilKit → l'enfant *couvre* la forme par
   des allers-retours (motricité), sans jamais « abîmer » le dessin.
-- **Toucher = remplir** : l'ébauche remplit aussi une zone d'un toucher. **À trancher** avec le
-  § 6.1 (le remplissage automatique est la norme du marché ; s'en passer est notre point fort) :
-  garder comme étayage de départ, le rendre réglable, ou le retirer.
+- **Toucher = remplir** : l'ébauche remplit aussi une zone d'un toucher. Face au § 6.1 (le
+  remplissage automatique est la norme du marché ; s'en passer est notre point fort), **décision de
+  l'utilisateur (25/09/2026) : réglable par l'adulte** — espace des grands › Atelier de coloriage ›
+  « Remplir d'un toucher » (activé par défaut, comme dans l'ébauche). Désactivé, l'enfant n'a que le
+  pinceau-pochoir : plus de mouvements de la main.
 - **Des pages vérifiables** : chaque forme dessinée porte un **point-témoin** ; les tests vérifient
   qu'aucune zone ne fuit dans sa voisine ni dans le fond, que toute petite zone (< 0,3 %) est un
   détail voulu (œil, bouton) et que les pages tiennent à ± 1 px de trait. 70 pages en 7 albums, dont

@@ -56,6 +56,6 @@ let package = Package(
         // Décors, bestioles, dessins des mots : rendus en PNG pour les relire (EVEIL_RENDER_DIR).
         .testTarget(name: "EveilDesignTests", dependencies: ["EveilDesign"]),
         // Zones du coloriage : ce que les traits délimitent, et rien d'autre.
-        .testTarget(name: "ColoringUITests", dependencies: ["ColoringUI"]),
+        .testTarget(name: "ColoringUITests", dependencies: ["ColoringUI", "EveilDesign"]),
     ]
 )

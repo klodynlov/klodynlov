@@ -2,9 +2,9 @@
 //
 // Pour les 3 ans et + : réussir à tous les coups. Une page est un DESSIN AU
 // TRAIT : chaque aire fermée par les traits est une zone, comme sur papier.
-// Deux gestes seulement — TOUCHER remplit la zone sous le doigt ; le PINCEAU peint
-// au doigt sans jamais déborder (pochoir : le trait reste dans la zone où il a
-// commencé). Les couleurs passent SOUS les traits, qui restent nets et visibles :
+// Deux gestes seulement — TOUCHER remplit la zone sous le doigt (réglable par
+// l'adulte : « Remplir d'un toucher », `SuiteSettings`) ; le PINCEAU peint au doigt
+// sans jamais déborder (pochoir : le trait reste dans la zone où il a commencé). Les couleurs passent SOUS les traits, qui restent nets et visibles :
 // rien ne fusionne. Grosses pastilles, annuler, tout effacer (annulable), choisir
 // une page parmi de grandes vignettes, page suivante. Rien n'est enregistré ni
 // envoyé. Le « mode papier » (photo d'un coloriage réel) viendra ensuite.
@@ -24,6 +24,7 @@ public struct ColoringView: View {
     @State private var studio: ColoringStudio
     @State private var colorIndex = 0
     @State private var tool: Tool = .fill
+    @AppStorage(SuiteSettings.tapToFillKey) private var tapToFill = SuiteSettings.tapToFillDefault
     @State private var cheer = false
     @State private var cheerTask: Task<Void, Never>?
     @State private var showPicker: Bool
@@ -42,6 +43,16 @@ public struct ColoringView: View {
     }
 
     enum Tool { case fill, brush }
+
+    /// Les outils proposés : sans « Remplir d'un toucher », le pinceau seul.
+    nonisolated static func tools(tapToFill: Bool) -> [Tool] { tapToFill ? [.fill, .brush] : [.brush] }
+
+    /// L'outil en main : celui choisi, s'il est proposé ; sinon le pinceau.
+    nonisolated static func activeTool(_ chosen: Tool, tapToFill: Bool) -> Tool {
+        tools(tapToFill: tapToFill).contains(chosen) ? chosen : .brush
+    }
+
+    private var active: Tool { Self.activeTool(tool, tapToFill: tapToFill) }
 
     nonisolated static let palette: [PaintColor] = [
         PaintColor(237, 51, 56, fr: "rouge", en: "red"),
@@ -133,10 +144,12 @@ public struct ColoringView: View {
 
     private func tools(_ layout: WorkshopLayout) -> some View {
         VStack(spacing: layout.tool * 0.18) {
-            toolButton("hand.tap.fill", selected: tool == .fill, size: layout.tool, label: fr ? "Remplir" : "Fill") {
-                tool = .fill
+            if tapToFill {
+                toolButton("hand.tap.fill", selected: active == .fill, size: layout.tool, label: fr ? "Remplir" : "Fill") {
+                    tool = .fill
+                }
             }
-            toolButton("paintbrush.pointed.fill", selected: tool == .brush, size: layout.tool,
+            toolButton("paintbrush.pointed.fill", selected: active == .brush, size: layout.tool,
                        label: fr ? "Pinceau" : "Brush") { tool = .brush }
             divider(layout)
             toolButton("arrow.uturn.backward", selected: false, size: layout.tool, label: fr ? "Annuler" : "Undo") {
@@ -237,7 +250,7 @@ public struct ColoringView: View {
     // MARK: Gestes
 
     private func touchBegan(_ unit: CGPoint) {
-        switch tool {
+        switch active {
         case .fill:
             if studio.fill(at: unit, color: color) { celebrate() }
         case .brush:
@@ -246,11 +259,11 @@ public struct ColoringView: View {
     }
 
     private func touchMoved(_ unit: CGPoint) {
-        if tool == .brush { studio.continueStroke(to: unit) }
+        if active == .brush { studio.continueStroke(to: unit) }
     }
 
     private func touchEnded(_ unit: CGPoint) {
-        guard tool == .brush else { return }
+        guard active == .brush else { return }
         studio.continueStroke(to: unit)
         if studio.endStroke() { celebrate() }
     }
