@@ -6,6 +6,11 @@ font sur le Mac : ouvrir Claude Code **à la racine du dépôt** et coller le pr
 La comparaison avec LibraryBrain suit un protocole figé d'avance :
 [`librarybrain/COMPARAISON.md`](librarybrain/COMPARAISON.md).
 
+> **Fait le 25/09/2026** : les deux chantiers sont faits (Swift compilé et testé,
+> [`README.md`](README.md#sur-mac--compilé-et-testé-le-25092026) ; comparaison dans
+> [`docs/EVEIL-SOURCES-LIBRARYBRAIN.md`](../docs/EVEIL-SOURCES-LIBRARYBRAIN.md)). Le prompt reste pour
+> rejouer la comparaison (P2) après acquisition des sources manquantes.
+
 ~~~text
 Reprise en local de la Suite Éveil (apps iPad d'éveil pour les 3 ans et +), commencée dans une session Claude Code cloud. Réponds et documente en français.
 
@@ -22,7 +27,7 @@ Les étapes 2 et 3 sont indépendantes : si l'une attend une réponse de ma part
 - depuis eveil/reference : python3 -m unittest discover -s wordend -t .  → 69 tests verts
 - depuis eveil/reference : python3 -m wordend.golden --check
 - depuis eveil/reference : python3 ../outils/verifier_confidentialite.py  → 0 violation
-- depuis la racine : python3 -m unittest discover -s eveil/librarybrain  → 14 tests verts
+- depuis la racine : python3 -m unittest discover -s eveil/librarybrain  → 20 tests verts
 Si quelque chose est rouge, arrête-toi et montre-moi.
 
 2. Swift : première vraie compilation

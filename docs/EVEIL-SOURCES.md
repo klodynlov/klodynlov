@@ -6,9 +6,13 @@
 
 **Date :** 2026-09-24 · **6 axes** · **168 affirmations examinées** · **≈ 170 références relevées**
 
+> **Mise à jour du 25/09/2026** — comparaison avec LibraryBrain (texte intégral, bibliothèque locale) :
+> [`EVEIL-SOURCES-LIBRARYBRAIN.md`](EVEIL-SOURCES-LIBRARYBRAIN.md). Seul changement ici : **A22 fermé**,
+> appuyé sur des citations vérifiées dans les documents d'origine. Aucun autre verdict n'est modifié.
+
 | Axe | Sujet | Affirmations | Bilan |
 |---|---|---:|---|
-| **A** | Développement phonologique FR/EN, bilinguisme, repérage | 23 | 14 confirmées · 3 nuancées · 0 réfutée · 6 non vérifiées |
+| **A** | Développement phonologique FR/EN, bilinguisme, repérage | 23 | 15 confirmées · 3 nuancées · 0 réfutée · 5 non vérifiées |
 | **B** | Interventions, apps, dosage, parents, validation | 27 | 14 confirmées · 9 nuancées · 1 réfutée · 3 non vérifiées |
 | **C** | Parole d'enfant, ASR, acoustique des fricatives, corpus | 21 | 13 confirmées · 2 nuancées · 2 réfutées · 4 non vérifiées |
 | **D** | Plateforme Apple (lue dans la doc officielle) | 38 | 28 confirmées · 4 nuancées · 2 réfutées · 4 non vérifiées |
@@ -67,7 +71,9 @@
 | A15 | Bilingues FR + autre langue : peu de différences sur les processus inhabituels ; codas/groupes meilleurs si l'autre langue en a beaucoup | CONFIRMÉ | A[9][10][16] |
 | A16 | Les classifications anglophones des TSP se transposent mal au français | CONFIRMÉ | A[11][21] |
 | A17 | Thèse Yamaguchi (Paris 3, 2012) : existence confirmée, contenu non lu | CONFIRMÉ (métadonnées) | A[8] |
-| A18–A23 | Normes EVALO 2-6 · profils bilingues (Hambly 2013, IEPMCS) · intelligibilité à 3 ans · Eduscol (syllabe orale/écrite) · critères HAS/ANAES/DPL3/ERTL4 · prévalence et résolution spontanée | NON VÉRIFIÉ | — |
+| A18–A21 | Normes EVALO 2-6 · profils bilingues (Hambly 2013, IEPMCS) · intelligibilité à 3 ans · Eduscol (syllabe orale/écrite) | NON VÉRIFIÉ | — |
+| A22 | Critères HAS/ANAES de repérage et d'orientation : signes d'alerte HAS entre 3 ans et 4 ans ½ (langage non intelligible pour les non-proches, pas de phrase constituée, compréhension altérée) ; profil 3 à l'ERTL4 → avis du médecin de PMI, et orientation directe possible vers l'orthophoniste en parallèle ; ANAES 2001 : plainte → évaluation individuelle et examen médical, bilan orthophonique selon sévérité, spécificité et persistance, prise en charge avant 4-5 ans si inintelligibilité, agrammatisme ou trouble de la compréhension (grade C). Seuils du DPL3 : non vérifiés | CONFIRMÉ — *LibraryBrain, vérifié dans le texte* (25/09/2026) | A[22][23][24] |
+| A23 | Prévalence et résolution spontanée | NON VÉRIFIÉ | — |
 
 **Sources A** (lu = résumé/extraits sauf mention) :
 [1] Dodd, Holm, Hua & Crosbie (2003), *Clin. Ling. & Phon.* 17(8), doi:10.1080/0269920031000111348 ·
@@ -90,7 +96,10 @@
 [18] Goad & Buckley (2006), *Catalan J. Linguistics* 5 (PDF auteur) ·
 [19] Rose (2000), thèse McGill (PDF listé, talkbank.org) ·
 [20] Vihman, DePaolis & Davis (1998), *Child Development* 69(4) ·
-[21] *Classification of speech sound disorders in French-speaking children* (PMID 42166379).
+[21] *Classification of speech sound disorders in French-speaking children* (PMID 42166379) ·
+[22] HAS, *Bilan de santé en école maternelle* — rapport d'élaboration (avril 2026), p. 71, tableau 10 (lu en texte intégral via LibraryBrain) ·
+[23] HAS, *Bilan de santé en école maternelle* — guide (avril 2026), p. 31 (idem) ·
+[24] ANAES, *L'orthophonie dans les troubles spécifiques du développement du langage oral chez l'enfant de 3 à 6 ans*, recommandations (mai 2001), p. 8, 10 et 12 (idem).
 
 ---
 
@@ -400,3 +409,7 @@ donc organisé en quatre gestes, à faire en local :
    passes — bibliothèque telle quelle, puis avec les PDF ci-dessus — et codés à l'aveugle. Ce
    document n'est **pas** indexé avant la fin (pas de `--avec-notes`). Rapport attendu :
    `docs/EVEIL-SOURCES-LIBRARYBRAIN.md`.
+
+**Fait le 25/09/2026** : trois passes (P0, contrôle P0b, P1 avec 17 des 28 sources), codage à l'aveugle,
+rapport [`EVEIL-SOURCES-LIBRARYBRAIN.md`](EVEIL-SOURCES-LIBRARYBRAIN.md) — A22 fermé, aucune
+contradiction avec les verdicts ci-dessus, 17 sources nouvelles, liste de sources à acquérir.

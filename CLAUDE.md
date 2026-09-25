@@ -213,14 +213,28 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
   **jamais `--avec-notes` avant la fin** (sinon LibraryBrain retrouve nos conclusions), réponses
   brutes locales `eveil/librarybrain/resultats/` (gitignoré : extraits sous droits, dépôt public).
   `test_questions.py` fige l'empreinte des 33 formulations.
+  ✅ **Comparaison faite le 25/09/2026** → `docs/EVEIL-SOURCES-LIBRARYBRAIN.md` : P0 (bibliothèque
+  telle quelle), **P0b** (contrôle après redémarrage : P1 l'exige car le routage par livre est
+  mémoïsé, et le code servi changeait), P1 (+ 17 des 28 PDF ; 11 refusés/pages déclarés absents).
+  Couverture **11/33 → 15/33** ; **aucune contradiction** des verdicts cloud (témoins P1 : 3/6 strict,
+  κ 0,33 ; 6/6 souple) ; **A22 fermé** (HAS BSEM avril 2026 + ANAES 2001, vérifié dans le texte) ;
+  17 sources nouvelles ; P0 = P0b au caractère près (génération reproductible, code sans effet).
+  Outils : `interroger.py` (routes des pages, passages relus en lecture seule dans la base),
+  `mesurer.py` (couverture/Wilson, accord/κ). Codage par 12 codeurs aveugles (sous-agents lancés hors
+  du dépôt), codes figés avant ouverture des verdicts. Pièges LibraryBrain vus : l'API ne rend pas le
+  texte des passages ; `/api/consensus` ne journalise pas ; chemins de fichiers en NFD (voire mixtes) ;
+  livres ajoutés invisibles sans redémarrage (`book_routing`).
 - ⚠️ Limite de la passe documentaire : proxy bloquant la plupart des sites académiques + quota
   WebSearch (200) épuisé → beaucoup de verdicts sur résumés ; Apple lu directement (DocC JSON via curl).
 
 - ▶️ **REPRISE (en local sur le Mac)** : prompt prêt à coller dans **`eveil/REPRISE-LOCALE.md`** →
-  (1) ✅ `swift test` du cœur + build iOS du paquet app (fait le 25/09/2026), (2) comparaison
-  **LibraryBrain ↔ passe cloud** selon le protocole, rapport attendu `docs/EVEIL-SOURCES-LIBRARYBRAIN.md`.
+  (1) ✅ `swift test` du cœur + build iOS du paquet app, (2) ✅ comparaison **LibraryBrain ↔ passe
+  cloud** (rapport `docs/EVEIL-SOURCES-LIBRARYBRAIN.md`) — les deux faits le 25/09/2026.
 
-**Reste à faire :** projet Xcode + app sur iPad réel (M1, avec l'utilisateur) · panel Delphi (mots, messages, nom,
+**Reste à faire :** projet Xcode + app sur iPad réel (M1, avec l'utilisateur) · **validation humaine**
+des précisions proposées pour B25 et C6 et de la ligne de `EVEIL.md` qui range encore les critères
+HAS/ANAES parmi les non vérifiés · acquérir les sources du rapport (§ 7) puis rejouer (P2) · alors
+seulement `--avec-notes` + veille arXiv · panel Delphi (mots, messages, nom,
 mascotte, voix) · protocole V1 (Jardé/CPP/CNIL à qualifier, corpus, calibration via le banc) ·
 App 2 (mode **papier** d'abord : VisionKit `VNDocumentCameraViewController` + SpriteKit ; mode
 écran : pochoir `PKStroke(mask:)`) · décisions ouvertes : nom, iPadOS 17 vs 26, mode par défaut
@@ -232,8 +246,10 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : Suite Éveil — **Swift compilé et testé sur le Mac** (25/09/2026 :
-cœur 19/19, paquet app 0 avertissement ; projet Xcode + iPad à faire avec l'utilisateur).
+_Dernière mise à jour mémoire : Suite Éveil — **comparaison LibraryBrain ↔ passe cloud faite**
+(25/09/2026 : couverture 11/33 → 15/33, aucune contradiction, A22 fermé, rapport
+`docs/EVEIL-SOURCES-LIBRARYBRAIN.md`) et **Swift compilé et testé sur le Mac** (cœur 19/19, paquet
+app 0 avertissement ; projet Xcode + iPad à faire avec l'utilisateur).
 Avant : **prompt de reprise locale** (`eveil/REPRISE-LOCALE.md`) et **protocole figé de comparaison
 LibraryBrain ↔ passe cloud** (33 questions, 2 passes, à l'aveugle). Avant : nouvel axe **Suite Éveil** (apps iPad 3 ans et +) sur la branche
 `claude/ios-educational-apps-suite-dljtt6` — blueprint + état de l'art sourcé (6 axes), détecteur
