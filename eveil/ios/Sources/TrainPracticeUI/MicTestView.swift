@@ -53,8 +53,6 @@ public struct MicTestView: View {
                     Picker(fr ? "Mot à dire" : "Word to say", selection: $wordIndex) {
                         ForEach(words.indices, id: \.self) { i in Text(words[i].text).tag(i) }
                     }
-                    Toggle(fr ? "Essai par un adulte (voix grave acceptée)" : "Adult trial (deep voices accepted)",
-                           isOn: $adultTrial)
                     Button(action: start) {
                         Label(listening ? (fr ? "J'écoute… dites « \(word.text) »" : "Listening… say \"\(word.text)\"")
                                         : (fr ? "Écouter" : "Listen"),
@@ -68,10 +66,13 @@ public struct MicTestView: View {
                         .id("\(word.id)-\(run)")
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 6)
+                        .clipped()                  // le train entre par la droite : pas au-delà de la ligne
                     if let diagnosis { DiagnosisCard(diagnosis: diagnosis) }
                     if let failure {
                         Text(failure).font(.callout).foregroundStyle(.red)
                     }
+                    Toggle(fr ? "Essai par un adulte (voix grave acceptée)" : "Adult trial (deep voices accepted)",
+                           isOn: $adultTrial)
                 } header: {
                     Text(fr ? "Essayer avec votre voix" : "Try it with your voice")
                 } footer: {
