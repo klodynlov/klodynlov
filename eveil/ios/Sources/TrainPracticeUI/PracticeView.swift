@@ -303,8 +303,9 @@ public struct PracticeView: View {
         feedback = nil
         listener.reset()
         SoundBoard.shared.isSuspended = true           // le mot modèle, puis l'écoute : silence
-        SoundBoard.shared.preload([scene.sound, WordScene.sound(of: scene.critter), .whistle]
-                                  + [WordScene.hookSound(coda: w.coda)].compactMap { $0 })
+        let wordScene = WordScene.forWord(w)
+        SoundBoard.shared.preload([wordScene.sound, .whistle] + [WordScene.hookSound(coda: w.coda)].compactMap { $0 })
+        SoundBoard.shared.preload([WordScene.sound(of: wordScene.critter)], variants: Array(0..<wordScene.count))
         modelPlaying = true
         // TODO(contenu) : remplacer par les enregistrements validés (voix humaine FR/EN).
         await voice.speak(w.text, locale: locale)
