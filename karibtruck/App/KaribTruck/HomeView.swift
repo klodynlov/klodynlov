@@ -25,6 +25,13 @@ struct HomeView: View {
         NavigationStack(path: $path) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
+                    Image("KaribLogo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 150)
+                        .clipShape(RoundedRectangle(cornerRadius: 22))
+                        .accessibilityLabel("Karib Truck — Saveurs Créoles")
                     if let w = store.storageWarning {
                         Label(w, systemImage: "externaldrive.badge.exclamationmark")
                             .font(.headline)
@@ -68,6 +75,7 @@ struct HomeView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("KaribTruck")
+            .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(for: Screen.self) { screen in
                 switch screen {
                 case .temperature(let id): TemperatureView(preselected: id, path: $path)

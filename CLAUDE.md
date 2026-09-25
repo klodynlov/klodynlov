@@ -161,11 +161,12 @@ audit, harnais). A entendu parler d'une obligation « caisse au 1er septembre »
   github/jsdelivr bloqués — npm/pypi OK). `AppIcon` = version sans sous-titre ; asset
   `KaribLogo` (`Image("KaribLogo")`) = logo complet pour l'accueil. Sources dans
   `karibtruck/App/icon/` (icon.svg, logo-full.svg, README). Itérations validées : frondes
-  « cocotier » (pas cannabis), « Saveurs Créoles » descendu.
+  « cocotier » (pas cannabis), « Saveurs Créoles » descendu. **Logo complet affiché en haut de
+  l'accueil** (`HomeView` : `Image("KaribLogo")`, bandeau hauteur 150, coins arrondis ; titre
+  de navigation passé en `.inline` pour éviter la redondance).
 - **Décision en attente (pour la suite)** : régime TVA (bloquant caisse, indépendant du M0) ·
   Face ID + sauvegarde chiffrée · réglages éditables (enceintes, limites, checklists) ·
-  écriture rectificative · valider les valeurs de départ avec le PMS · afficher `KaribLogo`
-  sur l'écran d'accueil de l'app.
+  écriture rectificative · valider les valeurs de départ avec le PMS.
 
 ### 🎵 KLOD Live Brain / KLOD GrooveDNA — coprocesseur musical temps réel
 **Statut : branche `claude/klod-live-brain-groovedna-hmm1nu`, basée sur `main`.**
