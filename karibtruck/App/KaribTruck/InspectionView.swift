@@ -123,6 +123,7 @@ struct InspectionView: View {
                                        totalEntries: store.entries.count,
                                        headHash: store.headHash, isValid: store.isValid,
                                        enclosures: store.enclosures,
+                                       meatLots: store.meatLots,
                                        photoCheck: { store.photoMatches($0) })
             try report.render().write(to: pdf, options: .atomic)
             try store.exportCSV(entries).data(using: .utf8)!.write(to: csv, options: .atomic)

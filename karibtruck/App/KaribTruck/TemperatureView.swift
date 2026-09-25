@@ -172,7 +172,8 @@ struct NumericKeypad: View {
                 .foregroundStyle(disabled ? Color.secondary.opacity(0.4) : .primary)
         }
         .buttonStyle(.plain)
-        .background(RoundedRectangle(cornerRadius: 16).fill(Color(.secondarySystemGroupedBackground)))
+        .background(RoundedRectangle(cornerRadius: 16).fill(Color(.systemBackground)))
+        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color(.separator), lineWidth: 1))
         .disabled(disabled)
     }
 

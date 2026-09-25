@@ -12,6 +12,7 @@ struct InspectionPDF {
     let headHash: String
     let isValid: Bool
     let enclosures: [Enclosure]
+    let meatLots: [MeatLot]
     let photoCheck: (String) -> Bool
 
     private let page = CGRect(x: 0, y: 0, width: 595, height: 842)   // A4 en points
@@ -63,6 +64,7 @@ struct InspectionPDF {
     }
 
     private let kinds = ["enclosure.reading", "checklist.run", "reception",
+                         "meat.reception", "meat.preparation", "meat.lot.close",
                          "frying-oil.check", "nonconformity", "market.schedule"]
 
     private func tables(_ w: inout Writer) {
@@ -111,6 +113,8 @@ struct InspectionPDF {
                                alert: photo == "ABSENTE/MODIFIÉE")
                 })
 
+        meatTables(&w)
+
         let oils = of("frying-oil.check")
         w.table(title: "Huile de friture (\(oils.count))",
                 columns: [("Date / heure", 0.18), ("Friteuse", 0.17), ("Action", 0.15), ("État", 0.14), ("Polaires", 0.12), ("Changée", 0.12), ("Empreinte", 0.12)],
@@ -140,6 +144,53 @@ struct InspectionPDF {
                     let p = e.payload
                     return Row(cells: [Fmt.dateTime(e.timestamp), Fmt.businessDay(p["date"] ?? ""),
                                        p["place"] ?? "", p["slot"] ?? "", short(e)], alert: false)
+                })
+    }
+
+    private func lotRef(_ id: String) -> String {
+        guard let lot = meatLots.first(where: { $0.id == id }) else { return "lot inconnu" }
+        let p = lot.reception.payload
+        return "#\(lot.reception.index) \(lot.species?.label ?? "?") \(p["product"] ?? "") (lot \(p["lot"] ?? ""))"
+    }
+
+    private func meatTables(_ w: inout Writer) {
+        let recs = of("meat.reception")
+        w.table(title: "Viandes — réceptions et origine (\(recs.count))",
+                columns: [("Date / heure", 0.16), ("Viande", 0.15), ("Fournisseur · lot", 0.14), ("Estampille", 0.10),
+                          ("Origine", 0.13), ("T° / limite", 0.09), ("DLC", 0.11), ("Empreinte", 0.12)],
+                rows: recs.map { e in
+                    let p = e.payload
+                    var photo = ""
+                    if let sha = p["photo_sha256"] { photo = photoCheck(sha) ? " · photo" : " · PHOTO MODIFIÉE" }
+                    return Row(cells: [Fmt.dateTime(e.timestamp),
+                                       Fmt.meatTitle(species: MeatSpecies(rawValue: p["species"] ?? ""),
+                                                     state: MeatState(rawValue: p["state"] ?? ""),
+                                                     product: p["product"] ?? ""),
+                                       "\(p["supplier"] ?? "") · \(p["lot"] ?? "")\(photo)", p["agrement"] ?? "—",
+                                       p["origin"] ?? "", "\(Fmt.number(p["celsius"])) / ≤ \(Fmt.number(p["limit"])) °C",
+                                       Fmt.businessDay(p["dlc"] ?? ""), short(e)],
+                               alert: p["status"] == "alert" || photo.contains("MODIFIÉE"))
+                })
+
+        let preps = of("meat.preparation")
+        w.table(title: "Viandes — fournées et lots utilisés (\(preps.count))",
+                columns: [("Date / heure", 0.16), ("Préparation", 0.18), ("Lots utilisés", 0.28), ("DLC", 0.12),
+                          ("Par", 0.13), ("Empreinte", 0.13)],
+                rows: preps.map { e in
+                    let p = e.payload
+                    return Row(cells: [Fmt.dateTime(e.timestamp), p["name"] ?? "",
+                                       KaribTruck.lotIDs(of: e).map(lotRef).joined(separator: "\n"),
+                                       Fmt.businessDay(p["dlc"] ?? ""), p["operator"] ?? "", short(e)], alert: false)
+                })
+
+        let closes = of("meat.lot.close")
+        w.table(title: "Viandes — lots clos (\(closes.count))",
+                columns: [("Date / heure", 0.16), ("Lot", 0.38), ("Motif", 0.16), ("Note", 0.17), ("Empreinte", 0.13)],
+                rows: closes.map { e in
+                    let p = e.payload
+                    let reason = MeatLotClosure(rawValue: p["reason"] ?? "")
+                    return Row(cells: [Fmt.dateTime(e.timestamp), lotRef(p["lot"] ?? ""), reason?.label ?? "",
+                                       p["note"] ?? "—", short(e)], alert: reason == .rappel)
                 })
     }
 

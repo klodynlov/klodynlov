@@ -15,8 +15,11 @@ pas sur Linux). Le cœur métier `KaribTruckCore` est, lui, testé en CI.
 - `KaribTruck/TemperatureView.swift` — relevé au pavé numérique géant.
 - `KaribTruck/ChecklistsView.swift`, `ReceptionView.swift`, `OperationsViews.swift`
   (huile, incident, planning), `HistoryView.swift`.
+- `KaribTruck/MeatView.swift` — traçabilité viande en 5 onglets (réception en étapes
+  avec reprise du dernier lot, fournée, lots en cours, rappel, affiche origine client).
 - `KaribTruck/InspectionView.swift` + `InspectionPDF.swift` — dossier de contrôle PDF/CSV.
-- `KaribTruck/Theme.swift` — charte terrain (gros boutons, puces), libellés, formats.
+- `KaribTruck/Theme.swift` — charte terrain (gros boutons, puces, étapes numérotées,
+  barre d'enregistrement fixe qui dit ce qui manque), libellés, formats.
 
 Démo au **simulateur uniquement** (jamais compilée pour l'iPad réel) :
 lancer avec l'argument `-karibtruck.seedDemo YES` sur un journal vide.

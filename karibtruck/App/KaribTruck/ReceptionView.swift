@@ -14,15 +14,15 @@ struct ReceptionView: View {
     @State private var dlc = Calendar.current.date(byAdding: .day, value: 3, to: Date())!
     @State private var photo: UIImage?
     @State private var photoData: Data?
-    @State private var showCamera = false
-    @State private var libraryItem: PhotosPickerItem?
     @State private var banner: (ok: Bool, title: String, detail: String)?
     @State private var error: String?
 
     private var dlcExpired: Bool { Calendar.current.startOfDay(for: dlc) < Calendar.current.startOfDay(for: Date()) }
-    private var canSave: Bool {
-        !product.trimmingCharacters(in: .whitespaces).isEmpty
-            && !supplier.trimmingCharacters(in: .whitespaces).isEmpty
+    private var missing: [String] {
+        var m: [String] = []
+        if product.trimmingCharacters(in: .whitespaces).isEmpty { m.append("produit") }
+        if supplier.trimmingCharacters(in: .whitespaces).isEmpty { m.append("fournisseur") }
+        return m
     }
 
     var body: some View {
@@ -30,7 +30,7 @@ struct ReceptionView: View {
             VStack(alignment: .leading, spacing: 22) {
                 if let banner { ResultBanner(ok: banner.ok, title: banner.title, detail: banner.detail) }
 
-                photoBlock
+                PhotoCapture(photo: $photo, photoData: $photoData, color: .brown)
 
                 Field(title: "Produit", text: $product, placeholder: "ex. poulet, morue, farine…",
                       suggestions: store.recentValues(kind: "reception", key: "product"))
@@ -61,64 +61,15 @@ struct ReceptionView: View {
 
                 if let error { Text(error).foregroundStyle(Theme.alert) }
 
-                Button { save() } label: {
-                    Label("Enregistrer la réception", systemImage: "square.and.arrow.down.fill")
-                }
-                .buttonStyle(BigButtonStyle(color: .brown))
-                .disabled(!canSave)
             }
             .padding(24)
         }
         .background(Color(.systemGroupedBackground))
-        .navigationTitle("Réception")
-        .fullScreenCover(isPresented: $showCamera) {
-            CameraPicker { image in
-                if let image { setPhoto(image) }
-                showCamera = false
-            }
-            .ignoresSafeArea()
+        .navigationTitle("Réception (autres produits)")
+        .safeAreaInset(edge: .bottom) {
+            SaveBar(title: "Enregistrer la réception", systemImage: "square.and.arrow.down.fill",
+                    color: .brown, missing: missing) { save() }
         }
-        .task(id: libraryItem) {
-            guard let item = libraryItem,
-                  let data = try? await item.loadTransferable(type: Data.self),
-                  let image = UIImage(data: data) else { return }
-            setPhoto(image)
-        }
-    }
-
-    private var photoBlock: some View {
-        HStack(spacing: 18) {
-            Group {
-                if let photo {
-                    Image(uiImage: photo).resizable().scaledToFill()
-                } else {
-                    Image(systemName: "photo.badge.plus").font(.system(size: 44)).foregroundStyle(.secondary)
-                }
-            }
-            .frame(width: 150, height: 150)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .background(RoundedRectangle(cornerRadius: 16).fill(Color(.secondarySystemGroupedBackground)))
-
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Photo de l'étiquette").font(.headline)
-                if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                    Button { showCamera = true } label: {
-                        Label("Prendre la photo", systemImage: "camera.fill")
-                    }
-                    .buttonStyle(BigButtonStyle(color: .brown))
-                    .frame(maxWidth: 320)
-                }
-                PhotosPicker(selection: $libraryItem, matching: .images) {
-                    Label("Choisir dans la photothèque", systemImage: "photo.on.rectangle")
-                        .font(.headline)
-                }
-            }
-        }
-    }
-
-    private func setPhoto(_ image: UIImage) {
-        photo = image
-        photoData = image.jpegData(compressionQuality: 0.7)
     }
 
     private func save() {
@@ -137,7 +88,67 @@ struct ReceptionView: View {
         banner = (!dlcExpired, "Réception scellée : \(p)",
                   "\(s) — DLC \(Fmt.day(dlc))\(sha != nil ? " — photo liée" : " — sans photo")")
         dlcExpired ? Haptics.warning() : Haptics.success()
-        product = ""; lot = ""; photo = nil; photoData = nil; libraryItem = nil
+        product = ""; lot = ""; photo = nil; photoData = nil
+    }
+}
+
+/// Photo d'étiquette : appareil photo (si présent) ou photothèque.
+struct PhotoCapture: View {
+    @Binding var photo: UIImage?
+    @Binding var photoData: Data?
+    var color: Color = .brown
+
+    @State private var showCamera = false
+    @State private var libraryItem: PhotosPickerItem?
+
+    var body: some View {
+        HStack(spacing: 18) {
+            Group {
+                if let photo {
+                    Image(uiImage: photo).resizable().scaledToFill()
+                } else {
+                    Image(systemName: "photo.badge.plus").font(.system(size: 44)).foregroundStyle(.secondary)
+                }
+            }
+            .frame(width: 150, height: 150)
+            .background(Color(.tertiarySystemFill))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Photo de l'étiquette").font(.headline)
+                if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                    Button { showCamera = true } label: {
+                        Label("Prendre la photo", systemImage: "camera.fill")
+                    }
+                    .buttonStyle(BigButtonStyle(color: color))
+                    .frame(maxWidth: 320)
+                }
+                PhotosPicker(selection: $libraryItem, matching: .images) {
+                    Label("Choisir dans la photothèque", systemImage: "photo.on.rectangle")
+                        .font(.headline)
+                }
+            }
+        }
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraPicker { image in
+                if let image { setPhoto(image) }
+                showCamera = false
+            }
+            .ignoresSafeArea()
+        }
+        .task(id: libraryItem) {
+            guard let item = libraryItem,
+                  let data = try? await item.loadTransferable(type: Data.self),
+                  let image = UIImage(data: data) else { return }
+            setPhoto(image)
+        }
+        // Photo effacée par l'écran parent (après enregistrement) : on oublie la sélection.
+        .onChange(of: photo == nil) { isNil in if isNil { libraryItem = nil } }
+    }
+
+    private func setPhoto(_ image: UIImage) {
+        photo = image
+        photoData = image.jpegData(compressionQuality: 0.7)
     }
 }
 
@@ -150,11 +161,11 @@ struct Field: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(title).font(.headline)
+            if !title.isEmpty { Text(title).font(.headline) }
             TextField(placeholder, text: $text)
                 .font(.title3)
                 .padding(14)
-                .background(RoundedRectangle(cornerRadius: 14).fill(Color(.secondarySystemGroupedBackground)))
+                .inputBox()
             if !suggestions.isEmpty {
                 FlowLayout {
                     ForEach(suggestions, id: \.self) { s in

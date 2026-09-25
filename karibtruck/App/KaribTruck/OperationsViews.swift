@@ -16,8 +16,11 @@ struct FryingOilView: View {
     @State private var banner: (ok: Bool, title: String, detail: String)?
 
     private var polarValue: Double? { Double(polar.replacingOccurrences(of: ",", with: ".")) }
-    private var canSave: Bool {
-        !fryer.trimmingCharacters(in: .whitespaces).isEmpty && (!withMeasure || polarValue != nil)
+    private var missing: [String] {
+        var m: [String] = []
+        if fryer.trimmingCharacters(in: .whitespaces).isEmpty { m.append("friteuse") }
+        if withMeasure && polarValue == nil { m.append("mesure du testeur") }
+        return m
     }
 
     var body: some View {
@@ -58,16 +61,15 @@ struct FryingOilView: View {
                     }
                 }
 
-                Button { save() } label: {
-                    Label("Enregistrer", systemImage: "square.and.arrow.down.fill")
-                }
-                .buttonStyle(BigButtonStyle(color: .orange))
-                .disabled(!canSave)
             }
             .padding(24)
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Huile de friture")
+        .safeAreaInset(edge: .bottom) {
+            SaveBar(title: "Enregistrer", systemImage: "square.and.arrow.down.fill",
+                    color: .orange, missing: missing) { save() }
+        }
     }
 
     private func save() {
@@ -123,7 +125,7 @@ struct NonConformityView: View {
                     TextField("Ce qui s'est passé", text: $what, axis: .vertical)
                         .font(.title3).lineLimit(2...4)
                         .padding(14)
-                        .background(RoundedRectangle(cornerRadius: 14).fill(Color(.secondarySystemGroupedBackground)))
+                        .inputBox()
                 }
 
                 VStack(alignment: .leading, spacing: 10) {
@@ -136,21 +138,26 @@ struct NonConformityView: View {
                     TextField("Ce qui a été fait", text: $action, axis: .vertical)
                         .font(.title3).lineLimit(2...4)
                         .padding(14)
-                        .background(RoundedRectangle(cornerRadius: 14).fill(Color(.secondarySystemGroupedBackground)))
+                        .inputBox()
                 }
 
-                Button { save() } label: {
-                    Label("Enregistrer l'incident", systemImage: "square.and.arrow.down.fill")
-                }
-                .buttonStyle(BigButtonStyle(color: Theme.alert))
-                .disabled(what.trimmingCharacters(in: .whitespaces).isEmpty
-                          || action.trimmingCharacters(in: .whitespaces).isEmpty)
             }
             .padding(24)
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Incident")
+        .safeAreaInset(edge: .bottom) {
+            SaveBar(title: "Enregistrer l'incident", systemImage: "square.and.arrow.down.fill",
+                    color: Theme.alert, missing: missing) { save() }
+        }
         .onAppear { if what.isEmpty, let prefilledWhat { what = prefilledWhat } }
+    }
+
+    private var missing: [String] {
+        var m: [String] = []
+        if what.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { m.append("constat") }
+        if action.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { m.append("action corrective") }
+        return m
     }
 
     private func toggleAction(_ a: String) {
@@ -216,11 +223,6 @@ struct PlanningView: View {
                 Field(title: "Emplacement", text: $place, placeholder: "ex. Marché de Fort-de-France",
                       suggestions: store.recentValues(kind: "market.schedule", key: "place"))
 
-                Button { save() } label: {
-                    Label("Ajouter au planning", systemImage: "calendar.badge.plus")
-                }
-                .buttonStyle(BigButtonStyle(color: .purple))
-                .disabled(place.trimmingCharacters(in: .whitespaces).isEmpty || end <= start)
 
                 Text("À venir").font(.title2.bold()).padding(.top, 8)
                 if upcoming.isEmpty {
@@ -244,6 +246,11 @@ struct PlanningView: View {
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Planning marchés")
+        .safeAreaInset(edge: .bottom) {
+            SaveBar(title: "Ajouter au planning", systemImage: "calendar.badge.plus", color: .purple,
+                    missing: (place.trimmingCharacters(in: .whitespaces).isEmpty ? ["emplacement"] : [])
+                        + (end <= start ? ["heure de fin après le début"] : [])) { save() }
+        }
     }
 
     private func save() {

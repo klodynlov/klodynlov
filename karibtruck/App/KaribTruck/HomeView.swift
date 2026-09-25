@@ -9,6 +9,7 @@ enum Screen: Hashable {
     case frying
     case nonConformity(String?)        // constat prérempli (ex. relevé en alerte)
     case planning
+    case meat(MeatTab)
     case history
     case inspection
 }
@@ -32,6 +33,7 @@ struct HomeView: View {
                             .background(RoundedRectangle(cornerRadius: 14).fill(Theme.alert.opacity(0.15)))
                     }
                     today
+                    Text("Au quotidien").font(.title3.bold()).foregroundStyle(.secondary)
                     LazyVGrid(columns: columns, spacing: 18) {
                         Tile(title: "Températures", icon: "thermometer.medium", color: .blue) {
                             path.append(.temperature(nil))
@@ -39,20 +41,23 @@ struct HomeView: View {
                         Tile(title: "Checklists", icon: "checklist", color: .teal) {
                             path.append(.checklists(nil))
                         }
-                        Tile(title: "Réception", icon: "shippingbox", color: .brown) {
-                            path.append(.reception)
+                        Tile(title: "Viandes", icon: "fork.knife", color: .pink) {
+                            path.append(.meat(.reception))
                         }
                         Tile(title: "Huile de friture", icon: "drop", color: .yellow) {
                             path.append(.frying)
                         }
+                    }
+                    Text("Au besoin").font(.title3.bold()).foregroundStyle(.secondary)
+                    LazyVGrid(columns: columns, spacing: 18) {
                         Tile(title: "Incident", icon: "exclamationmark.bubble", color: .red) {
                             path.append(.nonConformity(nil))
                         }
+                        Tile(title: "Réception (autres)", icon: "shippingbox", color: .brown) {
+                            path.append(.reception)
+                        }
                         Tile(title: "Planning marchés", icon: "calendar", color: .purple) {
                             path.append(.planning)
-                        }
-                        Tile(title: "Historique", icon: "clock.arrow.circlepath", color: .gray) {
-                            path.append(.history)
                         }
                         Tile(title: "Dossier de contrôle", icon: "doc.richtext", color: .indigo) {
                             path.append(.inspection)
@@ -71,6 +76,7 @@ struct HomeView: View {
                 case .frying: FryingOilView()
                 case .nonConformity(let what): NonConformityView(prefilledWhat: what)
                 case .planning: PlanningView()
+                case .meat(let tab): MeatView(tab: tab, path: $path)
                 case .history: HistoryView()
                 case .inspection: InspectionView()
                 }
@@ -90,6 +96,9 @@ struct HomeView: View {
                     Label("\(n) alerte\(n > 1 ? "s" : "") aujourd'hui", systemImage: "exclamationmark.triangle.fill")
                         .font(.headline).foregroundStyle(Theme.alert)
                 }
+                Button { path.append(.history) } label: {
+                    Label("Historique", systemImage: "clock.arrow.circlepath").font(.headline)
+                }
                 IntegrityBadge()
             }
             ScrollView(.horizontal, showsIndicators: false) {
@@ -104,6 +113,14 @@ struct HomeView: View {
                             state: last == nil ? .todo : (last?.payload["status"] == "alert" ? .alert : .ok)
                         ) { path.append(.temperature(enc.id)) }
                     }
+                    let open = store.openMeatLots
+                    let expired = open.filter { $0.isExpired(on: store.todayDay) }.count
+                    StatusCard(
+                        title: "Lots viande",
+                        value: "\(open.count) en cours",
+                        caption: expired > 0 ? "\(expired) DLC dépassée\(expired > 1 ? "s" : "") — à jeter" : "traçabilité",
+                        state: open.isEmpty ? .todo : (expired > 0 ? .alert : .ok)
+                    ) { path.append(.meat(expired > 0 ? .lots : .preparation)) }
                     ForEach(store.checklists.filter { $0.id != "nettoyage" }) { t in
                         let run = store.lastChecklistToday(t.id)
                         StatusCard(

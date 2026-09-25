@@ -17,6 +17,7 @@ rétro-datable, la preuve qu'on présente en contrôle DDPP.
 | 🌡️ Relevés de température (frigo `≤ 4 °C`, vitrine chaude `≥ 63 °C`), pavé numérique géant, action corrective en 1 tap si alerte | ✅ cœur + UI |
 | ✅ Checklists ouverture / fermeture / nettoyage — points non faits scellés, signature en alerte | ✅ cœur + UI |
 | 📦 Traçabilité réception (produit, fournisseur, lot, DLC) + **photo d'étiquette liée par empreinte SHA-256** | ✅ cœur + UI |
+| 🥩 **Traçabilité viande** (volaille, porc, bœuf, mouton, cabri) : réception (origine, estampille, T° selon l'état), fournées liées aux lots, lots clos, rappel fournisseur, affiche « Origine de nos viandes » (écran client + PDF) | ✅ cœur + UI |
 | ⚠️ Non-conformités + action corrective (modèles en un tap) | ✅ cœur + UI |
 | 🍟 Huile de friture (contrôle / changement, % composés polaires `≤ 25 %`) | ✅ cœur + UI |
 | 🗺️ Planning marché (date, emplacement, créneau) | ✅ cœur + UI |
@@ -26,6 +27,13 @@ rétro-datable, la preuve qu'on présente en contrôle DDPP.
 
 Les valeurs de départ (limites, points de checklist, modèles d'incident) sont à
 ajuster avec le PMS du camion.
+
+Règles viande encodées (vérifiées le 2026-09-25) : mention d'origine au format du
+décret n° 2002-1465 modifié (pérennisé par le décret n° 2025-141, y compris à
+emporter) ; limites de température à réception selon le règlement CE 853/2004 et
+l'arrêté du 21/12/2009 (haché 2 °C, abats 3 °C, volaille et préparations 4 °C,
+découpes 7 °C, surgelé −18 °C avec 3 °C de tolérance au transport). Une fournée
+refuse un lot inconnu, clos ou à DLC dépassée.
 
 ## Structure
 
@@ -38,6 +46,7 @@ karibtruck/
 │   ├── Thresholds.swift          #   règle de seuil (max=froid / min=chaud)
 │   ├── Enclosures.swift          #   enceintes + préréglages M0
 │   ├── Checklists.swift          #   modèles de checklists (préréglages M0)
+│   ├── Meat.swift                #   traçabilité viande (origine, limites, fournées, rappel)
 │   ├── KaribTruck.swift          #   façade métier (les 6 actions + lectures par période)
 │   └── Export.swift              #   export dossier de contrôle (CSV + résumé)
 ├── Tests/KaribTruckCoreTests/    # XCTest (SHA-256, journal, seuils, altération, export)
@@ -74,5 +83,5 @@ python3 tools/oracle.py       # self-test 5/5 + génère les vecteurs
 python3 tools/check_sync.py   # vérifie que les tests Swift == oracle
 ```
 
-> Vérifié sur Mac (Xcode 27, Swift 6.4) : `swift test` 39/39, oracle + garde-fou
+> Vérifié sur Mac (Xcode 27, Swift 6.4) : `swift test` 53/53, oracle + garde-fou
 > OK, app compilée sans avertissement, testée au simulateur et installée sur iPad.

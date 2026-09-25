@@ -15,8 +15,12 @@ struct ChecklistsView: View {
 
     private var template: ChecklistTemplate? { store.checklists.first { $0.id == templateID } }
     private var missing: [String] { template?.items.filter { !checked.contains($0) } ?? [] }
-    private var canSign: Bool {
-        template != nil && !operatorName.trimmingCharacters(in: .whitespaces).isEmpty && !checked.isEmpty
+    /// Ce qui empêche de signer (les points non cochés, eux, se signent avec confirmation).
+    private var signMissing: [String] {
+        var m: [String] = []
+        if checked.isEmpty { m.append("cocher les points faits") }
+        if operatorName.trimmingCharacters(in: .whitespaces).isEmpty { m.append("opérateur") }
+        return m
     }
 
     var body: some View {
@@ -56,22 +60,23 @@ struct ChecklistsView: View {
                             .font(.title3)
                             .textInputAutocapitalization(.words)
                             .padding(14)
-                            .background(RoundedRectangle(cornerRadius: 14).fill(Color(.secondarySystemGroupedBackground)))
+                            .inputBox()
                     }
 
-                    Button {
-                        missing.isEmpty ? sign() : (confirmIncomplete = true)
-                    } label: {
-                        Label("Signer (\(checked.count)/\(t.items.count))", systemImage: "signature")
-                    }
-                    .buttonStyle(BigButtonStyle(color: missing.isEmpty ? Theme.ok : Theme.accent))
-                    .disabled(!canSign)
                 }
             }
             .padding(24)
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Checklists")
+        .safeAreaInset(edge: .bottom) {
+            if let t = template {
+                SaveBar(title: "Signer (\(checked.count)/\(t.items.count))", systemImage: "signature",
+                        color: missing.isEmpty ? Theme.ok : Theme.accent, missing: signMissing) {
+                    missing.isEmpty ? sign() : (confirmIncomplete = true)
+                }
+            }
+        }
         .onAppear {
             if templateID.isEmpty {
                 select(preselected
@@ -128,7 +133,7 @@ private struct ItemRow: View {
             }
             .padding(.horizontal, 18)
             .frame(minHeight: 68)
-            .background(RoundedRectangle(cornerRadius: 14).fill(Color(.secondarySystemGroupedBackground)))
+            .inputBox()
         }
         .buttonStyle(.plain)
     }

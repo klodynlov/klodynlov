@@ -82,10 +82,12 @@ final class Store: ObservableObject {
 
     /// Valeurs déjà saisies pour une clé (suggestions : fournisseurs, lieux…),
     /// de la plus récente à la plus ancienne, sans doublon.
-    func recentValues(kind: String, key: String, limit: Int = 6) -> [String] {
+    func recentValues(kind: String, key: String, limit: Int = 6,
+                      matching filter: [String: String] = [:]) -> [String] {
         var seen = Set<String>()
         var out: [String] = []
-        for e in entries.reversed() where e.kind == kind {
+        for e in entries.reversed() where e.kind == kind
+            && filter.allSatisfy({ e.payload[$0.key] == $0.value }) {
             guard let v = e.payload[key], !v.isEmpty, seen.insert(v).inserted else { continue }
             out.append(v)
             if out.count == limit { break }
@@ -153,6 +155,40 @@ final class Store: ObservableObject {
         persist()
     }
 
+    // MARK: - Traçabilité viande
+
+    /// Jour local en cours au format métier « yyyy-MM-dd » (DLC, fournées).
+    var todayDay: String { Fmt.isoDay.string(from: Date()) }
+    var meatLots: [MeatLot] { truck.meatLots }
+    var openMeatLots: [MeatLot] { truck.openMeatLots }
+    func meatLot(_ id: String) -> MeatLot? { truck.meatLot(id) }
+    func searchMeatLots(_ q: String) -> [MeatLot] { truck.searchMeatLots(q) }
+    var originBoardToday: [(species: MeatSpecies, origins: [String])] { truck.originBoard(day: todayDay) }
+
+    /// Retourne le statut du contrôle de température et la référence du lot créé.
+    @discardableResult
+    func recordMeatReception(species: MeatSpecies, state: MeatState, product: String, supplier: String,
+                             lot: String, dlc: String, agrement: String, origin: MeatOrigin,
+                             celsius: Double, photoSHA256: String?) throws -> (status: ReadingStatus, lotID: String) {
+        let r = try truck.recordMeatReception(species: species, state: state, product: product,
+                                              supplier: supplier, lot: lot, dlc: dlc, agrement: agrement,
+                                              origin: origin, celsius: celsius,
+                                              photoSHA256: photoSHA256, at: now())
+        persist()
+        return (r.status, r.entry.hash)
+    }
+
+    func recordMeatPreparation(name: String, lots: [String], dlc: String, operator op: String) throws {
+        try truck.recordMeatPreparation(name: name, lots: lots, day: todayDay, dlc: dlc,
+                                        operator: op, at: now())
+        persist()
+    }
+
+    func closeMeatLot(_ id: String, reason: MeatLotClosure, note: String = "") throws {
+        try truck.closeMeatLot(id, reason: reason, note: note, at: now())
+        persist()
+    }
+
     // MARK: - Photos d'étiquettes (hors journal, liées par empreinte SHA-256)
 
     /// Enregistre la photo sous son empreinte et retourne celle-ci.
@@ -204,6 +240,30 @@ final class Store: ObservableObject {
             }
             truck.recordChecklistRun(checklist: "fermeture", done: day == 4 ? 8 : 9, total: 9, operator: "Démo",
                                      missing: day == 4 ? ["Eaux usées vidangées"] : [], at: at(day, 21, 0))
+        }
+        func day(_ daysAgo: Int, plus: Int = 0) -> String {
+            Fmt.isoDay.string(from: cal.date(byAdding: .day, value: plus - daysAgo, to: Date())!)
+        }
+        let poulet = try? truck.recordMeatReception(
+            species: .volaille, state: .fraiche, product: "Cuisses de poulet", supplier: "Antilles Frais",
+            lot: "V-2509", dlc: day(5, plus: 6), agrement: "FR 97.213.001 CE",
+            origin: MeatOrigin(raised: "France", slaughtered: "France"), celsius: 3.2, at: at(5, 8, 40)).entry.hash
+        let porc = try? truck.recordMeatReception(
+            species: .porc, state: .fraiche, product: "Échine", supplier: "Boucherie du Lamentin",
+            lot: "P-7781", dlc: day(4, plus: 8), agrement: "FR 97.209.004 CE",
+            origin: MeatOrigin(raised: "Espagne", slaughtered: "France"), celsius: 5.5, at: at(4, 8, 30)).entry.hash
+        _ = try? truck.recordMeatReception(
+            species: .boeuf, state: .surgelee, product: "Paleron", supplier: "Import Caraïbes",
+            lot: "B-IE-332", dlc: day(1, plus: 120), agrement: "IE 1234 EC",
+            origin: MeatOrigin(born: "Irlande", raised: "Irlande", slaughtered: "France"), celsius: -19, at: at(1, 9, 30))
+        if let poulet, let porc {
+            _ = try? truck.recordMeatPreparation(name: "Colombo de poulet", lots: [poulet], day: day(4),
+                                                 dlc: day(4), operator: "Démo", at: at(4, 10, 30))
+            _ = try? truck.recordMeatPreparation(name: "Porc boucané", lots: [porc], day: day(2),
+                                                 dlc: day(2), operator: "Démo", at: at(2, 10, 0))
+            _ = try? truck.recordMeatPreparation(name: "Colombo de poulet", lots: [poulet], day: day(2),
+                                                 dlc: day(2), operator: "Démo", at: at(2, 10, 20))
+            _ = try? truck.closeMeatLot(poulet, reason: .termine, at: at(2, 21, 30))
         }
         truck.recordMarketSchedule(date: Fmt.isoDay.string(from: cal.date(byAdding: .day, value: 2, to: Date())!),
                                    place: "Marché de Fort-de-France", slot: "08:00-14:00", at: at(1, 18, 0))

@@ -86,6 +86,61 @@ struct FlowLayout: Layout {
     }
 }
 
+/// Barre d'enregistrement fixée en bas de l'écran : toujours atteignable au
+/// pouce, et elle dit ce qui manque au lieu d'un bouton grisé muet.
+struct SaveBar: View {
+    let title: String
+    let systemImage: String
+    var color: Color = Theme.accent
+    let missing: [String]
+    let action: () -> Void
+
+    var body: some View {
+        VStack(spacing: 8) {
+            if !missing.isEmpty {
+                Label("À compléter : " + missing.joined(separator: " · "), systemImage: "hand.point.up.left")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            Button(action: action) { Label(title, systemImage: systemImage) }
+                .buttonStyle(BigButtonStyle(color: color))
+                .disabled(!missing.isEmpty)
+        }
+        .padding(.horizontal, 24)
+        .padding(.vertical, 12)
+        .background(.bar)
+    }
+}
+
+/// Étape numérotée d'un formulaire (① Viande, ② Étiquette…).
+struct StepCard<Content: View>: View {
+    let number: Int
+    let title: String
+    var done = false
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle().fill(done ? Theme.ok : Color.pink).frame(width: 34, height: 34)
+                    if done {
+                        Image(systemName: "checkmark").font(.headline.bold()).foregroundStyle(.white)
+                    } else {
+                        Text("\(number)").font(.headline.bold()).foregroundStyle(.white)
+                    }
+                }
+                Text(title).font(.title2.bold())
+            }
+            content
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: 20).fill(Color(.secondarySystemGroupedBackground)))
+    }
+}
+
 /// Bandeau de confirmation après une saisie (vert = conforme, rouge = alerte).
 struct ResultBanner: View {
     let ok: Bool
@@ -105,6 +160,14 @@ struct ResultBanner: View {
         .padding(18)
         .foregroundStyle(.white)
         .background(RoundedRectangle(cornerRadius: 18).fill(ok ? Theme.ok : Theme.alert))
+    }
+}
+
+extension View {
+    /// Champ de saisie : fond blanc + bordure, lisible sur fond gris comme dans une carte blanche.
+    func inputBox() -> some View {
+        background(RoundedRectangle(cornerRadius: 14).fill(Color(.systemBackground)))
+            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color(.separator), lineWidth: 1))
     }
 }
 
@@ -173,6 +236,9 @@ enum Fmt {
         case "frying-oil.check": return "Huile de friture"
         case "nonconformity": return "Non-conformité"
         case "market.schedule": return "Planning"
+        case "meat.reception": return "Réception viande"
+        case "meat.preparation": return "Fournée"
+        case "meat.lot.close": return "Lot viande clos"
         default: return kind
         }
     }
@@ -185,6 +251,9 @@ enum Fmt {
         case "frying-oil.check": return "drop"
         case "nonconformity": return "exclamationmark.bubble"
         case "market.schedule": return "calendar"
+        case "meat.reception": return "fork.knife"
+        case "meat.preparation": return "flame"
+        case "meat.lot.close": return "archivebox"
         default: return "doc"
         }
     }
@@ -226,9 +295,79 @@ enum Fmt {
             return "[\(p["severity"] ?? "")] \(p["what"] ?? "") → \(p["action"] ?? "")"
         case "market.schedule":
             return "\(businessDay(p["date"] ?? "")) — \(p["place"] ?? "") — \(p["slot"] ?? "")"
+        case "meat.reception":
+            let sp = MeatSpecies(rawValue: p["species"] ?? "")
+            return "\(speciesEmoji(sp)) \(meatTitle(species: sp, state: MeatState(rawValue: p["state"] ?? ""), product: p["product"] ?? "")) — lot \(p["lot"] ?? "") — \(number(p["celsius"])) °C — \(p["origin"] ?? "")"
+        case "meat.preparation":
+            let n = KaribTruck.lotIDs(of: e).count
+            return "\(p["name"] ?? "") — \(n) lot\(n > 1 ? "s" : "") — DLC \(businessDay(p["dlc"] ?? "")) — \(p["operator"] ?? "")"
+        case "meat.lot.close":
+            return "\(MeatLotClosure(rawValue: p["reason"] ?? "")?.label ?? "")\(p["note"].map { " — \($0)" } ?? "")"
         default:
             return p.keys.sorted().map { "\($0)=\(p[$0]!)" }.joined(separator: " | ")
         }
+    }
+
+    /// "Bœuf — Paleron (viande surgelée)" : l'état qualifie la viande (accord correct).
+    static func meatTitle(species: MeatSpecies?, state: MeatState?, product: String) -> String {
+        var s = "\(species?.label ?? "?") — \(product)"
+        if let state { s += " (viande \(state.label.lowercased()))" }
+        return s
+    }
+
+    static func speciesEmoji(_ s: MeatSpecies?) -> String {
+        switch s {
+        case .volaille: return "🐔"
+        case .porc: return "🐖"
+        case .boeuf: return "🐄"
+        case .ovin: return "🐑"
+        case .caprin: return "🐐"
+        case nil: return "🥩"
+        }
+    }
+
+    /// "🐔 Volaille · Cuisses — lot V-1".
+    static func lotLabel(_ lot: MeatLot) -> String {
+        "\(speciesEmoji(lot.species)) \(lot.species?.label ?? "?") · \(lot.reception.payload["product"] ?? "") — lot \(lot.reception.payload["lot"] ?? "")"
+    }
+
+    /// Message clair pour une erreur de traçabilité viande.
+    @MainActor
+    static func meatError(_ error: Error, store: Store) -> String {
+        func name(_ id: String) -> String { store.meatLot(id).map(lotLabel) ?? "lot inconnu" }
+        switch error as? MeatError {
+        case .incompleteOrigin: return "Origine incomplète : indiquez le pays d'élevage et d'abattage."
+        case .noLot: return "Choisissez au moins un lot."
+        case .unknownLot(let id): return "Lot introuvable : \(name(id))."
+        case .lotClosed(let id): return "Ce lot est déjà clos : \(name(id))."
+        case .lotExpired(let id): return "DLC dépassée, lot à jeter : \(name(id))."
+        case nil: return error.localizedDescription
+        }
+    }
+
+    /// Fiche de traçabilité d'un lot, en texte (partage : mail, message, AirDrop).
+    static func traceText(_ lot: MeatLot) -> String {
+        let p = lot.reception.payload
+        var out = "Fiche de traçabilité — KaribTruck\n\n"
+        out += meatTitle(species: lot.species, state: lot.state, product: p["product"] ?? "") + "\n"
+        out += "Reçu le : \(dateTime(lot.reception.timestamp))\n"
+        out += "Fournisseur : \(p["supplier"] ?? "")\n"
+        out += "Lot fournisseur : \(p["lot"] ?? "")\n"
+        out += "Estampille : \(p["agrement"] ?? "—")\n"
+        out += "Origine : \(lot.origin)\n"
+        out += "Température à réception : \(number(p["celsius"])) °C (limite ≤ \(number(p["limit"])) °C)\n"
+        out += "DLC : \(businessDay(lot.dlc))\n"
+        if let c = lot.closure {
+            out += "Clos le : \(dateTime(c.timestamp)) — \(MeatLotClosure(rawValue: c.payload["reason"] ?? "")?.label ?? "")\n"
+        } else {
+            out += "Statut : en cours\n"
+        }
+        out += "\nFournées (\(lot.preparations.count)) :\n"
+        for prep in lot.preparations {
+            out += "- \(dateTime(prep.timestamp)) : \(prep.payload["name"] ?? "") (DLC \(businessDay(prep.payload["dlc"] ?? "")), \(prep.payload["operator"] ?? ""))\n"
+        }
+        out += "\nEmpreinte de la réception : \(lot.reception.hash)\n"
+        return out
     }
 
     static func qualityLabel(_ q: String?) -> String {

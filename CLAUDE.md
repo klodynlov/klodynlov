@@ -144,6 +144,13 @@ audit, harnais). A entendu parler d'une obligation « caisse au 1er septembre »
   historique, **dossier de contrôle PDF A4** + CSV par période. Correctif : journal illisible
   au lancement = mis de côté, plus jamais écrasé. Testé au simulateur, **installé sur l'iPad
   réel** (profil joker de l'équipe, pas d'App ID créé). Démo = simulateur seulement.
+- ✅ **2026-09-25 — traçabilité viande** (choix utilisateur : suivi **par fournée** ; volaille,
+  porc, bœuf, mouton, cabri) : `Meat.swift` (cœur, 14 tests → **53/53**) + `MeatView.swift`
+  (réception en 4 étapes avec reprise du dernier lot de l'espèce, fournée qui re-sélectionne
+  les lots d'une préparation connue, lots en cours, rappel avec confirmation, affiche origine
+  plein écran + PDF). Sections viande dans le dossier PDF. **UX** (demande utilisateur
+  « intuitif et ergo ») : barre d'enregistrement fixe partout, accueil « Au quotidien / Au
+  besoin », champs lisibles dans les cartes. Règles sourcées dans `karibtruck/README.md`.
 - **Décision en attente (pour la suite)** : régime TVA (bloquant caisse, indépendant du M0) ·
   Face ID + sauvegarde chiffrée · réglages éditables (enceintes, limites, checklists) ·
   écriture rectificative · valider les valeurs de départ avec le PMS.

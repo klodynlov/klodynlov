@@ -6,7 +6,9 @@ import Foundation
 /// cœur reste sans horloge (donc déterministe et testable) ; c'est l'app iOS
 /// qui injecte `Date()`.
 public struct KaribTruck: Equatable {
-    public private(set) var journal: Journal
+    // `internal(set)` : les extensions du cœur (ex. Meat.swift) écrivent aussi ;
+    // hors du module, le journal reste en lecture seule.
+    public internal(set) var journal: Journal
     public var enclosures: [Enclosure]
 
     public init(enclosures: [Enclosure] = Enclosure.defaultsM0,
