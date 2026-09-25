@@ -409,19 +409,39 @@ confirmer (§10).*
 
 | | **Mode papier** (recommandé) | **Mode écran** |
 |---|---|---|
-| Geste | Vrais crayons, vraie friction, vraie prise | Doigt (ou stylet épais), PencilKit encre `.crayon` |
-| Guidage | Traits épais imprimés | **Pochoir** + guidage **sonore et visuel** près des contours ; haptique **Pencil Pro** en bonus |
+| Geste | Vrais crayons, vraie friction, vraie prise | Doigt (ou stylet épais) : pinceau rond qui reste dans sa zone ; toucher une zone la remplit (ébauche, voir § 6.3) |
+| Guidage | Traits épais imprimés | **Pochoir par zones** + guidage **sonore et visuel** près des contours (à faire) ; haptique **Pencil Pro** en bonus |
 | Écran | Quelques secondes (numériser, regarder l'animation) | Toute l'activité |
-| API clés (vérifiées) | `VNDocumentCameraViewController` (iOS 13), `VNDetectDocumentSegmentationRequest` (iOS 15) | `PKCanvasView` `.anyInput`, `PKStroke(ink:path:transform:mask:)` (iOS 14), `drawingGestureRecognizer` |
+| API clés (vérifiées) | `VNDocumentCameraViewController` (iOS 13), `VNDetectDocumentSegmentationRequest` (iOS 15) | Ébauche : SwiftUI `Canvas` + carte des zones en Swift pur (aucune API spéciale). Option : PencilKit (`PKCanvasView` `.anyInput`, encre `.crayon`, `PKStroke(ink:path:transform:mask:)` iOS 14) si l'on veut sa texture de crayon |
 
-### 6.3 Mode écran : pochoir et étayage progressif
+### 6.3 Mode écran : zones, pochoir et étayage progressif
 
-- **Pochoir** : chaque trait est **masqué** à la région où il a commencé (`PKStroke.mask`, un
-  `UIBezierPath` de la région) → l'enfant doit *couvrir* la forme par des allers-retours (motricité),
-  sans jamais « abîmer » le dessin. Point UX à tester : le trait se « range » à la fin du geste.
-- **Guidage multisensoriel** : un **champ de distance** pré-calculé par gabarit (distance au contour la
-  plus proche) donne, en O(1) à chaque point du geste, la proximité du bord → son de crayon modulé par
-  la vitesse, **« tic » doux** et halo lumineux près du contour, haptique Pencil Pro.
+*Mis à jour le 25/09/2026 avec l'accord de l'utilisateur, d'après l'ébauche essayée sur son iPad.*
+
+- **Des zones comme sur papier** : une page est un **dessin au trait** ; chaque surface fermée par
+  des traits est **une zone**, comme le seau de peinture sur une page imprimée — rien ne fusionne, et
+  les traits restent apparents (demande de l'utilisateur après l'essai). La **carte des zones** est
+  calculée à l'ouverture de la page (`ZoneMap`) : traits rastérisés en 1024² à 0,8 fois leur
+  épaisseur (la couleur passe sous le trait, pas de liseré blanc), zones = composantes connexes
+  (4-connexité), miettes de rastérisation (< 0,02 % de la page) rattachées à une voisine. Les traits
+  restent vectoriels et nets, par-dessus les couleurs.
+- **Pochoir** : un coup de pinceau ne peint **que la zone où il a commencé** (`PaintLayer`) — le
+  principe prévu avec `PKStroke.mask`, obtenu sans PencilKit → l'enfant *couvre* la forme par
+  des allers-retours (motricité), sans jamais « abîmer » le dessin.
+- **Toucher = remplir** : l'ébauche remplit aussi une zone d'un toucher. **À trancher** avec le
+  § 6.1 (le remplissage automatique est la norme du marché ; s'en passer est notre point fort) :
+  garder comme étayage de départ, le rendre réglable, ou le retirer.
+- **Des pages vérifiables** : chaque forme dessinée porte un **point-témoin** ; les tests vérifient
+  qu'aucune zone ne fuit dans sa voisine ni dans le fond, que toute petite zone (< 0,3 %) est un
+  détail voulu (œil, bouton) et que les pages tiennent à ± 1 px de trait. 70 pages en 7 albums, dont
+  **un dessin par mot du petit train** : 15 écrites en Swift, 55 dessinées et contrôlées en Python
+  (`eveil/outils/coloriages/`, même algorithme de traits, carte des zones simulée) puis générées en
+  Swift. Le premier `swift test` sur le Mac a trouvé une fuite que la simulation Python laissait
+  passer (l'œil du caniche) : la vérification finale reste celle de l'app.
+- **Guidage multisensoriel** (à faire) : un **champ de distance** pré-calculé par gabarit (distance au
+  contour le plus proche — la carte des zones le rend peu coûteux) donne, en O(1) à chaque point du
+  geste, la proximité du bord → son de crayon modulé par la vitesse, **« tic » doux** et halo lumineux
+  près du contour, haptique Pencil Pro.
 - **Étayage qui s'efface** (niveaux réglables) : pochoir + son → son seul → libre. On adapte sur la
   couverture et le débordement mesurés **localement**, jamais présentés comme une note.
 
@@ -435,7 +455,7 @@ les couleurs de l'enfant texturent un personnage **pré-animé** [F18].
 flowchart LR
     G["Gabarit (conçu une fois)<br/>trait · carte des régions<br/>squelette : parties + ancres"] --> P
     S1["Mode papier :<br/>page numérisée, redressée"] --> P["Composer le coloriage<br/>+ le trait"]
-    S2["Mode écran :<br/>PKDrawing.image(from:scale:)"] --> P
+    S2["Mode écran :<br/>image du calque de peinture"] --> P
     P --> C["Découper chaque partie<br/>(masque de région)"]
     C --> T["SKTexture par partie"]
     T --> A["SpriteKit : nœuds hiérarchiques<br/>SKAction · SKWarpGeometryGrid<br/>(respiration, rebond, marche)"]
@@ -447,8 +467,8 @@ SceneKit est écarté (déprécié en iOS 26) ; RealityKit seulement si l'on pas
 
 | Module | Rôle |
 |---|---|
-| `ColoringCore` (Swift pur, testable) | carte des régions, champ de distance, décision de pochoir, couverture/débordement |
-| `ColoringCanvas` | `PKCanvasView` + calque du trait + suivi du geste |
+| `ColoringCore` (Swift pur, testable) | ✅ carte des zones (`ZoneMap`), traits visibles (`Sketch`, `LineClipper`), calque de peinture et pochoir (`PaintLayer`) — dans `ColoringUI` pour l'ébauche ; à faire : champ de distance, couverture/débordement |
+| `ColoringCanvas` | ✅ `ColoringView` : SwiftUI `Canvas` (couleurs sous les traits) + suivi du geste, albums et choix des pages ; PencilKit en option |
 | `GuidanceEngine` | son (crayon, « tic »), halo, haptique Pencil Pro |
 | `PageScanner` | numérisation VisionKit + redressement + recalage sur le gabarit |
 | `AnimationStage` | squelette SpriteKit, textures, animations |
@@ -559,7 +579,7 @@ un IC95 de [0 % ; 11,4 %] — **« zéro sur trente » n'est pas « zéro »** (
 | **M1** | `swift test` sur Mac (parité), app Xcode sur iPad réel, essais **adultes** au micro (sanité, pas de validation) | 🟢 |
 | **M2** | V0 — panel Delphi (mots, messages, durées), nom définitif, mascotte, voix modèles FR/EN | 🟡 |
 | **M3** | V1 — cadre éthique, corpus, calibration, porte GO/NO GO | 🟡 |
-| **M4** | App 2 — prototype **mode papier** d'abord, puis mode écran (pochoir) | 🟡 |
+| **M4** | App 2 — prototype **mode papier** d'abord, puis mode écran (pochoir) | 🟡 ébauche du mode écran faite à la demande de l'utilisateur (zones, pochoir, 70 pages) ; mode papier à faire |
 | **M5** | V2 — usage en famille | 🟡 |
 | **M6** | V3 — étude à cas unique | 🟡 |
 | Plus tard | Calibration par enfant (mots-témoins /s/ /ʃ/) · codas occlusives et fricatives voisées · chemin `SpeechAnalyzer` · ML **seulement** si données et cadre le permettent | 🟡 |

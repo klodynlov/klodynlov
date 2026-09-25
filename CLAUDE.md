@@ -233,19 +233,22 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     `SketchPathData.swift`). **Un dessin par mot des 45** (même sujet que `WordArt`), éléments du
     train, et d'autres. **7 albums** (`ColoringAlbums.swift`, 12 pages max : tout visible d'un coup
     même en 11" paysage) ; `PagePicker` = rangée d'albums + grille de l'album. `ColoringPages.all` =
-    albums aplatis. Python : 25 tests verts, `generer --check` ; **Swift NON compilé ici** (tree-sitter
-    OK) → `swift test` à relancer sur le Mac (tests d'albums ajoutés, `testPagePickerShowsEveryAlbumAtOnce`).
+    albums aplatis. Python : 25 tests verts, `generer --check`. **Compilé et testé sur le Mac le 25/09** :
+    0 avertissement ; `testEveryDrawnShapeIsItsOwnZone` a trouvé une fuite que la simulation Python
+    laissait passer (blanc de l'œil du caniche rattaché à la tête : croissant < miette) → œil corrigé
+    dans `pages_animaux.py`, page régénérée → ColoringUITests 30/30. La vérification finale = l'app.
     Planche : `docs/ui/eveil-app/7-coloriages.png`. Doublons évités : les 15 sujets Mac gardés tels quels ;
   - piège SwiftUI vu deux fois : une boucle `repeatForever` lancée dans `onAppear` « capture » la
     transition ou l'animation d'un parent (train qui clignote, qui tremble) → **tout mouvement est piloté
     par l'horloge** (`TimelineView`), train compris.
   Réalisé en partie par 4 sous-agents en worktrees (mondes/bestioles, dessins des mots, sons,
   coloriage), relus sur planches PNG (`EVEIL_RENDER_DIR`, `EVEIL_SOUNDS_DIR`) puis fusionnés.
-  `cd eveil/ios && swift test` → **98 tests** (démo, écoute, sons, rendus, coloriage). Captures :
+  `cd eveil/ios && swift test` → **100 tests** (démo, écoute, sons, rendus, coloriage). Captures :
   `docs/ui/eveil-app/*.png`. **Mascotte provisoire choisie par l'utilisateur : un chat chef de gare.**
   Provisoire aussi : nom « Petit Train », identifiant `fr.klodynlov.eveil.petittrain`, iPadOS 17,
-  dessins et bruitages (en attendant illustrateur et vrais sons). `docs/EVEIL.md` § 6.3 décrit encore
-  le pochoir PencilKit prévu : à mettre à jour **avec l'accord de l'utilisateur**.
+  dessins et bruitages (en attendant illustrateur et vrais sons). `docs/EVEIL.md` § 6 **mis à jour le
+  25/09 avec l'accord de l'utilisateur** (zones comme sur papier, pochoir par zone sans PencilKit, pages
+  vérifiables ; question ouverte : garder « toucher = remplir » face au § 6.1 ?).
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur interdits) → 0 violation, 7 tests ;
   ignore les produits de compilation (`.build/`, `.swiftpm/`, `DerivedData/`).
