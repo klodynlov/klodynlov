@@ -109,8 +109,12 @@ en grappes (n = 123, d = 0,08) [B8] : l'humilité est un choix de conception, pa
   **initiale** des mots accentués sur la deuxième (*banana* → *nana*) [A11].
 - **Bilingues :** peu de différences sur les processus inhabituels ; codas meilleures si l'autre
   langue en a beaucoup [A15]. Profils FR et EN **séparés**, transferts non comptés comme erreurs.
-- **Non vérifié dans cette passe** (à compléter avec le panel et LibraryBrain) : critères d'orientation
-  HAS/ANAES, seuils d'intelligibilité à 3 ans, prévalence et résolution spontanée [A20–A23].
+- **Repérage et orientation, vérifiés dans le texte** (LibraryBrain, 25/09/2026) : signes d'alerte HAS
+  entre 3 ans et 4 ans ½ ; profil 3 à l'ERTL4 → avis du médecin de PMI, orientation directe possible
+  vers l'orthophoniste en parallèle ; ANAES 2001 : prise en charge avant 4-5 ans si inintelligibilité,
+  agrammatisme ou trouble de la compréhension [A22]. Seuils du DPL3 : non vérifiés.
+- **Non vérifié** (à compléter avec le panel et LibraryBrain) : seuils d'intelligibilité à 3 ans,
+  prévalence et résolution spontanée [A20][A23].
 
 → Conséquence produit : l'app **ne dit jamais** « votre enfant a un trouble ». L'espace parent dit
 simplement : *« Ce jeu n'évalue pas le langage de votre enfant. En cas de doute, parlez-en à votre

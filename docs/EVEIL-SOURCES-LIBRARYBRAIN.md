@@ -132,9 +132,9 @@ récupération · (d) erreur de la passe cloud · (e) citation introuvable.
 | 22 | A10 | CONFIRMÉ | NT | NT | NT | — | — | McLeod & Crowe à acquérir (PDF refusé) |
 | 23 | B2 | NUANCÉ | NT | NT | P · nuance ✓ | **strict** | — | — |
 | 24 | B8 | RÉFUTÉ | NT | NT | NT | — | — | — |
-| 25 | B25 | CONFIRMÉ | P · nuance ✓ | P · nuance ✓ | P · nuance ✓ | souple seulement | (c) | B25 tient ; précision proposée (§ 5.1) |
+| 25 | B25 | CONFIRMÉ | P · nuance ✓ | P · nuance ✓ | P · nuance ✓ | souple seulement | (c) | B25 tient ; précision validée et reportée (§ 5.1) |
 | 26 | C4 | RÉFUTÉ | NT | NT | NT | — | — | — |
-| 27 | C6 | CONFIRMÉ | NT | NT | P · nuance ✓ | souple seulement | (a) | C6 tient ; précision proposée (§ 5.1) |
+| 27 | C6 | CONFIRMÉ | NT | NT | P · nuance ✓ | souple seulement | (a) | C6 tient ; précision validée et reportée (§ 5.1) |
 | 28 | C9 | CONFIRMÉ | NT | NT | NT | — | — | de Jong & Wempe 2009 à acquérir |
 | 29 | C17 | RÉFUTÉ | NT | NT | P · contredit ✓ | **strict** | — | Réfutation retrouvée en texte intégral |
 | 30 | E10 | RÉFUTÉ | NT | NT | NT | — | — | — |
@@ -257,7 +257,8 @@ Non couvert : les seuils du DPL3, qui restent au panel. `EVEIL-SOURCES.md` est m
   - Le texte intégral ajoute des limites de réalisation (p. 10) : ratio réel de 0,81 contre 2,48
     séances par semaine, environ 19,5 séances au lieu des 24 prévues, approche des oppositions
     multiples seulement.
-  - **B25 tient.** Ces précisions sont *proposées*, à valider.
+  - **B25 tient.** Précisions **validées le 25/09/2026** et reportées dans `EVEIL-SOURCES.md`
+    (verdict inchangé).
 - **Q27 / C6** (l'ASR généraliste « corrige » vers des mots réels et efface les disfluences) —
   cause (a).
   - L'effacement des disfluences est confirmé (Kid-Whisper, 2024).
@@ -266,7 +267,7 @@ Non couvert : les seuils du DPL3, qui restent au panel. `EVEIL-SOURCES.md` est m
     (2024) parlent, eux, de correction lexicale.
   - La décision produit qu'appuie C6 (l'ASR masque les erreurs de l'enfant, elle ne peut pas être
     juge) **tient**. Le mécanisme (« corrige *ou ignore* ») et la population (enfants lecteurs) sont
-    des précisions *proposées*, à valider.
+    des précisions **validées le 25/09/2026** et reportées dans `EVEIL-SOURCES.md` (verdict inchangé).
 
 ### 5.2 Accords appuyés par le texte intégral
 
@@ -361,9 +362,9 @@ D'après les 22 refus et la page `/gaps` de LibraryBrain (18 requêtes sans rép
 
 ## 9. Suite
 
-- **Validation humaine** : les précisions proposées pour B25 et C6 (§ 5.1, sans changement de
-  verdict), et la ligne du blueprint (`EVEIL.md`, § phonologie) qui range encore les critères
-  HAS/ANAES parmi les non vérifiés.
+- **Validé le 25/09/2026** : précisions B25 et C6 reportées dans `EVEIL-SOURCES.md` (§ 5.1, verdicts
+  inchangés) ; ligne du blueprint (`EVEIL.md`, § phonologie) mise à jour — les critères HAS/ANAES n'y
+  figurent plus parmi les non vérifiés.
 - **Acquérir** les sources du § 7, puis rejouer le protocole (P2) sur les questions restées
   partielles ou non trouvées.
 - **Alors seulement**, comme prévu par le protocole : `recuperer_sources.py --avec-notes` et la veille

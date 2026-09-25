@@ -7,8 +7,9 @@
 **Date :** 2026-09-24 · **6 axes** · **168 affirmations examinées** · **≈ 170 références relevées**
 
 > **Mise à jour du 25/09/2026** — comparaison avec LibraryBrain (texte intégral, bibliothèque locale) :
-> [`EVEIL-SOURCES-LIBRARYBRAIN.md`](EVEIL-SOURCES-LIBRARYBRAIN.md). Seul changement ici : **A22 fermé**,
-> appuyé sur des citations vérifiées dans les documents d'origine. Aucun autre verdict n'est modifié.
+> [`EVEIL-SOURCES-LIBRARYBRAIN.md`](EVEIL-SOURCES-LIBRARYBRAIN.md). Changements ici : **A22 fermé**,
+> appuyé sur des citations vérifiées dans les documents d'origine ; **B25 et C6 précisés** d'après le
+> texte intégral (précisions validées le 25/09/2026, verdicts inchangés). Aucun autre verdict n'est modifié.
 
 | Axe | Sujet | Affirmations | Bilan |
 |---|---|---:|---|
@@ -131,7 +132,7 @@
 | B22 | Implication des parents : tâches hétérogènes, formation rarement décrite | CONFIRMÉ | B[23] |
 | B23 | Parent + orthophoniste, oppositions multiples (5 enfants 3;3-5;11) — plan confirmé, résultats non lus | CONFIRMÉ (plan) | B[24] |
 | B24 | Interventions langagières menées par les parents : 18 études, effets positifs (langage, pas TSP) | NUANCÉ | B[25] |
-| B25 | **3 séances/semaine × 8 semaines > 1/semaine × 24** (même dose) ; 1/semaine ≈ contrôle (n = 54) | CONFIRMÉ | B[26] |
+| B25 | **3 séances/semaine × 8 semaines > 1/semaine × 24** (même dose) ; 1/semaine ≈ contrôle (n = 54). Texte intégral (p. 1 et 10) : essai randomisé, enfants d'âge préscolaire, approche des oppositions multiples seulement ; limites de réalisation : 0,81 contre 2,48 séances par semaine réellement tenues, ≈ 19,5 séances au lieu des 24 prévues — *précisions LibraryBrain vérifiées, validées le 25/09/2026* | CONFIRMÉ | B[26] |
 | B26 | Intensité cumulée = dose × fréquence × durée | CONFIRMÉ | B[27] |
 | B27 | Hirsh-Pasek 2015 · Meyer 2021 · Radesky 2022 · *joint media engagement* · OMS 2019 · AAP 2016 · commission écrans 2024 · carnet de santé 2025 · 3-6-9-12 · WWC/SCRIBE · I-CVI (Lynn ; Polit & Beck) · Delphi | NON VÉRIFIÉ | — |
 
@@ -175,7 +176,7 @@
 | C3 | Formants plus élevés, variabilité inter- et intra-locuteur plus forte | CONFIRMÉ | C[3][27] |
 | C4 | « Lee et al. 1999 couvre les 3-5 ans » | **RÉFUTÉ** (5-17 ans) | C[3] |
 | C5 | Données d'enfants francophones : Lalilo (5-8 ans, interne), PAIDIALOGOS (7-16) ; aucun benchmark ASR FR 3-5 ans | NUANCÉ | C[7][8][24] |
-| C6 | L'ASR généraliste « corrige » vers des mots réels et efface les disfluences | CONFIRMÉ | C[5][12][14] |
+| C6 | L'ASR généraliste « corrige » vers des mots réels **ou ignore** l'erreur, et efface les disfluences. Texte intégral : Whisper ignore le mot mal lu dans 73 % des cas au lieu d'en transcrire la forme erronée (Gao et al. 2024, lecture à voix haute d'enfants néerlandais) ; correction lexicale chez Ahn et al. (2024) ; données d'enfants **lecteurs**, pas de 3-5 ans. La décision produit tient : l'ASR masque l'erreur, elle ne peut pas juger — *précisions LibraryBrain vérifiées, validées le 25/09/2026* | CONFIRMÉ | C[5][12][13][14] |
 | C7 | Méprises de lecture (6-13 ans) : PER HuBERT 23,1 % vs 6,3 % adulte ; erreurs sur fricatives/affriquées chez les plus jeunes | CONFIRMÉ | C[13][15] |
 | C8 | GOP corrélé aux juges si assez de parole ; Tabby Talks ; revue McKechnie (32 articles) | CONFIRMÉ | C[9][10][11] |
 | C9 | de Jong & Wempe : pics d'intensité entre creux, pics non voisés rejetés ; seuil = quantile 0,99 − 25 dB ; creux > 2 dB ; voisement 30-450 Hz | CONFIRMÉ | C[16][17] |
@@ -412,4 +413,5 @@ donc organisé en quatre gestes, à faire en local :
 
 **Fait le 25/09/2026** : trois passes (P0, contrôle P0b, P1 avec 17 des 28 sources), codage à l'aveugle,
 rapport [`EVEIL-SOURCES-LIBRARYBRAIN.md`](EVEIL-SOURCES-LIBRARYBRAIN.md) — A22 fermé, aucune
-contradiction avec les verdicts ci-dessus, 17 sources nouvelles, liste de sources à acquérir.
+contradiction avec les verdicts ci-dessus, B25 et C6 précisés (validés le 25/09/2026), 17 sources
+nouvelles, liste de sources à acquérir.

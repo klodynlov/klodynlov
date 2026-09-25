@@ -219,6 +219,10 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
   Couverture **11/33 → 15/33** ; **aucune contradiction** des verdicts cloud (témoins P1 : 3/6 strict,
   κ 0,33 ; 6/6 souple) ; **A22 fermé** (HAS BSEM avril 2026 + ANAES 2001, vérifié dans le texte) ;
   17 sources nouvelles ; P0 = P0b au caractère près (génération reproductible, code sans effet).
+  **Validé par l'utilisateur le 25/09/2026** : précisions B25 (limites de réalisation d'Allen 2013) et
+  C6 (l'ASR « corrige ou ignore » l'erreur ; données d'enfants lecteurs) reportées dans la colonne
+  *Affirmation* — verdicts inchangés, et jamais « LibraryBrain, vérifié dans le texte » dans la colonne
+  *Verdict* (`mesurer.py` y lit une fermeture) ; ligne HAS/ANAES d'`EVEIL.md` mise à jour [A22].
   Outils : `interroger.py` (routes des pages, passages relus en lecture seule dans la base),
   `mesurer.py` (couverture/Wilson, accord/κ). Codage par 12 codeurs aveugles (sous-agents lancés hors
   du dépôt), codes figés avant ouverture des verdicts. Pièges LibraryBrain vus : l'API ne rend pas le
@@ -231,9 +235,7 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
   (1) ✅ `swift test` du cœur + build iOS du paquet app, (2) ✅ comparaison **LibraryBrain ↔ passe
   cloud** (rapport `docs/EVEIL-SOURCES-LIBRARYBRAIN.md`) — les deux faits le 25/09/2026.
 
-**Reste à faire :** projet Xcode + app sur iPad réel (M1, avec l'utilisateur) · **validation humaine**
-des précisions proposées pour B25 et C6 et de la ligne de `EVEIL.md` qui range encore les critères
-HAS/ANAES parmi les non vérifiés · acquérir les sources du rapport (§ 7) puis rejouer (P2) · alors
+**Reste à faire :** projet Xcode + app sur iPad réel (M1, avec l'utilisateur) · acquérir les sources du rapport (§ 7) puis rejouer (P2) · alors
 seulement `--avec-notes` + veille arXiv · panel Delphi (mots, messages, nom,
 mascotte, voix) · protocole V1 (Jardé/CPP/CNIL à qualifier, corpus, calibration via le banc) ·
 App 2 (mode **papier** d'abord : VisionKit `VNDocumentCameraViewController` + SpriteKit ; mode
