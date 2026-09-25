@@ -52,3 +52,4 @@ targets:
         SWIFT_VERSION: "5.9"
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: GM9K95VYY4   # Team ID Apple Developer (Claude Volny)
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon   # icône dans KaribTruck/Assets.xcassets
