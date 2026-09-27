@@ -24,14 +24,13 @@ struct HomeView: View {
     var body: some View {
         NavigationStack(path: $path) {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    Image("KaribLogo")
+                VStack(spacing: 0) {
+                    Image("KaribBanner")           // bannière pleine largeur (edge-to-edge)
                         .resizable()
                         .scaledToFit()
                         .frame(maxWidth: .infinity)
-                        .frame(height: 150)
-                        .clipShape(RoundedRectangle(cornerRadius: 22))
                         .accessibilityLabel("Karib Truck — Saveurs Créoles")
+                    VStack(alignment: .leading, spacing: 24) {
                     if let w = store.storageWarning {
                         Label(w, systemImage: "externaldrive.badge.exclamationmark")
                             .font(.headline)
@@ -70,8 +69,9 @@ struct HomeView: View {
                             path.append(.inspection)
                         }
                     }
+                    }
+                    .padding(24)
                 }
-                .padding(24)
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("KaribTruck")
