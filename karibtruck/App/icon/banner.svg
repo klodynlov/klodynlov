@@ -1,46 +1,45 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 360" width="1600" height="360">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 300" width="1600" height="300">
 <defs><radialGradient id="sun" cx="0.5" cy="0.45" r="0.55">
 <stop offset="0" stop-color="#FFE23A"/><stop offset="0.6" stop-color="#FF9E1B"/><stop offset="1" stop-color="#FF6A13"/>
 </radialGradient></defs>
-<rect width="1600" height="360" fill="#ED0F7C"/>
-<circle cx="1275" cy="178" r="150" fill="url(#sun)"/>
-<path d="M1345,338 C1370,215 1362,173 1395,58" fill="none" stroke="#8A5A2E" stroke-width="18" stroke-linecap="round"/>
-<path d="M1395,58 Q1341,38 1260,161 Q1358,73 1395,58 Z" fill="#2AA24E"/>
-<path d="M1395,58 Q1343,2 1231,61 Q1335,41 1395,58 Z" fill="#2AA24E"/>
-<path d="M1395,58 Q1365,-20 1267,-19 Q1338,9 1395,58 Z" fill="#2AA24E"/>
-<path d="M1395,58 Q1396,-28 1342,-66 Q1358,-15 1395,58 Z" fill="#2AA24E"/>
-<path d="M1395,58 Q1426,-18 1430,-69 Q1388,-27 1395,58 Z" fill="#2AA24E"/>
-<path d="M1395,58 Q1450,8 1516,-21 Q1422,-20 1395,58 Z" fill="#2AA24E"/>
-<path d="M1395,58 Q1449,44 1543,70 Q1442,5 1395,58 Z" fill="#2AA24E"/>
-<path d="M1395,58 Q1424,68 1505,145 Q1440,32 1395,58 Z" fill="#2AA24E"/>
-<circle cx="1384" cy="71" r="9" fill="#7A4A22"/><circle cx="1406" cy="73" r="9" fill="#7A4A22"/><circle cx="1395" cy="79" r="9" fill="#7A4A22"/>
-<path d="M1395,58 Q1349,56 1260,161" fill="none" stroke="#178038" stroke-width="3.3" stroke-linecap="round"/>
-<path d="M1395,58 Q1339,22 1231,61" fill="none" stroke="#178038" stroke-width="3.3" stroke-linecap="round"/>
-<path d="M1395,58 Q1352,-6 1267,-19" fill="none" stroke="#178038" stroke-width="3.3" stroke-linecap="round"/>
-<path d="M1395,58 Q1377,-22 1342,-66" fill="none" stroke="#178038" stroke-width="3.3" stroke-linecap="round"/>
-<path d="M1395,58 Q1407,-22 1430,-69" fill="none" stroke="#178038" stroke-width="3.3" stroke-linecap="round"/>
-<path d="M1395,58 Q1436,-6 1516,-21" fill="none" stroke="#178038" stroke-width="3.3" stroke-linecap="round"/>
-<path d="M1395,58 Q1445,25 1543,70" fill="none" stroke="#178038" stroke-width="3.3" stroke-linecap="round"/>
-<path d="M1395,58 Q1432,50 1505,145" fill="none" stroke="#178038" stroke-width="3.3" stroke-linecap="round"/>
-<path d="M1200,338 C1215,263 1138,220 1158,150" fill="none" stroke="#8A5A2E" stroke-width="11" stroke-linecap="round"/>
-<path d="M1158,150 Q1107,147 1023,239 Q1117,168 1158,150 Z" fill="#2AA24E"/>
-<path d="M1158,150 Q1105,111 994,138 Q1100,135 1158,150 Z" fill="#2AA24E"/>
-<path d="M1158,150 Q1123,87 1030,58 Q1107,105 1158,150 Z" fill="#2AA24E"/>
-<path d="M1158,150 Q1152,76 1105,11 Q1129,84 1158,150 Z" fill="#2AA24E"/>
-<path d="M1158,150 Q1182,82 1193,9 Q1158,77 1158,150 Z" fill="#2AA24E"/>
-<path d="M1158,150 Q1207,104 1279,56 Q1191,87 1158,150 Z" fill="#2AA24E"/>
-<path d="M1158,150 Q1210,138 1306,147 Q1206,114 1158,150 Z" fill="#2AA24E"/>
-<path d="M1158,150 Q1190,163 1268,222 Q1200,141 1158,150 Z" fill="#2AA24E"/>
-<circle cx="1151" cy="158" r="6" fill="#7A4A22"/><circle cx="1165" cy="159" r="6" fill="#7A4A22"/><circle cx="1158" cy="163" r="6" fill="#7A4A22"/>
-<path d="M1158,150 Q1112,157 1023,239" fill="none" stroke="#178038" stroke-width="2.0" stroke-linecap="round"/>
-<path d="M1158,150 Q1102,123 994,138" fill="none" stroke="#178038" stroke-width="2.0" stroke-linecap="round"/>
-<path d="M1158,150 Q1115,96 1030,58" fill="none" stroke="#178038" stroke-width="2.0" stroke-linecap="round"/>
-<path d="M1158,150 Q1140,80 1105,11" fill="none" stroke="#178038" stroke-width="2.0" stroke-linecap="round"/>
-<path d="M1158,150 Q1170,79 1193,9" fill="none" stroke="#178038" stroke-width="2.0" stroke-linecap="round"/>
-<path d="M1158,150 Q1199,95 1279,56" fill="none" stroke="#178038" stroke-width="2.0" stroke-linecap="round"/>
-<path d="M1158,150 Q1208,126 1306,147" fill="none" stroke="#178038" stroke-width="2.0" stroke-linecap="round"/>
-<path d="M1158,150 Q1195,152 1268,222" fill="none" stroke="#178038" stroke-width="2.0" stroke-linecap="round"/>
-<text x="95" y="138" text-anchor="start" font-family="Kaushan Script" font-size="138" fill="rgba(90,0,45,0.35)" transform="translate(4,5)">Karib</text><text x="95" y="138" text-anchor="start" font-family="Kaushan Script" font-size="138" fill="#FFFFFF">Karib</text>
-<text x="185" y="250" text-anchor="start" font-family="Kaushan Script" font-size="138" fill="rgba(90,0,45,0.35)" transform="translate(4,5)">Truck</text><text x="185" y="250" text-anchor="start" font-family="Kaushan Script" font-size="138" fill="#FFFFFF">Truck</text>
-<text x="120" y="312" text-anchor="start" font-family="Kaushan Script" font-size="46" fill="rgba(90,0,45,0.35)" transform="translate(4,5)">Saveurs Créoles</text><text x="120" y="312" text-anchor="start" font-family="Kaushan Script" font-size="46" fill="#FFFFFF">Saveurs Créoles</text>
+<rect width="1600" height="300" fill="#ED0F7C"/>
+<circle cx="1315" cy="150" r="128" fill="url(#sun)"/>
+<path d="M1380,285 C1402,177 1399,131 1428,30" fill="none" stroke="#8A5A2E" stroke-width="16" stroke-linecap="round"/>
+<path d="M1428,30 Q1375,15 1293,129 Q1390,46 1428,30 Z" fill="#2AA24E"/>
+<path d="M1428,30 Q1376,-20 1264,28 Q1369,13 1428,30 Z" fill="#2AA24E"/>
+<path d="M1428,30 Q1396,-44 1300,-52 Q1373,-18 1428,30 Z" fill="#2AA24E"/>
+<path d="M1428,30 Q1427,-52 1375,-99 Q1394,-41 1428,30 Z" fill="#2AA24E"/>
+<path d="M1428,30 Q1457,-44 1463,-101 Q1423,-51 1428,30 Z" fill="#2AA24E"/>
+<path d="M1428,30 Q1481,-19 1549,-54 Q1457,-44 1428,30 Z" fill="#2AA24E"/>
+<path d="M1428,30 Q1481,17 1576,37 Q1475,-17 1428,30 Z" fill="#2AA24E"/>
+<path d="M1428,30 Q1458,41 1538,112 Q1472,9 1428,30 Z" fill="#2AA24E"/>
+<circle cx="1418" cy="42" r="8" fill="#7A4A22"/><circle cx="1438" cy="43" r="8" fill="#7A4A22"/><circle cx="1428" cy="49" r="8" fill="#7A4A22"/>
+<path d="M1428,30 Q1382,31 1293,129" fill="none" stroke="#178038" stroke-width="2.9" stroke-linecap="round"/>
+<path d="M1428,30 Q1372,-3 1264,28" fill="none" stroke="#178038" stroke-width="2.9" stroke-linecap="round"/>
+<path d="M1428,30 Q1385,-31 1300,-52" fill="none" stroke="#178038" stroke-width="2.9" stroke-linecap="round"/>
+<path d="M1428,30 Q1410,-47 1375,-99" fill="none" stroke="#178038" stroke-width="2.9" stroke-linecap="round"/>
+<path d="M1428,30 Q1440,-47 1463,-101" fill="none" stroke="#178038" stroke-width="2.9" stroke-linecap="round"/>
+<path d="M1428,30 Q1469,-31 1549,-54" fill="none" stroke="#178038" stroke-width="2.9" stroke-linecap="round"/>
+<path d="M1428,30 Q1478,-0 1576,37" fill="none" stroke="#178038" stroke-width="2.9" stroke-linecap="round"/>
+<path d="M1428,30 Q1465,25 1538,112" fill="none" stroke="#178038" stroke-width="2.9" stroke-linecap="round"/>
+<path d="M1250,285 C1264,216 1194,184 1212,120" fill="none" stroke="#8A5A2E" stroke-width="10" stroke-linecap="round"/>
+<path d="M1212,120 Q1161,119 1077,207 Q1171,138 1212,120 Z" fill="#2AA24E"/>
+<path d="M1212,120 Q1158,84 1048,106 Q1154,105 1212,120 Z" fill="#2AA24E"/>
+<path d="M1212,120 Q1176,59 1084,26 Q1161,75 1212,120 Z" fill="#2AA24E"/>
+<path d="M1212,120 Q1205,48 1159,-21 Q1184,55 1212,120 Z" fill="#2AA24E"/>
+<path d="M1212,120 Q1235,53 1247,-23 Q1213,48 1212,120 Z" fill="#2AA24E"/>
+<path d="M1212,120 Q1261,74 1333,24 Q1245,59 1212,120 Z" fill="#2AA24E"/>
+<path d="M1212,120 Q1264,108 1360,115 Q1260,86 1212,120 Z" fill="#2AA24E"/>
+<path d="M1212,120 Q1245,133 1322,190 Q1254,113 1212,120 Z" fill="#2AA24E"/>
+<circle cx="1206" cy="127" r="5" fill="#7A4A22"/><circle cx="1218" cy="128" r="5" fill="#7A4A22"/><circle cx="1212" cy="132" r="5" fill="#7A4A22"/>
+<path d="M1212,120 Q1166,129 1077,207" fill="none" stroke="#178038" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M1212,120 Q1156,94 1048,106" fill="none" stroke="#178038" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M1212,120 Q1169,67 1084,26" fill="none" stroke="#178038" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M1212,120 Q1194,51 1159,-21" fill="none" stroke="#178038" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M1212,120 Q1224,50 1247,-23" fill="none" stroke="#178038" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M1212,120 Q1253,67 1333,24" fill="none" stroke="#178038" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M1212,120 Q1262,97 1360,115" fill="none" stroke="#178038" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M1212,120 Q1249,123 1322,190" fill="none" stroke="#178038" stroke-width="1.8" stroke-linecap="round"/>
+<text x="85" y="158" text-anchor="start" font-family="Kaushan Script" font-size="112" fill="rgba(90,0,45,0.35)" transform="translate(4,5)">Karib Truck</text><text x="85" y="158" text-anchor="start" font-family="Kaushan Script" font-size="112" fill="#FFFFFF">Karib Truck</text>
+<text x="100" y="224" text-anchor="start" font-family="Kaushan Script" font-size="44" fill="rgba(90,0,45,0.35)" transform="translate(4,5)">Saveurs Créoles</text><text x="100" y="224" text-anchor="start" font-family="Kaushan Script" font-size="44" fill="#FFFFFF">Saveurs Créoles</text>
 </svg>
