@@ -122,6 +122,7 @@ extension Sketch {
             bumps.append(G.circle(cx + r * 0.62 * cos(a), cy + r * 0.62 * sin(a), r * 0.48))
         }
         shape(G.union(bumps), at: (cx + r * 0.8, cy))
+        part("la fleur", "the flower", rank: 1, at: [(cx + r * 0.8, cy)])
         detail(G.circle(cx, cy, r * 0.42), at: (cx, cy))
     }
 }

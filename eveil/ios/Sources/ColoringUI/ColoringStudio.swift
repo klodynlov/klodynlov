@@ -140,6 +140,33 @@ final class ColoringStudio {
         thumbnails[page.id] = snapshot.isBlank ? nil : layer.thumbnail(side: Self.thumbnailSide)
     }
 
+    // MARK: Consignes du mode interactif
+
+    /// La zone sous le doigt (la plus proche, comme le pinceau ; 0 si la carte n'est pas prête).
+    func zone(near unit: CGPoint) -> Int { map?.zone(near: unit) ?? 0 }
+
+    /// Pour chaque zone d'une partie nommée : combien de ses pixels ont la couleur, et sa taille.
+    func coverage(of color: PaintColor, at points: [CGPoint]) -> [(zone: Int, painted: Int, area: Int)] {
+        guard let map, let layer else { return [] }
+        var seen = Set<Int>()
+        var out: [(zone: Int, painted: Int, area: Int)] = []
+        for p in points {
+            let z = map.zone(at: p)
+            guard z != 0, seen.insert(z).inserted else { continue }
+            out.append((zone: z, painted: layer.count(color.packed, zone: z, in: map), area: map.areas[z]))
+        }
+        return out
+    }
+
+    /// La consigne est faite : l'une des zones de la partie a reçu assez de la couleur.
+    func isDone(_ instruction: ColoringInstruction, palette: [PaintColor]) -> Bool {
+        guard let map else { return false }
+        let color = palette[instruction.colorIndex]
+        return coverage(of: color, at: instruction.part.points).contains {
+            ColoringInstructions.isDone(painted: $0.painted, area: $0.area, pageArea: map.width * map.height)
+        }
+    }
+
     // MARK: Pour les tests et les rendus
 
     /// Calcule la carte de la page ouverte tout de suite (tests, captures).

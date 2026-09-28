@@ -24,6 +24,15 @@
 //     peint (gamme pentatonique : jamais de fausse note), et « J'ai fini ! » fait
 //     prendre vie au dessin (il danse, les confettis tombent, fanfare, bravo).
 //   Choisir un dessin et « page suivante » passent dans l'en-tête.
+//
+// Consignes (choix de l'utilisateur pour la suite, 28/09/2026), en mode interactif :
+//   • la voix donne une consigne, « Colorie le soleil en jaune ! », affichée à la place du titre
+//     (la toucher la redit) : une partie nommée de la page et une couleur (ColoringInstructions) ;
+//   • réussie quand la partie a reçu assez de cette couleur : étincelles, « Bravo ! », la suivante ;
+//   • jamais « faux » : colorier ailleurs ne coûte rien — au deuxième essai ailleurs, la consigne
+//     se redit et un anneau montre où ; une autre couleur sur la bonne partie : « En jaune ! » et
+//     la bonne pastille s'éclaire ;
+//   • au plus cinq consignes par page, puis « Continue comme tu veux ».
 
 #if canImport(SwiftUI) && canImport(AVFoundation)
 import EveilDesign
@@ -47,6 +56,17 @@ public struct ColoringView: View {
     @State private var voice = ModelVoicePlayer()
     /// « J'ai fini ! » : l'instant où le dessin a pris vie (nil au repos).
     @State private var masterpieceAt: Date?
+    /// Consignes du mode interactif : celles de la page, et celle en cours.
+    @State private var instructions: [ColoringInstruction] = []
+    @State private var step = 0
+    /// L'aide : un anneau sur la partie demandée (après deux essais ailleurs).
+    @State private var markAt: Date?
+    /// La pastille à prendre (après une autre couleur sur la bonne partie).
+    @State private var swatchHint: Int?
+    @State private var misses = 0
+    /// La zone où le dernier geste a commencé (le pinceau y reste).
+    @State private var touchedZone = 0
+    @State private var instructionTask: Task<Void, Never>?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     public init(locale: String = "fr-FR", onHome: (() -> Void)? = nil) {
@@ -87,7 +107,7 @@ public struct ColoringView: View {
         PaintColor(102, 199, 64, fr: "vert", en: "green"),
         PaintColor(28, 118, 58, fr: "vert foncé", en: "dark green"),
         PaintColor(32, 196, 186, fr: "turquoise", en: "turquoise"),
-        PaintColor(51, 179, 242, fr: "bleu ciel", en: "sky blue"),
+        PaintColor(51, 179, 242, fr: "bleu ciel", en: "light blue"),
         PaintColor(56, 92, 217, fr: "bleu", en: "blue"),
         PaintColor(30, 42, 112, fr: "bleu nuit", en: "navy blue"),
         PaintColor(148, 87, 219, fr: "violet", en: "purple"),
@@ -111,6 +131,7 @@ public struct ColoringView: View {
 
     private var fr: Bool { locale.hasPrefix("fr") }
     private var color: PaintColor { Self.palette[colorIndex] }
+    private var current: ColoringInstruction? { instructions.indices.contains(step) ? instructions[step] : nil }
 
     public var body: some View {
         GeometryReader { geo in
@@ -159,8 +180,15 @@ public struct ColoringView: View {
         .onAppear {
             studio.start()
             SoundBoard.shared.isSuspended = false         // le train a pu laisser les sons coupés
+            if interactive { startInstructions(after: 1.2) }
         }
-        .onDisappear { voice.stop() }
+        .onChange(of: studio.page.id) { _, _ in
+            if interactive { startInstructions(after: 0.6) }
+        }
+        .onDisappear {
+            instructionTask?.cancel()
+            voice.stop()
+        }
     }
 
     // MARK: En-tête
@@ -179,11 +207,15 @@ public struct ColoringView: View {
                 .accessibilityLabel(fr ? "Retour à l'accueil" : "Back home")
             }
             CatStationMaster(mood: cheer || masterpieceAt != nil ? .cheering : .hello, size: 80)
-            Text(studio.page.title(locale: locale))
-                .font(.system(size: 34, weight: .heavy, design: .rounded))
-                .foregroundStyle(EveilPalette.ink)
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
+            if interactive, let current {
+                instructionLabel(current)
+            } else {
+                Text(studio.page.title(locale: locale))
+                    .font(.system(size: 34, weight: .heavy, design: .rounded))
+                    .foregroundStyle(EveilPalette.ink)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+            }
             Spacer(minLength: 0)
             toolButton("wand.and.stars", selected: interactive, size: WorkshopLayout.headerButton,
                        label: fr ? "Mode interactif" : "Interactive mode", action: toggleInteractive)
@@ -285,17 +317,20 @@ public struct ColoringView: View {
 
     private func swatch(_ i: Int, size: CGFloat) -> some View {
         let selected = i == colorIndex
+        let hinted = i == swatchHint
         let c = Self.palette[i]
         return Button {
             colorIndex = i
             if tool == .eraser { tool = .brush }          // choisir une couleur, c'est vouloir peindre
+            if hinted { swatchHint = nil }
             if interactive { say(c.name(locale: locale)) }
         } label: {
             Circle().fill(c.swiftUIColor)
                 .overlay(Circle().stroke(selected ? EveilPalette.ink : Color.black.opacity(0.15),
                                          lineWidth: selected ? 5 : 2))
+                .overlay(Circle().stroke(hinted ? EveilPalette.wagonLit : .clear, lineWidth: 6).padding(-9))
                 .frame(width: size, height: size)
-                .scaleEffect(selected ? 1.18 : 1)
+                .scaleEffect(selected || hinted ? 1.18 : 1)
                 .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
                 .animation(reduceMotion ? nil : .spring(duration: 0.25), value: colorIndex)
         }
@@ -312,6 +347,12 @@ public struct ColoringView: View {
             let w = Self.dance(since: masterpieceAt, at: timeline.date, reduceMotion: reduceMotion)
             PaperView(studio: studio, side: layout.side,
                       onBegin: touchBegan, onMove: touchMoved, onEnd: touchEnded)
+                .overlay(alignment: .topLeading) {
+                    if let markAt, let current {
+                        InstructionMark(start: markAt, points: current.part.points, side: layout.side,
+                                        color: Self.palette[current.colorIndex].swiftUIColor)
+                    }
+                }
                 .scaleEffect(x: 1 + w.stretch, y: 1 - w.stretch, anchor: .bottom)
                 .rotationEffect(.degrees(w.tilt))
         }
@@ -324,6 +365,7 @@ public struct ColoringView: View {
     // MARK: Gestes
 
     private func touchBegan(_ unit: CGPoint) {
+        touchedZone = studio.zone(near: unit)
         switch active {
         case .fill:
             if studio.fill(at: unit, color: color) { painted() }
@@ -349,10 +391,121 @@ public struct ColoringView: View {
         }
     }
 
-    /// Une zone vient d'être coloriée : le chat se réjouit ; en mode interactif, la couleur chante.
+    /// Une zone vient d'être coloriée : le chat se réjouit ; en mode interactif, la couleur chante
+    /// et la consigne en cours est regardée.
     private func painted() {
         celebrate()
-        if interactive { SoundBoard.shared.play(.ding, variant: Self.note(ofColor: colorIndex)) }
+        if interactive {
+            SoundBoard.shared.play(.ding, variant: Self.note(ofColor: colorIndex))
+            checkInstruction(zone: touchedZone)
+        }
+    }
+
+    // MARK: Consignes
+
+    /// Les consignes de la page ouverte ; la première se dit après `delay` secondes.
+    private func startInstructions(after delay: Double, intro: String = "") {
+        instructionTask?.cancel()
+        markAt = nil
+        swatchHint = nil
+        misses = 0
+        step = 0
+        instructions = interactive ? ColoringInstructions.list(for: studio.page.parts, palette: Self.palette) : []
+        skipDone()
+        var text = intro
+        if let current {
+            text += ColoringInstructions.text(current, palette: Self.palette, locale: locale)
+        } else if !intro.isEmpty {
+            text += fr ? "Choisis une couleur." : "Pick a color."
+        }
+        guard !text.isEmpty else { return }
+        instructionTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            if !Task.isCancelled { say(text) }
+        }
+    }
+
+    /// Une consigne déjà faite (la page retrouvée, ou coloriée d'avance) ne se redemande pas.
+    private func skipDone() {
+        while let current, studio.isDone(current, palette: Self.palette) { step += 1 }
+    }
+
+    /// Après un coup de pinceau (ou un remplissage) dans la zone `zone`.
+    private func checkInstruction(zone: Int) {
+        guard let current else { return }
+        if studio.isDone(current, palette: Self.palette) {
+            // Réussi : étincelles, « Bravo ! », puis la consigne suivante.
+            markAt = nil
+            swatchHint = nil
+            misses = 0
+            SoundBoard.shared.play(.sparkle)
+            step += 1
+            skipDone()
+            let next = self.current.map { ColoringInstructions.text($0, palette: Self.palette, locale: locale) }
+            say(fr ? "Bravo !" : "Well done!")
+            instructionTask?.cancel()
+            instructionTask = Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 1_400_000_000)
+                guard !Task.isCancelled else { return }
+                say(next ?? (fr ? "Tu as fait toutes les consignes ! Continue comme tu veux."
+                                : "You did them all! Keep coloring as you like."))
+            }
+            return
+        }
+        let target = Set(current.part.points.map { studio.zone(near: $0) })
+        if target.contains(zone) {
+            // La bonne partie : avec une autre couleur, on rappelle laquelle (jamais « non »).
+            if colorIndex != current.colorIndex {
+                swatchHint = current.colorIndex
+                say(ColoringInstructions.colorReminder(current, palette: Self.palette, locale: locale))
+            }
+        } else {
+            // Ailleurs : ça ne coûte rien ; au deuxième essai, la consigne se redit et un anneau montre où.
+            misses += 1
+            if misses >= 2 {
+                misses = 0
+                showMark()
+                say(ColoringInstructions.text(current, palette: Self.palette, locale: locale))
+            }
+        }
+    }
+
+    /// L'anneau d'aide sur la partie demandée ; il s'éteint seul (l'horloge ne tourne pas pour rien).
+    private func showMark() {
+        let start = Date()
+        markAt = start
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(InstructionMark.duration * 1_000_000_000))
+            if markAt == start { markAt = nil }
+        }
+    }
+
+    /// La consigne en cours, à la place du titre : la toucher la redit (et montre où).
+    private func instructionLabel(_ i: ColoringInstruction) -> some View {
+        let text = ColoringInstructions.text(i, palette: Self.palette, locale: locale)
+        return Button {
+            showMark()
+            say(text)
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "speaker.wave.2.fill")
+                    .font(.system(size: 22, weight: .bold))
+                Text(text)
+                    .font(.system(size: 26, weight: .heavy, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                Circle().fill(Self.palette[i.colorIndex].swiftUIColor)
+                    .overlay(Circle().stroke(Color.black.opacity(0.2), lineWidth: 2))
+                    .frame(width: 30, height: 30)
+            }
+            .foregroundStyle(EveilPalette.ink)
+            .padding(.horizontal, 16)
+            .frame(height: 56)
+            .background(Capsule().fill(.white.opacity(0.9)))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(text)
+        .accessibilityHint(fr ? "Touche pour réentendre la consigne" : "Tap to hear the instruction again")
     }
 
     // MARK: Mode interactif
@@ -362,8 +515,12 @@ public struct ColoringView: View {
         if interactive {
             SoundBoard.shared.preload([.ding], variants: Array(0...14))
             SoundBoard.shared.preload([.whooshSoft, .fanfare, .sparkle])
-            say(fr ? "Je t'aide à colorier ! Choisis une couleur." : "I'll help you color! Pick a color.")
+            startInstructions(after: 0, intro: fr ? "Je t'aide à colorier ! " : "I'll help you color! ")
         } else {
+            instructionTask?.cancel()
+            instructions = []
+            markAt = nil
+            swatchHint = nil
             voice.stop()
             masterpieceAt = nil
         }
@@ -416,6 +573,42 @@ public struct ColoringView: View {
 
     private func closePicker() {
         if reduceMotion { showPicker = false } else { withAnimation(.spring(duration: 0.3)) { showPicker = false } }
+    }
+}
+
+// MARK: - L'anneau d'aide des consignes
+
+/// Un anneau de la couleur demandée qui bat sur la partie à colorier, quelques secondes.
+/// Piloté par l'horloge (TimelineView), comme tout mouvement de l'app.
+struct InstructionMark: View {
+    let start: Date
+    let points: [CGPoint]
+    let side: CGFloat
+    let color: Color
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    static let duration = 5.0
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 30, paused: reduceMotion)) { timeline in
+            let t = timeline.date.timeIntervalSince(start)
+            let fade = t < Self.duration - 1 ? 1 : max(0, Self.duration - t)
+            let beat = reduceMotion ? 0 : sin(t * 2 * .pi * 1.1)
+            ZStack(alignment: .topLeading) {
+                ForEach(Array(points.enumerated()), id: \.offset) { _, p in
+                    let d = side * (0.075 + 0.015 * beat)
+                    Circle()
+                        .stroke(.white, lineWidth: 11)
+                        .overlay(Circle().stroke(color, lineWidth: 6))
+                        .frame(width: d, height: d)
+                        .position(x: p.x * side, y: p.y * side)
+                }
+            }
+            .frame(width: side, height: side)
+            .opacity(fade)
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 }
 

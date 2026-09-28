@@ -22,7 +22,9 @@ Compile, teste et installe le troisième tour de la Suite Éveil, poussé depuis
    - le train des phrases (SentenceTrainView, SentenceStage, SentenceMotion, PictoArt) ;
    - les jeux d'écoute (EarGamesView) et les livres des sons (SoundBooksView, PracticeView en juge adulte, BookSentenceView : les phrases des livres, PlaceScene) ;
    - la voix (VoiceCatalog, ModelVoicePlayer) ;
-   - le coloriage (24 couleurs, gomme, mode interactif).
+   - le coloriage (24 couleurs, gomme, mode interactif) et ses consignes (ColoringInstructions, parties nommées des 70 pages :
+     ColoringPartsTests et ColoringInstructionsTests doivent passer ; si une partie d'une page Swift vise une mauvaise zone,
+     corrige son point dans PagesClassics/Animals/Things.swift ; pour une page générée, dans outils/coloriages/pages_*.py puis régénère).
    Corrige les erreurs et les avertissements au plus près du code. Interdit :
    - désactiver un test ou élargir une tolérance ;
    - modifier à la main un fichier généré (PictoDessins.swift, PhraseLexiconData.swift, SoundBooksData.swift, PagesDessins.swift). Ils viennent d'eveil/outils : python3 -m <pictos|phrases|livres|coloriages>.generer.

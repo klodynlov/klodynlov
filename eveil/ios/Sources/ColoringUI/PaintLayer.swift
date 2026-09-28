@@ -164,6 +164,28 @@ final class PaintLayer {
         return true
     }
 
+    /// Combien de pixels de la zone ont exactement cette valeur (consignes du mode interactif :
+    /// l'intérieur d'un coup de pinceau et un remplissage ont la couleur pleine).
+    func count(_ value: UInt32, zone: Int, in map: ZoneMap) -> Int {
+        let range = map.runRange(of: zone)
+        guard !range.isEmpty, map.width == width, map.height == height else { return 0 }
+        var n = 0
+        map.runStarts.withUnsafeBufferPointer { s in
+            map.runLengths.withUnsafeBufferPointer { l in
+                guard let S = s.baseAddress, let L = l.baseAddress else { return }
+                for r in range {
+                    var i = Int(S[r])
+                    let end = i + Int(L[r])
+                    while i < end {
+                        if pixels[i] == value { n &+= 1 }
+                        i &+= 1
+                    }
+                }
+            }
+        }
+        return n
+    }
+
     // MARK: Pinceau-pochoir
 
     /// Commence un trait dans la zone `zone` (point en pixels de la carte).

@@ -531,6 +531,16 @@ confirmer (§10).*
   (`eveil/outils/coloriages/`, même algorithme de traits, carte des zones simulée) puis générées en
   Swift. Le premier `swift test` sur le Mac a trouvé une fuite que la simulation Python laissait
   passer (l'œil du caniche) : la vérification finale reste celle de l'app.
+- **Consignes** (mode interactif ; choix de l'utilisateur le 28/09/2026) : « Colorie le soleil en
+  jaune ! ». Chaque page nomme ses parties (`ColoringPart` : nom avec son article, couleur imposée
+  quand elle va de soi, sujet puis décor, un point au cœur de chaque zone) ; au plus cinq consignes
+  par page, les couleurs proposées dans un ordre fixe (rien au hasard). Une consigne est réussie
+  quand l'une des zones de la partie a reçu assez de la couleur demandée (un huitième de la zone,
+  au plus 2 % de la page, jamais moins de 120 px) : mesuré localement, jamais présenté comme une
+  note. Pas d'échec : colorier ailleurs ne coûte rien (au deuxième essai, la consigne se redit et un
+  anneau montre où) ; une autre couleur sur la bonne partie : « En jaune ! ». Le nommage est
+  contrôlé en Python pour les pages générées (zones entières, ≥ 0,4 % de la page, un seul nom par
+  zone) et par des tests Swift sur toutes les pages.
 - **Guidage multisensoriel** (à faire) : un **champ de distance** pré-calculé par gabarit (distance au
   contour le plus proche — la carte des zones le rend peu coûteux) donne, en O(1) à chaque point du
   geste, la proximité du bord → son de crayon modulé par la vitesse, **« tic » doux** et halo lumineux

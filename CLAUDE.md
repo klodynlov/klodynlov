@@ -274,8 +274,7 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     dessins/page suivante dans l'en-tête, **mode interactif** (`SuiteSettings.coloringInteractiveKey`,
     off par défaut : voix qui nomme la couleur, note pentatonique par couleur, « J'ai fini ! » → dessin
     qui danse + `ConfettiLayer` + fanfare). ColoringUI dépend désormais d'EveilSounds et WordEndAudio.
-    Reste possible : consignes « Colorie le soleil en jaune » (demande des noms de zones dans
-    `outils/coloriages/`, non fait).
+    Consignes « Colorie le soleil en jaune » : faites ensuite (voir plus bas).
   - ✅ Tranche 2, **le train des phrases** (`SentenceTrainView`) : locomotive « qui ? » + un wagon par
     morceau (fait quoi / quoi / où), couleurs par rôle (jaune/vert/orange/bleu, à valider) ; niveaux
     2 wagons · 3 wagons · « où ? » ; plateau ≤ 6 pictos en rotation fixe ; la voix pose la question avec
@@ -314,6 +313,28 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     + 49 mots des livres (30 qui, 57 quoi ; « les ciseaux » : genre pluriel, jamais sujet).
     Python : livres 30 tests, phrases 13 ; Swift à compiler (tests `SoundBooksTests`,
     `SoundBooksViewTests`, `SentenceStageTests` + planche `phrase-cartes-ou.png`).
+  - 🐞 **L'app se fermait en ouvrant les livres des sons** (retour iPad, 28/09) : en Debug, Swift bâtit
+    un littéral géant (`SoundBooksData`, 349 Ko d'un bloc) dans la pile du fil principal → débordement.
+    Corrigé : une fonction par livre (`bookFr00()`…), `MAX_PAR_LITTERAL = 40`, test
+    `test_jamais_un_litteral_geant`. **À confirmer par l'utilisateur sur l'iPad.** Règle : jamais de
+    gros littéral généré d'un seul tenant (même motif que `PictoDessins`, une fonction par picto).
+  - ✅ **Consignes de coloriage** (choix de l'utilisateur, 28/09, « la suite ») : en mode interactif,
+    « Colorie le soleil en jaune ! » (affichée à la place du titre, la toucher la redit + anneau).
+    Parties nommées par page (`ColoringPart` : fr/en avec article, couleur imposée ou nil, rang 0 sujet /
+    1 décor, un point par zone ; `Sketch.part`, même nom = même partie). `ColoringInstructions` (pur,
+    testé) : 5 au plus, tri (rang, ordre), couleur nil → rotation fixe rouge, bleu, jaune, vert, orange,
+    violet, rose, marron sans reprendre une couleur déjà demandée ; réussie si une zone de la partie a
+    ≥ max(120 px, min(aire/8, page/50)) pixels de la couleur (`PaintLayer.count`, exact sur les
+    segments de la carte). Jamais « faux » : ailleurs → au 2e essai la consigne se redit + anneau ;
+    autre couleur sur la bonne partie → « En jaune ! » + pastille éclairée ; déjà faite → sautée.
+    Pages Python : `nomme(…)`/motifs nommés (soleil, nuage, herbe, mer, roue, tronc, feuilles, sapin,
+    fleur…), le ciel ajouté seul (bleu ciel) quand herbe/mer, contrôles `analyse.nommer` (zone entière
+    ≥ 0,4 %, pas sur un trait, un seul nom par zone, couleur de la palette), étiquettes sur les
+    aperçus ; sujets des 55 pages : nommage par 3 sous-agents EN COURS (relecture sur planches). 15 pages Swift nommées à la
+    main sur leurs **points-témoins** (déjà vérifiés : zone propre, ≥ 0,3 %) + le ciel au coin.
+    EN : « bleu ciel » = « light blue » (« Color the sky sky blue! » sonnait faux). Tests Swift :
+    `ColoringPartsTests`, `ColoringInstructionsTests` (chaque consigne de chaque page se réussit d'un
+    remplissage de sa couleur, jamais d'une autre). À compiler sur le Mac.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur interdits) → 0 violation, 7 tests ;
   ignore les produits de compilation (`.build/`, `.swiftpm/`, `DerivedData/`).
@@ -361,7 +382,9 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : Suite Éveil — **phrases des livres** (28/09/2026, session cloud : 3 niveaux
+_Dernière mise à jour mémoire : Suite Éveil — **consignes de coloriage** (28/09/2026, session cloud :
+« Colorie le soleil en jaune ! » en mode interactif, parties nommées sur les 70 pages ; correctif du
+plantage à l'ouverture des livres, à confirmer sur l'iPad ; à compiler sur le Mac). Avant : **phrases des livres** (28/09/2026, session cloud : 3 niveaux
 par livre, 6 phrases à reconstruire par niveau, cartes « où ? » avec le sujet à sa place, lettres du son
 alignées syllabe par syllabe ; à compiler sur le Mac). Avant : **troisième tour, tranches 2 et 4**
 (train des phrases avec scènes animées, jeux d'écoute, livres des sons complets — 16 + 15 livres,

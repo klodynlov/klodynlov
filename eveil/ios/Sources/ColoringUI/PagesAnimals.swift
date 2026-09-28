@@ -51,6 +51,11 @@ extension ColoringPages {
         s.ink(G.circle(0.445, 0.37, 0.028))
         s.ink(G.circle(0.555, 0.37, 0.028))
         s.line(G.arc(0.5, 0.445, 0.058, from: 25, to: 155))
+        // Les consignes du mode interactif, dans l'ordre où elles viennent (ColoringInstructions).
+        s.part("la tête", "the head", at: [(0.36, 0.43)])
+        s.part("les yeux", "the eyes", color: "rouge", at: [(0.415, 0.305), (0.585, 0.305)])
+        s.part("le corps", "the body", at: [(0.5, 0.605), (0.5, 0.735), (0.5, 0.835)])
+        s.part("les ailes", "the wings", color: "bleu ciel", at: [(0.21, 0.44), (0.79, 0.44)])
     }
 
     static let cow = ColoringPage("vache", fr: "La vache", en: "The cow") { s in
@@ -89,6 +94,11 @@ extension ColoringPages {
         s.ink(G.circle(0.165, 0.33, 0.02))
         s.ink(G.circle(0.255, 0.33, 0.02))
         s.grass([(0.08, 0.95), (0.60, 0.975), (0.93, 0.95)])
+        // Les consignes du mode interactif, dans l'ordre où elles viennent (ColoringInstructions).
+        s.part("les taches", "the spots", color: "noir", at: [(0.52, 0.425), (0.79, 0.385), (0.40, 0.55)])
+        s.part("le museau", "the muzzle", color: "rose", at: [(0.13, 0.49)])
+        s.part("l'herbe", "the grass", color: "vert", rank: 1, at: [(0.55, 0.95)])
+        s.part("le ciel", "the sky", color: "bleu ciel", rank: 1, at: [(0.05, 0.05)])
     }
 
     static let hive = ColoringPage("ruche", fr: "La ruche", en: "The beehive") { s in
@@ -116,6 +126,12 @@ extension ColoringPages {
         s.bee(0.20, 0.25, 1.3)
         s.bee(0.78, 0.21, 1.3)
         s.bee(0.855, 0.50, 1.2)
+        // Les consignes du mode interactif, dans l'ordre où elles viennent (ColoringInstructions).
+        s.part("la ruche", "the hive", color: "jaune",
+               at: [(0.46, 0.26), (0.46, 0.325), (0.46, 0.405), (0.46, 0.50), (0.46, 0.60), (0.305, 0.7175)])
+        s.part("la planche", "the board", color: "marron", at: [(0.23, 0.795)])
+        s.part("l'herbe", "the grass", color: "vert", rank: 1, at: [(0.5, 0.965)])
+        s.part("le ciel", "the sky", color: "bleu ciel", rank: 1, at: [(0.05, 0.05)])
     }
 
     static let fish = ColoringPage("poisson", fr: "Le poisson", en: "The fish") { s in
@@ -152,6 +168,13 @@ extension ColoringPages {
             if r < 0.035 { s.detail(G.circle(x, y, r), at: (x, y)) } else { s.shape(G.circle(x, y, r), at: (x, y)) }
             s.line(G.arc(x, y, r * 0.58, from: 195, to: 255))
         }
+        // Les consignes du mode interactif, dans l'ordre où elles viennent (ColoringInstructions).
+        s.part("le poisson", "the fish", color: "orange", at: [(0.34, 0.46), (0.5475, 0.46), (0.72, 0.53)])
+        s.part("les bandes", "the stripes", at: [(0.46, 0.46), (0.635, 0.46)])
+        s.part("la queue", "the tail", at: [(0.19, 0.46)])
+        s.part("l'eau", "the water", color: "turquoise", rank: 1, at: [(0.06, 0.06)])
+        s.part("le sable", "the sand", color: "jaune", rank: 1, at: [(0.45, 0.95)])
+        s.part("l'étoile de mer", "the starfish", color: "rose", rank: 1, at: [(0.70, 0.915)])
     }
 
     static let butterfly = ColoringPage("papillon", fr: "Le papillon", en: "The butterfly") { s in
@@ -187,6 +210,13 @@ extension ColoringPages {
         s.ink(G.circle(0.475, 0.28, 0.012))
         s.ink(G.circle(0.525, 0.28, 0.012))
         s.line(G.arc(0.5, 0.295, 0.024, from: 30, to: 150))
+        // Les consignes du mode interactif, dans l'ordre où elles viennent (ColoringInstructions).
+        s.part("les ailes du haut", "the top wings", at: [(0.40, 0.44), (0.60, 0.44)])
+        s.part("les ailes du bas", "the bottom wings", at: [(0.38, 0.59), (0.62, 0.59)])
+        s.part("les ronds", "the dots",
+               at: [(0.27, 0.70), (0.73, 0.70), (0.20, 0.29), (0.80, 0.29), (0.335, 0.36), (0.665, 0.36)])
+        s.part("le corps", "the body", at: [(0.5, 0.43), (0.5, 0.565), (0.5, 0.71)])
+        s.part("la tête", "the head", at: [(0.5, 0.245)])
     }
 
     static let snail = ColoringPage("escargot", fr: "L'escargot", en: "The snail") { s in
@@ -229,6 +259,10 @@ extension ColoringPages {
         }
         s.expect(0.6416, 0.7216)
         s.grass([(0.30, 0.95), (0.70, 0.96), (0.93, 0.93)])
+        // Les consignes du mode interactif, dans l'ordre où elles viennent (ColoringInstructions).
+        s.part("la coquille", "the shell", at: [(0.6416, 0.7216)])
+        s.part("le corps", "the body", at: [(0.83, 0.70)])
+        s.part("le champignon", "the mushroom", color: "rouge", at: [(0.115, 0.69), (0.115, 0.80)])
     }
 }
 #endif

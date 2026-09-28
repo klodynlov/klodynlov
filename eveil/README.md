@@ -191,6 +191,17 @@ pour le nombre de fois que l'enfant doit répéter » :
   interactif** (bouton baguette magique, éteint par défaut) : la voix nomme la couleur choisie,
   chaque couleur chante sa note quand on peint (gamme pentatonique : jamais de fausse note), et
   « J'ai fini ! » fait prendre vie au dessin (il danse, confettis, fanfare, « Bravo ! »).
+- **Les consignes de coloriage** (la suite choisie le 28/09/2026), en mode interactif : la voix
+  donne une consigne — « Colorie le soleil en jaune ! » — affichée à la place du titre (la toucher
+  la redit). Chaque page a ses **parties nommées**, le sujet d'abord puis le décor ; une couleur
+  imposée quand elle va de soi (le soleil jaune, l'herbe verte, les roues noires), sinon une couleur
+  franche dans un ordre fixe. La consigne est réussie quand la partie a reçu assez de cette couleur
+  (un remplissage, ou quelques coups de pinceau) : étincelles, « Bravo ! », la suivante ; cinq au
+  plus par page. Jamais « faux » : colorier ailleurs ne coûte rien (au deuxième essai, la consigne
+  se redit et un anneau montre où) ; une autre couleur sur la bonne partie : « En jaune ! », et la
+  bonne pastille s'éclaire. Les parties des 55 pages dessinées en Python sont nommées et contrôlées
+  par l'outil (des zones entières, assez grandes, jamais deux noms sur une zone) ; celles des 15
+  pages Swift reposent sur leurs points-témoins ; un test Swift vérifie chaque consigne de chaque page.
 
 ```bash
 open eveil/ios/App/EveilTrain.xcodeproj           # schéma EveilTrain, un iPad du simulateur, ▶︎

@@ -42,6 +42,12 @@ extension ColoringPages {
             s.shape(G.circle(x, y, r), at: (x, y - r * 0.55))
             s.ink(G.circle(x, y, 0.017))
         }
+        // Les consignes du mode interactif, dans l'ordre où elles viennent (ColoringInstructions).
+        s.part("la locomotive", "the engine", at: [(0.19, 0.60), (0.375, 0.60), (0.47, 0.60)])
+        s.part("le wagon", "the wagon", at: [(0.80, 0.63)])
+        s.part("les ballons", "the balloons", at: [(0.705, 0.48), (0.905, 0.48), (0.805, 0.46)])
+        s.part("les roues", "the wheels", color: "noir",
+               at: [(0.155, 0.7565), (0.335, 0.7565), (0.535, 0.7255), (0.72, 0.772), (0.885, 0.772)])
     }
 
     static let cat = ColoringPage("chat", fr: "Le chat chef de gare", en: "The station master cat") { s in
@@ -84,6 +90,12 @@ extension ColoringPages {
             s.line(G.line([(0.40, y0), (0.25, y1)]))
             s.line(G.line([(0.60, y0), (0.75, y1)]))
         }
+        // Les consignes du mode interactif, dans l'ordre où elles viennent (ColoringInstructions).
+        s.part("la tête", "the head", color: "orange", at: [(0.29, 0.45)])
+        s.part("la casquette", "the cap", color: "rouge", at: [(0.42, 0.17), (0.42, 0.265), (0.60, 0.3085)])
+        s.part("le manteau", "the coat", color: "bleu", at: [(0.40, 0.90)])
+        s.part("les oreilles", "the ears", color: "rose", at: [(0.244, 0.325), (0.756, 0.325)])
+        s.part("le col", "the collar", color: "jaune", at: [(0.50, 0.705)])
     }
 
     static let house = ColoringPage("maison", fr: "La maison", en: "The house") { s in
@@ -120,6 +132,13 @@ extension ColoringPages {
         s.shape(G.union([G.circle(0.075, 0.845, 0.05), G.circle(0.14, 0.83, 0.055), G.circle(0.20, 0.85, 0.045)]),
                 at: (0.14, 0.845))
         s.grass([(0.66, 0.93), (0.90, 0.95), (0.25, 0.96)])
+        // Les consignes du mode interactif, dans l'ordre où elles viennent (ColoringInstructions).
+        s.part("le toit", "the roof", color: "rouge", at: [(0.45, 0.37)])
+        s.part("le mur", "the wall", at: [(0.30, 0.78)])
+        s.part("la porte", "the door", at: [(0.45, 0.76)])
+        s.part("les fenêtres", "the windows", color: "bleu ciel",
+               at: [(0.28, 0.565), (0.35, 0.565), (0.28, 0.635), (0.35, 0.635),
+                    (0.56, 0.565), (0.63, 0.565), (0.56, 0.635), (0.63, 0.635)])
     }
 }
 #endif
