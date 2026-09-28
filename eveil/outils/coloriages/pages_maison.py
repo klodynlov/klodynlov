@@ -2,25 +2,30 @@
 
 (La maison et la niche sont dessinées à la main dans l'app : PagesClassics.swift,
 PagesThings.swift.)
+
+Consignes du mode interactif : chaque page nomme 1 à 3 grandes parties de son sujet (rang 0),
+en plus du décor que les motifs nomment eux-mêmes (soleil, fleur…).
 """
 from __future__ import annotations
 
 import math
 
 from .dessin import (
-    Contour, arc, cercle, coeur, detail, ellipse, encre, etoile, goutte, ligne, lisse, page, poly,
+    Contour, arc, cercle, coeur, detail, ellipse, encre, etoile, goutte, ligne, lisse, nomme, page, poly,
     rect, tourne, trait, trou, tube, zone,
 )
 from .motifs import fleur, groupe, nuage, oeil, soleil
 
 
 def canard(cx: float, cy: float) -> list:
-    """Petit canard de bain, tourné vers la droite."""
+    """Petit canard de bain, tourné vers la droite : « le canard » des consignes = le corps et la tête
+    (le bec est trop petit pour en être une)."""
+    nom = ("le canard", "the duck", "jaune")
     return [
         zone(lisse([(cx - 86, cy - 20), (cx - 40, cy - 40), (cx + 40, cy - 36), (cx + 84, cy), (cx + 50, cy + 44),
-                    (cx - 50, cy + 46), (cx - 96, cy + 10)])),
+                    (cx - 50, cy + 46), (cx - 96, cy + 10)]), nom=nom),
         zone(poly([(cx + 60, cy - 88), (cx + 124, cy - 72), (cx + 62, cy - 50)], r=[6, 10, 6])),
-        zone(cercle(cx + 36, cy - 76, 46)),
+        zone(cercle(cx + 36, cy - 76, 46), nom=nom),
         encre(cercle(cx + 50, cy - 86, 9)),
         trait(arc(cx - 16, cy - 2, 44, 20, 150)),
     ]
@@ -48,19 +53,19 @@ DOUCHE = page(
     zone(rect(0, 700, 1000, 300)),
     trait(ligne((0, 850), (1000, 850))),
     # tuyau (sur un joint du carrelage), pommeau
-    zone(tube([(750, 700), (750, 260), (724, 160), (640, 124), (548, 160)], 40)),
-    zone(poly([(466, 174), (602, 174), (648, 252), (420, 252)], r=[10, 10, 6, 6])),
-    zone(rect(404, 244, 260, 34, r=15)),
+    *nomme([zone(tube([(750, 700), (750, 260), (724, 160), (640, 124), (548, 160)], 40)),
+            zone(poly([(466, 174), (602, 174), (648, 252), (420, 252)], r=[10, 10, 6, 6])),
+            zone(rect(404, 244, 260, 34, r=15))], "la douche", "the shower"),
     # la pluie
     detail(*[goutte(x, y, 19) for x, y in [(450, 350), (534, 364), (618, 350), (486, 466), (570, 480), (650, 460),
                                             (452, 580), (540, 596), (628, 578)]]),
     # le receveur, le tapis, la serviette
     zone(rect(330, 660, 560, 60, r=20)),
-    zone(rect(80, 760, 320, 124, r=26)),
+    zone(rect(80, 760, 320, 124, r=26), nom=("le tapis", "the bath mat", None)),
     trait(*[ligne((x, 772), (x, 872)) for x in (150, 220, 290, 350)]),
     detail(rect(100, 120, 26, 66, r=8)),
-    zone(poly([(46, 180), (180, 180), (190, 520), (36, 520)], r=[10, 10, 14, 14])),
-    zone(rect(36, 436, 154, 44)),
+    *nomme([zone(poly([(46, 180), (180, 180), (190, 520), (36, 520)], r=[10, 10, 14, 14])),
+            zone(rect(36, 436, 154, 44))], "la serviette", "the towel"),
     # le savon et ses bulles
     zone(rect(214, 626, 128, 64, r=26)),
     *bulles([(284, 540, 30), (340, 500, 20), (220, 520, 18)]),
@@ -73,13 +78,13 @@ MOUSSE = page(
     # les grosses bulles qui s'envolent
     *bulles([(160, 170, 70), (300, 90, 44), (820, 150, 80), (700, 60, 34), (520, 120, 48), (900, 340, 30),
              (90, 380, 36)]),
-    # le tas de mousse, le canard dedans
-    nuage(500, 470, 330, 190, bosses=11, hauteur=0.85),
+    # le tas de mousse (en forme de nuage, mais ce n'est pas « le nuage »), le canard dedans
+    nomme(nuage(500, 470, 330, 190, bosses=11, hauteur=0.85), "la mousse", "the foam"),
     trait(arc(380, 440, 60, 200, 300), arc(620, 400, 70, 200, 300), arc(520, 540, 50, 200, 300)),
     *canard(640, 560),
     # la baignoire à pattes
-    zone(poly([(90, 600), (910, 600), (850, 820), (150, 820)], r=[20, 20, 90, 90])),
-    zone(rect(60, 580, 880, 50, r=25)),
+    *nomme([zone(poly([(90, 600), (910, 600), (850, 820), (150, 820)], r=[20, 20, 90, 90])),
+            zone(rect(60, 580, 880, 50, r=25))], "la baignoire", "the bathtub"),
     zone(rect(170, 812, 60, 76, r=18), rect(770, 812, 60, 76, r=18)),
     zone(etoile(500, 720, 62, coins=8)),
 )
@@ -91,22 +96,29 @@ BOUCHE = page(
     zone(lisse([(250, 484), (380, 458), (500, 468), (620, 458), (750, 484), (660, 580), (500, 620), (340, 580)])),
     zone(lisse([(290, 430), (500, 420), (710, 430), (700, 510), (500, 536), (300, 510)])),
     trait(ligne((400, 440), (400, 524)), ligne((500, 440), (500, 534)), ligne((600, 440), (600, 524))),
-    zone(lisse([(370, 580), (500, 548), (630, 580), (600, 650), (500, 670), (400, 650)])),
+    zone(lisse([(370, 580), (500, 548), (630, 580), (600, 650), (500, 670), (400, 650)]),
+         nom=("la langue", "the tongue", "rose")),
     trait(ligne((500, 564), (500, 612))),
     zone(lisse([(160, 480), (250, 392), (380, 348), (500, 392), (620, 348), (750, 392), (840, 480),
                 (750, 612), (620, 676), (500, 696), (380, 676), (250, 612)]),
          trou(lisse([(250, 484), (380, 458), (500, 468), (620, 458), (750, 484), (660, 580), (500, 620),
-                     (340, 580)]))),
+                     (340, 580)])), nom=("les lèvres", "the lips", "rouge")),
     trait(arc(300, 440, 40, 200, 260), arc(700, 440, 40, 280, 340)),
 )
 
 
+# Consignes : la brosse à dents (poils, manche, tête) ; le dentifrice, sur la brosse comme dans le tube.
+NOM_BROSSE_A_DENTS = ("la brosse à dents", "the toothbrush", None)
+NOM_DENTIFRICE = ("le dentifrice", "the toothpaste", None)
+
+
 def _brosse_a_dents() -> list:
     els = [
-        zone(rect(670, 395, 160, 80, r=10)),
-        zone(lisse([(660, 380), (700, 345), (740, 372), (780, 342), (820, 372), (850, 395), (760, 405)])),
-        zone(tube([(160, 510), (660, 510)], 62)),
-        zone(rect(640, 470, 210, 78, r=34)),
+        zone(rect(670, 395, 160, 80, r=10), nom=NOM_BROSSE_A_DENTS),
+        zone(lisse([(660, 380), (700, 345), (740, 372), (780, 342), (820, 372), (850, 395), (760, 405)]),
+             nom=NOM_DENTIFRICE),
+        zone(tube([(160, 510), (660, 510)], 62), nom=NOM_BROSSE_A_DENTS),
+        zone(rect(640, 470, 210, 78, r=34), nom=NOM_BROSSE_A_DENTS),
     ]
     return groupe(els, lambda f: tourne(f, -28, 500, 500))
 
@@ -117,11 +129,12 @@ BROSSE_A_DENTS = page(
     zone(rect(0, 880, 1000, 120)),
     *_brosse_a_dents(),
     zone(poly([(114, 790), (180, 756), (180, 874), (114, 840)], r=[6, 0, 0, 6])),
-    zone(rect(170, 752, 380, 124, r=46)),
-    zone(rect(256, 782, 210, 66, r=24)),
+    zone(rect(170, 752, 380, 124, r=46), nom=NOM_DENTIFRICE),
+    zone(rect(256, 782, 210, 66, r=24), nom=NOM_DENTIFRICE),
     zone(rect(548, 778, 80, 72, r=14)),
     zone(lisse([(700, 560), (760, 520), (820, 542), (880, 520), (942, 560), (930, 660), (905, 780), (880, 802),
-                (855, 740), (820, 720), (785, 740), (760, 802), (735, 780), (712, 660)])),
+                (855, 740), (820, 720), (785, 740), (760, 802), (735, 780), (712, 660)]),
+         nom=("la dent", "the tooth", None)),
     *oeil(790, 616, 18, dy=3, p=0.6), *oeil(852, 616, 18, dy=3, p=0.6),
     trait(arc(821, 650, 34, 30, 150)),
 )
@@ -131,15 +144,16 @@ BROSSE_A_CHEVEUX = page(
     "brosse-a-cheveux", "maison", "La brosse à cheveux", "The hairbrush",
     zone(rect(0, 880, 1000, 120)),
     # le nœud à cheveux
-    zone(lisse([(190, 250), (80, 156), (44, 260), (80, 364), (190, 292)])),
-    zone(lisse([(250, 250), (360, 156), (396, 260), (360, 364), (250, 292)])),
-    zone(tube([(200, 300), (160, 430)], 50)), zone(tube([(240, 300), (280, 430)], 50)),
-    zone(ellipse(220, 270, 44, 50)),
+    *nomme([
+        zone(lisse([(190, 250), (80, 156), (44, 260), (80, 364), (190, 292)])),
+        zone(lisse([(250, 250), (360, 156), (396, 260), (360, 364), (250, 292)])),
+        zone(tube([(200, 300), (160, 430)], 50)), zone(tube([(240, 300), (280, 430)], 50)),
+        zone(ellipse(220, 270, 44, 50)),
+    ], "le nœud", "the bow"),
     # la brosse : manche, dos, coussin et ses picots à boules
     *groupe([
-        zone(tube([(500, 880), (560, 620)], 96)),
-        zone(ellipse(610, 410, 200, 250)),
-        zone(ellipse(610, 410, 158, 206)),
+        zone(tube([(500, 880), (560, 620)], 96), nom=("le manche", "the handle", None)),
+        *nomme([zone(ellipse(610, 410, 200, 250)), zone(ellipse(610, 410, 158, 206))], "la brosse", "the brush"),
         encre(*[cercle(610 + dx, 410 + dy, 13) for dx, dy in
                 [(-90, -120), (-30, -150), (30, -150), (90, -120), (-120, -50), (-60, -70), (0, -80), (60, -70),
                  (120, -50), (-120, 30), (-60, 10), (0, 0), (60, 10), (120, 30), (-90, 100), (-30, 80), (30, 80),
@@ -150,7 +164,10 @@ BROSSE_A_CHEVEUX = page(
 
 
 def _main(cx: float, cy: float, s: float, rot: float, miroir: bool = False) -> list:
-    """Une main en moufle : le pouce (derrière), la paume aux doigts serrés, trois traits de doigts."""
+    """Une main en moufle : le pouce (derrière), la paume aux doigts serrés, trois traits de doigts.
+
+    Pour les consignes, les paumes des deux mains font « les mains » (le pouce est trop petit).
+    """
     k = -1 if miroir else 1
 
     def place(f):
@@ -160,7 +177,7 @@ def _main(cx: float, cy: float, s: float, rot: float, miroir: bool = False) -> l
         return tourne(f, rot, cx, cy)
     return [
         zone(place(tube([(-40, 36), (-92, -20)], 40))),
-        zone(place(rect(-52, -96, 104, 200, r=50))),
+        zone(place(rect(-52, -96, 104, 200, r=50)), nom=("les mains", "the hands", None)),
         trait(*[place(ligne((x, -90 + (50 - math.sqrt(50 ** 2 - x ** 2))), (x, -36))) for x in (-22, 0, 22)]),
     ]
 
@@ -173,14 +190,14 @@ LAVER = page(
     zone(tube([(510, 200), (560, 240), (640, 250)], 64)),
     zone(rect(606, 206, 100, 90, r=26)),
     detail(cercle(510, 50, 34)),
-    zone(rect(624, 290, 62, 210)),
+    zone(rect(624, 290, 62, 210), nom=("l'eau", "the water", "bleu")),
     # les mains qui se frottent sous l'eau
     *_main(572, 560, 1.25, 18),
     *_main(740, 574, 1.25, -18, miroir=True),
     # le lavabo, le savon, les bulles
     zone(poly([(160, 700), (860, 700), (780, 910), (240, 910)], r=[20, 20, 60, 60])),
     zone(rect(120, 680, 780, 52, r=26)),
-    zone(rect(170, 596, 176, 86, r=32)),
+    zone(rect(170, 596, 176, 86, r=32), nom=("le savon", "the soap", None)),
     trait(arc(258, 638, 44, 200, 340, ry=18)),
     *bulles([(240, 470, 46), (340, 390, 30), (160, 380, 26), (880, 380, 44), (930, 480, 24), (400, 480, 22)]),
 )
@@ -190,7 +207,7 @@ MACHINE = page(
     "machine", "maison", "La machine à laver", "The washing machine",
     zone(rect(0, 880, 1000, 120)),
     *bulles([(140, 250, 44), (95, 370, 28), (872, 200, 40), (922, 310, 24), (160, 120, 24)]),
-    zone(rect(220, 160, 560, 722, r=40)),
+    zone(rect(220, 160, 560, 722, r=40), nom=("la machine à laver", "the washing machine", None)),
     zone(rect(250, 190, 500, 110, r=20)),
     detail(cercle(310, 245, 32)),
     zone(rect(380, 220, 170, 50, r=12)),
@@ -198,10 +215,11 @@ MACHINE = page(
     # le hublot : le verre, l'eau, le linge, puis l'anneau de la porte par-dessus
     zone(cercle(500, 570, 170)),
     zone([Contour((300, 610), [("C", (360, 580), (400, 580), (440, 612)), ("C", (480, 640), (520, 640), (560, 610)),
-                               ("C", (600, 580), (640, 580), (700, 610)), ("L", (620, 750)), ("L", (380, 750))])]),
+                               ("C", (600, 580), (640, 580), (700, 610)), ("L", (620, 750)), ("L", (380, 750))])],
+         nom=("l'eau", "the water", "bleu")),
     zone(tube([(420, 470), (430, 556), (500, 598)], 50)),
     zone(poly([(470, 600), (540, 560), (610, 600), (590, 632), (570, 622), (570, 700), (500, 700), (500, 622),
-               (480, 632)], r=6)),
+               (480, 632)], r=6), nom=("le tee-shirt", "the T-shirt", None)),
     zone(cercle(500, 570, 220), trou(cercle(500, 570, 170))),
     detail(rect(704, 530, 34, 84, r=12)),
     detail(rect(262, 878, 60, 24, r=6), rect(678, 878, 60, 24, r=6)),
@@ -209,12 +227,13 @@ MACHINE = page(
 
 
 def crayon(x: float, y: float, longueur: float, w: float, angle: float) -> list:
-    """Crayon debout, pied en (x, y), incliné de `angle` degrés."""
+    """Crayon debout, pied en (x, y), incliné de `angle` degrés ; pour les consignes, les crayons de la
+    page ne font qu'une partie (« les crayons » : n'importe lequel)."""
     def t(f):
         return tourne(f, angle, x, y)
     top = y - longueur
     return [
-        zone(t(rect(x - w / 2, top, w, longueur))),
+        zone(t(rect(x - w / 2, top, w, longueur)), nom=("les crayons", "the pencils", None)),
         detail(t(poly([(x - w / 2, top), (x + w / 2, top), (x, top - 1.3 * w)], r=[0, 0, 6]))),
         encre(t(poly([(x - w / 5, top - 0.9 * w), (x + w / 5, top - 0.9 * w), (x, top - 1.3 * w)], r=[0, 0, 4]))),
     ]
@@ -226,10 +245,10 @@ TROUSSE = page(
     *crayon(360, 640, 380, 62, -18), *crayon(500, 640, 420, 62, 0), *crayon(640, 640, 380, 62, 18),
     zone(tourne(rect(700, 250, 76, 420, r=8), 26, 735, 620)),
     trait(*[tourne(ligne((700, y), (730, y)), 26, 735, 620) for y in range(300, 600, 60)]),
-    zone(rect(160, 500, 680, 345, r=100)),
+    zone(rect(160, 500, 680, 345, r=100), nom=("la trousse", "the pencil case", None)),
     trait(ligne((230, 548), (770, 548))),
     detail(rect(772, 526, 40, 64, r=12)),
-    zone(etoile(500, 704, 72, coins=6)),
+    zone(etoile(500, 704, 72, coins=6), nom=("l'étoile", "the star", "jaune")),
     zone(rect(14, 772, 116, 66, r=18)),
 )
 
@@ -238,16 +257,19 @@ TACHE = page(
     "tache", "maison", "La tache de peinture", "The paint splat",
     zone(lisse([(500, 190), (560, 260), (650, 200), (660, 300), (780, 290), (720, 380), (820, 440), (720, 480),
                 (770, 580), (660, 560), (640, 670), (560, 600), (480, 690), (440, 590), (330, 640), (360, 530),
-                (230, 510), (330, 440), (240, 350), (360, 340), (360, 230), (440, 290)])),
+                (230, 510), (330, 440), (240, 350), (360, 340), (360, 230), (440, 290)]),
+         nom=("la tache", "the splat", None)),
     zone(cercle(200, 200, 46), cercle(850, 190, 42), cercle(880, 560, 50), cercle(160, 650, 48)),
     detail(cercle(290, 140, 22), cercle(600, 770, 22), cercle(110, 470, 20), cercle(930, 380, 22)),
     # le pot de peinture et le pinceau
-    zone(poly([(640, 780), (900, 780), (880, 960), (660, 960)], r=[6, 6, 20, 20])),
+    zone(poly([(640, 780), (900, 780), (880, 960), (660, 960)], r=[6, 6, 20, 20]),
+         nom=("le pot de peinture", "the paint pot", None)),
     detail(ellipse(770, 780, 140, 38)),
     zone(ellipse(770, 780, 104, 20)),
-    zone(tube([(80, 960), (380, 830)], 46)),
-    detail(tourne(rect(372, 800, 64, 56, r=6), -23, 404, 828)),
-    zone(tourne(goutte(470, 830, 40, 100), 67, 470, 830)),
+    # le pinceau : le manche et la touffe de poils (la virole, un détail, n'est pas nommée)
+    *nomme([zone(tube([(80, 960), (380, 830)], 46)),
+            detail(tourne(rect(372, 800, 64, 56, r=6), -23, 404, 828)),
+            zone(tourne(goutte(470, 830, 40, 100), 67, 470, 830))], "le pinceau", "the paintbrush"),
 )
 
 
@@ -256,9 +278,9 @@ CACTUS = page(
     *soleil(130, 120, 56),
     zone(rect(0, 860, 1000, 140)),
     # bras, corps (épines : petits traits qui ne ferment rien)
-    zone(tube([(410, 560), (300, 560), (280, 470), (280, 390)], 84)),
-    zone(tube([(590, 500), (700, 500), (722, 420), (722, 330)], 84)),
-    zone(rect(410, 220, 180, 520, r=90)),
+    *nomme([zone(tube([(410, 560), (300, 560), (280, 470), (280, 390)], 84)),
+            zone(tube([(590, 500), (700, 500), (722, 420), (722, 330)], 84)),
+            zone(rect(410, 220, 180, 520, r=90))], "le cactus", "the cactus", "vert"),
     trait(*[ligne((x, y), (x + dx, y - 14)) for x, y, dx in
             [(440, 300, -12), (560, 300, 12), (450, 420, -12), (550, 420, 12), (440, 540, -12), (560, 540, 12),
              (450, 650, -12), (550, 650, 12), (300, 440, -12), (700, 380, 12)]]),
@@ -266,8 +288,8 @@ CACTUS = page(
     trait(arc(500, 424, 30, 30, 150)),
     *fleur(500, 216, 64),
     # le pot
-    zone(poly([(330, 740), (670, 740), (630, 870), (370, 870)], r=[6, 6, 18, 18])),
-    zone(rect(310, 700, 380, 64, r=16)),
+    *nomme([zone(poly([(330, 740), (670, 740), (630, 870), (370, 870)], r=[6, 6, 18, 18])),
+            zone(rect(310, 700, 380, 64, r=16))], "le pot", "the pot"),
     detail(coeur(500, 800, 30)),
 )
 
