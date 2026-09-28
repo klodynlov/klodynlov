@@ -293,8 +293,12 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     réécoute ; manches en ordre fixe (`EarGames.pick`, vérifié en Python). Accueil : cartes sur deux
     rangées.
   - 🚧 Tranche 3, **livres des sons** (`SoundBooksView`, `outils/livres`, juge adulte dans
-    `PracticeView`, wagon du son + lettres colorées) : codé mais **non poussé** tant que les 57 noms
-    nouveaux (`pictos/mots_a.py`, `mots_b.py`) ne sont pas dessinés (`livres.generer --check` les exige).
+    `PracticeView` : « Il l'a dit ! », wagon du son étoilé + lettres colorées, conseils « pour les
+    grands ») : poussée **EN COURS** — `livres.generer --en-cours` ne garde que les mots déjà dessinés
+    (46/103 → 7 livres FR, 9 EN). Les 57 noms nouveaux (`pictos/mots_a.py`, `mots_b.py`, sous-agents)
+    une fois dessinés : `python3 -m livres.generer` complet (16 FR, 15 EN ; `--check` exige tout).
+    18 tests Python (`livres/test_livres.py`) ; Swift : `SoundBooksTests`, `SoundBooksViewTests`,
+    `AdultJudgeTests`.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur interdits) → 0 violation, 7 tests ;
   ignore les produits de compilation (`.build/`, `.swiftpm/`, `DerivedData/`).
@@ -343,8 +347,8 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 ---
 
 _Dernière mise à jour mémoire : Suite Éveil — **troisième tour, tranches 2 et 4** (28/09/2026, session
-cloud : train des phrases avec scènes animées, jeux d'écoute ; livres des sons en attente des dessins ; à
-compiler sur le Mac). Avant : **tranche 1** (voix féminine choisie et syllabique, décompte des répétitions,
+cloud : train des phrases avec scènes animées, jeux d'écoute ; livres des sons EN COURS, 7 + 9 livres en
+attendant 57 dessins ; à compiler sur le Mac). Avant : **tranche 1** (voix féminine choisie et syllabique, décompte des répétitions,
 étoiles de jeu, syllabes au toucher, dings, coloriage 24 couleurs + gomme + mode interactif).
 Avant : **atelier de coloriage : 70 pages en 7 albums** (25/09/2026,
 session cloud : 55 pages dessinées et vérifiées en Python dans `eveil/outils/coloriages/`, un dessin par mot

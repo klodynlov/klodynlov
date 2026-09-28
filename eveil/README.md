@@ -169,6 +169,14 @@ pour le nombre de fois que l'enfant doit répéter » :
   images : laquelle fait ce bruit ? chaque image touchée sonne) et **« Où est… ? »** (2 à 4 images,
   vocabulaire en compréhension). Jamais « faux » : une autre image est nommée (« Ça, c'est le chat. »)
   et on réécoute ; manches dans un ordre fixe.
+- **Les livres des sons** (cf. [docs/EVEIL.md § 4.9](../docs/EVEIL.md#49-les-livres-des-sons-et-les-jeux-découte-28092026)) :
+  un livre par son — 16 en français, 15 en anglais quand tous les mots seront dessinés — **calculé**
+  à partir des mots dessinés qui contiennent le son, au début, au milieu, à la fin
+  ([`outils/livres`](outils/livres/)) ; 57 mots s'ajoutent pour eux ([`outils/pictos`](outils/pictos/),
+  familles `mot.`), chacun dès qu'il a son dessin (`--en-cours`). Le livre se parcourt dans le
+  petit train : wagon du son marqué d'une étoile, **lettres colorées**, voix syllabe par syllabe ;
+  c'est **l'adulte qui juge** (« Il l'a dit ! » : le détecteur ne juge que la fin des mots) ;
+  « Pour les grands » : l'image sonore du son et une idée de jeu sans écran (propositions à valider).
 - **L'atelier de coloriage** (« plus de couleurs, la gomme, un mode interactif au choix ») :
   **24 couleurs** (dont quatre couleurs de peau), toutes visibles d'un coup — 3 rangées de 8 en
   portrait, 6 rangées de 4 en paysage ; la **gomme** rend le papier blanc sans déborder de sa zone

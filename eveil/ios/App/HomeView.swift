@@ -1,7 +1,7 @@
 // HomeView.swift — l'accueil de la suite : le chat chef de gare propose ses jeux.
 //
-// De grandes cartes (le Petit Train des mots, le Train des phrases, l'Atelier de coloriage,
-// les Jeux d'écoute), un seul geste pour entrer, une maison pour revenir. L'espace des grands
+// De grandes cartes (le Petit Train des mots, le Train des phrases, les Livres des sons,
+// l'Atelier de coloriage, les Jeux d'écoute), un seul geste pour entrer, une maison pour revenir. L'espace des grands
 // reste derrière le contrôle parental (et disparaît pendant l'Accès guidé).
 
 import EveilDesign
@@ -23,7 +23,7 @@ struct HomeView: View {
     @Environment(\.modelContext) private var context
 
     enum Destination: String, Identifiable, CaseIterable {
-        case train, sentences, coloring, ears
+        case train, sentences, books, coloring, ears
         var id: String { rawValue }
     }
 
@@ -97,6 +97,9 @@ struct HomeView: View {
             case .sentences:
                 SentenceTrainView(locale: locale, parentButtonHidden: parentAreaLocked,
                                   onHome: { destination = nil })
+            case .books:
+                SoundBooksView(locale: locale, parentButtonHidden: parentAreaLocked, onHome: { destination = nil })
+                    .modelContext(context)
             case .coloring:
                 ColoringView(locale: locale, onHome: { destination = nil })
             case .ears:
@@ -127,6 +130,13 @@ extension HomeView {
                      color: EveilPalette.go, width: width, height: height) { destination = .sentences } art: {
                 SentenceArt()
             }
+        case .books:
+            GameCard(title: fr ? "Les livres des sons" : "The sound books",
+                     color: Color(red: 0.86, green: 0.16, blue: 0.3), width: width, height: height) {
+                destination = .books
+            } art: {
+                BooksArt(locale: locale)
+            }
         case .coloring:
             GameCard(title: fr ? "L'atelier de coloriage" : "The coloring workshop",
                      color: Color.purple, width: width, height: height) { destination = .coloring } art: {
@@ -138,6 +148,24 @@ extension HomeView {
                 destination = .ears
             } art: {
                 EarArt()
+            }
+        }
+    }
+}
+
+/// Petite illustration des livres des sons : trois livres debout, « ch », « s », « r ».
+struct BooksArt: View {
+    let locale: String
+
+    var body: some View {
+        HStack(alignment: .bottom, spacing: 8) {
+            ForEach(Array(zip(locale.hasPrefix("fr") ? ["ch", "s", "r"] : ["sh", "s", "r"],
+                              [Color.orange, Color.yellow, Color.green]).enumerated()), id: \.offset) { k, item in
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(item.1.gradient)
+                    .frame(width: 70, height: CGFloat(110 + 14 * (k % 2)))
+                    .overlay(Text(item.0).font(.system(size: 34, weight: .black, design: .rounded)).foregroundStyle(.white))
+                    .shadow(color: .black.opacity(0.2), radius: 3, y: 2)
             }
         }
     }

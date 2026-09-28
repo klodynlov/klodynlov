@@ -251,7 +251,7 @@ par le proxy de la session). Ce que fait la suite :
 | — | **Aucun micro** : c'est l'adulte qui touche « Il l'a dite ! » quand l'enfant redit la phrase (juge adulte, § 4.7) → étoiles de jeu, jamais de note |
 | Vidéos avec LSF | **Non repris** : on n'invente pas de signes ; à faire avec des vidéos réelles et un·e locuteur·rice de LSF |
 | Voix enregistrées | Synthèse vocale provisoire (la meilleure voix féminine installée) |
-| Livres par son, conseils | Tranche suivante : les livres des sons (imagier du son, phrases du son, idées de jeu) |
+| Livres par son, conseils | **Les livres des sons** (§ 4.9) : un livre par son, calculé à partir des mots dessinés ; image sonore et idée de jeu pour l'adulte |
 
 Mise en œuvre vérifiable : lexique, grammaire (articles, élision « l'autruche », noms propres,
 capitales), niveaux et plateaux en Python ([`eveil/outils/phrases`](../eveil/outils/phrases)),
@@ -260,6 +260,34 @@ Python et relus sur planches ([`eveil/outils/pictos`](../eveil/outils/pictos)) ;
 scène testés (repos au début et à la fin, rien hors de la scène). Le plateau propose au plus 6 pictos
 et tourne dans un ordre fixe (§ 4.6). **Les listes de mots et de verbes sont des propositions, à
 valider avec le panel** (§ 8).
+
+### 4.9 Les livres des sons et les jeux d'écoute (28/09/2026)
+
+**Les livres des sons.** OrthoPicto propose un livre par son. Ici chaque livre est **calculé** à
+partir des mots dessinés : tous ceux dont la transcription contient le son, rangés « au début »,
+« au milieu », « à la fin » ([`eveil/outils/livres`](../eveil/outils/livres)). Avec tous les mots
+dessinés : 16 livres en français (ch, s, z, j, f, v, p, b, t, d, k, g, m, n, l, r), 15 en anglais ;
+un son qui a moins de 5 mots n'a pas encore de livre (« gn » ; en anglais « ch », « v », « th »).
+Pour que chaque son ait son livre, 57 mots s'ajoutent (fleur, girafe, cheval…) aux dessins du petit
+train et du train des phrases ; un mot entre dans les livres quand il a son dessin
+(`livres.generer --en-cours`), jamais avec une image manquante.
+- Le livre se parcourt dans le **petit train** : la voix dit le mot syllabe par syllabe ; le wagon
+  du son porte une étoile et ses **lettres sont colorées** (« gi » : le « g ») ; toucher un wagon
+  redit sa syllabe ; décompte, étoiles, mondes et bestioles comme au petit train ; chaque livre
+  reprend où on l'a laissé.
+- **L'adulte juge** (« Il l'a dit ! », § 4.7) : le détecteur ne sait juger que la fin des mots en
+  « ch » ou « s » ; un son au début ou au milieu du mot lui échappe. Pas de micro dans les livres.
+- « **Pour les grands** » : l'image sonore du son (« le serpent : sss ! ») et une idée de jeu
+  **sans écran**. Des propositions, à valider par des orthophonistes (§ 8), avec le rappel que le
+  jeu n'évalue pas le langage de l'enfant.
+
+**Les jeux d'écoute** (« voire plus »), sans micro, avec les dessins et les bruitages de l'app :
+- le **loto des bruits** — un bruit (« meuh ») et trois images : laquelle fait ce bruit ? Toucher
+  une image la fait sonner, pour comparer (discrimination auditive, vocabulaire) ;
+- **« Où est… ? »** — la voix demande « Où est la pêche ? » parmi 2 à 4 images (vocabulaire en
+  compréhension).
+Jamais « non » : une autre image est **nommée** (« Ça, c'est le chat. ») puis on réécoute. Les
+manches suivent un ordre fixe (§ 4.6) et reprennent où on s'était arrêté.
 
 ---
 

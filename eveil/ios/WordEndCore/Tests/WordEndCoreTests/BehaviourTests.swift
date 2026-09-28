@@ -155,6 +155,39 @@ final class StarsTests: XCTestCase {
     }
 }
 
+/// Le juge adulte (livres des sons, docs/EVEIL.md § 4.7) : « Il l'a dit ! » vaut un mot entier,
+/// et l'adulte ne rend jamais d'autre verdict.
+final class AdultJudgeTests: XCTestCase {
+    func testAdultVerdictIsAWholeWord() {
+        let v = Verdict.adultHeard(wagons: 3, hasCaboose: false)
+        XCTAssertEqual(v.kind, .complete)
+        XCTAssertEqual(v.heardNuclei, 3)
+        XCTAssertEqual(v.expectedNuclei, 3)
+        XCTAssertEqual(v.reasons, ["adult_judge"])
+        XCTAssertEqual(Stars.earned(for: v, hasCaboose: false), Stars.max)
+        let fb = FeedbackPolicy.feedback(for: v, wagons: 3, hasCaboose: false, attempt: 1)
+        XCTAssertEqual(fb.litWagons, [true, true, true])
+        XCTAssertEqual(fb.caboose, CabooseState.none)
+        XCTAssertEqual(fb.message, .bravo)
+        XCTAssertTrue(fb.advance)
+        // Le décompte des répétitions marche aussi avec l'adulte.
+        let again = FeedbackPolicy.feedback(for: v, wagons: 3, hasCaboose: false, attempt: 1, repetitionsLeft: 1)
+        XCTAssertEqual(again.message, .again)
+        XCTAssertFalse(again.advance)
+    }
+
+    /// Un mot de livre : un wagon par syllabe orale, pas de fourgon (le son peut être n'importe où).
+    func testBookWordHasOneSegmentPerWagonAndNoCaboose() {
+        let w = TargetWord.bookWord(id: "mot.girafe", text: "girafe", ipa: "ʒi.ʁaf", wagons: ["gi", "rafe"])
+        XCTAssertNil(w.caboose)
+        XCTAssertNil(w.coda)
+        XCTAssertEqual(w.nuclei, 2)
+        XCTAssertEqual(w.voiceSegments, [VoiceSegment(text: "gi", ipa: "ʒi"), VoiceSegment(text: "rafe", ipa: "ʁaf")])
+        XCTAssertEqual(w.wagonSegments, w.voiceSegments)
+        XCTAssertNil(w.cabooseSegment)
+    }
+}
+
 final class LexicalGuardTests: XCTestCase {
     func testAsrCanOnlyMakeVerdictsMoreCautious() {
         for kind in VerdictKind.allCases {
