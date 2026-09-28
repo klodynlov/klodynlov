@@ -11,6 +11,7 @@ from pathlib import Path
 
 from . import lieux, mots_a, mots_b, verbes
 from .peinture import Picto, problemes
+from .scene import problemes_scene
 
 RACINE = Path(__file__).resolve().parents[2]
 SORTIE = RACINE / "ios" / "Sources" / "EveilDesign" / "PictoDessins.swift"
@@ -29,6 +30,8 @@ def verifier(pictos: list[Picto]) -> list[str]:
     for p in pictos:
         if p.id.startswith("lieu.") and not p.ancres:
             out.append(f"{p.id}: un lieu sans ancre")
+        if p.id.startswith("lieu."):
+            out += problemes_scene(p)      # la phrase se lit : jamais caché, posé « sur », abrité « sous »…
         if p.id.startswith(("verbe.", "mot.")) and p.ancres:
             out.append(f"{p.id}: seul un lieu a des ancres")
     return out

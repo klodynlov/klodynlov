@@ -188,15 +188,26 @@ def svg(p: Picto, taille: int = 200) -> str:
             f'<rect width="200" height="200" fill="#FFFFFF"/>{corps}</svg>')
 
 
+# Le personnage type des planches, dans SON carré 200 × 200 : une tête ronde et un corps, les pieds
+# en y = 179 comme les personnages de l'app (qui occupent ≈ 16…184) — c'est ce qui dit s'il est
+# bien posé « sur » le lieu, ou caché « dedans ».
+SILHOUETTE_TETE = (100.0, 76.0, 42.0)              # cx, cy, r
+SILHOUETTE_CORPS = (62.0, 100.0, 76.0, 79.0, 30.0)  # x, y, largeur, hauteur, arrondi (pieds en y = 179)
+
+
+def svg_silhouette(a: Ancre, couleur: str = "#FF5FA2") -> str:
+    """Le personnage type (rose) posé à l'ancre `a` : son carré a son bas-milieu en (a.x, a.y)."""
+    t = a.taille
+    (cx, cy, r), (x, y, w, h, rx) = SILHOUETTE_TETE, SILHOUETTE_CORPS
+    return (f'<g transform="translate({a.x - 100 * t:.2f},{a.y - 200 * t:.2f}) scale({t:.4f})" opacity="0.9" '
+            f'fill="{couleur}"><rect x="{x:g}" y="{y:g}" width="{w:g}" height="{h:g}" rx="{rx:g}"/>'
+            f'<circle cx="{cx:g}" cy="{cy:g}" r="{r:g}"/></g>')
+
+
 def svg_scene(lieu: Picto, preposition: str, taille: int = 200) -> str:
-    """Le lieu avec une silhouette posée à l'ancre de `preposition`, dans le bon ordre."""
+    """Le lieu avec le personnage type posé à l'ancre de `preposition`, dans le bon ordre."""
     a = lieu.ancres[preposition]
-    h = a.taille * 200
-    w = h * 0.62
-    x0, y0 = a.x - w / 2, a.y - h
-    perso = (f'<g opacity="0.9"><rect x="{x0:.1f}" y="{y0 + h * 0.34:.1f}" width="{w:.1f}" height="{h * 0.66:.1f}" '
-             f'rx="{w * 0.3:.1f}" fill="#FF5FA2"/><circle cx="{a.x:.1f}" cy="{y0 + h * 0.2:.1f}" r="{h * 0.2:.1f}" '
-             f'fill="#FF5FA2"/></g>')
+    perso = svg_silhouette(a)
 
     def ops(calques):
         return "".join(_op_svg(op) for op in lieu.ops if op.calque in calques)
