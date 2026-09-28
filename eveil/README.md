@@ -11,7 +11,7 @@ Tout est calculé **sur l'appareil**, sans modèle opaque, avec une règle d'or 
 | [`reference/wordend/`](reference/wordend/) | Détecteur de référence **Python stdlib** : DSP, détecteur, flux temps réel, pédagogie, lexiques, **banc de validation**, vecteurs de parité, démo | ✅ 69 tests verts |
 | [`ios/`](ios/) | **Swift** : paquet autonome [`WordEndCore`](ios/WordEndCore/) (portage ligne à ligne, Swift pur, testable seul) + paquet app `WordEndAudio` (AVFoundation) / `TrainPracticeUI` (SwiftUI/SwiftData) / `EveilDesign` (mondes, dessins des mots, bestioles, mascotte) / `EveilSounds` (bruitages calculés) / `ColoringUI` (atelier) + **projet Xcode** [`App/EveilTrain.xcodeproj`](ios/App/) | ✅ **app jouable, installée sur un iPad réel** ([captures](#lapp-ipad--ébauche-jouable-essayée-sur-un-vrai-ipad-25092026)) · cœur 19/19 · app 103 tests |
 | [`lexique/`](lexique/) | Mots cibles **FR** et **EN** conçus séparément (propositions à valider par un panel) | 🟡 à valider |
-| [`outils/`](outils/) | Garde-fou « rien ne quitte l'iPad » (analyse statique du code Swift) + [`coloriages/`](outils/coloriages/) : les pages de l'atelier **dessinées en Python** (traits visibles, carte des zones simulée, témoins) → [`PagesDessins.swift`](ios/Sources/ColoringUI/PagesDessins.swift) + [`papier/`](outils/papier/) : le mode papier sur photos simulées | ✅ 25 tests, 0 violation, 55 pages générées · papier 9 tests |
+| [`outils/`](outils/) | Garde-fou « rien ne quitte l'iPad » (analyse statique du code Swift) + [`coloriages/`](outils/coloriages/) : les pages de l'atelier **dessinées en Python** (traits visibles, carte des zones simulée, témoins) → [`PagesDessins.swift`](ios/Sources/ColoringUI/PagesDessins.swift) + [`papier/`](outils/papier/) : le mode papier sur photos simulées | ✅ 25 tests, 0 violation, 55 pages générées · papier 11 tests |
 | [`librarybrain/`](librarybrain/) | Relais vers LibraryBrain : sources en accès libre, veille arXiv, questions à poser, [protocole de comparaison](librarybrain/COMPARAISON.md) avec la passe cloud, [`interroger.py`](librarybrain/interroger.py) (les 33 questions, scriptées), [`mesurer.py`](librarybrain/mesurer.py) — comparaison faite : [rapport](../docs/EVEIL-SOURCES-LIBRARYBRAIN.md) | ✅ 20 tests |
 
 ---
@@ -216,13 +216,14 @@ pour le nombre de fois que l'enfant doit répéter » :
   ([`outils/coloriages/vivant.py`](outils/coloriages/vivant.py) :
   `python3 -m coloriages.vivant --planche DOSSIER`), portage dans `ColoringUI/LivingDrawing.swift`.
   [Planche](../docs/ui/eveil-app/9-dessin-vivant.png).
-- **Le mode papier** (la suite choisie ensuite) : bouton « Colorier sur papier » de l'atelier. On
-  **imprime** la page (un PDF A4 fait sur l'iPad : le dessin et quatre carrés noirs autour), l'enfant
-  la **colorie aux vrais crayons**, on la **photographie** avec le scanner de documents d'iPadOS.
-  L'atelier retrouve les quatre carrés, redresse la photo, reconnaît la page (ou ouvre celle qu'on a
-  photographiée, parmi les 70), pose les coups de crayon sous ses traits — le grain du crayon se
-  voit — et **le dessin prend vie**. Une photo illisible : « Je n'ai pas bien vu la page. On
-  réessaie ? ». La photo reste en mémoire le temps de la lire, jamais enregistrée ni envoyée.
+- **Le mode papier** (la suite choisie ensuite) : bouton « Colorier sur papier », en bas de la colonne
+  d'outils de l'atelier. On **imprime** la page (un PDF A4 fait sur l'iPad : le dessin et quatre
+  carrés noirs autour), l'enfant la **colorie aux vrais crayons**, on la **photographie** avec le
+  scanner de documents d'iPadOS. L'atelier retrouve les quatre carrés (même feuille de côté ou à
+  l'envers), redresse la photo, reconnaît la page (ou ouvre celle qu'on a photographiée, parmi les
+  70), pose les coups de crayon sous ses traits — le grain du crayon se voit — et **le dessin prend
+  vie**. Une photo illisible : « Je n'ai pas bien vu la page. On réessaie ? ». La photo reste en
+  mémoire le temps de la lire, jamais enregistrée ni envoyée.
   Référence sur photos simulées ([`outils/papier/`](outils/papier/) : perspective, lumière chaude,
   grain ; `python3 -m papier.planche DOSSIER`), portage dans `ColoringUI/PaperMode.swift` et
   `PaperSheet.swift`. [Planche](../docs/ui/eveil-app/10-mode-papier.png).

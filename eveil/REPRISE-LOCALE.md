@@ -12,7 +12,7 @@ tour* d'`eveil/REPRISE-LOCALE.md` ». Tu peux aussi coller ce prompt :
 Compile, teste et installe le troisième tour de la Suite Éveil, poussé depuis une session cloud qui ne pouvait pas compiler le Swift. Réponds en français.
 
 0. git fetch origin ; git switch claude/ios-educational-apps-suite-dljtt6 ; git pull. Relis CLAUDE.md, section « Suite Éveil », puis « Troisième tour ».
-1. Python (stdlib) : depuis la racine, python3 -m unittest discover -s eveil/outils (125 tests) ; depuis eveil/reference, python3 -m unittest discover -s wordend -t . (83 tests). Si c'est rouge, arrête-toi et montre-moi.
+1. Python (stdlib) : depuis la racine, python3 -m unittest discover -s eveil/outils (127 tests) ; depuis eveil/reference, python3 -m unittest discover -s wordend -t . (83 tests). Si c'est rouge, arrête-toi et montre-moi.
 2. Swift, à relancer après chaque pull (swift test repasse sur macOS depuis le commit b936373 du 28/09) :
    - cd eveil/ios/WordEndCore && swift test ;
    - puis cd eveil/ios && swift test ;
@@ -38,7 +38,7 @@ Compile, teste et installe le troisième tour de la Suite Éveil, poussé depuis
    Si un test révèle un vrai défaut, corrige la source : le Python, puis régénère ; ou bien le Swift.
 3. Planches : EVEIL_RENDER_DIR=/tmp/eveil-rendus swift test --filter SentenceStageTests, puis montre-moi les PNG des phrases jouées (phrase-*.png) et des cartes « où ? » (phrase-cartes-ou.png : on doit VOIR dans, sur, sous, devant, derrière).
 4. iPad : ouvre App/EveilTrain.xcodeproj, compile et installe sur mon iPad (commandes xcrun devicectl dans eveil/README.md). L'ID d'équipe Apple ne va jamais dans le dépôt.
-   Mode papier, avec moi : dans l'atelier, bouton « Colorier sur papier » → « Imprimer la page » (A4, imprimante AirPrint ou PDF),
+   Mode papier, avec moi : dans l'atelier, bouton « Colorier sur papier » (en bas de la colonne d'outils) → « Imprimer la page » (A4, imprimante AirPrint ou PDF),
    je colorie, puis « Photographier le coloriage » (l'iPad demande l'accès à la caméra la première fois : NSCameraUsageDescription
    est dans le projet). Note ce qui ne va pas (repères non trouvés, couleurs ternes, page non reconnue) avec la photo si besoin.
 5. Committe et pousse les corrections sur la même branche : git pull avant, jamais de force-push, messages en français. Consigne versions et résultats dans eveil/README.md et CLAUDE.md. Dis-moi combien de tests passent, les avertissements restants et ce qui a été corrigé.

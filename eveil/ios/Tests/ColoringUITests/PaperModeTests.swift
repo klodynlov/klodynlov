@@ -132,6 +132,29 @@ struct PaperShot: @unchecked Sendable {
     private static func channel(_ v: Double) -> UInt32 { UInt32(max(0, min(255, v.rounded()))) }
 }
 
+extension RGBAImage {
+    /// L'image tournée de `k` quarts de tour dans le sens des aiguilles d'une montre (comme
+    /// `Image.tourner` de la référence) : une feuille photographiée de côté ou à l'envers.
+    func turned(_ k: Int) -> RGBAImage {
+        let q = (k % 4 + 4) % 4
+        guard q != 0 else { return self }
+        let w = q % 2 == 1 ? height : width, h = q % 2 == 1 ? width : height
+        var out = [UInt32](repeating: 0, count: w * h)
+        for y in 0..<h {
+            for x in 0..<w {
+                let sx: Int, sy: Int
+                switch q {
+                case 1: sx = y; sy = height - 1 - x
+                case 2: sx = width - 1 - x; sy = height - 1 - y
+                default: sx = width - 1 - y; sy = x
+                }
+                out[y * w + x] = pixels[sy * width + sx]
+            }
+        }
+        return RGBAImage(width: w, height: h, pixels: out)
+    }
+}
+
 final class PaperModeTests: XCTestCase {
     static let locomotive = PaperShot.make("locomotive")
 
@@ -296,6 +319,48 @@ final class PaperModeTests: XCTestCase {
         XCTAssertGreaterThan(match, 0.8)
         XCTAssertEqual(paint.count, map.width * map.height)
         XCTAssertGreaterThan(paint.lazy.filter { $0 != 0 }.count, map.width * map.height / 20)
+    }
+
+    // MARK: De côté, à l'envers
+
+    /// Un point de la page droite ramené sur la photo telle qu'elle est : le même pixel.
+    func testTurnsAreConsistent() {
+        let image = RGBAImage(width: 3, height: 2, pixels: (0..<6).map { UInt32($0) | 0xFF00_0000 })
+        for k in 0..<4 {
+            let t = image.turned(k)
+            for y in 0..<t.height {
+                for x in 0..<t.width {
+                    let p = PaperScan.fromUpright(CGPoint(x: Double(x) + 0.5, y: Double(y) + 0.5), turns: k,
+                                                  width: image.width, height: image.height)
+                    XCTAssertEqual(t.pixels[y * t.width + x], image.pixels[Int(p.y) * image.width + Int(p.x)],
+                                   "\(k) quart(s) de tour, (\(x), \(y))")
+                }
+            }
+        }
+        XCTAssertEqual(PaperScan.turns(for: image), [1, 3])
+        XCTAssertEqual(PaperScan.turns(for: image.turned(1)), [0, 2])
+    }
+
+    /// La feuille photographiée de côté ou à l'envers (l'enfant assis en face de l'adulte) : lue dans
+    /// le bon sens, avec les mêmes coups de crayon (à quelques pixels près).
+    func testASheetTurnedAroundIsReadTheRightWay() throws {
+        let shot = try XCTUnwrap(Self.locomotive)
+        let at = try XCTUnwrap(index("locomotive"))
+        let map = ZoneMap(lineArt: shot.page.lineArt)
+        var painted: [Int] = []
+        for k in 0..<4 {
+            let photo = try XCTUnwrap(PaperShot.image(shot.photo.turned(k)))
+            let outcome = PaperScan.read(photo, pages: ColoringPages.all, index: at, map: map)
+            guard case let .painted(paint, match) = outcome else {
+                XCTFail("photo tournée de \(k) quart(s) : lu \(said(outcome))")
+                continue
+            }
+            XCTAssertGreaterThan(match, 0.8, "photo tournée de \(k) quart(s)")
+            painted.append(paint.lazy.filter { $0 != 0 }.count)
+        }
+        if let first = painted.first {
+            for n in painted { XCTAssertEqual(Double(n), Double(first), accuracy: 0.03 * Double(first)) }
+        }
     }
 
     // MARK: Les pièges

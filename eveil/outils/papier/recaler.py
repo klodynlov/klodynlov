@@ -4,6 +4,8 @@
    envoie chaque pixel du carré du dessin sur la photo ; on y lit la couleur (bilinéaire).
 2. Accord : la photo est-elle bien CETTE page ? La part des pixels de trait de la page qui sont
    sombres sur la photo redressée (la bonne page : presque tous ; une autre : peu).
+   La feuille peut être photographiée de côté ou à l'envers : on essaie les deux sens qui la mettent
+   en portrait, et l'on garde celui où la page ressemble le plus à ses traits (`lire`).
 3. Les couleurs : la balance des blancs d'après le papier (le 95e centile de clarté des zones) ;
    un pixel est colorié s'il est coloré (saturation) ou sombre (crayon noir, marron, gris) ; près
    d'un trait (erreur de recalage, bord du trait imprimé), seule une vraie couleur compte. Le reste
@@ -14,7 +16,7 @@ from __future__ import annotations
 
 from collections import deque
 
-from . import mise_en_page as mp
+from . import mise_en_page as mp, reperes
 from .homographie import appliquer, homographie
 from .image import Image
 
@@ -36,6 +38,27 @@ def redresser(img: Image, reperes, n: int) -> Image:
         for x in range(n):
             out.put(x, y, img.bilineaire(*appliquer(H, ((x + 0.5) / n, v))))
     return out
+
+
+def sens(img: Image) -> list[int]:
+    """Les quarts de tour à essayer : ceux qui mettent la feuille en portrait — photo prise de côté,
+    ou à l'envers (l'enfant assis en face de l'adulte)."""
+    return [1, 3] if img.W > img.H else [0, 2]
+
+
+def lire(img: Image, labels: list[int], n: int):
+    """La photo redressée dans le meilleur sens pour ces traits (carte n × n) :
+    (accord, quarts de tour, repères, carré redressé)."""
+    candidats = sens(img)
+    taches = reperes.Taches(img, candidats[0])          # même réduction pour les deux sens
+    meilleur = None
+    for q in candidats:
+        rep = reperes.trouver(img, q, taches) or reperes.sans_reperes(img, q)
+        rect = redresser(img, rep, n)
+        a = accord(rect, labels)
+        if meilleur is None or a > meilleur[0]:
+            meilleur = (a, q, rep, rect)
+    return meilleur
 
 
 def _pres_des_traits(labels: list[int], n: int, r: int) -> bytearray:

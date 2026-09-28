@@ -505,8 +505,8 @@ confirmer (§10).*
 | Écran | Quelques secondes (numériser, regarder l'animation) | Toute l'activité |
 | API clés (vérifiées) | `VNDocumentCameraViewController` (iOS 13), `UIPrintInteractionController` ; `VNDetectDocumentSegmentationRequest` (iOS 15) inutile : le scanner détecte déjà la feuille, nos repères font le recalage fin | Ébauche : SwiftUI `Canvas` + carte des zones en Swift pur (aucune API spéciale). Option : PencilKit (`PKCanvasView` `.anyInput`, encre `.crayon`, `PKStroke(ink:path:transform:mask:)` iOS 14) si l'on veut sa texture de crayon |
 
-**Mode papier, fait le 28/09/2026 (choix de l'utilisateur)** — bouton « Colorier sur papier » de
-l'atelier : une carte en trois étapes (imprimer, colorier, photographier) avec la page telle qu'elle
+**Mode papier, fait le 28/09/2026 (choix de l'utilisateur)** — bouton « Colorier sur papier » en bas
+de la colonne d'outils de l'atelier : une carte en trois étapes (imprimer, colorier, photographier) avec la page telle qu'elle
 sortira de l'imprimante.
 
 1. **Imprimer** : un PDF A4 fait sur l'iPad (`PaperPrint`, jamais écrit sur disque) — le titre, le
@@ -516,7 +516,9 @@ sortira de l'imprimante.
    L'atelier y cherche chaque repère près de sa place attendue — la tache sombre **la plus proche**
    qui a l'allure d'un carré plein (sombre, presque carrée, remplie à plus de 80 %, de la bonne
    taille) : un coin du dessin colorié en noir ne trompe pas. Faute de repères, la photo est prise
-   pour la page entière.
+   pour la page entière. Feuille photographiée **de côté ou à l'envers** (l'enfant assis en face de
+   l'adulte) : les deux sens qui la mettent en portrait sont essayés, sans tourner la photo (les
+   places attendues des repères y sont ramenées) ; on garde celui où la page ressemble à ses traits.
 3. **Redresser et reconnaître** : l'homographie des repères redresse le carré du dessin à la taille de
    la carte des zones (1024²). Est-ce bien cette page ? La part des pixels de trait qui sont de
    l'**encre** (gris foncé presque sans couleur ; un ciel colorié en rouge, sombre lui aussi, n'en est
@@ -526,7 +528,8 @@ sortira de l'imprimante.
    coloré ou sombre (crayon noir, marron) ; près d'un trait, seule une vraie couleur compte ; le reste
    est transparent — **le grain blanc du crayon se voit**, comme sur la feuille. Les traits, l'app les
    redessine par-dessus, nets. Posé sur la page, annulable d'un geste ; puis **le dessin prend vie**
-   (§ 6.4), même hors du mode interactif : c'est la promesse écrite sur la feuille.
+   (§ 6.4), même hors du mode interactif : c'est la promesse écrite sur la feuille. Les consignes de
+   la page s'arrêtent alors (les couleurs des crayons ne sont pas celles de la palette).
 
 Jamais « raté » : une photo illisible, c'est « Je n'ai pas bien vu la page. On réessaie ? », avec un
 conseil pour les grands. La photo reste en mémoire le temps de la lire (§ 7.1). Référence

@@ -1,6 +1,6 @@
 """Tests du mode papier sur des photos simulées : la mise en page, l'homographie, les repères (même en
-perspective, sous une lumière chaude, avec un coin du dessin colorié en noir), l'accord avec la page,
-et les coups de crayon retrouvés.
+perspective, sous une lumière chaude, avec un coin du dessin colorié en noir, feuille de côté ou à
+l'envers), l'accord avec la page, et les coups de crayon retrouvés.
 
     cd eveil/outils && python3 -m unittest papier.test_papier -v
 """
@@ -96,6 +96,27 @@ class TestPhoto(unittest.TestCase):
             if total.get(z):
                 self.assertLess(len(peints.get(z, [])) / total[z], 0.08, f"zone blanche {z}")
         self.assertFalse(any(self.paint[i] for i in range(n * n) if self.cn.labels[i] == 0))
+
+
+class TestSens(unittest.TestCase):
+    """Une feuille photographiée de côté ou à l'envers (l'enfant assis en face de l'adulte) se lit
+    dans le bon sens, sans tourner la photo : les places attendues des repères sont ramenées dessus."""
+
+    def test_quarts_de_tour_coherents(self):
+        img = Image(3, 2, bytearray(range(18)))
+        for q in range(4):
+            t = img.tourner(q)
+            for y in range(t.H):
+                for x in range(t.W):
+                    sx, sy = reperes.depuis_droite(x + 0.5, y + 0.5, q, img.W, img.H)
+                    self.assertEqual(t.get(x, y), img.get(int(sx), int(sy)), f"{q} quart(s), ({x}, {y})")
+
+    def test_feuille_de_cote_ou_a_l_envers(self):
+        _, photo, _, _, _, _, cn, _, _ = scenario("locomotive")
+        for q in (0, 1, 2, 3):
+            a, sens, rep, _ = recaler.lire(photo.tourner(q), cn.labels, cn.W)
+            self.assertEqual(sens, (4 - q) % 4, f"photo tournée de {q} quart(s)")
+            self.assertGreater(a, 0.8, f"photo tournée de {q} quart(s)")
 
 
 class TestPiegesDePhoto(unittest.TestCase):

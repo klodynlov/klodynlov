@@ -11,6 +11,9 @@
 // 2. La photo vient du scanner de documents d'iPadOS (feuille détectée, redressée, recadrée). On y
 //    retrouve les repères : près de leur place attendue, la tache sombre la plus proche qui a
 //    l'allure d'un carré plein (`PaperScan.markers`). Faute de repères, la photo est la page.
+//    Feuille photographiée de côté ou à l'envers (l'enfant assis en face de l'adulte) : on essaie
+//    les deux sens qui la mettent en portrait, sans tourner un pixel (les places attendues des
+//    repères sont ramenées sur la photo), et l'on garde celui où la page ressemble à ses traits.
 // 3. L'homographie repères → photo redresse le carré du dessin à la taille de la carte des zones.
 // 4. Est-ce bien cette page ? La part des pixels de trait qui sont de l'encre (gris foncé presque
 //    sans couleur) : ~0,9 pour la bonne page, ~0,2 pour une autre (sinon on cherche parmi toutes).
@@ -301,22 +304,30 @@ enum PaperScan {
     /// plus de 80 % (une lettre, un œil rond, un trait ne le sont pas), de 0,4 à 2,5 fois le côté
     /// attendu. Un coin de dessin colorié tout noir pourrait passer ces tests : c'est pourquoi la
     /// plus PROCHE gagne (les repères sont hors du dessin).
-    static func markers(in photo: RGBAImage) -> [CGPoint]? {
-        let f = max(1, Int((Double(photo.height) / Double(searchHeight)).rounded(.toNearestOrEven)))
+    ///
+    /// `turns` : de combien de quarts de tour (sens des aiguilles d'une montre) il faudrait tourner
+    /// la photo pour que la page soit droite ; les centres rendus sont ceux des repères DE LA PAGE
+    /// (haut-gauche de la page d'abord), en pixels de la photo telle qu'elle est.
+    static func markers(in photo: RGBAImage, turns: Int = 0) -> [CGPoint]? {
+        let upright = turns % 2 == 0 ? photo.height : photo.width
+        let f = max(1, Int((Double(upright) / Double(searchHeight)).rounded(.toNearestOrEven)))
         let small = photo.reduced(f)
         let W = small.width, H = small.height
         guard W > 8, H > 8 else { return nil }
         let luma = small.pixels.map(RGBAImage.luma)
         let threshold = 0.45 * percentile(luma, 0.90)
         let darkMask = luma.map { $0 < threshold }
-        let kx = Double(W) / Double(PaperLayout.page.width), ky = Double(H) / Double(PaperLayout.page.height)
+        // La page droite, en pixels réduits.
+        let uw = turns % 2 == 0 ? W : H, uh = turns % 2 == 0 ? H : W
+        let kx = Double(uw) / Double(PaperLayout.page.width), ky = Double(uh) / Double(PaperLayout.page.height)
         let side = Double(PaperLayout.marker) * (kx + ky) / 2
-        let radius = 0.10 * Double(W)
+        let radius = 0.10 * Double(uw)
         var seen = [Bool](repeating: false, count: W * H)
         var queue: [Int] = []
         var out: [CGPoint] = []
         for c in PaperLayout.markers {
-            let ex = Double(c.x) * kx, ey = Double(c.y) * ky
+            let e = fromUpright(CGPoint(x: Double(c.x) * kx, y: Double(c.y) * ky), turns: turns, width: W, height: H)
+            let ex = Double(e.x), ey = Double(e.y)
             let x0 = max(0, Int(ex - radius)), x1 = min(W, Int(ex + radius) + 1)
             let y0 = max(0, Int(ey - radius)), y1 = min(H, Int(ey + radius) + 1)
             var best: (d: Double, x: Double, y: Double)?
@@ -360,9 +371,28 @@ enum PaperScan {
     }
 
     /// Faute de repères (coin coupé, photo floue) : la photo est prise pour la page entière.
-    static func pageMarkers(width: Int, height: Int) -> [CGPoint] {
-        let kx = CGFloat(width) / PaperLayout.page.width, ky = CGFloat(height) / PaperLayout.page.height
-        return PaperLayout.markers.map { CGPoint(x: $0.x * kx, y: $0.y * ky) }
+    static func pageMarkers(width: Int, height: Int, turns: Int = 0) -> [CGPoint] {
+        let uw = turns % 2 == 0 ? width : height, uh = turns % 2 == 0 ? height : width
+        let kx = CGFloat(uw) / PaperLayout.page.width, ky = CGFloat(uh) / PaperLayout.page.height
+        return PaperLayout.markers.map {
+            fromUpright(CGPoint(x: $0.x * kx, y: $0.y * ky), turns: turns, width: width, height: height)
+        }
+    }
+
+    /// Les quarts de tour à essayer : ceux qui mettent la feuille en portrait — photo prise de côté,
+    /// ou à l'envers (l'enfant assis en face de l'adulte).
+    static func turns(for photo: RGBAImage) -> [Int] { photo.width > photo.height ? [1, 3] : [0, 2] }
+
+    /// Un point de la page DROITE (la photo tournée de `turns` quarts de tour) ramené sur la photo
+    /// telle qu'elle est (`width` × `height` pixels).
+    static func fromUpright(_ p: CGPoint, turns: Int, width: Int, height: Int) -> CGPoint {
+        let w = CGFloat(width), h = CGFloat(height)
+        switch (turns % 4 + 4) % 4 {
+        case 1: return CGPoint(x: p.y, y: h - p.x)
+        case 2: return CGPoint(x: w - p.x, y: h - p.y)
+        case 3: return CGPoint(x: w - p.y, y: p.x)
+        default: return p
+        }
     }
 
     /// Le carré du dessin (size × size, RGBA opaque) lu sur la photo.
@@ -518,26 +548,49 @@ enum PaperScan {
     }
 
     /// Lit une photo pour la page `index` de `pages` (sa carte `map`) ; si ce n'est pas elle, cherche
-    /// la page photographiée parmi toutes (cartes réduites à `searchSide` px, puis la vraie carte).
+    /// la page photographiée parmi toutes. Chaque sens possible de la feuille est essayé en petit
+    /// (cartes à `searchSide` px) ; le meilleur est lu en grand, sur la vraie carte.
     static func read(_ photo: CGImage, pages: [ColoringPage], index: Int, map: ZoneMap) -> Outcome {
-        guard let image = RGBAImage(photo) else { return .unreadable }
-        let marks = markers(in: image) ?? pageMarkers(width: image.width, height: image.height)
-        guard let square = rectify(image, markers: marks, size: map.width) else { return .unreadable }
-        let here = match(square, labels: map.labels, size: map.width)
-        if here >= minimumMatch { return .painted(paint(square, map: map), match: here) }
-        // Une autre page ? On compare en petit, puis on lit la meilleure en grand.
-        guard let squareSmall = rectify(image, markers: marks, size: searchSide) else { return .unreadable }
-        var best: (k: Int, score: Double)?
-        for (k, page) in pages.enumerated() where k != index {
-            let m = ZoneMap(lineArt: page.lineArt, size: searchSide)
-            let s = match(squareSmall, labels: m.labels, size: searchSide)
-            if s >= minimumMatch, s > (best?.score ?? 0) { best = (k, s) }
+        guard let image = RGBAImage(photo), pages.indices.contains(index) else { return .unreadable }
+        // La feuille dans chaque sens : ses repères (sinon la photo entière pour page), et le dessin
+        // redressé en petit pour comparer vite.
+        var built: [(marks: [CGPoint], small: [UInt32])] = []
+        for k in turns(for: image) {
+            let marks = markers(in: image, turns: k) ?? pageMarkers(width: image.width, height: image.height, turns: k)
+            if let small = rectify(image, markers: marks, size: searchSide) { built.append((marks: marks, small: small)) }
         }
-        guard let best else { return .unreadable }
-        let full = ZoneMap(lineArt: pages[best.k].lineArt, size: map.width)
-        let score = match(square, labels: full.labels, size: full.width)
-        guard score >= minimumMatch else { return .unreadable }
-        return .otherPage(best.k, paint(square, map: full), map: full, match: score)
+        let views = built
+        /// Le sens où la photo ressemble le plus à ces traits (en petit), s'il y en a un.
+        func bestView(_ labels: [UInt16]) -> (view: Int, score: Double)? {
+            var best: (view: Int, score: Double)?
+            for (v, view) in views.enumerated() {
+                let s = match(view.small, labels: labels, size: searchSide)
+                if s >= minimumMatch, s > (best?.score ?? 0) { best = (v, s) }
+            }
+            return best
+        }
+        /// Le dessin redressé en grand dans ce sens, s'il ressemble bien à cette carte.
+        func readFull(_ view: Int, on full: ZoneMap) -> (pixels: [UInt32], score: Double)? {
+            guard let pixels = rectify(image, markers: views[view].marks, size: full.width) else { return nil }
+            let s = match(pixels, labels: full.labels, size: full.width)
+            return s >= minimumMatch ? (pixels, s) : nil
+        }
+        // Cette page ?
+        if let b = bestView(ZoneMap(lineArt: pages[index].lineArt, size: searchSide).labels),
+           let here = readFull(b.view, on: map) {
+            return .painted(paint(here.pixels, map: map), match: here.score)
+        }
+        // Une autre page de l'atelier ?
+        var found: (k: Int, view: Int, score: Double)?
+        for (k, page) in pages.enumerated() where k != index {
+            if let b = bestView(ZoneMap(lineArt: page.lineArt, size: searchSide).labels), b.score > (found?.score ?? 0) {
+                found = (k, b.view, b.score)
+            }
+        }
+        guard let found else { return .unreadable }
+        let full = ZoneMap(lineArt: pages[found.k].lineArt, size: map.width)
+        guard let there = readFull(found.view, on: full) else { return .unreadable }
+        return .otherPage(found.k, paint(there.pixels, map: full), map: full, match: there.score)
     }
 }
 #endif

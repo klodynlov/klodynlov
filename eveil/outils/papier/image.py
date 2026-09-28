@@ -42,6 +42,26 @@ class Image:
                 out[2] += w * self.px[i + 2]
         return (round(out[0]), round(out[1]), round(out[2]))
 
+    def tourner(self, k: int) -> "Image":
+        """L'image tournée de k quarts de tour dans le sens des aiguilles d'une montre."""
+        k %= 4
+        if k == 0:
+            return self
+        W, H = (self.H, self.W) if k % 2 else (self.W, self.H)
+        out = Image(W, H)
+        for y in range(H):
+            for x in range(W):
+                if k == 1:
+                    sx, sy = y, self.H - 1 - x
+                elif k == 2:
+                    sx, sy = self.W - 1 - x, self.H - 1 - y
+                else:
+                    sx, sy = self.W - 1 - y, x
+                i = (sy * self.W + sx) * 3
+                o = (y * W + x) * 3
+                out.px[o:o + 3] = self.px[i:i + 3]
+        return out
+
     def reduire(self, f: int) -> "Image":
         """Moyenne de blocs f × f."""
         if f <= 1:

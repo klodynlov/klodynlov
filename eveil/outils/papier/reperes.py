@@ -10,6 +10,11 @@ sombre la plus proche qui a l'allure d'un carré plein :
 - de la bonne taille : entre 0,4 et 2,5 fois le côté attendu.
 Un coin de dessin colorié tout noir par l'enfant pourrait passer ces tests : c'est pourquoi on
 prend la candidate la plus PROCHE de la place attendue (les repères sont hors du dessin).
+
+La feuille peut être photographiée de côté ou à l'envers (l'enfant assis en face de l'adulte) :
+`quarts` dit de combien de quarts de tour (sens des aiguilles d'une montre) il faudrait tourner la
+photo pour que la page soit droite ; les places attendues sont alors ramenées sur la photo telle
+qu'elle est (`depuis_droite`), sans tourner un seul pixel.
 """
 from __future__ import annotations
 
@@ -34,23 +39,47 @@ def _centile(valeurs: list[float], q: float) -> float:
     return 255.0
 
 
-def trouver(img: Image) -> list[tuple[float, float]] | None:
-    """Centres des repères (haut-gauche, haut-droit, bas-droit, bas-gauche) en pixels de `img`,
-    ou None s'il en manque un."""
-    f = max(1, round(img.H / CIBLE))
-    petit = img.reduire(f)
-    W, H = petit.W, petit.H
-    L = petit.luma()
-    papier = _centile(L, 0.90)
-    seuil = 0.45 * papier
-    sombre = bytearray(1 if v < seuil else 0 for v in L)
-    kx, ky = W / mp.PAGE_L, H / mp.PAGE_H
+def depuis_droite(x: float, y: float, quarts: int, W: int, H: int) -> tuple[float, float]:
+    """Un point de la page DROITE (la photo tournée de `quarts` quarts de tour) ramené sur la photo
+    telle qu'elle est (W × H)."""
+    q = quarts % 4
+    if q == 1:
+        return (y, H - x)
+    if q == 2:
+        return (W - x, H - y)
+    if q == 3:
+        return (W - y, x)
+    return (x, y)
+
+
+class Taches:
+    """La photo réduite (~900 px de haut, page droite) et ses pixels sombres : moins de 45 % de la
+    clarté du papier (le 90e centile de la photo)."""
+
+    def __init__(self, img: Image, quarts: int = 0):
+        haut = img.W if quarts % 2 else img.H
+        self.f = max(1, round(haut / CIBLE))
+        petit = img.reduire(self.f)
+        self.W, self.H = petit.W, petit.H
+        L = petit.luma()
+        seuil = 0.45 * _centile(L, 0.90)
+        self.sombre = bytearray(1 if v < seuil else 0 for v in L)
+
+
+def trouver(img: Image, quarts: int = 0, taches: Taches | None = None) -> list[tuple[float, float]] | None:
+    """Centres des repères (haut-gauche, haut-droit, bas-droit, bas-gauche DE LA PAGE) en pixels de
+    `img`, ou None s'il en manque un. `taches` : celles de la photo, si on les a déjà (même `quarts`
+    à un demi-tour près)."""
+    t = taches or Taches(img, quarts)
+    f, W, H, sombre = t.f, t.W, t.H, t.sombre
+    uw, uh = (H, W) if quarts % 2 else (W, H)          # la page droite, en pixels réduits
+    kx, ky = uw / mp.PAGE_L, uh / mp.PAGE_H
     cote = mp.REPERE * (kx + ky) / 2
-    rayon = 0.10 * W
+    rayon = 0.10 * uw
     out = []
     vu = bytearray(W * H)
     for cx, cy in mp.reperes_page():
-        ex, ey = cx * kx, cy * ky
+        ex, ey = depuis_droite(cx * kx, cy * ky, quarts, W, H)
         x0, x1 = max(0, int(ex - rayon)), min(W, int(ex + rayon) + 1)
         y0, y1 = max(0, int(ey - rayon)), min(H, int(ey + rayon) + 1)
         meilleur = None
@@ -93,7 +122,8 @@ def trouver(img: Image) -> list[tuple[float, float]] | None:
     return out
 
 
-def sans_reperes(img: Image) -> list[tuple[float, float]]:
+def sans_reperes(img: Image, quarts: int = 0) -> list[tuple[float, float]]:
     """Faute de repères (coin coupé, photo floue) : la photo est prise pour la page entière."""
-    kx, ky = img.W / mp.PAGE_L, img.H / mp.PAGE_H
-    return [(x * kx, y * ky) for x, y in mp.reperes_page()]
+    uw, uh = (img.H, img.W) if quarts % 2 else (img.W, img.H)
+    kx, ky = uw / mp.PAGE_L, uh / mp.PAGE_H
+    return [depuis_droite(x * kx, y * ky, quarts, img.W, img.H) for x, y in mp.reperes_page()]

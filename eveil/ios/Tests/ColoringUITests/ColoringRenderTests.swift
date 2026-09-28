@@ -86,7 +86,8 @@ final class ColoringRenderTests: XCTestCase {
         // La palette tient avec de bonnes marges ; la page est grande ; les boutons restent gros.
         for size in Self.iPadSizes {
             let l = WorkshopLayout(size: size)
-            let toolColumn = 7.26 * l.tool + 6
+            // La colonne d'outils au complet : 7 boutons, 8 écarts de 0,18, 2 séparateurs de 3 pt.
+            let toolColumn = 8.44 * l.tool + 6
             if l.portrait {
                 XCTAssertLessThanOrEqual(l.swatch * WorkshopLayout.rowPaletteSwatches, size.width - 70, "palette trop large : \(size)")
                 XCTAssertLessThanOrEqual(2 * l.margin + l.tool + l.gap + l.side, size.width + 0.5, "\(size)")

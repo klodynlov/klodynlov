@@ -365,7 +365,8 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     `ColoringPartsTests`, `ColoringInstructionsTests` (chaque consigne de chaque page se réussit d'un
     remplissage de sa couleur, jamais d'une autre). À compiler sur le Mac.
   - ✅ **Mode papier** (choix de l'utilisateur, 28/09, « la suite ») : bouton « Colorier sur papier »
-    (en-tête de l'atelier, `doc.viewfinder`) → carte en 3 étapes (`PaperSheet` : imprimer, colorier,
+    (`doc.viewfinder`, en bas de la **colonne d'outils** — pas l'en-tête : en portrait il écrasait la
+    consigne ; colonne = 7 boutons au plus, `WorkshopLayout.toolColumnHeight` 8,6) → carte en 3 étapes (`PaperSheet` : imprimer, colorier,
     photographier ; aperçu de la page imprimée ; `ReadingDots` pilotés par l'horloge). **Imprimer** :
     PDF A4 fait en mémoire (`PaperPrint`, `PaperLayout` = mêmes nombres que `papier/mise_en_page.py` :
     carré 480 pt en (57,64 ; 150), 4 repères pleins de 26 pt centrés à 26 pt des coins, hors du dessin,
@@ -374,20 +375,25 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     l'endroit ≤ 2000 px → `PaperPhoto` `@unchecked Sendable`). **Lire** (`PaperScan.read`, hors du fil
     principal) : repères cherchés sur la photo réduite à ~900 px (papier = 90e centile, sombre < 0,45 ×,
     boîte 0,4–2,5 × le côté, rapport 0,6–1,67, remplie ≥ 80 %, la plus PROCHE de sa place dans 10 % de
-    la largeur ; sinon la photo = la page) → homographie (DLT 8×8) → carré redressé à la taille de la
+    la largeur ; sinon la photo = la page ; **feuille de côté ou à l'envers** : 2 sens essayés, ceux qui
+    la mettent en portrait, places attendues ramenées sur la photo par `fromUpright`, sans tourner de
+    pixel ; le sens gagnant = meilleur accord en 256 px) → homographie (DLT 8×8) → carré redressé à la taille de la
     carte → **accord** = part des pixels de trait qui sont de l'encre (clarté < 0,4 × papier ET chroma
     < 60 ; seuil 0,5) ; sinon recherche parmi les 70 pages en 256 px → `.otherPage` (l'atelier OUVRE
     cette page, avec sa carte) ; **coups de crayon** : balance des blancs (95e centile, gains 0,8–3),
     colorié si chroma ≥ 45 ou clarté ≤ 150, près d'un trait (0,6 %) chroma ≥ 70 seulement, le reste
     transparent (grain du crayon). `PaintLayer.load` (annulable, `.all`) → **le dessin prend vie** même
-    hors mode interactif (`paperArrived`, `paperPending` : la fête attend le `onChange` de la page).
-    Illisible : « Je n'ai pas bien vu la page. On réessaie ? » + conseil pour les grands.
+    hors mode interactif (`paperArrived`, `paperPending` : la fête attend le `onChange` de la page) ;
+    les **consignes de la page s'arrêtent** (couleurs de crayon ≠ palette : « en jaune » reviendrait
+    pour un soleil déjà jaune) ; carte des zones pas encore prête → calculée dans la lecture. Illisible : « Je n'ai pas bien vu la page. On réessaie ? » + conseil pour les grands.
     `NSCameraUsageDescription` (pbxproj Debug/Release + `Info-additions.plist`). Python `outils/papier/`
-    (9 tests, **dans les conditions de l'app** : photo 1,6 px/pt, carte 1024 → repères à 0,3 px, bonne
+    (11 tests, dont les 4 sens de la feuille, **dans les conditions de l'app** : photo 1,6 px/pt, carte 1024 → repères à 0,3 px, bonne
     page 1,0, autre 0,21, couleurs à ~20/255) ; planche `docs/ui/eveil-app/10-mode-papier.png` ;
     Swift `PaperModeTests` (le vrai PDF rendu, colorié, photographié de travers ; rendus `papier-*.png`).
     ⚠️ Performances Debug : boucles par pixel sur pointeurs bruts (comme `ZoneMap`), pas de tableau
-    littéral par pixel. À compiler sur le Mac, **puis à essayer avec une vraie imprimante**.
+    littéral par pixel. Relecture indépendante (sous-agent, API vérifiées dans la doc Apple et règles
+    du langage dans les sources du compilateur) : **aucune erreur de compilation certaine**. À compiler
+    sur le Mac, **puis à essayer avec une vraie imprimante**.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur, photo enregistrée ou convertie en
   fichier interdits) → 0 violation, 8 tests ;

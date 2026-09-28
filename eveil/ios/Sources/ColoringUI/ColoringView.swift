@@ -250,8 +250,6 @@ public struct ColoringView: View {
             Spacer(minLength: 0)
             toolButton("wand.and.stars", selected: interactive, size: WorkshopLayout.headerButton,
                        label: fr ? "Mode interactif" : "Interactive mode", action: toggleInteractive)
-            toolButton("doc.viewfinder", selected: false, size: WorkshopLayout.headerButton,
-                       label: fr ? "Colorier sur papier" : "Color on paper", action: openPaper)
             toolButton("square.grid.2x2.fill", selected: false, size: WorkshopLayout.headerButton,
                        label: fr ? "Choisir un dessin" : "Pick a picture", action: openPicker)
             toolButton("arrow.right", selected: false, size: WorkshopLayout.headerButton,
@@ -286,12 +284,16 @@ public struct ColoringView: View {
             toolButton("sparkles", selected: false, size: layout.tool, label: fr ? "Tout effacer" : "Clear all") {
                 studio.clear()
             }
+            divider(layout)
             if interactive {
-                divider(layout)
                 // « J'ai fini ! » : le dessin prend vie (mode interactif).
                 toolButton("checkmark", selected: masterpieceAt != nil, size: layout.tool,
                            label: fr ? "J'ai fini !" : "I'm done!") { finishMasterpiece() }
             }
+            // Le mode papier : imprimer la page, puis la photographier coloriée aux crayons. Dans la
+            // colonne plutôt que dans l'en-tête, qui garde sa place à la consigne (iPad en portrait).
+            toolButton("doc.viewfinder", selected: showPaper, size: layout.tool,
+                       label: fr ? "Colorier sur papier" : "Color on paper", action: openPaper)
         }
     }
 
@@ -652,11 +654,15 @@ public struct ColoringView: View {
         return true
     }
 
-    /// Le coloriage sur papier est sur la page : il prend vie (même hors du mode interactif) ; en mode
-    /// interactif, les consignes qui restent reprennent après la fête.
+    /// Le coloriage sur papier est sur la page : il prend vie (même hors du mode interactif). Les
+    /// consignes de la page s'arrêtent : le dessin est fini, et les couleurs des crayons ne sont pas
+    /// celles de la palette (« Colorie le soleil en jaune » reviendrait pour un soleil déjà jaune).
     private func paperArrived() {
+        instructionTask?.cancel()
+        instructions = []
+        markAt = nil
+        swatchHint = nil
         finishMasterpiece(saying: fr ? "Bravo ! Ton dessin prend vie !" : "Well done! Your picture comes alive!")
-        if interactive { startInstructions(after: LivingMotion.duration + 1.5) }
     }
 
     private func openPicker() {
@@ -759,6 +765,9 @@ struct WorkshopLayout {
     static let gridPaletteColumns = 4
     static let gridPaletteWidth: CGFloat = 5.26
     static let gridPaletteHeight: CGFloat = 7.7
+    /// La colonne d'outils, en boutons : 7 au plus (remplir, pinceau, gomme, annuler, tout effacer,
+    /// j'ai fini, colorier sur papier), 8 écarts de 0,18 et 2 séparateurs, avec un peu de marge.
+    static let toolColumnHeight: CGFloat = 8.6
 
     let portrait: Bool
     let margin: CGFloat = 20
@@ -775,12 +784,12 @@ struct WorkshopLayout {
             // La palette garde 40 pt de marge de chaque côté (iPad 11" portrait : 834 pt).
             swatch = min(64, max(40, (size.width - 80) / Self.rowPaletteSwatches))
             middle = size.height - 2 * margin - Self.headerHeight - swatch * Self.rowPaletteHeight - 3 * gap
-            tool = min(76, max(52, middle / 7.8))
+            tool = min(76, max(52, middle / Self.toolColumnHeight))
             side = max(200, min(size.width - 2 * margin - tool - gap, middle))
         } else {
             middle = size.height - 2 * margin - Self.headerHeight - 2 * gap
             swatch = min(64, max(40, middle / Self.gridPaletteHeight))
-            tool = min(76, max(52, middle / 7.8))
+            tool = min(76, max(52, middle / Self.toolColumnHeight))
             side = max(200, min(middle, size.width - 2 * margin - tool - swatch * Self.gridPaletteWidth - 2 * gap))
         }
     }
