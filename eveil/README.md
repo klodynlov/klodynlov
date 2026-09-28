@@ -202,7 +202,17 @@ xcrun devicectl device install app --device <UDID> <DerivedData>/Build/Products/
 xcrun devicectl device process launch --device <UDID> fr.klodynlov.eveil.petittrain
 ```
 
+Icône de l'app (`App/Assets.xcassets/AppIcon.appiconset/AppIcon.png`, 1024 × 1024 sans alpha) :
+dessinée en SwiftUI (`TrainPracticeUI/AppIconArt.swift` : le chat chef de gare salue la locomotive
+de l'accueil), régénérée par un test, puis copiée à la main :
+
+```bash
+cd eveil/ios && EVEIL_APPICON_OUT=/tmp/icone swift test --filter AppIconTests   # AppIcon.png + variantes
+cp /tmp/icone/AppIcon.png App/Assets.xcassets/AppIcon.appiconset/AppIcon.png
+```
+
 Provisoire, à trancher : nom affiché « Petit Train » et identifiant `fr.klodynlov.eveil.petittrain`,
+icône (variante `catAndLoco` ; autres : `cat`, `catOverTrain`),
 cible iPadOS 17 (celle du paquet), toutes orientations, mascotte (chat chef de gare), dessins
 vectoriels (en attendant un illustrateur), bruitages synthétisés (en attendant de vrais sons), voix
 du mot = synthèse système (en attendant les enregistrements). Reste : l'Accès guidé à vérifier sur
