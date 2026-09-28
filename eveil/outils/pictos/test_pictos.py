@@ -138,7 +138,7 @@ class TestCatalogue(unittest.TestCase):
     def test_identifiants(self):
         for p in tous():
             genre = p.id.split(".")[0]
-            self.assertIn(genre, ("verbe", "lieu", "perso"), p.id)
+            self.assertIn(genre, ("verbe", "lieu", "perso", "mot"), p.id)
             if genre == "lieu":
                 self.assertTrue(p.ancres, p.id)
 

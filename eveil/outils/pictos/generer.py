@@ -9,7 +9,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from . import lieux, verbes
+from . import lieux, mots_a, mots_b, verbes
 from .peinture import Picto, problemes
 
 RACINE = Path(__file__).resolve().parents[2]
@@ -19,7 +19,7 @@ PREPOSITIONS_SWIFT = {"dans": "dans", "sur": "sur", "sous": "sous", "devant": "d
 
 
 def tous() -> list[Picto]:
-    return list(verbes.PICTOS) + list(lieux.PICTOS)
+    return list(verbes.PICTOS) + list(lieux.PICTOS) + list(mots_a.PICTOS) + list(mots_b.PICTOS)
 
 
 def verifier(pictos: list[Picto]) -> list[str]:
@@ -29,8 +29,8 @@ def verifier(pictos: list[Picto]) -> list[str]:
     for p in pictos:
         if p.id.startswith("lieu.") and not p.ancres:
             out.append(f"{p.id}: un lieu sans ancre")
-        if p.id.startswith("verbe.") and p.ancres:
-            out.append(f"{p.id}: un verbe n'a pas d'ancre")
+        if p.id.startswith(("verbe.", "mot.")) and p.ancres:
+            out.append(f"{p.id}: seul un lieu a des ancres")
     return out
 
 
