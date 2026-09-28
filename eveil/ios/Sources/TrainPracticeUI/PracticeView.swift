@@ -168,6 +168,7 @@ public struct PracticeView: View {
             voice.stop()
             listener.reset()
             SoundBoard.shared.stopAll()
+            SoundBoard.shared.isSuspended = false         // les autres jeux retrouvent leurs sons
         }
     }
 

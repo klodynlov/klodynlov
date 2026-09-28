@@ -44,7 +44,8 @@ let package = Package(
             dependencies: [.product(name: "WordEndCore", package: "WordEndCore"), "WordEndAudio", "EveilDesign",
                            "EveilSounds"]
         ),
-        .target(name: "ColoringUI", dependencies: ["EveilDesign"]),
+        // Mode interactif (28/09/2026) : la voix nomme les couleurs, chaque couleur a sa note.
+        .target(name: "ColoringUI", dependencies: ["EveilDesign", "EveilSounds", "WordEndAudio"]),
         // Le mode démo montre ce qu'il annonce, pour chaque mot (macOS : `swift test` ici).
         .testTarget(
             name: "EveilTrainTests",

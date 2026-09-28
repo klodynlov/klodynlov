@@ -11,5 +11,11 @@ public enum SuiteSettings {
     /// (25/09/2026) : réglable par l'adulte, et DÉSACTIVÉ par défaut — pinceau seul.
     public static let tapToFillKey = "eveil.coloring.tapToFill"
     public static let tapToFillDefault = false
+    /// Atelier de coloriage : « Mode interactif » (demande de l'utilisateur, 28/09/2026 : « un mode
+    /// interactif, que l'on peut activer au choix ») — la voix nomme la couleur choisie, chaque
+    /// couleur chante sa note, et « J'ai fini ! » fait prendre vie au dessin. Désactivé par défaut ;
+    /// l'enfant (ou l'adulte) l'allume d'un bouton de l'atelier.
+    public static let coloringInteractiveKey = "eveil.coloring.interactive"
+    public static let coloringInteractiveDefault = false
 }
 #endif

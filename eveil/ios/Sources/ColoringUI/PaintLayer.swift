@@ -65,6 +65,9 @@ public struct PaintSnapshot: Sendable {
 }
 
 final class PaintLayer {
+    /// La « couleur » de la gomme : pixel transparent, le papier blanc réapparaît.
+    static let transparent: UInt32 = 0
+
     let width: Int
     let height: Int
     let maxHistoryBytes: Int

@@ -266,8 +266,15 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     `Stars.earned` (3/2/2/1/0, jamais de perte ; `StarsView` : volée du train au compteur, trésor sur
     l'accueil, masquable/vidable). Réf. Python `policy.py`/`lexicon.py` → **82 tests** ; miroirs Swift
     dans `WordEndCore` + `VoiceCatalogTests`.
-  - ⏭️ Ensuite, dans l'ordre : coloriage (palette, gomme, mode interactif) → train des phrases (pictos +
-    scènes animées, 3 niveaux, mode écrit) → livres des sons → jeux d'écoute.
+  - ✅ Coloriage : palette **24 couleurs** (4 peaux ; 3×8 portrait, 6×4 paysage ; `WorkshopLayout`
+    recalculé, tests de mise en page à jour), **gomme** (`PaintLayer.transparent`, pochoir, rayon 0,04),
+    dessins/page suivante dans l'en-tête, **mode interactif** (`SuiteSettings.coloringInteractiveKey`,
+    off par défaut : voix qui nomme la couleur, note pentatonique par couleur, « J'ai fini ! » → dessin
+    qui danse + `ConfettiLayer` + fanfare). ColoringUI dépend désormais d'EveilSounds et WordEndAudio.
+    Reste possible : consignes « Colorie le soleil en jaune » (demande des noms de zones dans
+    `outils/coloriages/`, non fait).
+  - ⏭️ Ensuite : train des phrases (pictos + scènes animées, 3 niveaux, mode écrit) → livres des sons
+    → jeux d'écoute.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur interdits) → 0 violation, 7 tests ;
   ignore les produits de compilation (`.build/`, `.swiftpm/`, `DerivedData/`).

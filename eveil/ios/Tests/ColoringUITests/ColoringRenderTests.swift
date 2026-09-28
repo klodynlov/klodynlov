@@ -90,8 +90,8 @@ final class ColoringRenderTests: XCTestCase {
             if l.portrait {
                 XCTAssertLessThanOrEqual(l.swatch * WorkshopLayout.rowPaletteSwatches, size.width - 70, "palette trop large : \(size)")
                 XCTAssertLessThanOrEqual(2 * l.margin + l.tool + l.gap + l.side, size.width + 0.5, "\(size)")
-                XCTAssertLessThanOrEqual(2 * l.margin + WorkshopLayout.headerHeight + max(l.side, toolColumn) + l.swatch * 1.4
-                                         + 3 * l.gap, size.height + 0.5, "\(size)")
+                XCTAssertLessThanOrEqual(2 * l.margin + WorkshopLayout.headerHeight + max(l.side, toolColumn)
+                                         + l.swatch * WorkshopLayout.rowPaletteHeight + 3 * l.gap, size.height + 0.5, "\(size)")
             } else {
                 XCTAssertLessThanOrEqual(2 * l.margin + l.tool + l.side + l.swatch * WorkshopLayout.gridPaletteWidth + 2 * l.gap,
                                          size.width + 0.5, "\(size)")
@@ -99,6 +99,9 @@ final class ColoringRenderTests: XCTestCase {
                                          + max(l.side, toolColumn, l.swatch * WorkshopLayout.gridPaletteHeight),
                                          size.height + 0.5, "\(size)")
             }
+            // L'en-tête : maison, chat, titre (180 pt au moins), mode interactif, dessins, page suivante.
+            let header = 64 + 80 + 180 + 3 * WorkshopLayout.headerButton + 5 * 18 + 16
+            XCTAssertLessThanOrEqual(header, size.width - 2 * l.margin, "en-tête trop large : \(size)")
             XCTAssertGreaterThanOrEqual(l.swatch, 52, "pastilles trop petites pour \(size)")
             XCTAssertGreaterThanOrEqual(l.tool, 60, "\(size)")
             XCTAssertGreaterThanOrEqual(l.side, 560, "page trop petite pour \(size)")

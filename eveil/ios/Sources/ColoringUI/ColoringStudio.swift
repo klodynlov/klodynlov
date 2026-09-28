@@ -19,6 +19,8 @@ import Observation
 final class ColoringStudio {
     /// Rayon du pinceau, en unité de page (≈ un doigt d'enfant).
     nonisolated static let brushRadius: CGFloat = 0.027
+    /// Rayon de la gomme : plus large que le pinceau (on efface vite, sans déborder).
+    nonisolated static let eraserRadius: CGFloat = 0.04
     /// Taille des vignettes du choix des pages (pixels).
     nonisolated static let thumbnailSide = 256
 
@@ -92,6 +94,17 @@ final class ColoringStudio {
         guard zone != 0 else { return }
         layer.beginStroke(at: pixel(unit, map), zone: zone, color: color.packed,
                           radius: Self.brushRadius * CGFloat(map.width), in: map)
+        refresh()
+    }
+
+    /// Pose la gomme (demande de l'utilisateur, 28/09/2026) : un trait « transparent » qui
+    /// rend le papier blanc — et qui reste, lui aussi, dans la zone touchée.
+    func beginErase(at unit: CGPoint) {
+        guard let map, let layer else { return }
+        let zone = map.zone(near: unit)
+        guard zone != 0 else { return }
+        layer.beginStroke(at: pixel(unit, map), zone: zone, color: PaintLayer.transparent,
+                          radius: Self.eraserRadius * CGFloat(map.width), in: map)
         refresh()
     }
 

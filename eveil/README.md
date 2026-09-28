@@ -145,6 +145,13 @@ pour le nombre de fois que l'enfant doit répéter » :
   trésor. Ce n'est **pas** un score de langage (pas de pourcentage, de courbe, de détail par son, ni
   d'export — [docs/EVEIL.md § 7.3](../docs/EVEIL.md#73-la-frontière-du-dispositif-médical)).
   Référence : `policy.stars_for` ; 82 tests Python (69 → 82).
+- **L'atelier de coloriage** (« plus de couleurs, la gomme, un mode interactif au choix ») :
+  **24 couleurs** (dont quatre couleurs de peau), toutes visibles d'un coup — 3 rangées de 8 en
+  portrait, 6 rangées de 4 en paysage ; la **gomme** rend le papier blanc sans déborder de sa zone
+  (annulable) ; « choisir un dessin » et « page suivante » passent dans l'en-tête. Le **mode
+  interactif** (bouton baguette magique, éteint par défaut) : la voix nomme la couleur choisie,
+  chaque couleur chante sa note quand on peint (gamme pentatonique : jamais de fausse note), et
+  « J'ai fini ! » fait prendre vie au dessin (il danse, confettis, fanfare, « Bravo ! »).
 
 ```bash
 open eveil/ios/App/EveilTrain.xcodeproj           # schéma EveilTrain, un iPad du simulateur, ▶︎
