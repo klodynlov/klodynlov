@@ -275,8 +275,11 @@ des phrases ; un mot ajouté n'entre dans les livres qu'avec son dessin (`livres
   du son porte une étoile et ses **lettres sont colorées** (« gi » : le « g ») ; toucher un wagon
   redit sa syllabe ; décompte, étoiles, mondes et bestioles comme au petit train ; chaque livre
   reprend où on l'a laissé.
-- **L'adulte juge** (« Il l'a dit ! », § 4.7) : le détecteur ne sait juger que la fin des mots en
-  « ch » ou « s » ; un son au début ou au milieu du mot lui échappe. Pas de micro dans les livres.
+- **Le micro écoute comme au petit train, l'adulte juge le son** : les wagons s'allument à la voix
+  et le verdict porte sur les syllabes (décompte, étoiles) ; « Il l'a dit ! » (§ 4.7) reste à
+  l'adulte, car le détecteur ne sait juger que la fin des mots en « ch » ou « s » — un son au début
+  ou au milieu du mot lui échappe. (D'abord sans micro ; micro ajouté le 28/09/2026 à la demande de
+  l'utilisateur, après essai sur l'iPad : « quand on répète il ne se passe rien ».)
 - « **Pour les grands** » : l'image sonore du son (« le serpent : sss ! ») et une idée de jeu
   **sans écran**. Des propositions, à valider par des orthophonistes (§ 8), avec le rappel que le
   jeu n'évalue pas le langage de l'enfant.

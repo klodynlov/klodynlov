@@ -4,9 +4,11 @@
 // livre par son ; ici chaque livre est calculé à partir des mots dessinés qui contiennent le son
 // (`SoundBooks`, généré par eveil/outils/livres). On choisit un livre sur l'étagère, et le petit
 // train le parcourt mot après mot : la voix dit le mot syllabe par syllabe, le wagon du son porte
-// une étoile et ses lettres sont colorées ; toucher un wagon redit sa syllabe ; l'adulte touche
-// « Il l'a dit ! » (le détecteur ne juge que la fin des mots en « ch » ou « s ») ; décompte,
-// étoiles, mondes et bestioles comme dans le petit train. Chaque livre reprend où on l'a laissé.
+// une étoile et ses lettres sont colorées ; toucher un wagon redit sa syllabe ; le micro écoute
+// comme dans le petit train (les wagons s'allument à la voix, verdict sur les syllabes) et l'adulte
+// peut toujours toucher « Il l'a dit ! » (le détecteur ne juge pas le son du livre, seulement les
+// syllabes et la fin des mots en « ch » ou « s ») ; décompte, étoiles, mondes et bestioles comme
+// dans le petit train. Chaque livre reprend où on l'a laissé.
 // « Pour les grands » : l'image sonore du son et une idée de jeu hors écran (propositions à
 // valider par des orthophonistes).
 // En haut, trois niveaux : les mots (le petit train, ci-dessus), les phrases et « et où ? »
@@ -86,7 +88,7 @@ public struct SoundBooksView: View {
                 BookSentenceView(book: book, level: level, onClose: { open = nil })
             } else {
                 PracticeView(words: book.words.map(Self.targetWord), locale: book.locale, cabooseSounds: [:],
-                             parentButtonHidden: parentButtonHidden, onHome: { open = nil }, judge: .adult,
+                             parentButtonHidden: parentButtonHidden, onHome: { open = nil }, judge: Self.judge,
                              targets: Dictionary(book.words.map {
                                  ($0.drawing, WordTarget(wagon: $0.targetWagon, letters: $0.letters))
                              }, uniquingKeysWith: { first, _ in first }),
@@ -119,8 +121,12 @@ public struct SoundBooksView: View {
         }
     }
 
+    /// Qui juge dans un livre : le micro, comme dans le petit train (retour de l'utilisateur, 28/09),
+    /// et l'adulte pour le son travaillé, que le détecteur ne sait pas juger.
+    nonisolated static let judge = PracticeJudge.listenAndAdult
+
     /// Un mot de livre pour le petit train : l'identifiant est son dessin.
-    static func targetWord(_ w: SoundBookWord) -> TargetWord {
+    nonisolated static func targetWord(_ w: SoundBookWord) -> TargetWord {
         .bookWord(id: w.drawing, text: w.text, ipa: w.ipa, wagons: w.wagons)
     }
 }

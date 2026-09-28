@@ -174,7 +174,8 @@ pour le nombre de fois que l'enfant doit répéter » :
   contiennent le son, au début, au milieu, à la fin ([`outils/livres`](outils/livres/)) ; 57 mots
   dessinés pour eux ([`outils/pictos`](outils/pictos/), familles `mot.`). Le livre se parcourt dans le
   petit train : wagon du son marqué d'une étoile, **lettres colorées**, voix syllabe par syllabe ;
-  c'est **l'adulte qui juge** (« Il l'a dit ! » : le détecteur ne juge que la fin des mots) ;
+  le micro **écoute comme au petit train** (wagons allumés à la voix, verdict sur les syllabes) et
+  l'adulte garde « Il l'a dit ! » pour le son du livre (le détecteur ne juge que la fin des mots) ;
   « Pour les grands » : l'image sonore du son et une idée de jeu sans écran (propositions à valider).
 - **Les phrases des livres** (la page d'OrthoPicto) : sur l'étagère, trois niveaux — les mots, **les
   phrases** (« La vache pousse la bûche. »), **« et où ? »** (« Le chat chante dans la niche. »),
@@ -270,7 +271,7 @@ Même Mac (macOS 27.0 26A428 · Xcode 27.0 27A266a · Swift 6.4 · SDK iOS 27.0)
 python3 -m unittest discover -s eveil/outils                               # 127 tests
 (cd eveil/reference && python3 -m unittest discover -s wordend -t .)       # 83 tests
 (cd eveil/ios/WordEndCore && swift test)                                   # 30 tests
-(cd eveil/ios && swift test)                                               # 184 tests
+(cd eveil/ios && swift test)                                               # 186 tests
 (cd eveil/ios && xcodebuild -scheme EveilTrain-Package \
     -destination 'generic/platform=iOS Simulator' build)                   # BUILD SUCCEEDED
 ```
@@ -294,6 +295,11 @@ python3 -m unittest discover -s eveil/outils                               # 127
   vivant, à revoir (cosmétique) : un nuage qui dérive laisse de petits restes gris de son ancien contour
   sur le ciel (`vivant-locomotive.png`) ; les ailes du papillon, en battant, découvrent un fond rebouché
   à l'orange du corps (`vivant-papillon.png`).
+- **Retour de l'essai iPad** : « dans le livre des sons, quand on répète il ne se passe rien » — les
+  livres étaient sans micro (juge adulte seul). Désormais le micro écoute comme au petit train
+  (`PracticeJudge.listenAndAdult`), « Il l'a dit ! » reste à l'adulte ; `SoundBooksViewTests` vérifie
+  que le détecteur entend les mots des livres (mot entier → complet, syllabe en moins → non) pour
+  chaque nombre de wagons. Paquet `ios` : **186 tests**, 0 avertissement.
 - **iPad réel** (iPad Pro 11" M1) : compilé, signé (équipe en ligne de commande seulement), installé.
   Mode papier **à essayer avec une vraie imprimante** et de vrais crayons.
 

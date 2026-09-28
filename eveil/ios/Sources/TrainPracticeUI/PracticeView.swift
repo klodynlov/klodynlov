@@ -34,10 +34,13 @@
 //     arpège, puis le « chhh » du fourgon accroché.
 // Fin de séance ritualisée (`SessionPolicy`) + une « mission » hors écran.
 //
-// Livres des sons (28/09/2026) : le même train, mais c'est l'ADULTE qui juge
-// (`judge: .adult`, docs/EVEIL.md § 4.7) — le détecteur ne sait juger que la fin des mots en
-// « ch » ou « s » ; dans un livre, le son est au début, au milieu ou à la fin. Pas de micro :
-// l'adulte touche « Il l'a dit ! » ; le wagon du son est marqué et ses lettres colorées.
+// Livres des sons (28/09/2026) : le même train. D'abord sans micro (`judge: .adult`,
+// docs/EVEIL.md § 4.7 : le détecteur ne juge que la fin des mots en « ch » ou « s », et dans un
+// livre le son est au début, au milieu ou à la fin) ; puis, retour de l'utilisateur sur l'iPad
+// (« quand on répète il ne se passe rien, ça n'agit pas comme le petit train ») : le micro écoute
+// COMME dans le petit train (`judge: .listenAndAdult` — wagons allumés à la voix, verdict sur les
+// syllabes, décompte, étoiles), et l'adulte garde « Il l'a dit ! », seul juge du son travaillé.
+// Le wagon du son est marqué et ses lettres colorées.
 //
 // Mode démo (espace parent, ou argument de lancement `-eveil.demoMode 1`) : pas de
 // micro ; une barre de présentation fait « parler » le train avec une pseudo-parole
@@ -51,10 +54,17 @@ import SwiftUI
 import WordEndAudio
 import WordEndCore
 
-/// Qui dit que le mot est bien dit : le détecteur (micro), ou l'adulte (livres des sons).
+/// Qui dit que le mot est bien dit : le détecteur (micro), l'adulte, ou les deux (livres des sons :
+/// le micro juge les syllabes, l'adulte peut toujours dire « Il l'a dit ! »).
 public enum PracticeJudge: Sendable {
     case listen
     case adult
+    case listenAndAdult
+
+    /// Le micro s'ouvre après le mot modèle.
+    public var listens: Bool { self != .adult }
+    /// Le bouton « Il l'a dit ! » est là.
+    public var adultJudges: Bool { self != .listen }
 }
 
 /// Le son travaillé dans un mot (livres des sons) : son wagon et ses lettres.
@@ -151,6 +161,11 @@ public struct PracticeView: View {
     private var world: World { World(rawValue: worldRaw) ?? .countryside }
     private var fr: Bool { locale.hasPrefix("fr") }
     private var listening: Bool { listener.phase == .listening }
+    /// « Il l'a dit ! » compte : pas pendant le modèle ni le voyage, et pas deux fois le même mot
+    /// (ni pendant la fête d'une répétition, ni quand le train va partir).
+    private var adultCanJudge: Bool {
+        judge.adultJudges && !modelPlaying && !traveling && feedback?.message != .again && feedback?.advance != true
+    }
     /// Tour de parole : aucun bruitage pendant le mot modèle ni pendant l'écoute.
     private var soundsAllowed: Bool { !listening && !modelPlaying }
 
@@ -317,7 +332,7 @@ public struct PracticeView: View {
                         RepetitionMeter(plan: plan, locale: locale)
                             .opacity(traveling ? 0.4 : 1)
                     }
-                    if judge == .adult {
+                    if !judge.listens {
                         Button {
                             Task { await present(word) }
                         } label: {
@@ -330,13 +345,13 @@ public struct PracticeView: View {
                         .accessibilityLabel(fr ? "Réécouter le mot" : "Listen again")
                     }
                     Button {
-                        if judge == .adult {
+                        if !judge.listens {
                             adultHeard()
                         } else {
                             Task { await present(word) }
                         }
                     } label: {
-                        if judge == .adult {
+                        if !judge.listens {
                             Label(fr ? "Il l'a dit !" : "Said it!", systemImage: "hand.thumbsup.fill")
                         } else if listening {
                             // Le train entend : des barres qui bougent avec la voix (le niveau, jamais le son).
@@ -352,6 +367,20 @@ public struct PracticeView: View {
                     // Pendant la fête d'une répétition, le micro se rouvre tout seul (« Encore ! »).
                     .disabled(listening || modelPlaying || traveling || feedback?.message == .again)
                     .opacity(traveling ? 0.4 : 1)
+                    if judge == .listenAndAdult {
+                        // Le micro compte les syllabes ; le son du livre, c'est l'adulte qui l'entend.
+                        Button(action: adultHeard) {
+                            Label(fr ? "Il l'a dit !" : "Said it!", systemImage: "hand.thumbsup.fill")
+                                .font(.system(size: 22, weight: .bold, design: .rounded))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 20)
+                                .frame(height: 56)
+                                .background(Capsule().fill(EveilPalette.ink.opacity(0.55)))
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(!adultCanJudge)
+                        .opacity(traveling ? 0.4 : adultCanJudge ? 1 : 0.5)
+                    }
                 }
                 .padding(.top, 22)
                 Spacer(minLength: demoMode ? 110 : 36)
@@ -468,16 +497,18 @@ public struct PracticeView: View {
             modelPlaying = false
             return
         }
-        if judge == .listen && !demoMode && !traveling && step == .continue {
+        if judge.listens && !demoMode && !traveling && step == .continue {
             listener.config = ListeningSettings.detectorConfig(adultTrial: adultTrial)
             listener.listen(for: w)                    // l'écoute démarre AVANT de rendre les sons
         }
         modelPlaying = false
     }
 
-    /// Le juge adulte : l'enfant a bien dit le mot (livres des sons).
+    /// Le juge adulte : l'enfant a bien dit le mot (livres des sons). Si le micro écoutait, il se
+    /// ferme : le verdict de l'adulte passe avant (jamais deux fêtes pour un mot).
     private func adultHeard() {
-        guard judge == .adult, !modelPlaying, !traveling, feedback?.message != .again else { return }
+        guard adultCanJudge else { return }
+        if listening { listener.reset() }
         handle(.adultHeard(wagons: word.wagons.count, hasCaboose: word.coda != nil))
     }
 
@@ -485,7 +516,7 @@ public struct PracticeView: View {
     /// (sans rejouer le modèle : l'enfant vient de le dire).
     private func listenAgainForCountdown(_ w: TargetWord) async {
         guard step == .continue, !traveling, w.id == word.id else { return }
-        if judge == .adult {
+        if !judge.listens {
             // Pas de micro : on relance juste le décompte (« Encore ! »), l'adulte juge.
             feedback = nil
             voice.voiceIdentifier = voiceId

@@ -292,8 +292,11 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     manche) et « Où est… ? » (2 à 4 images) ; jamais « non » : l'autre image est nommée puis on
     réécoute ; manches en ordre fixe (`EarGames.pick`, vérifié en Python). Accueil : cartes sur deux
     rangées.
-  - ✅ Tranche 3, **livres des sons** (`SoundBooksView`, `outils/livres`, juge adulte dans
-    `PracticeView` : « Il l'a dit ! », wagon du son étoilé + lettres colorées, conseils « pour les
+  - ✅ Tranche 3, **livres des sons** (`SoundBooksView`, `outils/livres`, `PracticeView` en
+    `judge: .listenAndAdult` — **micro comme au petit train** (retour iPad de l'utilisateur, 28/09 soir :
+    « quand on répète il ne se passe rien » ; avant : `.adult`, sans micro), verdict sur les syllabes
+    (`bookWord` : noyaux = wagons, pas de consonne finale), + « Il l'a dit ! » de l'adulte pour le son
+    du livre (ferme le micro ; jamais deux fois le même mot) ; wagon du son étoilé + lettres colorées, conseils « pour les
     grands ») : **complète** — 103 mots tous dessinés (57 nouveaux pictos `mot.*` en deux lots de
     sous-agents, `pictos/mots_a.py` + `mots_b.py`, relus sur planches), **16 livres FR, 15 EN**
     (`python3 -m livres.generer --check`). `--en-cours` = seulement les mots déjà dessinés (utile si
