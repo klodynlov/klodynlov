@@ -52,7 +52,8 @@ def swift_source(analyses: list[analyse.Analyse]) -> str:
         "// L'outil en a déjà tiré les traits VISIBLES (même algorithme que `LineClipper`), les aplats",
         "// d'encre, et un point au cœur de chaque zone d'après la carte des zones simulée comme `ZoneMap`",
         "// (mêmes règles de rastérisation et d'étiquetage, et robuste à ± 1 px de trait). Chaque page",
-        "// n'est donc ici qu'un trait, ses encres et ses témoins (cf. SketchPathData.swift).",
+        "// n'est donc ici qu'un trait, ses encres et ses témoins (cf. SketchPathData.swift), et ses",
+        "// parties nommées pour les consignes du mode interactif (« Colorie le soleil en jaune »).",
         "",
         "#if canImport(CoreGraphics)",
         "import CoreGraphics",
@@ -78,6 +79,10 @@ def swift_source(analyses: list[analyse.Analyse]) -> str:
         out.append(f'        s.expectAll("{_points(a.temoins.temoins)}")')
         if a.temoins.details:
             out.append(f'        s.expectDetails("{_points(a.temoins.details)}")')
+        for q in a.parties or []:
+            couleur = f'"{_q(q.couleur)}"' if q.couleur else "nil"
+            out.append(f'        s.part("{_q(q.fr)}", "{_q(q.en)}", color: {couleur}, rank: {q.rang}, '
+                       f'at: "{_points(q.points)}")')
         out.append("    }")
     out += ["}", "#endif", ""]
     return "\n".join(out)
@@ -97,10 +102,25 @@ def planche(analyses: list[analyse.Analyse], px: int = 230) -> str:
         titre = catalogue.TITRES_ALBUMS[album][0]
         parts.append(f"<h2>{html.escape(titre)} — {len(groupe)} nouvelles pages</h2><div class='g'>")
         for a in groupe:
-            parts.append(f"<figure>{apercu.svg(a.traits, px)}"
+            parts.append(f"<figure>{apercu.svg(a.traits, px, a.parties)}"
                          f"<figcaption>{html.escape(a.page.fr)}</figcaption></figure>")
         parts.append("</div>")
     return "\n".join(parts)
+
+
+CHROMIUM = Path("/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell")
+
+
+def rendre_planche(html_path: Path, largeur: int = 1320, hauteur: int = 4300) -> Path | None:
+    """La planche en PNG (Chromium sans écran, s'il est là) : traits et consignes, page par page."""
+    import subprocess
+    if not CHROMIUM.exists():
+        return None
+    png = html_path.with_suffix(".png")
+    subprocess.run([str(CHROMIUM), "--headless", "--no-sandbox", "--disable-gpu", "--hide-scrollbars",
+                    f"--window-size={largeur},{hauteur}", f"--screenshot={png}", html_path.resolve().as_uri()],
+                   check=True, capture_output=True, timeout=180)
+    return png
 
 
 def tout_analyser() -> tuple[list[analyse.Analyse], list[str]]:
@@ -131,7 +151,8 @@ def main(argv: list[str] | None = None) -> int:
         for a in analyses:
             apercu.png_revue(a, args.apercu / f"{a.page.id}.png")
         (args.apercu / "planche.html").write_text(planche(analyses), encoding="utf-8")
-        print(f"{len(analyses)} aperçus dans {args.apercu}")
+        png = rendre_planche(args.apercu / "planche.html")
+        print(f"{len(analyses)} aperçus dans {args.apercu}" + (f" ; planche : {png}" if png else ""))
         return 0
     SWIFT.write_text(src, encoding="utf-8")
     zones_total = sum(a.carte.zones for a in analyses)

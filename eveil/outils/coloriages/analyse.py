@@ -29,6 +29,20 @@ MARGE_TEMOINS = 1.05   # une zone-témoin doit dépasser le seuil de 0,3 % d'au 
 PROFONDEUR_DETAIL = 4.0
 
 
+# Une consigne vise une zone qu'un enfant de 3 ans peut peindre au doigt : pas un détail.
+PART_MIN_NOM = 0.004
+
+
+@dataclass
+class Partie:
+    """Une partie nommée d'une page (consignes : « Colorie le soleil en jaune ») : ses zones."""
+    fr: str
+    en: str
+    couleur: str | None
+    rang: int                       # 0 : le sujet de la page ; 1 : le décor
+    points: list                    # [(x, y)] en unité : un point au cœur de chacune de ses zones
+
+
 @dataclass
 class Analyse:
     page: Page
@@ -37,6 +51,7 @@ class Analyse:
     temoins: Temoins
     erreurs: list
     remarques: list
+    parties: list = None
 
     @property
     def lignes(self) -> str:
@@ -96,7 +111,47 @@ def analyser(p: Page, variantes: bool = True) -> Analyse:
         for delta, dec in VARIANTES:
             c2 = zones.carte(t, delta=delta, decalage=dec)
             err += [f"[trait {delta:+g} px, décalage {dec}] {e}" for e in zones.verifier(c2, tem)]
-    return Analyse(p, t, c, tem, err, rem)
+    parties, err_parties = nommer(p, c, own, tem)
+    return Analyse(p, t, c, tem, err + err_parties, rem, parties)
+
+
+def nommer(p: Page, c: Carte, own: dict, tem: Temoins) -> tuple[list, list]:
+    """Les parties nommées de la page : chaque élément nommé → le cœur de chacune de ses zones
+    (celles qu'un doigt peut peindre). Un même nom sur plusieurs éléments = une seule partie
+    (« la roue » : n'importe laquelle). Dehors (herbe ou mer), le fond devient « le ciel »."""
+    from .dessin import PALETTE
+    err, par_nom = [], {}
+    coin = c.zone(COIN)
+    for i, el in enumerate(p.elements):
+        if not el.nom:
+            continue
+        fr, en, couleur = el.nom
+        if couleur is not None and couleur not in PALETTE:
+            err.append(f"« {fr} » : couleur « {couleur} » absente de la palette")
+        zs = [z for z, o in own.items() if o == i and z != coin and c.part(z) >= PART_MIN_NOM]
+        if not zs:
+            if el.rang == 0:              # un petit motif de décor ne fait simplement pas de consigne
+                err.append(f"« {fr} » (élément {i}) : aucune zone assez grande pour une consigne")
+            continue
+        partie = par_nom.setdefault(fr, Partie(fr, en, couleur, el.rang, []))
+        if (partie.en, partie.couleur) != (en, couleur):
+            err.append(f"« {fr} » : deux traductions ou deux couleurs")
+        partie.rang = min(partie.rang, el.rang)
+        partie.points += [tem.par_zone[z] for z in sorted(zs)]
+    dehors = any(n in par_nom for n in ("l'herbe", "la mer"))
+    if dehors and coin and coin in tem.par_zone and own.get(coin, -1) == -1:
+        par_nom.setdefault("le ciel", Partie("le ciel", "the sky", "bleu ciel", 1, [tem.par_zone[coin]]))
+    parties = sorted(par_nom.values(), key=lambda q: q.rang)          # le sujet d'abord, puis le décor
+    vus = {}
+    for q in parties:
+        for pt in q.points:
+            z = c.zone(pt)
+            if z == 0:
+                err.append(f"« {q.fr} » : point {pt} sur un trait")
+            elif z in vus and vus[z] != q.fr:
+                err.append(f"« {q.fr} » et « {vus[z]} » visent la même zone")
+            vus[z] = q.fr
+    return parties, err
 
 
 def owner_in(el: Element, owner: list[int], taille: int = zones.TAILLE) -> set[int]:

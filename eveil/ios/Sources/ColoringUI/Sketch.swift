@@ -47,6 +47,22 @@ public struct LineArt: @unchecked Sendable {
     public let lineWidth: CGFloat
 }
 
+/// Une partie nommée d'une page, pour les consignes du mode interactif (« Colorie le soleil en
+/// jaune ») : son nom, la couleur proposée, et un point au cœur de chacune de ses zones (un même
+/// nom peut désigner plusieurs zones : « la roue », n'importe laquelle).
+public struct ColoringPart: Equatable, Sendable {
+    public let fr: String
+    public let en: String
+    /// Le nom français d'une couleur de la palette (« jaune »), ou `nil` : l'atelier en propose une.
+    public let color: String?
+    /// 0 : le sujet de la page ; 1 : le décor (soleil, nuage, herbe, ciel…).
+    public let rank: Int
+    /// Un point au cœur de chacune de ses zones (unité de page).
+    public let points: [CGPoint]
+
+    public func name(locale: String) -> String { locale.hasPrefix("fr") ? fr : en }
+}
+
 /// Un croquis : l'empilement des formes (du fond vers l'avant) et ce qu'on en attend.
 public struct Sketch {
     enum Layer {
@@ -63,6 +79,9 @@ public struct Sketch {
     private(set) var probes: [CGPoint] = []
     /// Les petites zones voulues (yeux, boutons…) : seules zones permises sous 0,3 % de la page.
     private(set) var details: [CGPoint] = []
+    /// Les parties nommées (consignes), le sujet d'abord puis le décor, dans l'ordre du dessin.
+    public var parts: [ColoringPart] { namedParts.enumerated().sorted { ($0.element.rank, $0.offset) < ($1.element.rank, $1.offset) }.map(\.element) }
+    private var namedParts: [ColoringPart] = []
 
     public init() {}
 
@@ -93,6 +112,20 @@ public struct Sketch {
 
     /// Déclare une petite zone voulue que dessinent des traits.
     public mutating func expectDetail(_ x: CGFloat, _ y: CGFloat) { details.append(CGPoint(x: x, y: y)) }
+
+    /// Nomme une partie de la page (consignes) ; `at` : un point au cœur de chacune de ses zones.
+    /// Le même nom deux fois : une seule partie, toutes ses zones.
+    public mutating func part(_ fr: String, _ en: String, color: String? = nil, rank: Int = 0,
+                              at points: [(CGFloat, CGFloat)]) {
+        let pts = points.map { CGPoint(x: $0.0, y: $0.1) }
+        if let k = namedParts.firstIndex(where: { $0.fr == fr }) {
+            let old = namedParts[k]
+            namedParts[k] = ColoringPart(fr: fr, en: en, color: old.color, rank: min(old.rank, rank),
+                                         points: old.points + pts)
+        } else {
+            namedParts.append(ColoringPart(fr: fr, en: en, color: color, rank: rank, points: pts))
+        }
+    }
 
     /// Les traits visibles : on parcourt l'empilement de l'avant vers le fond, en
     /// accumulant les formes qui sont devant ; chaque contour, chaque trait est

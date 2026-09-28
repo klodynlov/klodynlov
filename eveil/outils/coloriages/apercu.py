@@ -101,8 +101,11 @@ def png_zones(c: Carte, tem: Temoins, chemin, coin_blanc: bool = True):
     ecrire_png(chemin, W, H, rgb)
 
 
-def svg(t: Traits, px: int = 500) -> str:
-    """Les traits en SVG (épaisseur affichée, bouts ronds) — comme `LineArtView`."""
+def svg(t: Traits, px: int = 500, parties: list | None = None) -> str:
+    """Les traits en SVG (épaisseur affichée, bouts ronds) — comme `LineArtView`. Avec `parties` :
+    les consignes (un point de la couleur proposée au cœur de chaque zone, et le nom)."""
+    from html import escape
+    from .dessin import PALETTE_RGB
     w = t.page.trait * 1000
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="{px}" height="{px}">',
            '<rect width="1000" height="1000" fill="#fff"/>']
@@ -111,6 +114,14 @@ def svg(t: Traits, px: int = 500) -> str:
                    'stroke-linejoin="round" stroke-linecap="round"/>')
     out.append(f'<path d="{donnees_lignes(t.lignes)}" fill="none" stroke="{ENCRE}" stroke-width="{w:g}" '
                'stroke-linejoin="round" stroke-linecap="round"/>')
+    for q in parties or []:
+        r, g, b = PALETTE_RGB.get(q.couleur or "", (200, 200, 200))
+        for x, y in q.points:
+            out.append(f'<circle cx="{x * 1000:.0f}" cy="{y * 1000:.0f}" r="22" fill="rgb({r},{g},{b})" '
+                       f'stroke="#2E334A" stroke-width="5"/>')
+            out.append(f'<text x="{x * 1000:.0f}" y="{y * 1000 + 62:.0f}" font-size="46" text-anchor="middle" '
+                       f'font-family="sans-serif" font-weight="bold" fill="#2E334A" stroke="#fff" stroke-width="10" '
+                       f'paint-order="stroke">{escape(q.fr)}</text>')
     out.append("</svg>")
     return "\n".join(out)
 

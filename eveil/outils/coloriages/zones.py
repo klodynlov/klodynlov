@@ -385,6 +385,7 @@ class Temoins:
     temoins: list = field(default_factory=list)   # [(x, y)] en unité, zones ≥ 0,3 %
     details: list = field(default_factory=list)   # [(x, y)] en unité, petites zones voulues
     profondeur: dict = field(default_factory=dict)  # zone → distance du témoin au trait (pixels)
+    par_zone: dict = field(default_factory=dict)  # zone → son point le plus profond (fond du coin compris)
 
 
 def placer(c: Carte, voulus: set | frozenset = frozenset()) -> Temoins:
@@ -402,11 +403,12 @@ def placer(c: Carte, voulus: set | frozenset = frozenset()) -> Temoins:
     coin = c.zone(COIN)
     out = Temoins()
     for z in sorted(best):
-        if z == coin:
-            continue
         dist, i = best[z]
         x, y = i % c.W, i // c.W
         u = (round((x + 0.5) / c.W, 4), round((y + 0.5) / c.H, 4))
+        out.par_zone[z] = u
+        if z == coin:
+            continue
         (out.temoins if c.part(z) >= PETITE and z not in voulus else out.details).append(u)
         out.profondeur[z] = dist / 3
     return out

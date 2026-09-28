@@ -352,10 +352,35 @@ def trou(f: Forme) -> Forme:
 class Element:
     genre: str            # "zone" | "detail" | "trait" | "encre"
     contours: list
+    nom: tuple | None = None   # consignes du mode interactif : (fr, en, couleur de la palette ou None)
+    rang: int = 0              # 0 : le sujet de la page (nommé à la main) ; 1 : le décor (motifs)
 
 
-def zone(*formes: Forme) -> Element:
-    return Element("zone", [c for f in formes for c in f])
+# Les couleurs de la palette de l'atelier (ColoringView.palette, noms français) : une consigne
+# « Colorie le soleil en jaune » ne propose qu'une couleur que l'enfant a sous le doigt.
+PALETTE_RGB = {
+    "rouge": (237, 51, 56), "rouge foncé": (158, 30, 48), "rose vif": (228, 60, 150), "rose": (255, 140, 191),
+    "orange": (255, 140, 26), "jaune": (255, 214, 26), "jaune clair": (255, 240, 150),
+    "vert clair": (168, 222, 82), "vert": (102, 199, 64), "vert foncé": (28, 118, 58),
+    "turquoise": (32, 196, 186), "bleu ciel": (51, 179, 242), "bleu": (56, 92, 217), "bleu nuit": (30, 42, 112),
+    "violet": (148, 87, 219), "mauve": (204, 166, 240), "peau claire": (252, 220, 192),
+    "peau dorée": (228, 172, 122), "peau brune": (166, 108, 68), "peau foncée": (98, 60, 38),
+    "marron": (140, 89, 51), "gris": (150, 152, 162), "noir": (38, 38, 46), "blanc": (247, 247, 247),
+}
+PALETTE = tuple(PALETTE_RGB)
+
+
+def zone(*formes: Forme, nom: tuple | None = None) -> Element:
+    """Une zone à colorier ; `nom` = (« le toit », "the roof", couleur ou None) pour les consignes."""
+    return Element("zone", [c for f in formes for c in f], nom=nom)
+
+
+def nomme(els, fr: str, en: str, couleur: str | None = None, rang: int = 0):
+    """Nomme les ZONES d'un élément ou d'une liste d'éléments (motifs : `rang=1`, le décor)."""
+    for e in (els if isinstance(els, list) else [els]):
+        if e.genre == "zone":
+            e.nom, e.rang = (fr, en, couleur), rang
+    return els
 
 
 def detail(*formes: Forme) -> Element:

@@ -9,7 +9,7 @@ from __future__ import annotations
 import math
 
 from .dessin import (
-    Contour, Element, arc, cercle, courbe, detail, ellipse, encre, goutte, ligne, miroir, poly, rect,
+    Contour, Element, arc, cercle, courbe, detail, ellipse, encre, goutte, ligne, miroir, nomme, poly, rect,
     trait, zone,
 )
 
@@ -18,14 +18,16 @@ def sol(y: float = 800, vague: float = 16, bosses: int = 4) -> Element:
     """Prairie jusqu'en bas, bord supérieur doucement ondulé."""
     top = [(1000 * i / bosses, y + (vague if i % 2 else -vague)) for i in range(bosses + 1)]
     c = courbe(top)[0]
-    return zone([Contour(c.start, c.segs + [("L", (1000, 1000)), ("L", (0, 1000))])])
+    return nomme(zone([Contour(c.start, c.segs + [("L", (1000, 1000)), ("L", (0, 1000))])]),
+                 "l'herbe", "the grass", "vert", rang=1)
 
 
 def vagues(y: float, amp: float = 16, n: int = 10) -> Element:
     """Mer jusqu'en bas, crête en vaguelettes."""
     top = [(1000 * i / n, y + (amp if i % 2 else -amp)) for i in range(n + 1)]
     c = courbe(top)[0]
-    return zone([Contour(c.start, c.segs + [("L", (1000, 1000)), ("L", (0, 1000))])])
+    return nomme(zone([Contour(c.start, c.segs + [("L", (1000, 1000)), ("L", (0, 1000))])]),
+                 "la mer", "the sea", "bleu", rang=1)
 
 
 def bande_sol(y: float) -> Element:
@@ -42,7 +44,7 @@ def soleil(cx: float, cy: float, r: float, rayons: int = 10, visage: bool = True
         base2 = (cx + 0.92 * r * math.cos(a + da), cy + 0.92 * r * math.sin(a + da))
         tip = (cx + 1.55 * r * math.cos(a), cy + 1.55 * r * math.sin(a))
         tris += poly([base1, tip, base2], r=[0, r * 0.12, 0])
-    els = [detail(tris), zone(cercle(cx, cy, r))]
+    els = [detail(tris), nomme(zone(cercle(cx, cy, r)), "le soleil", "the sun", "jaune", rang=1)]
     if visage:
         els.append(trait(arc(cx - 0.35 * r, cy - 0.1 * r, 0.16 * r, 200, 340),
                          arc(cx + 0.35 * r, cy - 0.1 * r, 0.16 * r, 200, 340),
@@ -52,12 +54,12 @@ def soleil(cx: float, cy: float, r: float, rayons: int = 10, visage: bool = True
 
 def nuage(cx: float, cy: float, rx: float, ry: float, bosses: int = 7, hauteur: float = 0.8) -> Element:
     from .dessin import nuage as _nuage
-    return zone(_nuage(cx, cy, rx, ry, bosses=bosses, hauteur=hauteur))
+    return nomme(zone(_nuage(cx, cy, rx, ry, bosses=bosses, hauteur=hauteur)), "le nuage", "the cloud", rang=1)
 
 
 def roue(cx: float, cy: float, r: float, rayons: int = 0, moyeu: float = 0.2) -> list:
     """Roue : pneu d'une zone, rayons (traits qui ne ferment rien), moyeu d'encre."""
-    els = [zone(cercle(cx, cy, r))]
+    els = [nomme(zone(cercle(cx, cy, r)), "la roue", "the wheel", "noir", rang=1)]
     if rayons:
         spokes = [ligne((cx + (moyeu + 0.14) * r * math.cos(a), cy + (moyeu + 0.14) * r * math.sin(a)),
                         (cx + 0.72 * r * math.cos(a), cy + 0.72 * r * math.sin(a)))
@@ -95,7 +97,7 @@ def fleur(cx: float, cy: float, r: float, petales: int = 6, tige: float = 0.0) -
     if tige:
         els.append(zone(rect(cx - 0.13 * r, cy, 0.26 * r, tige, r=0.1 * r)))
     corolle = _nuage(cx, cy, 0.74 * r, 0.74 * r, bosses=petales, hauteur=1.0)
-    els.append((zone if r >= 55 else detail)(corolle))
+    els.append(nomme((zone if r >= 55 else detail)(corolle), "la fleur", "the flower", rang=1))
     els.append(detail(cercle(cx, cy, 0.36 * r)))
     return els
 
@@ -108,7 +110,8 @@ def fleur_petales(cx: float, cy: float, r: float, petales: int = 5) -> list:
         rad = math.radians(a)
         pet += ellipse(cx + 0.95 * r * math.cos(rad), cy + 0.95 * r * math.sin(rad), 0.55 * r,
                        0.95 * r * math.sin(math.pi / petales) * 0.8, rot=a)
-    return [zone(pet), zone(cercle(cx, cy, 0.52 * r))]
+    return [nomme(zone(pet), "les pétales", "the petals", rang=1),
+            nomme(zone(cercle(cx, cy, 0.52 * r)), "le cœur de la fleur", "the middle of the flower", "jaune", rang=1)]
 
 
 def feuille(a: tuple, b: tuple, w: float) -> list:
@@ -125,12 +128,12 @@ def feuille(a: tuple, b: tuple, w: float) -> list:
 
 def refleter(els: list, x: float) -> list:
     """Éléments retournés gauche-droite autour de la verticale x."""
-    return [Element(e.genre, miroir(e.contours, x)) for e in els]
+    return [Element(e.genre, miroir(e.contours, x), e.nom, e.rang) for e in els]
 
 
 def groupe(els: list, f) -> list:
     """Applique une transformation de formes (ex. `lambda c: tourne(c, 20)`) à des éléments."""
-    return [Element(e.genre, f(e.contours)) for e in els]
+    return [Element(e.genre, f(e.contours), e.nom, e.rang) for e in els]
 
 
 def oiseau(x: float, y: float, s: float = 1.0) -> list:
@@ -150,10 +153,12 @@ def sapin(x: float, y: float, h: float) -> list:
     """Sapin à trois étages ; (x, y) = pied du tronc. Le tronc se voit bien entre sol et branches."""
     w = 0.62 * h
     return [
-        zone(rect(x - 0.08 * h, y - 0.3 * h, 0.16 * h, 0.3 * h)),
-        zone(poly([(x - w / 2, y - 0.26 * h), (x + w / 2, y - 0.26 * h), (x, y - 0.66 * h)], r=[10, 10, 8])),
-        zone(poly([(x - w * 0.4, y - 0.48 * h), (x + w * 0.4, y - 0.48 * h), (x, y - 0.84 * h)], r=[10, 10, 8])),
-        zone(poly([(x - w * 0.3, y - 0.68 * h), (x + w * 0.3, y - 0.68 * h), (x, y - h)], r=[8, 8, 8])),
+        nomme(zone(rect(x - 0.08 * h, y - 0.3 * h, 0.16 * h, 0.3 * h)), "le tronc", "the trunk", "marron", rang=1),
+        *nomme([
+            zone(poly([(x - w / 2, y - 0.26 * h), (x + w / 2, y - 0.26 * h), (x, y - 0.66 * h)], r=[10, 10, 8])),
+            zone(poly([(x - w * 0.4, y - 0.48 * h), (x + w * 0.4, y - 0.48 * h), (x, y - 0.84 * h)], r=[10, 10, 8])),
+            zone(poly([(x - w * 0.3, y - 0.68 * h), (x + w * 0.3, y - 0.68 * h), (x, y - h)], r=[8, 8, 8])),
+        ], "le sapin", "the fir tree", "vert", rang=1),
     ]
 
 
@@ -162,9 +167,10 @@ def arbre(x: float, y: float, h: float, largeur: float | None = None) -> list:
     from .dessin import nuage as _nuage
     w = largeur or 0.7 * h
     return [
-        zone(poly([(x - 0.07 * h, y), (x - 0.05 * h, y - 0.45 * h), (x + 0.05 * h, y - 0.45 * h), (x + 0.07 * h, y)],
-                  r=[4, 0, 0, 4])),
-        zone(_nuage(x, y - 0.66 * h, w / 2, 0.3 * h, bosses=8, hauteur=0.7)),
+        nomme(zone(poly([(x - 0.07 * h, y), (x - 0.05 * h, y - 0.45 * h), (x + 0.05 * h, y - 0.45 * h),
+                         (x + 0.07 * h, y)], r=[4, 0, 0, 4])), "le tronc", "the trunk", "marron", rang=1),
+        nomme(zone(_nuage(x, y - 0.66 * h, w / 2, 0.3 * h, bosses=8, hauteur=0.7)), "les feuilles", "the leaves",
+              "vert", rang=1),
     ]
 
 
