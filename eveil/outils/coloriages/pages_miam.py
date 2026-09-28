@@ -40,6 +40,7 @@ SAUCISSE = page(
     trait(ligne((460, 480), (440, 520)), ligne((520, 482), (500, 522)), ligne((580, 490), (560, 530))),
     trait(courbe([(370, 616), (420, 600), (470, 614), (520, 600), (570, 616)])),
     *fourchette(930, 975, 390, -6),
+    consignes=("les saucisses",),
 )
 
 
@@ -115,6 +116,7 @@ GLACONS = page(
             for a in range(0, 360, 60)]),
     zone(tourne(rect(756, 750, 108, 108, r=22), 10, 810, 804), nom=_GLACONS),
     zone(tourne(rect(152, 764, 100, 100, r=20), -8, 202, 814), nom=_GLACONS),
+    consignes=("les glaçons", "le citron"),
 )
 
 
@@ -155,6 +157,7 @@ PECHE = page(
     zone(lisse([(800, 676), (842, 712), (846, 770), (800, 806), (754, 770), (758, 712)]),
          nom=("le noyau", "the pit", "marron")),
     trait(courbe([(800, 690), (790, 740), (800, 792)])),
+    consignes=("la pêche",),
 )
 
 
@@ -181,7 +184,7 @@ def patte(cx: float, cy: float, k: float = 1.0) -> list:
 
 
 _GAMELLE = ("la gamelle", "the bowl", None)
-_OS = ("les os", "the bones", None)
+_OS = ("les os", "the bones", "jaune clair")   # proposée, ce serait rouge : des os rouges !
 
 OS = page(
     "os", "miam", "L'os du chien", "The dog's bone",
@@ -196,6 +199,7 @@ OS = page(
     trait(tourne(arc(250, 410, 40, 200, 260), -18, 460, 470)),
     # un petit os près de la gamelle
     zone(tourne(forme_os(170, 400, 760, 42, 30, 20), 8, 285, 760), nom=_OS),
+    consignes=("les os",),
 )
 
 
@@ -218,6 +222,7 @@ JUS = page(
     zone(cercle(840, 740, 110), nom=("l'orange", "the orange", "orange")),
     zone(feuille((840, 630), (920, 560), 64)),
     encre(cercle(840, 632, 9)),
+    consignes=("le jus", "l'orange"),
 )
 
 

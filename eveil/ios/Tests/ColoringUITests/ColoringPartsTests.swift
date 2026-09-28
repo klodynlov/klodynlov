@@ -3,7 +3,7 @@
 // « Colorie le soleil en jaune » : pour CHAQUE page, sur sa vraie carte 1024 × 1024, chaque
 // partie nommée a ses points dans des zones (jamais sur un trait), assez grandes pour un doigt
 // (pas un détail) ; deux parties ne visent jamais la même zone ; la couleur proposée est une
-// couleur de la palette ; le nom a son article (la voix le dit tel quel).
+// couleur de la palette (ou « au choix ») ; le nom a son article (la voix le dit tel quel).
 
 #if canImport(SwiftUI) && canImport(AVFoundation)
 @testable import ColoringUI
@@ -20,7 +20,9 @@ final class ColoringPartsTests: XCTestCase {
             XCTAssertEqual(Set(parts.map(\.fr)).count, parts.count, "\(page.id) : deux parties du même nom")
             var owner: [Int: String] = [:]
             for part in parts {
-                if let c = part.color { XCTAssertTrue(colors.contains(c), "\(page.id) : couleur « \(c) »") }
+                if let c = part.color {
+                    XCTAssertTrue(colors.contains(c) || c == ColoringInstructions.anyColor, "\(page.id) : couleur « \(c) »")
+                }
                 XCTAssertFalse(part.points.isEmpty, "\(page.id) : « \(part.fr) » sans point")
                 XCTAssertTrue(part.fr.contains(" ") || part.fr.hasPrefix("l'"), "\(page.id) : « \(part.fr) » sans article")
                 XCTAssertTrue(part.en.hasPrefix("the "), "\(page.id) : « \(part.en) » sans article")

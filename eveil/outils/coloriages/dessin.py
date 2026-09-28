@@ -368,6 +368,9 @@ PALETTE_RGB = {
     "marron": (140, 89, 51), "gris": (150, 152, 162), "noir": (38, 38, 46), "blanc": (247, 247, 247),
 }
 PALETTE = tuple(PALETTE_RGB)
+# Couleur d'une consigne que l'enfant choisit lui-même (« Colorie les mains, de la couleur que tu veux ! ») :
+# pour la peau, on n'impose jamais une couleur.
+AU_CHOIX = "au choix"
 
 
 def zone(*formes: Forme, nom: tuple | None = None) -> Element:
@@ -414,11 +417,15 @@ class Page:
     en: str
     elements: list
     trait: float = TRAIT
+    # L'ordre des consignes, quand celui du dessin ne va pas (la feuille est dessinée avant la
+    # coccinelle) : ces parties (noms français) d'abord, les autres ensuite, dans l'ordre du dessin.
+    consignes: tuple = ()
 
 
-def page(id: str, album: str, fr: str, en: str, *elements: Element, trait: float = TRAIT) -> Page:
+def page(id: str, album: str, fr: str, en: str, *elements: Element, trait: float = TRAIT,
+         consignes: tuple = ()) -> Page:
     assert album in ALBUMS, album
-    return Page(id, album, fr, en, list(elements), trait)
+    return Page(id, album, fr, en, list(elements), trait, tuple(consignes))
 
 
 def d(el: Element) -> str:

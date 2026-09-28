@@ -79,7 +79,7 @@ MOUSSE = page(
     *bulles([(160, 170, 70), (300, 90, 44), (820, 150, 80), (700, 60, 34), (520, 120, 48), (900, 340, 30),
              (90, 380, 36)]),
     # le tas de mousse (en forme de nuage, mais ce n'est pas « le nuage »), le canard dedans
-    nomme(nuage(500, 470, 330, 190, bosses=11, hauteur=0.85), "la mousse", "the foam"),
+    nomme(nuage(500, 470, 330, 190, bosses=11, hauteur=0.85), "la mousse", "the foam", "bleu ciel"),
     trait(arc(380, 440, 60, 200, 300), arc(620, 400, 70, 200, 300), arc(520, 540, 50, 200, 300)),
     *canard(640, 560),
     # la baignoire à pattes
@@ -104,6 +104,7 @@ BOUCHE = page(
          trou(lisse([(250, 484), (380, 458), (500, 468), (620, 458), (750, 484), (660, 580), (500, 620),
                      (340, 580)])), nom=("les lèvres", "the lips", "rouge")),
     trait(arc(300, 440, 40, 200, 260), arc(700, 440, 40, 280, 340)),
+    consignes=("les lèvres",),
 )
 
 
@@ -132,9 +133,10 @@ BROSSE_A_DENTS = page(
     zone(rect(170, 752, 380, 124, r=46), nom=NOM_DENTIFRICE),
     zone(rect(256, 782, 210, 66, r=24), nom=NOM_DENTIFRICE),
     zone(rect(548, 778, 80, 72, r=14)),
+    # la dent n'est pas nommée : en jaune (couleur proposée), un contre-message sur une page de brossage ;
+    # blanche, elle ne se verrait pas sur le papier
     zone(lisse([(700, 560), (760, 520), (820, 542), (880, 520), (942, 560), (930, 660), (905, 780), (880, 802),
-                (855, 740), (820, 720), (785, 740), (760, 802), (735, 780), (712, 660)]),
-         nom=("la dent", "the tooth", None)),
+                (855, 740), (820, 720), (785, 740), (760, 802), (735, 780), (712, 660)])),
     *oeil(790, 616, 18, dy=3, p=0.6), *oeil(852, 616, 18, dy=3, p=0.6),
     trait(arc(821, 650, 34, 30, 150)),
 )
@@ -160,6 +162,7 @@ BROSSE_A_CHEVEUX = page(
                  (90, 100), (-40, 160), (40, 160)]]),
     ], lambda f: tourne(f, 12, 560, 620)),
     detail(etoile(840, 820, 52), etoile(150, 700, 46)),
+    consignes=("la brosse", "le manche"),
 )
 
 
@@ -177,7 +180,7 @@ def _main(cx: float, cy: float, s: float, rot: float, miroir: bool = False) -> l
         return tourne(f, rot, cx, cy)
     return [
         zone(place(tube([(-40, 36), (-92, -20)], 40))),
-        zone(place(rect(-52, -96, 104, 200, r=50)), nom=("les mains", "the hands", None)),
+        zone(place(rect(-52, -96, 104, 200, r=50)), nom=("les mains", "the hands", "au choix")),
         trait(*[place(ligne((x, -90 + (50 - math.sqrt(50 ** 2 - x ** 2))), (x, -36))) for x in (-22, 0, 22)]),
     ]
 
@@ -200,6 +203,7 @@ LAVER = page(
     zone(rect(170, 596, 176, 86, r=32), nom=("le savon", "the soap", None)),
     trait(arc(258, 638, 44, 200, 340, ry=18)),
     *bulles([(240, 470, 46), (340, 390, 30), (160, 380, 26), (880, 380, 44), (930, 480, 24), (400, 480, 22)]),
+    consignes=("les mains",),
 )
 
 
@@ -250,6 +254,7 @@ TROUSSE = page(
     detail(rect(772, 526, 40, 64, r=12)),
     zone(etoile(500, 704, 72, coins=6), nom=("l'étoile", "the star", "jaune")),
     zone(rect(14, 772, 116, 66, r=18)),
+    consignes=("la trousse",),
 )
 
 
@@ -258,7 +263,7 @@ TACHE = page(
     zone(lisse([(500, 190), (560, 260), (650, 200), (660, 300), (780, 290), (720, 380), (820, 440), (720, 480),
                 (770, 580), (660, 560), (640, 670), (560, 600), (480, 690), (440, 590), (330, 640), (360, 530),
                 (230, 510), (330, 440), (240, 350), (360, 340), (360, 230), (440, 290)]),
-         nom=("la tache", "the splat", None)),
+         nom=("la tache", "the splat", "au choix")),
     zone(cercle(200, 200, 46), cercle(850, 190, 42), cercle(880, 560, 50), cercle(160, 650, 48)),
     detail(cercle(290, 140, 22), cercle(600, 770, 22), cercle(110, 470, 20), cercle(930, 380, 22)),
     # le pot de peinture et le pinceau

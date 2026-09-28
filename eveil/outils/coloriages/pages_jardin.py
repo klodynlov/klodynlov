@@ -29,6 +29,7 @@ COCCINELLE = page(
     detail(cercle(410, 450, 42), cercle(380, 594, 38), cercle(446, 682, 32),
            cercle(590, 450, 42), cercle(620, 594, 38), cercle(554, 682, 32)),
     *oeil(462, 284, 30, dy=2, p=0.5), *oeil(538, 284, 30, dy=2, p=0.5),
+    consignes=("la coccinelle", "la tête"),
 )
 
 
@@ -52,8 +53,9 @@ TORTUE = page(
              poly([(425, 586), (440, 500), (600, 500), (615, 586)], r=14),
              poly([(640, 586), (630, 500), (710, 500), (748, 586)], r=14)),
         zone(rect(215, 592, 610, 46, r=23)),
-    ], "la carapace", "the shell"),
+    ], "la carapace", "the shell", "vert"),
     *fleur(120, 900, 44), *fleur(880, 900, 44),
+    consignes=("la carapace", "la tête"),
 )
 
 
@@ -78,6 +80,7 @@ CHAMPIGNONS = page(
     *champignon(400, 850, 380, 440),
     *champignon(170, 880, 180, 200),
     herbe([(574, 884), (872, 900)]),
+    consignes=("les chapeaux des champignons",),
 )
 
 
@@ -98,6 +101,7 @@ POMMIER = page(
     detail(cercle(724, 800, 36)),
     detail(cercle(806, 796, 36)),
     *nomme([zone(corde(770, 820, 118, 0, 180, ry=82)), zone(rect(646, 804, 248, 32, r=15))], "le bol", "the bowl"),
+    consignes=("les feuilles", "le tronc"),
 )
 
 
@@ -125,6 +129,7 @@ RADIS = page(
     zone(rect(0, 830, 1000, 170)),
     *radis(200, 600, 104), *radis(500, 560, 116), *radis(800, 600, 104),
     herbe([(350, 870), (660, 880)]),
+    consignes=("les radis",),
 )
 
 
@@ -175,6 +180,7 @@ BUCHE = page(
     detail(ellipse(790, 625, 22, 28)),
     *fleur(90, 880, 44), *fleur(900, 890, 46),
     herbe([(300, 880), (560, 900)]),
+    consignes=("la bûche",),
 )
 
 

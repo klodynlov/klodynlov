@@ -11,8 +11,8 @@ import unittest
 from pathlib import Path
 
 from . import analyse, catalogue, generer, traits, zones
-from .dessin import Element, aire, cercle, croisements, detail, ellipse, encre, miroir, page, rect, relire, trou, \
-    tube, zone
+from .dessin import Element, aire, cercle, croisements, detail, ellipse, encre, miroir, nomme, page, rect, relire, \
+    trou, tube, zone
 
 EVEIL = Path(__file__).resolve().parents[2]
 
@@ -102,6 +102,26 @@ class TestTraitsVisibles(unittest.TestCase):
         self.assertEqual(a.carte.zones, 3)
         self.assertEqual(len(a.temoins.temoins), 1)
         self.assertEqual(len(a.temoins.details), 1)
+
+
+class TestConsignes(unittest.TestCase):
+    ELEMENTS = [zone(rect(60, 60, 400, 400), nom=("la feuille", "the leaf", "vert")),
+                zone(cercle(700, 300, 200), nom=("la coccinelle", "the ladybird", "rouge")),
+                nomme(zone(rect(100, 700, 800, 250)), "l'herbe", "the grass", "vert", rang=1)]
+
+    def noms(self, **kw):
+        a = analyse.analyser(page("essai", "jardin", "Essai", "Test", *self.ELEMENTS, **kw), variantes=False)
+        return [q.fr for q in a.parties], a.erreurs
+
+    def test_ordre_du_dessin_puis_le_decor(self):
+        """Par défaut, l'ordre du dessin ; le décor après le sujet ; dehors, le fond devient le ciel."""
+        self.assertEqual(self.noms()[0], ["la feuille", "la coccinelle", "l'herbe", "le ciel"])
+
+    def test_ordre_voulu_par_la_page(self):
+        self.assertEqual(self.noms(consignes=("la coccinelle",))[0],
+                         ["la coccinelle", "la feuille", "l'herbe", "le ciel"])
+        _, erreurs = self.noms(consignes=("le hérisson",))
+        self.assertTrue(any("« le hérisson »" in e for e in erreurs), erreurs)
 
 
 class TestDetailsRobustes(unittest.TestCase):

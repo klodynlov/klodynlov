@@ -122,6 +122,12 @@ public struct ColoringView: View {
         PaintColor(247, 247, 247, fr: "blanc", en: "white"),
     ]
 
+    /// La pastille d'une consigne « au choix » : un petit arc-en-ciel.
+    static var anyColorStyle: AnyShapeStyle {
+        AnyShapeStyle(AngularGradient(gradient: Gradient(colors: [0, 4, 5, 8, 12, 14, 0].map { palette[$0].swiftUIColor }),
+                                      center: .center))
+    }
+
     /// La note de chaque couleur (mode interactif) : la palette monte la gamme pentatonique
     /// de `ding` (variantes 0…14), du rouge (le plus grave) au blanc (le plus aigu).
     nonisolated static func note(ofColor index: Int) -> Int {
@@ -350,7 +356,8 @@ public struct ColoringView: View {
                 .overlay(alignment: .topLeading) {
                     if let markAt, let current {
                         InstructionMark(start: markAt, points: current.part.points, side: layout.side,
-                                        color: Self.palette[current.colorIndex].swiftUIColor)
+                                        color: current.colorIndex.map { Self.palette[$0].swiftUIColor }
+                                            ?? EveilPalette.wagonLit)
                     }
                 }
                 .scaleEffect(x: 1 + w.stretch, y: 1 - w.stretch, anchor: .bottom)
@@ -455,9 +462,10 @@ public struct ColoringView: View {
         let target = Set(current.part.points.map { studio.zone(near: $0) })
         if target.contains(zone) {
             // La bonne partie : avec une autre couleur, on rappelle laquelle (jamais « non »).
-            if colorIndex != current.colorIndex {
-                swatchHint = current.colorIndex
-                say(ColoringInstructions.colorReminder(current, palette: Self.palette, locale: locale))
+            if let wanted = current.colorIndex, colorIndex != wanted,
+               let reminder = ColoringInstructions.colorReminder(current, palette: Self.palette, locale: locale) {
+                swatchHint = wanted
+                say(reminder)
             }
         } else {
             // Ailleurs : ça ne coûte rien ; au deuxième essai, la consigne se redit et un anneau montre où.
@@ -494,7 +502,7 @@ public struct ColoringView: View {
                     .font(.system(size: 26, weight: .heavy, design: .rounded))
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
-                Circle().fill(Self.palette[i.colorIndex].swiftUIColor)
+                Circle().fill(i.colorIndex.map { AnyShapeStyle(Self.palette[$0].swiftUIColor) } ?? Self.anyColorStyle)
                     .overlay(Circle().stroke(Color.black.opacity(0.2), lineWidth: 2))
                     .frame(width: 30, height: 30)
             }

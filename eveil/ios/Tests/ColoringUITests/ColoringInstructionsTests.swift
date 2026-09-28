@@ -1,10 +1,10 @@
 // ColoringInstructionsTests.swift — les consignes du mode interactif : « Colorie le soleil en jaune ! »
 //
 // L'ordre (le sujet, puis le décor), la couleur imposée gardée, sinon la rotation fixe sans
-// doublon (rien au hasard), au plus cinq par page, les phrases FR/EN, le seuil « assez colorié ».
-// Puis sur les vraies pages : chaque consigne se réussit d'un remplissage de SA couleur, sur
-// n'importe laquelle de ses zones, jamais d'une autre couleur ; et une vitre de la maison se fait
-// d'un seul coup de pinceau.
+// doublon (rien au hasard), « au choix » laissé à l'enfant, au plus cinq par page, les phrases
+// FR/EN, le seuil « assez colorié ». Puis sur les vraies pages : chaque consigne se réussit d'un
+// remplissage de SA couleur, sur n'importe laquelle de ses zones, jamais d'une autre couleur (au
+// choix : de n'importe laquelle) ; et une vitre de la maison se fait d'un seul coup de pinceau.
 
 #if canImport(SwiftUI) && canImport(AVFoundation)
 @testable import ColoringUI
@@ -18,14 +18,18 @@ final class ColoringInstructionsTests: XCTestCase {
         ColoringPart(fr: fr, en: en, color: color, rank: rank, points: [CGPoint(x: 0.5, y: 0.5)])
     }
 
-    private func colors(_ list: [ColoringInstruction]) -> [String] { list.map { palette[$0.colorIndex].nameFR } }
+    private func colors(_ list: [ColoringInstruction]) -> [String] {
+        list.map { $0.colorIndex.map { palette[$0].nameFR } ?? ColoringInstructions.anyColor }
+    }
 
     func testImposedColorsStayAndTheOthersFollowTheRotation() {
-        let list = ColoringInstructions.list(for: [part("le toit", color: "rouge"), part("le mur"), part("la porte"),
+        let list = ColoringInstructions.list(for: [part("le toit", color: "rouge"), part("le mur"),
+                                                   part("les mains", color: "au choix"), part("la porte"),
                                                    part("le soleil", color: "jaune", rank: 1)], palette: palette)
-        XCTAssertEqual(list.map(\.part.fr), ["le toit", "le mur", "la porte", "le soleil"])
-        // Le rouge et le jaune sont déjà demandés : le mur prend le bleu, la porte le vert.
-        XCTAssertEqual(colors(list), ["rouge", "bleu", "vert", "jaune"])
+        XCTAssertEqual(list.map(\.part.fr), ["le toit", "le mur", "les mains", "la porte", "le soleil"])
+        // Le rouge et le jaune sont déjà demandés : le mur prend le bleu, la porte le vert ; les mains,
+        // l'enfant choisit (jamais une couleur de peau imposée).
+        XCTAssertEqual(colors(list), ["rouge", "bleu", "au choix", "vert", "jaune"])
     }
 
     func testAtMostFiveNeverTheSameProposedColorTwiceAndNothingRandom() {
@@ -55,6 +59,15 @@ final class ColoringInstructionsTests: XCTestCase {
         XCTAssertEqual(ColoringInstructions.text(sky, palette: palette, locale: "fr-FR"), "Colorie le ciel en bleu ciel !")
         XCTAssertEqual(ColoringInstructions.text(sky, palette: palette, locale: "en-US"), "Color the sky light blue!")
         XCTAssertEqual(ColoringInstructions.colorReminder(sky, palette: palette, locale: "en-US"), "Light blue!")
+        // Au choix : pas de couleur dite, pas de rappel.
+        let hands = try XCTUnwrap(ColoringInstructions.list(for: [part("les mains", "the hands", color: "au choix")],
+                                                            palette: palette).first)
+        XCTAssertNil(hands.colorIndex)
+        XCTAssertEqual(ColoringInstructions.text(hands, palette: palette, locale: "fr-FR"),
+                       "Colorie les mains, de la couleur que tu veux !")
+        XCTAssertEqual(ColoringInstructions.text(hands, palette: palette, locale: "en-US"),
+                       "Color the hands any color you like!")
+        XCTAssertNil(ColoringInstructions.colorReminder(hands, palette: palette, locale: "fr-FR"))
     }
 
     func testEnoughColor() {
@@ -80,7 +93,7 @@ final class ColoringInstructionsTests: XCTestCase {
     }
 
     /// Chaque consigne de chaque page se réussit d'un remplissage de sa couleur (sur sa dernière
-    /// zone : n'importe laquelle compte), et jamais d'une autre couleur.
+    /// zone : n'importe laquelle compte), et jamais d'une autre couleur ; au choix, de n'importe laquelle.
     @MainActor
     func testEveryInstructionCanBeDone() {
         var done = 0
@@ -92,9 +105,13 @@ final class ColoringInstructionsTests: XCTestCase {
                 let label = "\(page.id) : « \(i.part.fr) »"
                 let point = i.part.points[i.part.points.count - 1]
                 XCTAssertFalse(studio.isDone(i, palette: palette), "\(label) déjà faite")
-                studio.fill(at: point, color: palette[(i.colorIndex + 1) % palette.count])
-                XCTAssertFalse(studio.isDone(i, palette: palette), "\(label) faite d'une autre couleur")
-                studio.fill(at: point, color: palette[i.colorIndex])
+                if let index = i.colorIndex {
+                    studio.fill(at: point, color: palette[(index + 1) % palette.count])
+                    XCTAssertFalse(studio.isDone(i, palette: palette), "\(label) faite d'une autre couleur")
+                    studio.fill(at: point, color: palette[index])
+                } else {
+                    studio.fill(at: point, color: palette[(done * 5) % palette.count])
+                }
                 XCTAssertTrue(studio.isDone(i, palette: palette), "\(label) impossible à faire")
                 done += 1
             }
@@ -112,7 +129,8 @@ final class ColoringInstructionsTests: XCTestCase {
         let windows = try XCTUnwrap(ColoringInstructions.list(for: house.parts, palette: palette)
             .first { $0.part.fr == "les fenêtres" })
         XCTAssertFalse(studio.isDone(windows, palette: palette))
-        studio.beginStroke(at: windows.part.points[0], color: palette[windows.colorIndex])
+        let index = try XCTUnwrap(windows.colorIndex)
+        studio.beginStroke(at: windows.part.points[0], color: palette[index])
         XCTAssertTrue(studio.endStroke())
         XCTAssertTrue(studio.isDone(windows, palette: palette))
     }

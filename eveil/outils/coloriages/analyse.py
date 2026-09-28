@@ -119,14 +119,14 @@ def nommer(p: Page, c: Carte, own: dict, tem: Temoins) -> tuple[list, list]:
     """Les parties nommées de la page : chaque élément nommé → le cœur de chacune de ses zones
     (celles qu'un doigt peut peindre). Un même nom sur plusieurs éléments = une seule partie
     (« la roue » : n'importe laquelle). Dehors (herbe ou mer), le fond devient « le ciel »."""
-    from .dessin import PALETTE
+    from .dessin import AU_CHOIX, PALETTE
     err, par_nom = [], {}
     coin = c.zone(COIN)
     for i, el in enumerate(p.elements):
         if not el.nom:
             continue
         fr, en, couleur = el.nom
-        if couleur is not None and couleur not in PALETTE:
+        if couleur is not None and couleur not in PALETTE and couleur != AU_CHOIX:
             err.append(f"« {fr} » : couleur « {couleur} » absente de la palette")
         zs = [z for z, o in own.items() if o == i and z != coin and c.part(z) >= PART_MIN_NOM]
         if not zs:
@@ -141,7 +141,12 @@ def nommer(p: Page, c: Carte, own: dict, tem: Temoins) -> tuple[list, list]:
     dehors = any(n in par_nom for n in ("l'herbe", "la mer"))
     if dehors and coin and coin in tem.par_zone and own.get(coin, -1) == -1:
         par_nom.setdefault("le ciel", Partie("le ciel", "the sky", "bleu ciel", 1, [tem.par_zone[coin]]))
-    parties = sorted(par_nom.values(), key=lambda q: q.rang)          # le sujet d'abord, puis le décor
+    # Le sujet d'abord, puis le décor ; dans chacun, l'ordre voulu par la page, puis celui du dessin.
+    ordre = {fr: k for k, fr in enumerate(p.consignes)}
+    for fr in p.consignes:
+        if fr not in par_nom:
+            err.append(f"ordre des consignes : « {fr} » n'est pas une partie de la page")
+    parties = sorted(par_nom.values(), key=lambda q: (q.rang, ordre.get(q.fr, len(ordre))))
     vus = {}
     for q in parties:
         for pt in q.points:

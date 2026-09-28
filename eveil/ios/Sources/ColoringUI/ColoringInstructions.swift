@@ -7,20 +7,25 @@
 // colorier ailleurs ne coûte rien (la consigne se redit, un repère montre où) ; une autre couleur
 // sur la bonne partie, c'est « En jaune ! » et la bonne pastille s'éclaire. La couleur imposée
 // (le soleil jaune) est gardée ; sinon l'atelier en propose une franche, dans un ordre fixe
-// (rien n'est tiré au hasard, docs/EVEIL.md § 4.6). Fonctions pures : testées.
+// (rien n'est tiré au hasard, docs/EVEIL.md § 4.6). Une partie « au choix » laisse l'enfant choisir
+// (« Colorie les mains, de la couleur que tu veux ! ») : pour la peau, on n'impose jamais une
+// couleur. Fonctions pures : testées.
 
 #if canImport(CoreGraphics)
 import CoreGraphics
 
-/// Une consigne : une partie de la page, et la couleur demandée (index dans la palette).
+/// Une consigne : une partie de la page, et la couleur demandée (index dans la palette ; `nil` :
+/// au choix de l'enfant).
 struct ColoringInstruction: Equatable {
     let part: ColoringPart
-    let colorIndex: Int
+    let colorIndex: Int?
 }
 
 enum ColoringInstructions {
     /// Au plus tant de consignes par page : une séance courte, qu'on finit toujours.
     static let maxPerPage = 5
+    /// La « couleur » d'une partie que l'enfant colorie de la couleur qu'il veut.
+    static let anyColor = "au choix"
     /// Les couleurs franches proposées quand la page n'en impose pas, dans cet ordre.
     static let rotation = ["rouge", "bleu", "jaune", "vert", "orange", "violet", "rose", "marron"]
 
@@ -32,6 +37,10 @@ enum ColoringInstructions {
         var next = 0
         var out: [ColoringInstruction] = []
         for part in chosen {
+            if part.color == anyColor {
+                out.append(ColoringInstruction(part: part, colorIndex: nil))
+                continue
+            }
             var name = part.color
             if name == nil {
                 var k = 0
@@ -48,15 +57,22 @@ enum ColoringInstructions {
         return out
     }
 
-    /// « Colorie le soleil en jaune ! » / « Color the sun yellow! »
+    /// « Colorie le soleil en jaune ! » / « Color the sun yellow! » ; au choix : « Colorie les mains,
+    /// de la couleur que tu veux ! » / « Color the hands any color you like! »
     static func text(_ i: ColoringInstruction, palette: [PaintColor], locale: String) -> String {
-        let color = palette[i.colorIndex].name(locale: locale)
-        return locale.hasPrefix("fr") ? "Colorie \(i.part.fr) en \(color) !" : "Color \(i.part.en) \(color)!"
+        let fr = locale.hasPrefix("fr")
+        guard let index = i.colorIndex else {
+            return fr ? "Colorie \(i.part.fr), de la couleur que tu veux !" : "Color \(i.part.en) any color you like!"
+        }
+        let color = palette[index].name(locale: locale)
+        return fr ? "Colorie \(i.part.fr) en \(color) !" : "Color \(i.part.en) \(color)!"
     }
 
     /// Le rappel quand la bonne partie reçoit une autre couleur : « En jaune ! » / « Yellow! »
-    static func colorReminder(_ i: ColoringInstruction, palette: [PaintColor], locale: String) -> String {
-        let color = palette[i.colorIndex].name(locale: locale)
+    /// (aucun quand la couleur est au choix).
+    static func colorReminder(_ i: ColoringInstruction, palette: [PaintColor], locale: String) -> String? {
+        guard let index = i.colorIndex else { return nil }
+        let color = palette[index].name(locale: locale)
         if locale.hasPrefix("fr") { return "En \(color) !" }
         let capitalized = color.prefix(1).uppercased() + String(color.dropFirst())
         return capitalized + "!"

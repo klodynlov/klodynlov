@@ -206,6 +206,7 @@ CIRQUE = page(
     zone(bosses(500, 500, 372, 26, bosses=12, hauteur=0.6, depart=15)),
     detail(etoile(150, 190, 40), etoile(860, 250, 44), etoile(80, 420, 30), etoile(930, 600, 32)),
     detail(etoile(500, 330, 58)),
+    consignes=("le toit",),
 )
 
 

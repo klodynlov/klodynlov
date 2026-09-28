@@ -164,11 +164,13 @@ final class PaintLayer {
         return true
     }
 
-    /// Combien de pixels de la zone ont exactement cette valeur (consignes du mode interactif :
-    /// l'intérieur d'un coup de pinceau et un remplissage ont la couleur pleine).
-    func count(_ value: UInt32, zone: Int, in map: ZoneMap) -> Int {
+    /// Combien de pixels de la zone ont exactement cette valeur (`nil` : n'importe quelle couleur
+    /// posée à plein) — consignes du mode interactif : l'intérieur d'un coup de pinceau et un
+    /// remplissage ont la couleur pleine.
+    func count(_ value: UInt32?, zone: Int, in map: ZoneMap) -> Int {
         let range = map.runRange(of: zone)
         guard !range.isEmpty, map.width == width, map.height == height else { return 0 }
+        let any = value == nil, wanted = value ?? 0
         var n = 0
         map.runStarts.withUnsafeBufferPointer { s in
             map.runLengths.withUnsafeBufferPointer { l in
@@ -177,7 +179,8 @@ final class PaintLayer {
                     var i = Int(S[r])
                     let end = i + Int(L[r])
                     while i < end {
-                        if pixels[i] == value { n &+= 1 }
+                        let v = pixels[i]
+                        if any ? v >= 0xFF00_0000 : v == wanted { n &+= 1 }
                         i &+= 1
                     }
                 }
