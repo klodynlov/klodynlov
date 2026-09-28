@@ -420,6 +420,9 @@ enum PaperScan {
 
     /// Part des pixels de trait (loin du bord) qui sont de l'ENCRE sur le carré redressé : un gris
     /// foncé presque sans couleur (un ciel colorié en rouge, sombre lui aussi, n'en est pas).
+    /// Seul le cœur des traits compte (les 4 voisins sont du trait aussi) : `ZoneMap.rasterize` sans
+    /// anticrénelage donne un trait ~1 px plus large que prévu, ce qui en petit (`searchSide`) dépasse
+    /// le trait imprimé.
     static func match(_ square: [UInt32], labels: [UInt16], size n: Int) -> Double {
         guard n > 4, square.count == n * n, labels.count == n * n else { return 0 }
         var ink = 0, total = 0
@@ -434,7 +437,8 @@ enum PaperScan {
                 for y in m..<(n - m) {
                     for x in m..<(n - m) {
                         let i = y * n + x
-                        guard lab[i] == 0 else { continue }
+                        guard lab[i] == 0, lab[i - 1] == 0, lab[i + 1] == 0,
+                              lab[i - n] == 0, lab[i + n] == 0 else { continue }
                         total += 1
                         let v = sq[i]
                         let r = Double(v & 0xFF), g = Double((v >> 8) & 0xFF), b = Double((v >> 16) & 0xFF)

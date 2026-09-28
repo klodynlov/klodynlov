@@ -113,7 +113,7 @@ iPadOS 27) l'après-midi. Ses retours ont fait le second tour :
   les boucles d'animation SwiftUI faisaient clignoter ou trembler le train. « Réduire les
   animations » fige tout.
 
-**Troisième tour (28/09/2026, session cloud — à compiler et essayer sur le Mac)**, sur ses retours
+**Troisième tour (28/09/2026, session cloud — compilé, testé et installé sur l'iPad le soir même, voir [plus bas](#sur-mac--troisième-tour-compilé-le-28092026))**, sur ses retours
 « voix trop générique : voix féminine naturelle, qui suit les syllabes » et « afficher un décompte
 pour le nombre de fois que l'enfant doit répéter » :
 
@@ -261,6 +261,41 @@ cible iPadOS 17 (celle du paquet), toutes orientations, mascotte (chat chef de g
 vectoriels (en attendant un illustrateur), bruitages synthétisés (en attendant de vrais sons), voix
 du mot = synthèse système (en attendant les enregistrements). Reste : l'Accès guidé à vérifier sur
 l'iPad, les voix, le panel.
+
+## Sur Mac — troisième tour compilé le 28/09/2026
+
+Même Mac (macOS 27.0 26A428 · Xcode 27.0 27A266a · Swift 6.4 · SDK iOS 27.0), tête `51f6238` + correctif.
+
+```bash
+python3 -m unittest discover -s eveil/outils                               # 127 tests
+(cd eveil/reference && python3 -m unittest discover -s wordend -t .)       # 83 tests
+(cd eveil/ios/WordEndCore && swift test)                                   # 30 tests
+(cd eveil/ios && swift test)                                               # 184 tests
+(cd eveil/ios && xcodebuild -scheme EveilTrain-Package \
+    -destination 'generic/platform=iOS Simulator' build)                   # BUILD SUCCEEDED
+```
+
+- **Tout vert, 0 avertissement** (build propre `swift package clean`, puis simulateur iOS et iPad réel) :
+  Python 127 + 83, Swift 30 + 184 (PhraseCore 13, EveilTrain 25, EveilSounds 40, EveilDesign 31,
+  ColoringUI 75 — dont `ColoringInstructionsTests` 8, `ColoringPartsTests` 2, `LivingDrawingTests` 9,
+  `PaperModeTests` 15). Mode papier (VisionKit, `UIPrintInteractionController`), bouton dans la colonne
+  d'outils et dessin vivant **compilés du premier coup**.
+- **Un vrai défaut, trouvé par `testTheRightPageAndNotAnother`** : la reconnaissance de la page en petit
+  (`PaperScan.searchSide`, 256 px) donnait 0,69 pour la bonne page (Python 0,96), et 0,70 même sur le PDF
+  rendu sans photo. Cause : `ZoneMap.rasterize` sans anticrénelage fait un trait ~1 px plus large que
+  `zones.masque_traits` à toutes les tailles (part de trait 0,223/0,167 à 256, 0,120/0,091 à 512,
+  0,146/0,130 à 1024) — sans effet sur les zones (robustesse ± 1 px déjà testée), mais à 256 px ce trait
+  (≈ 7,5 pt) déborde le trait imprimé (5,8 pt) : l'accord comptait ses bords gris. Correctif, Python et
+  Swift : l'accord ne compte que le **cœur** des traits (pixel de trait dont les 4 voisins sont du trait).
+  Bonne page 0,97 (Python 0,999), autre page 0,21 ; à 1024 inchangé (1,0). Seuils et tests inchangés.
+- **Planches** (`EVEIL_RENDER_DIR=/tmp/eveil-rendus swift test --filter 'PaperModeTests|LivingDrawingTests'`) :
+  `papier-lu.png` juste (couleurs sous les traits, grain du crayon, aucun décalage) ; cartes lisibles en
+  portrait et paysage (boutons grisés hors iPad : ni impression ni scanner sur Mac, attendu). Dessin
+  vivant, à revoir (cosmétique) : un nuage qui dérive laisse de petits restes gris de son ancien contour
+  sur le ciel (`vivant-locomotive.png`) ; les ailes du papillon, en battant, découvrent un fond rebouché
+  à l'orange du corps (`vivant-papillon.png`).
+- **iPad réel** (iPad Pro 11" M1) : compilé, signé (équipe en ligne de commande seulement), installé.
+  Mode papier **à essayer avec une vraie imprimante** et de vrais crayons.
 
 ## Sur Mac — compilé et testé le 25/09/2026
 

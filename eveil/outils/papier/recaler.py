@@ -85,7 +85,9 @@ def _pres_des_traits(labels: list[int], n: int, r: int) -> bytearray:
 
 def accord(rect: Image, labels: list[int]) -> float:
     """Part des pixels de trait (loin du bord) qui sont de l'ENCRE sur la photo redressée : un gris
-    foncé presque sans couleur (un ciel colorié en rouge, sombre lui aussi, n'en est pas)."""
+    foncé presque sans couleur (un ciel colorié en rouge, sombre lui aussi, n'en est pas).
+    Seul le cœur des traits compte (les 4 voisins sont du trait aussi) : la carte rastérisée par l'app
+    a son trait ~1 px plus large que celui-ci, ce qui en petit (256 px) dépasse le trait imprimé."""
     n = rect.W
     L = rect.luma()
     zones = sorted(L[i] for i, z in enumerate(labels) if z)
@@ -95,7 +97,8 @@ def accord(rect: Image, labels: list[int]) -> float:
     for y in range(m, n - m):
         for x in range(m, n - m):
             i = y * n + x
-            if labels[i] == 0:
+            if labels[i] == 0 and labels[i - 1] == 0 and labels[i + 1] == 0 \
+                    and labels[i - n] == 0 and labels[i + n] == 0:
                 total += 1
                 r, g, b = rect.px[3 * i], rect.px[3 * i + 1], rect.px[3 * i + 2]
                 if L[i] < ENCRE_CLARTE * papier and max(r, g, b) - min(r, g, b) < ENCRE_CHROMA:

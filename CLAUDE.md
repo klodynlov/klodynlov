@@ -251,7 +251,8 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
   vérifiables). **Décidé par l'utilisateur** : « Remplir d'un toucher » **réglable** dans l'espace des
   grands (`SuiteSettings.tapToFillKey`) et **désactivé par défaut** → pinceau seul tant que l'adulte ne
   l'active pas.
-- 🔊 **Troisième tour (session cloud, 28/09/2026 ; Swift à compiler sur le Mac)**. Demandes : « upgrade au
+- 🔊 **Troisième tour (session cloud, 28/09/2026 ; ✅ compilé, testé et installé sur l'iPad le soir même, voir
+  « Compilé sur le Mac, 28/09 » plus bas)**. Demandes : « upgrade au
   niveau d'OrthoPicto voire plus » (Symbolicone, orthophoniste : livres par son, phrases S-V-C avec pictos
   qui s'animent, 3 niveaux, mode écrit — cf. tranches ci-dessous), puis en cours de route : « voix féminine
   naturelle qui suit les syllabes », « décompte des répétitions », « score selon la prononciation » →
@@ -311,7 +312,7 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     (`sons.lettres_dans_syllabe`, aussi pour les pages de mots : « sac » coloriait le « c »), contrôle
     d'alignement écrit/API (a trouvé « os·trich », « croc·o·dile », corrigés). Lexique des phrases
     + 49 mots des livres (30 qui, 57 quoi ; « les ciseaux » : genre pluriel, jamais sujet).
-    Python : livres 30 tests, phrases 13 ; Swift à compiler (tests `SoundBooksTests`,
+    Python : livres 30 tests, phrases 13 ; Swift compilé le 28/09 (tests `SoundBooksTests`,
     `SoundBooksViewTests`, `SentenceStageTests` + planche `phrase-cartes-ou.png`).
   - 🐞 **L'app se fermait en ouvrant les livres des sons** (retour iPad, 28/09) : en Debug, Swift bâtit
     un littéral géant (`SoundBooksData`, 349 Ko d'un bloc) dans la pile du fil principal → débordement.
@@ -378,7 +379,7 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     la largeur ; sinon la photo = la page ; **feuille de côté ou à l'envers** : 2 sens essayés, ceux qui
     la mettent en portrait, places attendues ramenées sur la photo par `fromUpright`, sans tourner de
     pixel ; le sens gagnant = meilleur accord en 256 px) → homographie (DLT 8×8) → carré redressé à la taille de la
-    carte → **accord** = part des pixels de trait qui sont de l'encre (clarté < 0,4 × papier ET chroma
+    carte → **accord** = part des pixels au cœur des traits (4 voisins de trait) qui sont de l'encre (clarté < 0,4 × papier ET chroma
     < 60 ; seuil 0,5) ; sinon recherche parmi les 70 pages en 256 px → `.otherPage` (l'atelier OUVRE
     cette page, avec sa carte) ; **coups de crayon** : balance des blancs (95e centile, gains 0,8–3),
     colorié si chroma ≥ 45 ou clarté ≤ 150, près d'un trait (0,6 %) chroma ≥ 70 seulement, le reste
@@ -394,6 +395,20 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     littéral par pixel. Relecture indépendante (sous-agent, API vérifiées dans la doc Apple et règles
     du langage dans les sources du compilateur) : **aucune erreur de compilation certaine**. À compiler
     sur le Mac, **puis à essayer avec une vraie imprimante**.
+  - ✅ **Compilé sur le Mac, 28/09/2026 au soir** (macOS 27.0, Xcode 27.0, Swift 6.4, tête `51f6238` +
+    correctif) : Python 127 + 83, Swift `WordEndCore` 30 + paquet `ios` **184** (ColoringUI 75 dont
+    consignes 8, parties 2, vivant 9, papier 15), build simulateur iOS et iPad réel, **0 avertissement**.
+    Mode papier (VisionKit, impression), bouton de la colonne d'outils et dessin vivant compilés du
+    premier coup. **Un vrai défaut** (`testTheRightPageAndNotAnother`) : en petit (256 px) la bonne page
+    ne faisait que 0,69 (Python 0,96 ; 0,70 même sur le PDF rendu sans photo) — `ZoneMap.rasterize`
+    (CoreGraphics sans anticrénelage) fait un trait **~1 px plus large** que `zones.masque_traits` à
+    toutes les tailles (part de trait 0,223/0,167 à 256), sans effet sur les zones, mais à 256 px il
+    déborde le trait imprimé → l'accord comptait les bords gris. Correctif Python + Swift : **accord sur
+    le cœur des traits** (les 4 voisins sont du trait) → 0,97 (Python 0,999), autre page 0,21 ; seuils
+    et tests inchangés. Planches : `papier-lu` juste, cartes lisibles portrait/paysage ; à revoir
+    (cosmétique, dessin vivant) : restes gris de l'ancien contour d'un nuage qui dérive
+    (`vivant-locomotive`), fond sous les ailes du papillon rebouché à l'orange du corps. App installée
+    sur l'iPad ; mode papier à essayer avec une vraie imprimante.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur, photo enregistrée ou convertie en
   fichier interdits) → 0 violation, 8 tests ;
@@ -442,7 +457,9 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : Suite Éveil — **mode papier** (28/09/2026, session cloud : imprimer la
+_Dernière mise à jour mémoire : Suite Éveil — **troisième tour compilé sur le Mac** (28/09/2026 au soir :
+214 tests Swift + 210 Python verts, 0 avertissement ; accord du mode papier calculé sur le cœur des traits ;
+app installée sur l'iPad). Avant : **mode papier** (28/09/2026, session cloud : imprimer la
 page, la colorier aux vrais crayons, la photographier ; l'atelier retrouve les repères, reconnaît la page,
 pose les coups de crayon et le dessin prend vie ; référence Python dans les conditions de l'app, Swift à
 compiler sur le Mac puis à essayer avec une imprimante). Avant : **le dessin prend vie** (28/09/2026, session cloud : au
