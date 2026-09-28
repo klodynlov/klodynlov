@@ -157,7 +157,7 @@ pour le nombre de fois que l'enfant doit répéter » :
   [docs/EVEIL.md § 4.8](../docs/EVEIL.md#48-le-train-des-phrases-demande-du-28092026--au-niveau-dorthopicto-voire-plus)) :
   l'enfant construit une phrase avec des pictos — la locomotive porte « qui ? », un wagon par morceau
   (« fait quoi ? », « quoi ? », « où ? »), couleurs par rôle — et la **scène la joue**, quelle qu'elle
-  soit : 20 verbes animés, 14 sujets, 23 compléments, 8 lieux (31 mises en scène avec « dans, sur, sous, devant, derrière ») (« la vache mange la
+  soit : 20 verbes animés, 30 sujets, 57 compléments, 8 lieux (31 mises en scène avec « dans, sur, sous, devant, derrière ») (« la vache mange la
   bûche », « Lou se cache sous la table »). Trois niveaux (2 wagons, 3 wagons, « où ? ») ; la voix pose
   la question avec ce qui est choisi (« Que fait le chat ? ») et nomme chaque picto ; la phrase se dit
   morceau par morceau puis d'une traite ; toucher un wagon le redit et permet de le changer. Éveil à la
@@ -176,6 +176,14 @@ pour le nombre de fois que l'enfant doit répéter » :
   petit train : wagon du son marqué d'une étoile, **lettres colorées**, voix syllabe par syllabe ;
   c'est **l'adulte qui juge** (« Il l'a dit ! » : le détecteur ne juge que la fin des mots) ;
   « Pour les grands » : l'image sonore du son et une idée de jeu sans écran (propositions à valider).
+- **Les phrases des livres** (la page d'OrthoPicto) : sur l'étagère, trois niveaux — les mots, **les
+  phrases** (« La vache pousse la bûche. »), **« et où ? »** (« Le chat chante dans la niche. »),
+  6 phrases par niveau et par livre, choisies pour porter le son
+  ([`outils/livres/phrases.py`](outils/livres/phrases.py)). L'image de la phrase finie, la voix la lit ;
+  « À toi ! » : l'enfant la **reconstruit** wagon par wagon parmi trois pictos (les cartes « où ? »
+  montrent le sujet dans, sur, sous… le lieu) ; un autre picto est nommé, le bon s'éclaire ; puis la
+  scène **joue** la phrase. Lettres du son colorées à la bonne place (syllabe, puis place du son) ;
+  l'adulte juge → étoiles.
 - **L'atelier de coloriage** (« plus de couleurs, la gomme, un mode interactif au choix ») :
   **24 couleurs** (dont quatre couleurs de peau), toutes visibles d'un coup — 3 rangées de 8 en
   portrait, 6 rangées de 4 en paysage ; la **gomme** rend le papier blanc sans déborder de sa zone

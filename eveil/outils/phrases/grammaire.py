@@ -1,7 +1,7 @@
 """La grammaire du train des phrases : groupes nominaux, morceaux (wagons), phrase entière.
 
-Français : article défini accordé (le / la), ÉLIDÉ devant une voyelle (« l'autruche »,
-« l'os ») ; pas d'article devant un nom propre (« Lou ») ; verbe au présent, 3e personne ;
+Français : article défini accordé (le / la / les), ÉLIDÉ devant une voyelle (« l'autruche »,
+« l'os » ; jamais « les ») ; pas d'article devant un nom propre (« Lou ») ; verbe au présent, 3e personne ;
 lieu = préposition + groupe nominal (« dans la boîte », « derrière l'arbre »).
 Anglais : « the » + nom ; « Lou » ; verbe en -s ; « in / on / under / in front of / behind ».
 La phrase commence par une majuscule et finit par un point. Chaque MORCEAU est le texte
@@ -33,6 +33,8 @@ def groupe_nominal(n: Nom, locale: str) -> str:
     if francais(locale):
         if n.genre == "p":
             return n.fr
+        if n.genre == "pl":
+            return "les " + n.fr
         if n.fr[0].lower() in VOYELLES:
             return "l'" + n.fr
         return ("le " if n.genre == "m" else "la ") + n.fr

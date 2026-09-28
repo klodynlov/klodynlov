@@ -32,8 +32,10 @@ def problemes(verifier_pictos: bool = True) -> list[str]:
     mots = dessins_des_mots()
     dessines = pictos() if verifier_pictos else {}
     for n in NOMS:
-        if n.genre not in ("m", "f", "p"):
+        if n.genre not in ("m", "f", "pl", "p"):
             out.append(f"{n.id}: genre {n.genre!r}")
+        if n.genre == "pl" and "qui" in n.roles:
+            out.append(f"{n.id}: un pluriel ne peut pas être sujet (verbes au singulier)")
         if not n.roles or n.roles - {"qui", "quoi", "ou"}:
             out.append(f"{n.id}: rôles {sorted(n.roles)}")
         if n.regarde not in ("gauche", "droite", "face"):

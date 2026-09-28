@@ -19,6 +19,17 @@ class TestGrammaire(unittest.TestCase):
         self.assertEqual(groupe_nominal(PAR_ID["chat"], "en-US"), "the cat")
         self.assertEqual(groupe_nominal(PAR_ID["lou"], "en-US"), "Lou")
 
+    def test_pluriel_et_mots_des_livres(self):
+        self.assertEqual(groupe_nominal(PAR_ID["ciseaux"], "fr-FR"), "les ciseaux")
+        self.assertEqual(groupe_nominal(PAR_ID["ciseaux"], "en-US"), "the scissors")
+        self.assertEqual(groupe_nominal(PAR_ID["orange"], "fr-FR"), "l'orange")
+        self.assertEqual(groupe_nominal(PAR_ID["araignee"], "fr-FR"), "l'araignée")
+        cartes = [Carte("qui", "girafe"), Carte("verbe", "porter"), Carte("quoi", "ciseaux")]
+        self.assertEqual(phrase(cartes, "fr-FR"), "La girafe porte les ciseaux.")
+        self.assertEqual(phrase(cartes, "en-US"), "The giraffe carries the scissors.")
+        # Un pluriel n'est jamais sujet (les verbes sont au singulier).
+        self.assertTrue(all(n.genre != "pl" for n in noms("qui")))
+
     def test_phrases(self):
         C = Carte
         cas = [
@@ -85,8 +96,9 @@ class TestNiveaux(unittest.TestCase):
                     self.assertEqual(len(set(a)), len(a), "pas de doublon")
 
     def test_le_plateau_tourne(self):
+        # Le plateau avance de 3 sujets par phrase : tous passent en len/3 phrases environ.
         vus = set()
-        for tour in range(6):
+        for tour in range(len(noms("qui")) // 3 + 1):
             vus |= {c.id for c in plateau("qui", 1, tour)}
         self.assertEqual(vus, {n.id for n in noms("qui")}, "en quelques phrases, tout le monde passe")
 

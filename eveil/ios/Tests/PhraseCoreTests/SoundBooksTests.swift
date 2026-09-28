@@ -38,6 +38,54 @@ final class SoundBooksTests: XCTestCase {
         }
     }
 
+    /// Les phrases des livres : la phrase de la référence Python, les lettres du son dans leur
+    /// wagon, la bonne carte parmi trois pictos différents du même rôle.
+    func testBookSentencesMatchPythonAndAreWellFormed() {
+        for book in SoundBooks.all {
+            XCTAssertGreaterThanOrEqual(book.sentences(level: 2).count, 3, book.id)
+            XCTAssertGreaterThanOrEqual(book.sentences(level: 3).count, 3, book.id)
+            XCTAssertEqual(Set(book.sentences.map(\.text)).count, book.sentences.count, "\(book.id) : phrase en double")
+            for s in book.sentences {
+                XCTAssertEqual(PhraseGrammar.sentence(s.cards, locale: book.locale), s.text, book.id)
+                XCTAssertEqual(s.cards.map(\.role), PhraseLevels.roles(level: s.level), s.text)
+                XCTAssertEqual(s.marks.count, s.cards.count, s.text)
+                XCTAssertEqual(s.choices.count, s.cards.count, s.text)
+                XCTAssertTrue(s.marks.contains { $0 != nil }, "\(s.text) : le son est quelque part")
+                for (card, mark) in zip(s.cards, s.marks) {
+                    guard let mark else { continue }
+                    let chunk = PhraseGrammar.chunk(card, locale: book.locale)
+                    guard let range = mark.range(in: chunk) else {
+                        XCTFail("\(s.text) : lettres hors de « \(chunk) »")
+                        continue
+                    }
+                    XCTAssertTrue(chunk[range].allSatisfy(\.isLetter), "\(s.text) : « \(chunk[range]) »")
+                }
+                for (card, choices) in zip(s.cards, s.choices) {
+                    XCTAssertEqual(choices.count, 3, s.text)
+                    XCTAssertEqual(Set(choices).count, 3, s.text)
+                    XCTAssertTrue(choices.contains(card), s.text)
+                    XCTAssertTrue(choices.allSatisfy { $0.role == card.role }, s.text)
+                    for c in choices {
+                        let known = c.role == .verbe ? PhraseLexicon.verb(c.key) != nil : PhraseLexicon.noun(c.key) != nil
+                        XCTAssertTrue(known, "\(s.text) : \(c.key)")
+                    }
+                }
+            }
+        }
+    }
+
+    func testPluralNounPhrase() throws {
+        let scissors = try XCTUnwrap(PhraseLexicon.noun("ciseaux"))
+        XCTAssertEqual(PhraseGrammar.nounPhrase(scissors, locale: "fr-FR"), "les ciseaux")
+        XCTAssertEqual(PhraseGrammar.nounPhrase(scissors, locale: "en-US"), "the scissors")
+        XCTAssertFalse(PhraseLexicon.nouns(.qui).contains { $0.gender == .plural }, "jamais sujet")
+    }
+
+    func testMarkRange() {
+        XCTAssertEqual(SoundMark(start: 5, length: 2).range(in: "la pêche").map { String("la pêche"[$0]) }, "ch")
+        XCTAssertNil(SoundMark(start: 7, length: 2).range(in: "la pêche"))
+    }
+
     func testBooksByLanguage() throws {
         let fr = SoundBooks.books(locale: "fr-FR")
         let en = SoundBooks.books(locale: "en-US")

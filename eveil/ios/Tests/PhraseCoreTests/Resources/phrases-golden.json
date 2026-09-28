@@ -801,23 +801,23 @@
     },
     {
      "role": "quoi",
-     "id": "balle"
+     "id": "papillon"
     }
    ],
    "fr-FR": {
-    "sentence": "L'autruche attrape la balle.",
+    "sentence": "L'autruche attrape le papillon.",
     "chunks": [
      "l'autruche",
      "attrape",
-     "la balle"
+     "le papillon"
     ]
    },
    "en-US": {
-    "sentence": "The ostrich catches the ball.",
+    "sentence": "The ostrich catches the butterfly.",
     "chunks": [
      "the ostrich",
      "catches",
-     "the ball"
+     "the butterfly"
     ]
    }
   },
@@ -833,23 +833,23 @@
     },
     {
      "role": "quoi",
-     "id": "assiette"
+     "id": "glace"
     }
    ],
    "fr-FR": {
-    "sentence": "Le poisson lèche l'assiette.",
+    "sentence": "Le poisson lèche la glace.",
     "chunks": [
      "le poisson",
      "lèche",
-     "l'assiette"
+     "la glace"
     ]
    },
    "en-US": {
-    "sentence": "The fish licks the plate.",
+    "sentence": "The fish licks the ice cream.",
     "chunks": [
      "the fish",
      "licks",
-     "the plate"
+     "the ice cream"
     ]
    }
   },
@@ -961,23 +961,23 @@
     },
     {
      "role": "quoi",
-     "id": "os"
+     "id": "gateau"
     }
    ],
    "fr-FR": {
-    "sentence": "L'oie lèche l'os.",
+    "sentence": "L'oie lèche le gâteau.",
     "chunks": [
      "l'oie",
      "lèche",
-     "l'os"
+     "le gâteau"
     ]
    },
    "en-US": {
-    "sentence": "The goose licks the bone.",
+    "sentence": "The goose licks the cake.",
     "chunks": [
      "the goose",
      "licks",
-     "the bone"
+     "the cake"
     ]
    }
   },
@@ -993,23 +993,23 @@
     },
     {
      "role": "quoi",
-     "id": "saucisse"
+     "id": "rose"
     }
    ],
    "fr-FR": {
-    "sentence": "L'élan sent la saucisse.",
+    "sentence": "L'élan sent la rose.",
     "chunks": [
      "l'élan",
      "sent",
-     "la saucisse"
+     "la rose"
     ]
    },
    "en-US": {
-    "sentence": "The moose smells the sausage.",
+    "sentence": "The moose smells the rose.",
     "chunks": [
      "the moose",
      "smells",
-     "the sausage"
+     "the rose"
     ]
    }
   },
@@ -1025,23 +1025,23 @@
     },
     {
      "role": "quoi",
-     "id": "buche"
+     "id": "valise"
     }
    ],
    "fr-FR": {
-    "sentence": "La souris tire la bûche.",
+    "sentence": "La souris tire la valise.",
     "chunks": [
      "la souris",
      "tire",
-     "la bûche"
+     "la valise"
     ]
    },
    "en-US": {
-    "sentence": "The mouse pulls the log.",
+    "sentence": "The mouse pulls the suitcase.",
     "chunks": [
      "the mouse",
      "pulls",
-     "the log"
+     "the suitcase"
     ]
    }
   },
@@ -1854,7 +1854,7 @@
     },
     {
      "role": "qui",
-     "id": "chat"
+     "id": "fee"
     }
    ]
   },
@@ -2102,7 +2102,7 @@
     },
     {
      "role": "qui",
-     "id": "chat"
+     "id": "fee"
     }
    ]
   },
@@ -2162,6 +2162,10 @@
     {
      "role": "quoi",
      "id": "radis"
+    },
+    {
+     "role": "quoi",
+     "id": "pomme"
     }
    ]
   },
@@ -2189,7 +2193,11 @@
     },
     {
      "role": "quoi",
-     "id": "peche"
+     "id": "pomme"
+    },
+    {
+     "role": "quoi",
+     "id": "banane"
     }
    ]
   },
@@ -2206,6 +2214,10 @@
     {
      "role": "quoi",
      "id": "tasse"
+    },
+    {
+     "role": "quoi",
+     "id": "soupe"
     }
    ]
   },
@@ -2218,6 +2230,10 @@
     {
      "role": "quoi",
      "id": "tasse"
+    },
+    {
+     "role": "quoi",
+     "id": "soupe"
     },
     {
      "role": "quoi",
@@ -2285,7 +2301,7 @@
     },
     {
      "role": "quoi",
-     "id": "bus"
+     "id": "camion"
     }
    ]
   },
@@ -2413,7 +2429,7 @@
     },
     {
      "role": "quoi",
-     "id": "balle"
+     "id": "de"
     }
    ]
   },
@@ -2506,6 +2522,10 @@
     {
      "role": "quoi",
      "id": "fleche"
+    },
+    {
+     "role": "quoi",
+     "id": "papillon"
     }
    ]
   },
@@ -2533,7 +2553,11 @@
     },
     {
      "role": "quoi",
-     "id": "balle"
+     "id": "papillon"
+    },
+    {
+     "role": "quoi",
+     "id": "plume"
     }
    ]
   },
@@ -2558,6 +2582,14 @@
     {
      "role": "quoi",
      "id": "chat"
+    },
+    {
+     "role": "quoi",
+     "id": "fraise"
+    },
+    {
+     "role": "quoi",
+     "id": "gateau"
     }
    ]
   },
@@ -2578,6 +2610,14 @@
     {
      "role": "quoi",
      "id": "chat"
+    },
+    {
+     "role": "quoi",
+     "id": "fraise"
+    },
+    {
+     "role": "quoi",
+     "id": "gateau"
     },
     {
      "role": "quoi",
@@ -2610,6 +2650,10 @@
     {
      "role": "quoi",
      "id": "jus"
+    },
+    {
+     "role": "quoi",
+     "id": "fleur"
     }
    ]
   },
@@ -2637,7 +2681,11 @@
     },
     {
      "role": "quoi",
-     "id": "peche"
+     "id": "fleur"
+    },
+    {
+     "role": "quoi",
+     "id": "rose"
     }
    ]
   },
@@ -2666,6 +2714,10 @@
     {
      "role": "quoi",
      "id": "brosse"
+    },
+    {
+     "role": "quoi",
+     "id": "camion"
     }
    ]
   },
@@ -2693,7 +2745,11 @@
     },
     {
      "role": "quoi",
-     "id": "carrosse"
+     "id": "camion"
+    },
+    {
+     "role": "quoi",
+     "id": "velo"
     }
    ]
   },
@@ -2910,7 +2966,7 @@
     },
     {
      "role": "qui",
-     "id": "chat"
+     "id": "fee"
     }
    ]
   },
@@ -3806,11 +3862,256 @@
    "id": "carrosse",
    "fr-FR": "le carrosse",
    "en-US": "the carriage"
+  },
+  {
+   "id": "fleur",
+   "fr-FR": "la fleur",
+   "en-US": "the flower"
+  },
+  {
+   "id": "fee",
+   "fr-FR": "la fée",
+   "en-US": "the fairy"
+  },
+  {
+   "id": "fusee",
+   "fr-FR": "la fusée",
+   "en-US": "the rocket"
+  },
+  {
+   "id": "fraise",
+   "fr-FR": "la fraise",
+   "en-US": "the strawberry"
+  },
+  {
+   "id": "fourchette",
+   "fr-FR": "la fourchette",
+   "en-US": "the fork"
+  },
+  {
+   "id": "phoque",
+   "fr-FR": "le phoque",
+   "en-US": "the seal"
+  },
+  {
+   "id": "girafe",
+   "fr-FR": "la girafe",
+   "en-US": "the giraffe"
+  },
+  {
+   "id": "velo",
+   "fr-FR": "le vélo",
+   "en-US": "the bike"
+  },
+  {
+   "id": "verre",
+   "fr-FR": "le verre",
+   "en-US": "the glass"
+  },
+  {
+   "id": "valise",
+   "fr-FR": "la valise",
+   "en-US": "the suitcase"
+  },
+  {
+   "id": "cheval",
+   "fr-FR": "le cheval",
+   "en-US": "the horse"
+  },
+  {
+   "id": "jupe",
+   "fr-FR": "la jupe",
+   "en-US": "the skirt"
+  },
+  {
+   "id": "orange",
+   "fr-FR": "l'orange",
+   "en-US": "the orange"
+  },
+  {
+   "id": "cage",
+   "fr-FR": "la cage",
+   "en-US": "the cage"
+  },
+  {
+   "id": "gateau",
+   "fr-FR": "le gâteau",
+   "en-US": "the cake"
+  },
+  {
+   "id": "gomme",
+   "fr-FR": "la gomme",
+   "en-US": "the eraser"
+  },
+  {
+   "id": "guitare",
+   "fr-FR": "la guitare",
+   "en-US": "the guitar"
+  },
+  {
+   "id": "gant",
+   "fr-FR": "le gant",
+   "en-US": "the glove"
+  },
+  {
+   "id": "grenouille",
+   "fr-FR": "la grenouille",
+   "en-US": "the frog"
+  },
+  {
+   "id": "bague",
+   "fr-FR": "la bague",
+   "en-US": "the ring"
+  },
+  {
+   "id": "dragon",
+   "fr-FR": "le dragon",
+   "en-US": "the dragon"
+  },
+  {
+   "id": "dinosaure",
+   "fr-FR": "le dinosaure",
+   "en-US": "the dinosaur"
+  },
+  {
+   "id": "de",
+   "fr-FR": "le dé",
+   "en-US": "the dice"
+  },
+  {
+   "id": "dauphin",
+   "fr-FR": "le dauphin",
+   "en-US": "the dolphin"
+  },
+  {
+   "id": "coq",
+   "fr-FR": "le coq",
+   "en-US": "the rooster"
+  },
+  {
+   "id": "canard",
+   "fr-FR": "le canard",
+   "en-US": "the duck"
+  },
+  {
+   "id": "cle",
+   "fr-FR": "la clé",
+   "en-US": "the key"
+  },
+  {
+   "id": "camion",
+   "fr-FR": "le camion",
+   "en-US": "the truck"
+  },
+  {
+   "id": "crocodile",
+   "fr-FR": "le crocodile",
+   "en-US": "the crocodile"
+  },
+  {
+   "id": "cadeau",
+   "fr-FR": "le cadeau",
+   "en-US": "the gift"
+  },
+  {
+   "id": "sac",
+   "fr-FR": "le sac",
+   "en-US": "the bag"
+  },
+  {
+   "id": "zebre",
+   "fr-FR": "le zèbre",
+   "en-US": "the zebra"
+  },
+  {
+   "id": "rose",
+   "fr-FR": "la rose",
+   "en-US": "the rose"
+  },
+  {
+   "id": "vase",
+   "fr-FR": "le vase",
+   "en-US": "the vase"
+  },
+  {
+   "id": "ciseaux",
+   "fr-FR": "les ciseaux",
+   "en-US": "the scissors"
+  },
+  {
+   "id": "nid",
+   "fr-FR": "le nid",
+   "en-US": "the nest"
+  },
+  {
+   "id": "banane",
+   "fr-FR": "la banane",
+   "en-US": "the banana"
+  },
+  {
+   "id": "pomme",
+   "fr-FR": "la pomme",
+   "en-US": "the apple"
+  },
+  {
+   "id": "pain",
+   "fr-FR": "le pain",
+   "en-US": "the bread"
+  },
+  {
+   "id": "papillon",
+   "fr-FR": "le papillon",
+   "en-US": "the butterfly"
+  },
+  {
+   "id": "parapluie",
+   "fr-FR": "le parapluie",
+   "en-US": "the umbrella"
+  },
+  {
+   "id": "lapin",
+   "fr-FR": "le lapin",
+   "en-US": "the rabbit"
+  },
+  {
+   "id": "soupe",
+   "fr-FR": "la soupe",
+   "en-US": "the soup"
+  },
+  {
+   "id": "moto",
+   "fr-FR": "la moto",
+   "en-US": "the motorbike"
+  },
+  {
+   "id": "mouton",
+   "fr-FR": "le mouton",
+   "en-US": "the sheep"
+  },
+  {
+   "id": "plume",
+   "fr-FR": "la plume",
+   "en-US": "the feather"
+  },
+  {
+   "id": "araignee",
+   "fr-FR": "l'araignée",
+   "en-US": "the spider"
+  },
+  {
+   "id": "champignon",
+   "fr-FR": "le champignon",
+   "en-US": "the mushroom"
+  },
+  {
+   "id": "peigne",
+   "fr-FR": "le peigne",
+   "en-US": "the comb"
   }
  ],
  "counts": {
-  "qui": 14,
-  "quoi": 23,
+  "qui": 30,
+  "quoi": 57,
   "ou": 8,
   "verbs": 20
  }

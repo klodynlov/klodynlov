@@ -46,7 +46,7 @@ def swift_source() -> str:
     ]
     for n in NOMS:
         roles = ", ".join(f".{r}" for r in ("qui", "quoi", "ou") if r in n.roles)
-        out.append(f"        PhraseNoun(id: {_s(n.id)}, drawing: {_s(n.dessin)}, gender: .{ {'m': 'masculine', 'f': 'feminine', 'p': 'proper'}[n.genre] }, "
+        out.append(f"        PhraseNoun(id: {_s(n.id)}, drawing: {_s(n.dessin)}, gender: .{ {'m': 'masculine', 'f': 'feminine', 'pl': 'plural', 'p': 'proper'}[n.genre] }, "
                    f"fr: {_s(n.fr)}, frIPA: {_s(n.fr_api)}, en: {_s(n.en)}, enIPA: {_s(n.en_api)}, "
                    f"roles: [{roles}], facesLeft: {'true' if n.regarde == 'gauche' else 'false'}, "
                    f"prepositions: {_liste(n.prepositions)}),")

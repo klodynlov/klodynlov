@@ -20,14 +20,14 @@ Compile, teste et installe le troisième tour de la Suite Éveil, poussé depuis
    Nouveautés à compiler :
    - la cible PhraseCore ;
    - le train des phrases (SentenceTrainView, SentenceStage, SentenceMotion, PictoArt) ;
-   - les jeux d'écoute (EarGamesView) et les livres des sons (SoundBooksView, PracticeView en juge adulte) ;
+   - les jeux d'écoute (EarGamesView) et les livres des sons (SoundBooksView, PracticeView en juge adulte, BookSentenceView : les phrases des livres, PlaceScene) ;
    - la voix (VoiceCatalog, ModelVoicePlayer) ;
    - le coloriage (24 couleurs, gomme, mode interactif).
    Corrige les erreurs et les avertissements au plus près du code. Interdit :
    - désactiver un test ou élargir une tolérance ;
    - modifier à la main un fichier généré (PictoDessins.swift, PhraseLexiconData.swift, SoundBooksData.swift, PagesDessins.swift). Ils viennent d'eveil/outils : python3 -m <pictos|phrases|livres|coloriages>.generer.
    Si un test révèle un vrai défaut, corrige la source : le Python, puis régénère ; ou bien le Swift.
-3. Planches : EVEIL_RENDER_DIR=/tmp/eveil-rendus swift test --filter SentenceStageTests, puis montre-moi les PNG des phrases jouées (phrase-*.png).
+3. Planches : EVEIL_RENDER_DIR=/tmp/eveil-rendus swift test --filter SentenceStageTests, puis montre-moi les PNG des phrases jouées (phrase-*.png) et des cartes « où ? » (phrase-cartes-ou.png : on doit VOIR dans, sur, sous, devant, derrière).
 4. iPad : ouvre App/EveilTrain.xcodeproj, compile et installe sur mon iPad (commandes xcrun devicectl dans eveil/README.md). L'ID d'équipe Apple ne va jamais dans le dépôt.
 5. Committe et pousse les corrections sur la même branche : git pull avant, jamais de force-push, messages en français. Consigne versions et résultats dans eveil/README.md et CLAUDE.md. Dis-moi combien de tests passent, les avertissements restants et ce qui a été corrigé.
 ~~~

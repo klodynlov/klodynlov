@@ -105,10 +105,8 @@ SONS_EN = (
 # Construire les livres
 # ---------------------------------------------------------------------------
 
-import unicodedata  # noqa: E402
-
 from .mots import TOUS, Mot  # noqa: E402
-from .sons import ou_est  # noqa: E402
+from .sons import lettres_dans_syllabe, ou_est, plier  # noqa: E402
 
 PLACES = ("debut", "milieu", "fin")
 MIN_MOTS = 5
@@ -128,9 +126,7 @@ class Livre:
     pages: tuple
 
 
-def _plier(texte: str) -> str:
-    nfd = unicodedata.normalize("NFD", texte.lower())
-    return "".join(ch for ch in nfd if not unicodedata.combining(ch))
+_plier = plier
 
 
 def lettres_du_son(son: Son, wagon: str) -> str:
@@ -154,7 +150,11 @@ def livres(locale: str, mots: tuple = TOUS) -> list[Livre]:
             ici = ou_est(son.api, api, locale)
             if ici is None:
                 continue
-            pages.append(Page(m, ici.syllabe, ici.position, lettres_du_son(son, wagons[ici.syllabe])))
+            syllabes = [x for x in api.split(".") if x]
+            place = lettres_dans_syllabe(son.api, son.lettres, wagons[ici.syllabe], syllabes[ici.syllabe], locale)
+            wagon = wagons[ici.syllabe]
+            lettres = wagon[place[0]:place[0] + place[1]] if place else lettres_du_son(son, wagon)
+            pages.append(Page(m, ici.syllabe, ici.position, lettres))
         pages.sort(key=lambda pg: (PLACES.index(pg.position), _plier(pg.mot.fr if fr else pg.mot.en)))
         if len(pages) >= MIN_MOTS:
             out.append(Livre(son, tuple(pages)))

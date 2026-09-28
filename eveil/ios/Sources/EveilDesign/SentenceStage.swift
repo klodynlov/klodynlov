@@ -18,6 +18,9 @@ public struct SentenceStage: View {
     public let scene: SentenceScene
     /// L'instant où la phrase a commencé à se jouer (nil : chacun à sa place, au repos).
     public let playStart: Date?
+    /// Sans `playStart` : l'image de la phrase finie (le sujet déjà DANS la niche, au repos),
+    /// plutôt que chacun à sa place de départ (livres des sons : l'enfant la décrit avec les pictos).
+    public let settled: Bool
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var clockOn = false
@@ -25,9 +28,17 @@ public struct SentenceStage: View {
     /// Temps pour aller jusqu'au lieu (niveau 3), avant le verbe.
     static let travel = 1.0
 
-    public init(scene: SentenceScene, playStart: Date?) {
+    public init(scene: SentenceScene, playStart: Date?, settled: Bool = false) {
         self.scene = scene
         self.playStart = playStart
+        self.settled = settled
+    }
+
+    /// L'instant peint quand rien ne joue : `nil` (au départ) ou, `settled`, arrivé au lieu (le
+    /// verbe au repos : chaque mouvement commence au repos).
+    static func restTime(of scene: SentenceScene, settled: Bool) -> Double? {
+        guard settled, scene.verb != nil else { return nil }
+        return scene.place != nil ? travel : 0
     }
 
     /// Durée totale de la scène jouée (trajet jusqu'au lieu compris).
@@ -51,7 +62,7 @@ public struct SentenceStage: View {
                 let t: Double? = playStart.map { start in
                     reduceMotion ? Self.duration(of: scene)
                                  : min(Self.duration(of: scene), max(0, timeline.date.timeIntervalSince(start)))
-                }
+                } ?? Self.restTime(of: scene, settled: settled)
                 StagePainter.paint(context, size: size, scene: scene, t: t)
             }
         }
@@ -65,6 +76,34 @@ public struct SentenceStage: View {
             if left > 0 { try? await Task.sleep(nanoseconds: UInt64(left * 1_000_000_000)) }
             if !Task.isCancelled { clockOn = false }
         }
+        .accessibilityHidden(true)
+    }
+}
+
+/// La carte « où ? » : le lieu, et le sujet posé à l'ancre de la préposition (« dans la niche »,
+/// « sur la niche ») — la préposition se VOIT, sans avoir à lire. Sans sujet : une étoile à l'ancre.
+public struct PlaceScene: View {
+    public let place: String
+    public let preposition: PictoPreposition
+    public let subject: String?
+    public let subjectFacesLeft: Bool
+    public let size: CGFloat
+
+    public init(place: String, preposition: PictoPreposition, subject: String? = nil,
+                subjectFacesLeft: Bool = false, size: CGFloat) {
+        self.place = place
+        self.preposition = preposition
+        self.subject = subject
+        self.subjectFacesLeft = subjectFacesLeft
+        self.size = size
+    }
+
+    public var body: some View {
+        Canvas { context, canvasSize in
+            StagePainter.paintPlace(context, size: canvasSize, place: place, preposition: preposition,
+                                    subject: subject, subjectFacesLeft: subjectFacesLeft)
+        }
+        .frame(width: size, height: size)
         .accessibilityHidden(true)
     }
 }
@@ -198,6 +237,39 @@ enum StagePainter {
         let side = anchor.size * box.height
         return (CGPoint(x: box.minX + anchor.x / 200 * box.width,
                         y: box.minY + anchor.y / 200 * box.height - (1 - feet) * side), side)
+    }
+
+    /// Un lieu (son carré de 200 remplit `size`) et le sujet à l'ancre de la préposition, dans
+    /// l'ordre de l'ancre (derrière, dedans, devant). Au repos : rien ne bouge.
+    static func paintPlace(_ context: GraphicsContext, size: CGSize, place: String, preposition: PictoPreposition,
+                           subject: String?, subjectFacesLeft: Bool) {
+        guard size.width > 1, let drawing = PictoLibrary.drawing(place) else { return }
+        var g = context
+        g.scaleBy(x: size.width / 200, y: size.height / 200)
+        guard let anchor = drawing.anchors[preposition] else {
+            drawing.paint(g, layers: .all)
+            return
+        }
+        let (base, side) = stand(at: anchor, in: CGRect(x: 0, y: 0, width: 200, height: 200))
+        func drawSubject() {
+            if let subject {
+                actor(g, subject, base: base, size: side, pose: ActorPose(), facesLeft: subjectFacesLeft, playing: false)
+            } else {
+                g.fill(P.disk(base.x, base.y - side * 0.45, side * 0.14), with: .color(EveilPalette.wagonLit))
+            }
+        }
+        switch anchor.order {
+        case .behind:
+            drawSubject()
+            drawing.paint(g, layers: .all)
+        case .inside:
+            drawing.paint(g, layers: .back)
+            drawSubject()
+            drawing.paint(g, layers: .front)
+        case .front:
+            drawing.paint(g, layers: .all)
+            drawSubject()
+        }
     }
 
     private static func placeContext(_ g: GraphicsContext, _ box: CGRect) -> GraphicsContext {

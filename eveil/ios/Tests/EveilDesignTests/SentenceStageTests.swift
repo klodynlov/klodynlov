@@ -114,6 +114,37 @@ final class SentenceStageTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(checked, 30, "les lieux du train des phrases ont leurs ancres")
     }
 
+    /// L'image de la phrase finie (livres des sons) : le sujet est déjà à sa place, le verbe au repos.
+    @MainActor
+    func testSettledStillShowsTheSubjectAtItsPlace() {
+        let atPlace = SentenceScene(subject: "fr.vache", verb: "dormir", place: "lieu.niche", preposition: .dans)
+        let withObject = SentenceScene(subject: "fr.minouche", verb: "manger", object: "fr.peche")
+        XCTAssertEqual(SentenceStage.restTime(of: atPlace, settled: true), SentenceStage.travel)
+        XCTAssertEqual(SentenceStage.restTime(of: withObject, settled: true), 0)
+        XCTAssertNil(SentenceStage.restTime(of: atPlace, settled: false))
+        XCTAssertNil(SentenceStage.restTime(of: SentenceScene(subject: "fr.vache"), settled: true))
+    }
+
+    /// Les cartes « où ? » : chaque lieu avec chaque préposition, le chat posé à sa place (planche
+    /// `phrase-cartes-ou.png` : on doit VOIR dans, sur, sous, devant, derrière).
+    @MainActor
+    func testRenderPlaceCards() {
+        let places = PictoLibrary.ids.filter { $0.hasPrefix("lieu.") }
+        XCTAssertGreaterThanOrEqual(places.count, 8)
+        let grid = VStack(spacing: 6) {
+            ForEach(places, id: \.self) { place in
+                HStack(spacing: 6) {
+                    ForEach(PictoPreposition.allCases, id: \.self) { preposition in
+                        PlaceScene(place: place, preposition: preposition, subject: "fr.minouche", size: 120)
+                            .background(Color.white)
+                    }
+                }
+            }
+        }
+        let size = CGSize(width: 5 * 126, height: CGFloat(places.count) * 126)
+        XCTAssertNotNil(RenderSupport.render(grid, size: size, name: "phrase-cartes-ou"))
+    }
+
     /// Planches : cinq instants de quelques phrases (relues à l'œil sur Mac).
     @MainActor
     func testRenderFilmstrips() throws {

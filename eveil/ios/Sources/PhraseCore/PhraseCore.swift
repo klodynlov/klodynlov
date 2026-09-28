@@ -18,7 +18,7 @@ public enum PhraseRole: String, CaseIterable, Sendable {
 }
 
 public enum PhraseGender: String, Sendable {
-    case masculine, feminine, proper
+    case masculine, feminine, plural, proper
 }
 
 /// Un nom : qui ? (sujet), quoi ? (complément), où ? (lieu).
@@ -96,10 +96,11 @@ public enum PhraseGrammar {
 
     static func french(_ locale: String) -> Bool { locale.hasPrefix("fr") }
 
-    /// « le chat », « la vache », « l'autruche », « Lou » ; « the cat », « Lou ».
+    /// « le chat », « la vache », « l'autruche », « les ciseaux », « Lou » ; « the cat », « Lou ».
     public static func nounPhrase(_ n: PhraseNoun, locale: String) -> String {
         if french(locale) {
             if n.gender == .proper { return n.fr }
+            if n.gender == .plural { return "les " + n.fr }
             if let first = n.fr.lowercased().first, vowels.contains(first) { return "l'" + n.fr }
             return (n.gender == .masculine ? "le " : "la ") + n.fr
         }

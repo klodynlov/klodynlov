@@ -9,6 +9,8 @@
 // étoiles, mondes et bestioles comme dans le petit train. Chaque livre reprend où on l'a laissé.
 // « Pour les grands » : l'image sonore du son et une idée de jeu hors écran (propositions à
 // valider par des orthophonistes).
+// En haut, trois niveaux : les mots (le petit train, ci-dessus), les phrases et « et où ? »
+// (`BookSentenceView` : l'image d'une phrase du livre, que l'enfant reconstruit avec les pictos).
 
 #if canImport(SwiftUI) && canImport(SwiftData) && canImport(AVFoundation) && canImport(Observation)
 import EveilDesign
@@ -25,6 +27,8 @@ public struct SoundBooksView: View {
 
     @State private var open: SoundBook?
     @State private var tips: SoundBook?
+    /// Ce qu'on fait dans le livre : 1 les mots, 2 les phrases, 3 « et où ? » (réglage mémorisé).
+    @AppStorage("eveil.book.level") private var level = 1
     @Environment(\.modelContext) private var context
 
     public init(locale: String, parentButtonHidden: Bool = false, onHome: (() -> Void)? = nil) {
@@ -57,7 +61,10 @@ public struct SoundBooksView: View {
                         Text(fr ? "Les livres des sons" : "The sound books")
                             .font(.system(size: 34, weight: .heavy, design: .rounded))
                             .foregroundStyle(EveilPalette.ink)
-                        Spacer()
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                        Spacer(minLength: 8)
+                        levelPicker
                     }
                     ScrollView {
                         LazyVGrid(columns: Array(repeating: GridItem(.fixed(side), spacing: 18), count: columns),
@@ -75,16 +82,40 @@ public struct SoundBooksView: View {
             }
         }
         .fullScreen(item: $open) { book in
-            PracticeView(words: book.words.map(Self.targetWord), locale: book.locale, cabooseSounds: [:],
-                         parentButtonHidden: parentButtonHidden, onHome: { open = nil }, judge: .adult,
-                         targets: Dictionary(book.words.map {
-                             ($0.drawing, WordTarget(wagon: $0.targetWagon, letters: $0.letters))
-                         }, uniquingKeysWith: { first, _ in first }),
-                         title: SoundBooks.title(book), cursorKey: "eveil.book.\(book.id)")
-                .modelContext(context)
+            if level > 1, !book.sentences(level: level).isEmpty {
+                BookSentenceView(book: book, level: level, onClose: { open = nil })
+            } else {
+                PracticeView(words: book.words.map(Self.targetWord), locale: book.locale, cabooseSounds: [:],
+                             parentButtonHidden: parentButtonHidden, onHome: { open = nil }, judge: .adult,
+                             targets: Dictionary(book.words.map {
+                                 ($0.drawing, WordTarget(wagon: $0.targetWagon, letters: $0.letters))
+                             }, uniquingKeysWith: { first, _ in first }),
+                             title: SoundBooks.title(book), cursorKey: "eveil.book.\(book.id)")
+                    .modelContext(context)
+            }
         }
         .sheet(item: $tips) { book in
             BookTips(book: book, locale: locale)
+        }
+    }
+
+    /// Les mots, les phrases, « et où ? » : ce que le livre fait faire (comme les niveaux d'OrthoPicto).
+    private var levelPicker: some View {
+        HStack(spacing: 8) {
+            ForEach(1...3, id: \.self) { n in
+                Button {
+                    level = n
+                } label: {
+                    Text(BookSentenceView.levelName(n, locale: locale))
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .foregroundStyle(n == level ? .white : EveilPalette.ink)
+                        .padding(.horizontal, 16)
+                        .frame(height: 50)
+                        .background(Capsule().fill(n == level ? EveilPalette.go : Color.white.opacity(0.7)))
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(n == level ? .isSelected : [])
+            }
         }
     }
 

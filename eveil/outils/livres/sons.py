@@ -38,6 +38,40 @@ def phonemes(api: str, locale: str) -> list[tuple[str, int]]:
     return out
 
 
+def plier(texte: str) -> str:
+    """Minuscules sans accents, caractère pour caractère (« Bûche » → « buche »)."""
+    nfd = unicodedata.normalize("NFD", texte.lower())
+    return "".join(ch for ch in nfd if not unicodedata.combining(ch))
+
+
+def lettres_dans_syllabe(son: str, graphies: tuple, ecrit: str, api: str, locale: str) -> tuple | None:
+    """Où s'écrit le son dans UNE syllabe écrite : (début, longueur), ou None s'il n'y est pas.
+
+    Toutes les graphies du son sont cherchées dans la syllabe ; on garde celle qui tombe au plus
+    près de la place du son parmi les sons de la syllabe. Ainsi « dan·ces » (/dæn.sɪz/) : le /s/
+    est le premier son de « ces », c'est donc le « c » et pas le « s » final, qui se dit /z/. Puis
+    on l'élargit à la graphie plus longue qui la contient : « pou[ss]e », pas « pous[s]e »."""
+    sons_ = [ph for ph, _ in phonemes(api, locale)]
+    if son not in sons_:
+        return None
+    centre = (sons_.index(son) + 0.5) / len(sons_)
+    plie = plier(ecrit)
+    trouves = []                                   # (début, longueur, rang de la graphie)
+    for rang, g in enumerate(graphies):
+        gp = plier(g)
+        k = plie.find(gp)
+        while k >= 0:
+            trouves.append((k, len(gp), rang))
+            k = plie.find(gp, k + 1)
+    if not trouves:
+        return None
+    k, n, _ = min(trouves, key=lambda t: (abs((t[0] + t[1] / 2) / len(plie) - centre), t[2], t[0]))
+    for k2, n2, _ in sorted(trouves, key=lambda t: (-t[1], t[2], t[0])):
+        if n2 > n and k2 <= k and k2 + n2 >= k + n:
+            return (k2, n2)
+    return (k, n)
+
+
 @dataclass(frozen=True)
 class SonDansMot:
     syllabe: int          # le wagon où il est

@@ -125,7 +125,7 @@ public struct SentenceTrainView: View {
             guard !started else { return }
             started = true
             SoundBoard.shared.isSuspended = false
-            SoundBoard.shared.preload([.crunch, .slurp, .whooshSoft, .splash, .pop, .sparkle, .pok, .bell, .whistle])
+            SoundBoard.shared.preload(SceneSounds.preloaded)
             SoundBoard.shared.preload([.ding], variants: [0, 2, 3, 5])
             reset()
             try? await Task.sleep(nanoseconds: 500_000_000)
@@ -217,7 +217,7 @@ public struct SentenceTrainView: View {
                 HStack(spacing: 14) {
                     ForEach(tray) { card in
                         PictoCard(card: card, side: cardSide, locale: locale, written: written, capitals: capitals,
-                                  color: PhraseTrain.color(card.role)) { choose(card) }
+                                  color: PhraseTrain.color(card.role), subject: subject) { choose(card) }
                             .disabled(speaking)
                     }
                 }
@@ -250,26 +250,13 @@ public struct SentenceTrainView: View {
     // MARK: La scène
 
     private var scene: SentenceScene {
-        var s = SentenceScene()
-        for (k, slot) in slots.enumerated() {
-            guard let card = slot, roles.indices.contains(k) else { continue }
-            switch card.role {
-            case .qui:
-                if let n = PhraseLexicon.noun(card.key) { s.subject = n.drawing; s.subjectFacesLeft = n.facesLeft }
-            case .verbe:
-                s.verb = card.key
-            case .quoi:
-                if let n = PhraseLexicon.noun(card.key) { s.object = n.drawing; s.objectFacesLeft = n.facesLeft }
-            case .ou:
-                if let n = PhraseLexicon.noun(card.key) {
-                    s.place = n.drawing
-                    s.preposition = PictoPreposition(rawValue: card.preposition)
-                }
-            }
-        }
+        var s = SentenceScene(cards: Array(slots.prefix(roles.count)))
         if !complete { s.verb = nil }                 // le verbe se joue quand la phrase est finie
         return s
     }
+
+    /// Le sujet choisi (pour montrer les cartes « où ? » avec lui dedans, dessus…).
+    private var subject: PhraseNoun? { slots.first.flatMap { $0 }.flatMap { PhraseLexicon.noun($0.key) } }
 
     // MARK: Gestes
 
@@ -406,27 +393,76 @@ public struct SentenceTrainView: View {
     }
 
     private func scheduleSounds(for scene: SentenceScene, start: Date) {
-        let subjectSound = scene.subject.flatMap { WordScene.table[$0]?.sound }
         for (time, cue) in SentenceStage.cues(of: scene) {
-            let effect: SoundEffect?
-            switch cue {
-            case .bite: effect = .crunch
-            case .slurp: effect = .slurp
-            case .whoosh, .swish: effect = .whooshSoft
-            case .splash: effect = .splash
-            case .pop: effect = .pop
-            case .sparkle: effect = .sparkle
-            case .hop: effect = .pok
-            case .bell: effect = .bell
-            case .voice: effect = subjectSound
-            case .snore: effect = nil
-            }
-            guard let effect else { continue }
+            guard let effect = SceneSounds.effect(cue, subject: scene.subject) else { continue }
             Task {
                 try? await Task.sleep(nanoseconds: UInt64(max(0, time) * 1_000_000_000))
                 if playStart == start { SoundBoard.shared.play(effect) }
             }
         }
+    }
+}
+
+// MARK: - Partagé avec les phrases des livres des sons
+
+/// Les bruitages d'une scène jouée : un son par repère du mouvement (la voix du sujet, s'il en a une).
+enum SceneSounds {
+    static let preloaded: [SoundEffect] = [.crunch, .slurp, .whooshSoft, .splash, .pop, .sparkle, .pok, .bell, .whistle]
+
+    static func effect(_ cue: SceneSound, subject: String?) -> SoundEffect? {
+        switch cue {
+        case .bite: return .crunch
+        case .slurp: return .slurp
+        case .whoosh, .swish: return .whooshSoft
+        case .splash: return .splash
+        case .pop: return .pop
+        case .sparkle: return .sparkle
+        case .hop: return .pok
+        case .bell: return .bell
+        case .voice: return subject.flatMap { WordScene.table[$0]?.sound }
+        case .snore: return nil
+        }
+    }
+}
+
+extension SentenceScene {
+    /// La scène d'une phrase de pictos : le sujet, le verbe, l'objet ou le lieu (et sa préposition).
+    init(cards: [PhraseCard?]) {
+        self.init()
+        for card in cards.compactMap({ $0 }) {
+            switch card.role {
+            case .qui:
+                if let n = PhraseLexicon.noun(card.key) { subject = n.drawing; subjectFacesLeft = n.facesLeft }
+            case .verbe:
+                verb = card.key
+            case .quoi:
+                if let n = PhraseLexicon.noun(card.key) { object = n.drawing; objectFacesLeft = n.facesLeft }
+            case .ou:
+                if let n = PhraseLexicon.noun(card.key) {
+                    place = n.drawing
+                    preposition = PictoPreposition(rawValue: card.preposition)
+                }
+            }
+        }
+    }
+}
+
+/// Un texte de wagon dont les lettres du son sont colorées (livres des sons). `capitals` : tout en
+/// capitales ; `capitalizeFirst` : majuscule au début (début de phrase) ; `suffix` : le point final.
+func soundText(_ text: String, mark: SoundMark?, capitals: Bool, capitalizeFirst: Bool = false,
+               suffix: String = "") -> Text {
+    var parts: [(String, Bool)] = [(text, false)]
+    if let mark, let range = mark.range(in: text) {
+        parts = [(String(text[..<range.lowerBound]), false), (String(text[range]), true),
+                 (String(text[range.upperBound...]), false)]
+    }
+    if capitalizeFirst, let k = parts.firstIndex(where: { !$0.0.isEmpty }) {
+        parts[k].0 = parts[k].0.prefix(1).uppercased() + parts[k].0.dropFirst()
+    }
+    parts.append((suffix, false))
+    return parts.reduce(Text("")) { text, part in
+        let shown = capitals ? part.0.uppercased() : part.0
+        return text + (part.1 ? Text(shown).foregroundStyle(WagonCar.soundColor) : Text(shown))
     }
 }
 
@@ -442,6 +478,8 @@ struct PhraseTrain: View {
     let locale: String
     let written: Bool
     let capitals: Bool
+    /// Livres des sons : les lettres du son dans le texte de chaque wagon.
+    var marks: [SoundMark?] = []
     let onTap: (Int) -> Void
 
     static let height: CGFloat = 200
@@ -465,7 +503,8 @@ struct PhraseTrain: View {
                 ForEach(Array(roles.enumerated()), id: \.offset) { k, role in
                     PhraseCar(role: role, card: slots.indices.contains(k) ? slots[k] : nil, isEngine: k == 0,
                               current: editing == k, lit: lit == k, locale: locale, written: written,
-                              capitals: capitals)
+                              capitals: capitals, mark: marks.indices.contains(k) ? marks[k] : nil,
+                              subject: slots.first.flatMap { $0 }.flatMap { PhraseLexicon.noun($0.key) })
                         .contentShape(Rectangle())
                         .onTapGesture { onTap(k) }
                 }
@@ -487,6 +526,9 @@ struct PhraseCar: View {
     let locale: String
     let written: Bool
     let capitals: Bool
+    var mark: SoundMark? = nil
+    /// Le sujet de la phrase : le wagon « où ? » le montre dans le lieu.
+    var subject: PhraseNoun? = nil
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
@@ -508,12 +550,11 @@ struct PhraseCar: View {
                     .frame(width: 160, height: 138)
                     .offset(x: 8, y: 10)
                 if let card {
-                    PictoView(id: PhraseLexicon.drawing(of: card), size: written ? 96 : 116)
+                    CardPicture(card: card, subject: subject, size: written ? 96 : 116)
                         .frame(width: 160, height: written ? 104 : 130)
                         .offset(x: 8, y: written ? 12 : 14)
                     if written {
-                        Text(capitals ? PhraseGrammar.chunk(card, locale: locale).uppercased()
-                                      : PhraseGrammar.chunk(card, locale: locale))
+                        soundText(PhraseGrammar.chunk(card, locale: locale), mark: mark, capitals: capitals)
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(EveilPalette.ink)
                             .lineLimit(1)
@@ -555,12 +596,16 @@ struct PictoCard: View {
     let written: Bool
     let capitals: Bool
     let color: Color
+    /// Le sujet de la phrase : une carte « où ? » le montre dans, sur, sous… le lieu.
+    var subject: PhraseNoun? = nil
+    /// Éclairée : c'est celle qu'on cherche (après un autre choix, jamais « faux »).
+    var hint = false
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             VStack(spacing: 2) {
-                PictoView(id: PhraseLexicon.drawing(of: card), size: side * (written ? 0.78 : 0.92))
+                CardPicture(card: card, subject: subject, size: side * (written ? 0.78 : 0.92))
                 if written {
                     Text(capitals ? PhraseGrammar.chunk(card, locale: locale).uppercased()
                                   : PhraseGrammar.chunk(card, locale: locale))
@@ -574,12 +619,32 @@ struct PictoCard: View {
             .background(
                 RoundedRectangle(cornerRadius: side * 0.16, style: .continuous).fill(.white)
                     .overlay(RoundedRectangle(cornerRadius: side * 0.16, style: .continuous)
-                        .stroke(color, lineWidth: 4))
-                    .shadow(color: .black.opacity(0.12), radius: 6, y: 3)
+                        .stroke(hint ? EveilPalette.wagonLit : color, lineWidth: hint ? 9 : 4))
+                    .shadow(color: hint ? EveilPalette.wagonLit.opacity(0.8) : .black.opacity(0.12),
+                            radius: hint ? 14 : 6, y: 3)
             )
+            .scaleEffect(hint ? 1.08 : 1)
+            .animation(.spring(duration: 0.35, bounce: 0.4), value: hint)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(PhraseGrammar.chunk(card, locale: locale))
+    }
+}
+
+/// L'image d'une carte : son picto ; pour « où ? », le lieu avec le sujet posé à sa place.
+struct CardPicture: View {
+    let card: PhraseCard
+    var subject: PhraseNoun? = nil
+    let size: CGFloat
+
+    var body: some View {
+        if card.role == .ou, let preposition = PictoPreposition(rawValue: card.preposition),
+           let place = PhraseLexicon.noun(card.key) {
+            PlaceScene(place: place.drawing, preposition: preposition, subject: subject?.drawing,
+                       subjectFacesLeft: subject?.facesLeft ?? false, size: size)
+        } else {
+            PictoView(id: PhraseLexicon.drawing(of: card), size: size)
+        }
     }
 }
 
@@ -589,14 +654,14 @@ struct SentenceStrip: View {
     let locale: String
     let capitals: Bool
     let lit: Int?
+    /// Livres des sons : les lettres du son dans chaque morceau.
+    var marks: [SoundMark?] = []
 
     var body: some View {
         HStack(spacing: 10) {
             ForEach(Array(cards.enumerated()), id: \.offset) { k, card in
-                let text = PhraseGrammar.chunk(card, locale: locale)
-                let shown = (k == 0 ? text.prefix(1).uppercased() + text.dropFirst() : text)
-                    + (k == cards.count - 1 ? "." : "")
-                Text(capitals ? shown.uppercased() : shown)
+                soundText(PhraseGrammar.chunk(card, locale: locale), mark: marks.indices.contains(k) ? marks[k] : nil,
+                          capitals: capitals, capitalizeFirst: k == 0, suffix: k == cards.count - 1 ? "." : "")
                     .font(.system(size: 30, weight: .heavy, design: .rounded))
                     .foregroundStyle(EveilPalette.ink)
                     .padding(.horizontal, 10)

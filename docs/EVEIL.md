@@ -243,7 +243,7 @@ par le proxy de la session). Ce que fait la suite :
 
 | OrthoPicto | Le train des phrases |
 |---|---|
-| Une page = une phrase fixe et sa vidéo | **N'importe quelle phrase se joue** : un mouvement par verbe (20), qui marche avec 14 sujets, 23 compléments, 8 lieux (3 ou 4 prépositions chacun, 31 mises en scène) — « la vache nage dans la baignoire » : on rit, on ne se trompe jamais |
+| Une page = une phrase fixe et sa vidéo | **N'importe quelle phrase se joue** : un mouvement par verbe (20), qui marche avec 30 sujets, 57 compléments, 8 lieux (3 ou 4 prépositions chacun, 31 mises en scène) — « la vache nage dans la baignoire » : on rit, on ne se trompe jamais |
 | Pictos à associer | La phrase est un **train** : la locomotive porte « qui ? », un wagon par morceau (« fait quoi ? », « quoi ? », « où ? »), couleurs par rôle comme les tableaux de communication (qui en jaune, fait quoi en vert, quoi en orange, où en bleu — *à valider*) |
 | 3 niveaux | **2 wagons** (le chat dort) · **3 wagons** (le chat mange la pêche) · **« où ? »** (le chat dort dans la boîte : dans, sur, sous, devant, derrière) |
 | — | La voix **pose la question avec ce qui est choisi** (« Que fait le chat ? », « Le chat mange quoi ? ») et nomme chaque picto ; la phrase se dit morceau par morceau (chaque wagon s'allume), puis d'une traite pendant la scène |
@@ -251,7 +251,7 @@ par le proxy de la session). Ce que fait la suite :
 | — | **Aucun micro** : c'est l'adulte qui touche « Il l'a dite ! » quand l'enfant redit la phrase (juge adulte, § 4.7) → étoiles de jeu, jamais de note |
 | Vidéos avec LSF | **Non repris** : on n'invente pas de signes ; à faire avec des vidéos réelles et un·e locuteur·rice de LSF |
 | Voix enregistrées | Synthèse vocale provisoire (la meilleure voix féminine installée) |
-| Livres par son, conseils | **Les livres des sons** (§ 4.9) : un livre par son, calculé à partir des mots dessinés ; image sonore et idée de jeu pour l'adulte |
+| Livres par son, conseils | **Les livres des sons** (§ 4.9) : un livre par son, calculé à partir des mots dessinés ; ses **phrases illustrées à reconstruire** (2 niveaux) ; image sonore et idée de jeu pour l'adulte |
 
 Mise en œuvre vérifiable : lexique, grammaire (articles, élision « l'autruche », noms propres,
 capitales), niveaux et plateaux en Python ([`eveil/outils/phrases`](../eveil/outils/phrases)),
@@ -280,6 +280,28 @@ des phrases ; un mot ajouté n'entre dans les livres qu'avec son dessin (`livres
 - « **Pour les grands** » : l'image sonore du son (« le serpent : sss ! ») et une idée de jeu
   **sans écran**. Des propositions, à valider par des orthophonistes (§ 8), avec le rappel que le
   jeu n'évalue pas le langage de l'enfant.
+
+**Les phrases des livres** (la page d'OrthoPicto : une phrase illustrée, reconstruite avec les
+pictos, puis l'image s'anime). Sur l'étagère, trois niveaux : **les mots** (ci-dessus), **les
+phrases** (« qui + fait quoi + quoi » : « La vache pousse la bûche. ») et **« et où ? »** (« qui +
+fait quoi + où » : « Le chat chante dans la niche. »). Chaque livre a 6 phrases par niveau,
+choisies ([`eveil/outils/livres/phrases.py`](../eveil/outils/livres/phrases.py)) parmi toutes celles
+que le train des phrases sait jouer : au moins un nom qui porte le son, le plus de morceaux qui le
+portent (verbe et préposition compris, jamais l'article), sans reprendre toujours le même sujet ;
+ordre fixe.
+- Une page : l'**image de la phrase finie** (le chat déjà dans la niche) ; la voix la lit, les
+  wagons s'allument ; puis « À toi ! » : le train se vide, et pour chaque wagon **trois pictos** (le
+  bon et deux autres du même rôle). Pour « où ? », le même lieu avec une autre préposition et un
+  autre lieu ; les cartes « où ? » **montrent le sujet à sa place** (dans, sur, sous…) : la
+  préposition se voit, sans lire.
+- Un autre picto : la voix le **nomme** (« Ça, c'est la bûche. ») et le bon s'éclaire — jamais
+  « non ». La phrase complète : elle se redit morceau par morceau, puis la scène la **joue**.
+- **Les lettres du son** sont colorées dans les wagons et la phrase écrite, à la bonne place : la
+  syllabe qui porte le son, et dans elle la graphie la plus proche de la place du son (« dan·**c**es » :
+  le /s/ est le « c », pas le « s » final qui se dit /z/). Deux découpages de mots incohérents
+  (« os·trich », « croc·o·dile ») ont été trouvés ainsi et corrigés ; un contrôle le vérifie.
+- L'adulte juge (« Il l'a dite ! ») → étoiles de jeu. Le lexique du train des phrases s'est
+  enrichi des mots dessinés pour les livres : 30 sujets, 57 compléments (propositions, § 8).
 
 **Les jeux d'écoute** (« voire plus »), sans micro, avec les dessins et les bruitages de l'app :
 - le **loto des bruits** — un bruit (« meuh ») et trois images : laquelle fait ce bruit ? Toucher

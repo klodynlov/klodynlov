@@ -280,7 +280,7 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     morceau (fait quoi / quoi / où), couleurs par rôle (jaune/vert/orange/bleu, à valider) ; niveaux
     2 wagons · 3 wagons · « où ? » ; plateau ≤ 6 pictos en rotation fixe ; la voix pose la question avec
     ce qui est choisi puis dit la phrase morceau par morceau, et la **scène la joue** (n'importe quelle
-    phrase : 20 verbes, 14 sujets, 23 compléments, 8 lieux / 31 mises en scène). Mode écrit (mots,
+    phrase : 20 verbes, 30 sujets, 57 compléments, 8 lieux / 31 mises en scène). Mode écrit (mots,
     phrase colorée, capitales au choix, réglages dans l'espace des grands) ; « Il l'a dite ! » (juge
     adulte) → étoiles. Python : `outils/phrases` (lexique, grammaire FR/EN avec élision, niveaux,
     vecteurs de parité → cible Swift pure **`PhraseCore`** + `PhraseCoreTests`) et `outils/pictos`
@@ -301,6 +301,19 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     lapin, moto, nuage (air d'icône), nez.
     18 tests Python (`livres/test_livres.py`) ; Swift : `SoundBooksTests`, `SoundBooksViewTests`,
     `AdultJudgeTests`.
+  - ✅ **Phrases des livres** (choix de l'utilisateur, 28/09, « la suite ») : étagère à 3 niveaux (mots ·
+    phrases qui+verbe+quoi · « et où ? » qui+verbe+où), 6 phrases/niveau/livre choisies par
+    `livres/phrases.py` (glouton déterministe : ≥ 1 nom avec le son, noms ×2, verbe/prép. ×1, pénalité
+    de reprise) → `SoundBookSentence` (cartes, marques, 3 choix/wagon, texte de parité) dans
+    `SoundBooksData.swift`. `BookSentenceView` : image de la phrase finie (`SentenceStage(settled:)`),
+    la voix la lit, « À toi ! », reconstruction parmi 3 pictos (« où ? » = même lieu autre préposition
+    + autre lieu ; `PlaceScene` montre le sujet à l'ancre), autre picto nommé + bon éclairé, puis la
+    scène joue ; « Il l'a dite ! » → étoiles. Lettres du son : **syllabe puis place du son**
+    (`sons.lettres_dans_syllabe`, aussi pour les pages de mots : « sac » coloriait le « c »), contrôle
+    d'alignement écrit/API (a trouvé « os·trich », « croc·o·dile », corrigés). Lexique des phrases
+    + 49 mots des livres (30 qui, 57 quoi ; « les ciseaux » : genre pluriel, jamais sujet).
+    Python : livres 30 tests, phrases 13 ; Swift à compiler (tests `SoundBooksTests`,
+    `SoundBooksViewTests`, `SentenceStageTests` + planche `phrase-cartes-ou.png`).
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur interdits) → 0 violation, 7 tests ;
   ignore les produits de compilation (`.build/`, `.swiftpm/`, `DerivedData/`).
@@ -348,9 +361,11 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : Suite Éveil — **troisième tour, tranches 2 et 4** (28/09/2026, session
-cloud : train des phrases avec scènes animées, jeux d'écoute, livres des sons complets — 16 + 15 livres,
-57 nouveaux pictos ; à compiler sur le Mac). Avant : **tranche 1** (voix féminine choisie et syllabique, décompte des répétitions,
+_Dernière mise à jour mémoire : Suite Éveil — **phrases des livres** (28/09/2026, session cloud : 3 niveaux
+par livre, 6 phrases à reconstruire par niveau, cartes « où ? » avec le sujet à sa place, lettres du son
+alignées syllabe par syllabe ; à compiler sur le Mac). Avant : **troisième tour, tranches 2 et 4**
+(train des phrases avec scènes animées, jeux d'écoute, livres des sons complets — 16 + 15 livres,
+57 nouveaux pictos ; `swift test` remis en marche sur le Mac par la session locale, icône de l'app). Avant : **tranche 1** (voix féminine choisie et syllabique, décompte des répétitions,
 étoiles de jeu, syllabes au toucher, dings, coloriage 24 couleurs + gomme + mode interactif).
 Avant : **atelier de coloriage : 70 pages en 7 albums** (25/09/2026,
 session cloud : 55 pages dessinées et vérifiées en Python dans `eveil/outils/coloriages/`, un dessin par mot

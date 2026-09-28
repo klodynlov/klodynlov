@@ -28,7 +28,7 @@ PREP_EN = {"dans": "in", "sur": "on", "sous": "under", "devant": "in front of", 
 class Nom:
     id: str
     dessin: str
-    genre: str              # m | f | p (nom propre : pas d'article)
+    genre: str              # m | f | pl (les) | p (nom propre : pas d'article)
     fr: str
     fr_api: str
     en: str
@@ -123,22 +123,75 @@ VERBES = (
     Verbe("se_cacher", "se cache", "sə kaʃ", "hides", "haɪdz", False, prepositions=("dans", "sous", "derriere")),
     # --- avec complément (niveau 2) ; « manger » et « boire » aussi seuls au niveau 1
     Verbe("manger", "mange", "mɑ̃ʒ", "eats", "its", True, absolu=True,
-          objets=("peche", "saucisse", "glace", "os", "radis")),
-    Verbe("boire", "boit", "bwa", "drinks", "dɹɪŋks", True, absolu=True, objets=("jus", "tasse")),
+          objets=("peche", "saucisse", "glace", "os", "radis", "pomme", "banane", "fraise", "gateau",
+                  "pain", "orange", "champignon", "soupe")),
+    Verbe("boire", "boit", "bwa", "drinks", "dɹɪŋks", True, absolu=True, objets=("jus", "tasse", "soupe")),
     Verbe("pousser", "pousse", "pus", "pushes", "ˈpʊʃɪz", True,
-          objets=("bus", "carrosse", "buche", "trousse", "balle", "cloche")),
+          objets=("bus", "carrosse", "buche", "trousse", "balle", "cloche", "camion", "velo", "valise", "cage",
+                  "moto", "cadeau", "fusee")),
     Verbe("porter", "porte", "pɔʁt", "carries", "ˈkæɹiz", True,
-          objets=("trousse", "buche", "os", "tasse", "cloche", "peche", "brosse")),
+          objets=("trousse", "buche", "os", "tasse", "cloche", "peche", "brosse", "valise", "sac", "cadeau",
+                  "parapluie", "guitare", "gateau", "vase", "cage", "fleur", "nid", "pain", "jupe", "bague",
+                  "gant", "ciseaux", "cle", "fusee", "fourchette", "verre", "peigne", "gomme")),
     Verbe("lancer", "lance", "lɑ̃s", "throws", "θɹoʊz", True,
-          objets=("balle", "os", "peche", "fleche", "brosse", "trousse")),
+          objets=("balle", "os", "peche", "fleche", "brosse", "trousse", "de", "pomme", "orange", "plume",
+                  "gant", "cle", "gomme", "peigne")),
     Verbe("laver", "lave", "lav", "washes", "ˈwɑʃɪz", True,
-          objets=("tasse", "assiette", "chien", "vache", "bus", "brosse", "carrosse")),
+          objets=("tasse", "assiette", "chien", "vache", "bus", "brosse", "carrosse", "velo", "camion", "moto",
+                  "verre", "fourchette", "jupe", "gant", "peigne", "vase", "ciseaux", "bague")),
     Verbe("attraper", "attrape", "atʁap", "catches", "ˈkætʃɪz", True,
-          objets=("balle", "mouche", "os", "peche", "fleche")),
-    Verbe("lecher", "lèche", "lɛʃ", "licks", "lɪks", True, objets=("glace", "os", "assiette", "chat")),
-    Verbe("sentir", "sent", "sɑ̃", "smells", "smɛlz", True, objets=("peche", "saucisse", "glace", "radis", "jus")),
-    Verbe("tirer", "tire", "tiʁ", "pulls", "pʊlz", True, objets=("carrosse", "bus", "buche", "trousse", "brosse")),
+          objets=("balle", "mouche", "os", "peche", "fleche", "papillon", "plume", "cle", "pomme", "orange",
+                  "de")),
+    Verbe("lecher", "lèche", "lɛʃ", "licks", "lɪks", True,
+          objets=("glace", "os", "assiette", "chat", "fraise", "gateau")),
+    Verbe("sentir", "sent", "sɑ̃", "smells", "smɛlz", True,
+          objets=("peche", "saucisse", "glace", "radis", "jus", "fleur", "rose", "fraise", "pomme", "orange",
+                  "gateau", "pain", "soupe", "champignon", "banane")),
+    Verbe("tirer", "tire", "tiʁ", "pulls", "pʊlz", True,
+          objets=("carrosse", "bus", "buche", "trousse", "brosse", "camion", "velo", "valise", "sac", "cage",
+                  "moto", "parapluie")),
 )
+
+# --- Les mots dessinés pour les livres des sons (outils/livres/mots.py) qui entrent aussi dans
+# les phrases : leur rôle, et le sens de leur dessin (les animaux de profil regardent vers la
+# gauche). Les autres (le feu, la vague, le genou, la neige, la dent, le nez, le nuage, la lune)
+# restent des mots de livre. Un nom au pluriel (« les ciseaux ») n'est jamais sujet : les verbes
+# sont au singulier.
+DES_LIVRES = {
+    # qui ?
+    "fee": ("qui", "face"), "phoque": ("qui", "gauche"), "girafe": ("qui", "gauche"),
+    "cheval": ("qui", "gauche"), "grenouille": ("qui", "face"), "dragon": ("qui", "gauche"),
+    "dinosaure": ("qui", "gauche"), "dauphin": ("qui", "gauche"), "coq": ("qui", "gauche"),
+    "canard": ("qui", "gauche"), "crocodile": ("qui", "gauche"), "zebre": ("qui", "gauche"),
+    "lapin": ("qui", "gauche"), "mouton": ("qui", "gauche"), "araignee": ("qui", "face"),
+    "papillon": ("qui quoi", "face"),
+    # quoi ?
+    "fleur": ("quoi", "face"), "fusee": ("quoi", "face"), "fraise": ("quoi", "face"),
+    "fourchette": ("quoi", "face"), "velo": ("quoi", "face"), "verre": ("quoi", "face"),
+    "valise": ("quoi", "face"), "jupe": ("quoi", "face"), "orange": ("quoi", "face"),
+    "cage": ("quoi", "face"), "gateau": ("quoi", "face"), "gomme": ("quoi", "face"),
+    "guitare": ("quoi", "face"), "gant": ("quoi", "face"), "bague": ("quoi", "face"),
+    "de": ("quoi", "face"), "cle": ("quoi", "face"), "camion": ("quoi", "gauche"),
+    "cadeau": ("quoi", "face"), "sac": ("quoi", "face"), "rose": ("quoi", "face"),
+    "vase": ("quoi", "face"), "ciseaux": ("quoi", "face"), "nid": ("quoi", "face"),
+    "banane": ("quoi", "face"), "pomme": ("quoi", "face"), "pain": ("quoi", "face"),
+    "parapluie": ("quoi", "face"), "soupe": ("quoi", "face"), "moto": ("quoi", "gauche"),
+    "plume": ("quoi", "face"), "champignon": ("quoi", "face"), "peigne": ("quoi", "face"),
+}
+
+
+def _des_livres() -> tuple:
+    from livres.mots import NOUVEAUX
+    out = []
+    for m in NOUVEAUX:
+        if m.id in DES_LIVRES:
+            roles, regarde = DES_LIVRES[m.id]
+            out.append(_nom(m.id, m.dessin, m.genre, m.fr, m.fr_api.replace(".", ""),
+                            m.en, m.en_api.replace(".", ""), roles, regarde))
+    return tuple(out)
+
+
+NOMS = NOMS + _des_livres()
 
 PAR_ID = {n.id: n for n in NOMS}
 VERBE_PAR_ID = {v.id: v for v in VERBES}

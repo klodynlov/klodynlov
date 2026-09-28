@@ -13,6 +13,7 @@ from pathlib import Path
 
 from .livres import livres
 from .mots import TOUS
+from .phrases import phrases_du_livre
 from .verifier import mots_dessines, problemes
 
 RACINE = Path(__file__).resolve().parents[2]
@@ -24,13 +25,20 @@ def _s(v: str) -> str:
     return '"' + v.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
+def _carte(c) -> str:
+    prep = f", preposition: {_s(c.preposition)}" if c.preposition else ""
+    return f"PhraseCard(.{c.role}, {_s(c.id)}{prep})"
+
+
 def swift_source(mots: tuple = TOUS) -> str:
     out = [
         "// SoundBooksData.swift — FICHIER GÉNÉRÉ par eveil/outils/livres/generer.py : ne pas modifier à la main.",
         "//",
         "// Les livres des sons : un livre par son, calculé à partir des mots dessinés (au début, au",
-        "// milieu, à la fin), avec le wagon du son et ses lettres ; une image sonore et une idée de jeu",
-        "// pour l'adulte (propositions à valider par des orthophonistes, docs/EVEIL.md § 8).",
+        "// milieu, à la fin), avec le wagon du son et ses lettres ; ses phrases (niveau 2 : qui + fait",
+        "// quoi + quoi ; niveau 3 : qui + fait quoi + où), avec les lettres du son dans chaque wagon et",
+        "// les pictos proposés ; une image sonore et une idée de jeu pour l'adulte (propositions à",
+        "// valider par des orthophonistes, docs/EVEIL.md § 8).",
     ]
     if len(mots) < len(TOUS):
         out.append(f"// EN COURS : {len(mots)} mots sur {len(TOUS)} ont déjà leur dessin ; les livres grandiront.")
@@ -53,6 +61,16 @@ def swift_source(mots: tuple = TOUS) -> str:
                 out.append(f"                      SoundBookWord(id: {_s(m.id)}, drawing: {_s(m.dessin)}, "
                            f"text: {_s(texte)}, ipa: {_s(api)}, wagons: [{wag}], targetWagon: {pg.wagon}, "
                            f"letters: {_s(pg.lettres)}, position: .{ {'debut': 'start', 'milieu': 'middle', 'fin': 'end'}[pg.position] }),")
+            out.append("                  ], sentences: [")
+            for ph in phrases_du_livre(son, loc):
+                marques = ", ".join("nil" if m is None else f"SoundMark(start: {m.debut}, length: {m.longueur})"
+                                    for m in ph.marques)
+                choix = ", ".join("[" + ", ".join(_carte(c) for c in ch) + "]" for ch in ph.choix)
+                out.append(f"                      SoundBookSentence(level: {ph.niveau}, "
+                           f"cards: [{', '.join(_carte(c) for c in ph.cartes)}],")
+                out.append(f"                                        marks: [{marques}],")
+                out.append(f"                                        choices: [{choix}],")
+                out.append(f"                                        text: {_s(ph.texte)}),")
             out.append("                  ]),")
     out += ["    ]", "}", ""]
     return "\n".join(out)

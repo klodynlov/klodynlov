@@ -18,6 +18,35 @@ final class SoundBooksViewTests: XCTestCase {
         }
     }
 
+    /// Chaque phrase de livre se joue : un sujet, un verbe qui bouge, l'objet ou le lieu dessiné,
+    /// et l'ancre de la préposition (« dans la niche » : le sujet sait où se mettre).
+    func testEveryBookSentenceCanBePlayed() {
+        for book in SoundBooks.all {
+            for sentence in book.sentences {
+                let scene = SentenceScene(cards: sentence.cards)
+                XCTAssertNotNil(scene.subject, sentence.text)
+                XCTAssertTrue(scene.verb.map { SentenceMotion.verbs.contains($0) } ?? false, sentence.text)
+                if sentence.level == 2 {
+                    XCTAssertTrue(scene.object.map(PictoLibrary.isDrawn) ?? false, sentence.text)
+                } else {
+                    let place = scene.place.flatMap(PictoLibrary.drawing)
+                    XCTAssertNotNil(scene.preposition.flatMap { place?.anchors[$0] }, sentence.text)
+                }
+                for choices in sentence.choices {
+                    for card in choices {
+                        XCTAssertTrue(PictoLibrary.isDrawn(PhraseLexicon.drawing(of: card)), "\(sentence.text) : \(card.key)")
+                    }
+                }
+            }
+        }
+    }
+
+    func testLevelNames() {
+        XCTAssertEqual(BookSentenceView.levelName(1, locale: "fr-FR"), "Les mots")
+        XCTAssertEqual(BookSentenceView.levelName(2, locale: "fr-FR"), "Les phrases")
+        XCTAssertEqual(BookSentenceView.levelName(3, locale: "en-US"), "And where?")
+    }
+
     @MainActor
     func testBookWordBecomesATrainWord() throws {
         for book in SoundBooks.all {
