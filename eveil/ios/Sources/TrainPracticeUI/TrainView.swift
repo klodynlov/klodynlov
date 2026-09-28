@@ -25,6 +25,10 @@ public struct TrainView: View {
     public var scale: CGFloat = 1
     /// Vrai : le train quitte la gare (vers la gauche) — le voyage vers un autre monde.
     public var departing = false
+    /// Toucher un wagon fait entendre sa syllabe ; le fourgon, sa consonne (28/09/2026).
+    /// Absent (nil) : le train ne réagit pas au toucher (vignette de l'accueil).
+    public var onTapWagon: ((Int) -> Void)?
+    public var onTapCaboose: (() -> Void)?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// Mouvement piloté par l'HORLOGE : l'instant d'entrée en gare et de départ.
@@ -38,7 +42,8 @@ public struct TrainView: View {
     static let leaveDuration = 1.1
 
     public init(wagons: [String], lit: [Bool], cabooseLabel: String?, caboose: CabooseState,
-                showsLetters: Bool = true, scale: CGFloat = 1, departing: Bool = false) {
+                showsLetters: Bool = true, scale: CGFloat = 1, departing: Bool = false,
+                onTapWagon: ((Int) -> Void)? = nil, onTapCaboose: (() -> Void)? = nil) {
         self.wagons = wagons
         self.lit = lit
         self.cabooseLabel = cabooseLabel
@@ -46,6 +51,8 @@ public struct TrainView: View {
         self.showsLetters = showsLetters
         self.scale = scale
         self.departing = departing
+        self.onTapWagon = onTapWagon
+        self.onTapCaboose = onTapCaboose
     }
 
     // Dimensions de base (avant `scale`).
@@ -80,6 +87,7 @@ public struct TrainView: View {
                     ForEach(Array(wagons.enumerated()), id: \.offset) { index, label in
                         WagonCar(label: label, lit: lit.indices.contains(index) && lit[index],
                                  showsLetters: showsLetters, travel: x)
+                            .modifier(TapIfPossible(action: onTapWagon.map { tap -> () -> Void in { tap(index) } }))
                     }
                     .animation(reduceMotion ? nil : .spring(duration: 0.45), value: lit)
                     if let cabooseLabel, hasCaboose {
@@ -89,6 +97,7 @@ public struct TrainView: View {
                                 ? (1 - cos(inner.date.timeIntervalSinceReferenceDate * 2 * .pi / 1.6)) / 2 : 0
                             CabooseCar(label: cabooseLabel, state: caboose, showsLetters: showsLetters, travel: x)
                                 .scaleEffect(1 + 0.06 * breath, anchor: .bottom)
+                                .modifier(TapIfPossible(action: onTapCaboose))
                         }
                         .padding(.leading, cabooseGap)
                         .animation(reduceMotion ? nil : .spring(duration: 0.55, bounce: 0.35), value: caboose)
@@ -153,6 +162,21 @@ public struct TrainView: View {
             }
         }
         return parts.joined(separator: ", ")
+    }
+}
+
+/// Un toucher seulement s'il y a quelque chose à faire : sinon le train laisse passer le
+/// doigt (dans la carte de l'accueil, c'est la carte entière qui est un bouton).
+struct TapIfPossible: ViewModifier {
+    let action: (() -> Void)?
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if let action {
+            content.contentShape(Rectangle()).onTapGesture(perform: action)
+        } else {
+            content
+        }
     }
 }
 

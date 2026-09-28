@@ -26,7 +26,12 @@
 //     d'échec, après trop d'essais ;
 //   • « plus c'est bien répété, plus de points » : chaque essai rapporte des étoiles
 //     de jeu (`Stars.earned` : mot entier 3, sans la fin 2, syllabe en moins 1), qui
-//     s'envolent du train vers le compteur — jamais un score de langage, jamais de perte.
+//     s'envolent du train vers le compteur — jamais un score de langage, jamais de perte ;
+//   • « entendre les syllabes quand on les touche » : toucher un wagon fait dire SA
+//     syllabe (`wagonSegments`), le fourgon sa consonne et sa vapeur — hors écoute ;
+//   • « chaque syllabe bien prononcée émet un son de validation » : dès la fin de
+//     l'écoute (le micro ne doit jamais entendre le jeu), un ding par wagon allumé, en
+//     arpège, puis le « chhh » du fourgon accroché.
 // Fin de séance ritualisée (`SessionPolicy`) + une « mission » hors écran.
 //
 // Mode démo (espace parent, ou argument de lancement `-eveil.demoMode 1`) : pas de
@@ -87,6 +92,9 @@ public struct PracticeView: View {
     /// Étoiles de la séance, et la volée en vol (du train vers le compteur).
     @State private var sessionStars = 0
     @State private var burst: StarBurst?
+    /// Le wagon (ou le fourgon) que l'enfant vient de toucher : il s'allume seul pendant sa syllabe.
+    @State private var touchedWagon: Int?
+    @State private var touchedCaboose = false
 
     public init(words: [TargetWord], locale: String, cabooseSounds: [String: CabooseSound],
                 policy: SessionPolicy = SessionPolicy(), parentButtonHidden: Bool = false,
@@ -257,10 +265,10 @@ public struct PracticeView: View {
                 .animation(.easeInOut(duration: 0.4), value: departing)
                 Spacer(minLength: 20)
                 TrainView(wagons: word.wagons, lit: litWagons, cabooseLabel: word.caboose,
-                          caboose: cabooseState, scale: trainScale, departing: departing)
+                          caboose: cabooseState, scale: trainScale, departing: departing,
+                          onTapWagon: hearWagon, onTapCaboose: hearCaboose)
                     .id(word.id)
                     .frame(maxWidth: .infinity)
-                    .allowsHitTesting(false)
                 HStack(spacing: 24) {
                     if plan.target > 1 {
                         RepetitionMeter(plan: plan, locale: locale)
@@ -346,14 +354,16 @@ public struct PracticeView: View {
     // Le modèle allume les wagons avec ses syllabes ; aperçu en direct pendant l'écoute ;
     // retour final ensuite.
     private var litWagons: [Bool] {
+        if let touchedWagon { return word.wagons.indices.map { $0 == touchedWagon } }
         if let feedback { return feedback.litWagons }
         if let modelLit { return word.wagons.indices.map { $0 < modelLit } }
         return word.wagons.indices.map { $0 < listener.litWagons }
     }
 
     private var cabooseState: CabooseState {
-        if let feedback { return feedback.caboose }
         guard word.coda != nil else { return .none }
+        if touchedCaboose { return .hooked }
+        if let feedback { return feedback.caboose }
         if modelLit != nil { return modelHooked ? .hooked : .waiting }
         return listener.cabooseHeard ? .hooked : .waiting
     }
@@ -363,12 +373,15 @@ public struct PracticeView: View {
     private func present(_ w: TargetWord) async {
         guard step == .continue else { return }
         feedback = nil
+        touchedWagon = nil
+        touchedCaboose = false
         listener.reset()
         SoundBoard.shared.isSuspended = true           // le mot modèle, puis l'écoute : silence
         let wordScene = WordScene.forWord(w)
         SoundBoard.shared.preload([wordScene.sound, .whistle] + [WordScene.hookSound(coda: w.coda)].compactMap { $0 })
         SoundBoard.shared.preload([WordScene.sound(of: wordScene.critter)], variants: Array(0..<wordScene.count))
         SoundBoard.shared.preload([.twinkle], variants: Array(0..<Stars.max))
+        SoundBoard.shared.preload([.ding], variants: Self.syllableNotes)
         modelPlaying = true
         voice.voiceIdentifier = voiceId
         // TODO(contenu) : remplacer par les enregistrements validés (voix humaine FR/EN).
@@ -442,10 +455,17 @@ public struct PracticeView: View {
             attempt += 1                              // la relance vient de l'enfant (« À toi ! »)
         }
         let hook = verdict.kind == .complete ? WordScene.hookSound(coda: current.coda) : nil
+        let validated = fb.litWagons.filter { $0 }.count
         giveStars(Stars.earned(for: verdict, hasCaboose: current.coda != nil))
         Task {
+            // L'écoute est finie : le train « rejoue » ses wagons, un ding par syllabe bien dite.
+            SoundBoard.shared.isSuspended = false
+            for k in 0..<validated {
+                SoundBoard.shared.play(.ding, variant: Self.syllableNotes[k % Self.syllableNotes.count])
+                try? await Task.sleep(nanoseconds: 170_000_000)
+            }
             if let hook {
-                try? await Task.sleep(nanoseconds: 250_000_000)
+                try? await Task.sleep(nanoseconds: validated > 0 ? 80_000_000 : 250_000_000)
                 SoundBoard.shared.play(hook)          // « chhh » : le fourgon s'accroche
             }
             if fb.mascot == .modelWord {
@@ -511,6 +531,39 @@ public struct PracticeView: View {
         try? await Task.sleep(nanoseconds: reduceMotion ? 200_000_000 : 1_500_000_000)   // entrée en gare
         traveling = false
         await present(word)
+    }
+
+    /// Les notes des syllabes validées : do, mi, sol, do (arpège montant de la gamme de `ding`).
+    static let syllableNotes = [0, 2, 3, 5]
+
+    /// L'enfant touche un wagon : la voix dit SA syllabe, le wagon s'allume seul le temps de la dire.
+    /// Jamais pendant l'écoute ni pendant le modèle (tour de parole).
+    private func hearWagon(_ k: Int) {
+        guard !listening, !modelPlaying, !traveling, word.wagonSegments.indices.contains(k) else { return }
+        let segment = word.wagonSegments[k]
+        let current = word.id
+        touchedCaboose = false
+        touchedWagon = k
+        Task {
+            voice.voiceIdentifier = voiceId
+            await voice.speak(segment.text, locale: locale, ipa: segment.ipa, pace: .syllable)
+            if touchedWagon == k && word.id == current { touchedWagon = nil }
+        }
+    }
+
+    /// L'enfant touche le fourgon : sa vapeur (« chhh ») ou son serpent (« sss »), puis la voix
+    /// dit la consonne.
+    private func hearCaboose() {
+        guard !listening, !modelPlaying, !traveling, let segment = word.cabooseSegment else { return }
+        let current = word.id
+        touchedWagon = nil
+        touchedCaboose = true
+        if let hook = WordScene.hookSound(coda: word.coda) { SoundBoard.shared.play(hook) }
+        Task {
+            voice.voiceIdentifier = voiceId
+            await voice.speak(segment.text, locale: locale, ipa: segment.ipa, pace: .syllable)
+            if word.id == current { touchedCaboose = false }
+        }
     }
 
     /// Les étoiles d'un essai s'envolent du train ; le compteur monte à chaque étoile posée.

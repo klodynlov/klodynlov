@@ -8,7 +8,8 @@ from pathlib import Path
 from wordend import golden
 from wordend.bench import (Gate, build_demo_corpus, cohen_kappa, evaluate_corpus, read_annotations,
                            read_wav, wilson, write_wav)
-from wordend.lexicon import custom_word, ipa_syllables, load_locale, problems, voice_segments
+from wordend.lexicon import (caboose_segment, custom_word, ipa_syllables, load_locale, problems, voice_segments,
+                             wagon_segments)
 from wordend.synth import LIBRARY, synthesize, utterance
 
 
@@ -45,6 +46,23 @@ class TestLexicons(unittest.TestCase):
                 self.assertEqual(len(segs), len(w.wagons), w.id)
                 self.assertTrue(all(s.ipa for s in segs), w.id)
                 self.assertEqual("".join(s.ipa for s in segs), "".join(ipa_syllables(w.ipa)), w.id)
+
+    def test_touching_a_wagon_says_its_syllable(self):
+        """Toucher un wagon fait entendre SA syllabe ; le fourgon, sa consonne."""
+        minouche = load_locale("fr-FR").by_id("fr.minouche")
+        self.assertEqual([(s.text, s.ipa) for s in wagon_segments(minouche)], [("mi", "mi"), ("nou", "nu")])
+        self.assertEqual((caboose_segment(minouche).text, caboose_segment(minouche).ipa), ("ch", "ʃ"))
+        tasse = load_locale("fr-FR").by_id("fr.tasse")
+        self.assertEqual([(s.text, s.ipa) for s in wagon_segments(tasse)], [("ta", "ta")])
+        self.assertEqual(caboose_segment(tasse).ipa, "s")
+        for locale in ("fr-FR", "en-US"):
+            for w in load_locale(locale).words:
+                wagons = wagon_segments(w)
+                self.assertEqual(len(wagons), len(w.wagons), w.id)
+                self.assertTrue(all(s.ipa for s in wagons), w.id)
+                # Les wagons + le fourgon redonnent exactement le mot.
+                self.assertEqual("".join(s.ipa for s in wagons) + caboose_segment(w).ipa,
+                                 "".join(ipa_syllables(w.ipa)), w.id)
 
     def test_voice_without_ipa_reads_the_wagons(self):
         w = custom_word("Minouche", ["Mi", "nou"], "S", "fr-FR")

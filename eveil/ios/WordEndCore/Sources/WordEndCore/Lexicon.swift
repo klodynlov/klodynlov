@@ -70,6 +70,29 @@ public extension TargetWord {
     }
 }
 
+public extension TargetWord {
+    /// Chaque wagon SEUL, pour l'entendre quand l'enfant le touche (28/09/2026) : la
+    /// dernière syllabe sans la consonne finale — elle est dans le fourgon (miroir de
+    /// `wagon_segments`).
+    var wagonSegments: [VoiceSegment] {
+        let syllables = ipa.map(ipaSyllables) ?? []
+        guard syllables.count == wagons.count else {
+            return wagons.map { VoiceSegment(text: $0, ipa: nil) }
+        }
+        var out = zip(wagons, syllables).map { VoiceSegment(text: $0.0, ipa: $0.1) }
+        if let coda, let sound = Lexicon.codaIPA[coda], let last = out.last?.ipa, last.hasSuffix(sound) {
+            out[out.count - 1].ipa = String(last.dropLast(sound.count))
+        }
+        return out
+    }
+
+    /// Le fourgon seul : sa consonne (« ch » → /ʃ/, « sse » → /s/).
+    var cabooseSegment: VoiceSegment? {
+        guard let coda, let caboose, let sound = Lexicon.codaIPA[coda] else { return nil }
+        return VoiceSegment(text: caboose, ipa: sound)
+    }
+}
+
 public struct Lexicon: Codable, Equatable, Sendable {
     public var schema: String
     public var locale: String

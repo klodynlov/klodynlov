@@ -120,6 +120,27 @@ def voice_segments(word: TargetWord) -> list[VoiceSegment]:
     return out
 
 
+def wagon_segments(word: TargetWord) -> list[VoiceSegment]:
+    """Chaque wagon SEUL, pour l'entendre quand l'enfant le touche (demande de
+    l'utilisateur, 28/09/2026) : la dernière syllabe sans la consonne finale — elle est
+    dans le fourgon (« mi », « nou » ; le fourgon : « ch »)."""
+    syllables = ipa_syllables(word.ipa) if word.ipa else []
+    if len(syllables) != len(word.wagons):
+        return [VoiceSegment(w, None) for w in word.wagons]
+    out = [VoiceSegment(w, syl) for w, syl in zip(word.wagons, syllables)]
+    sound = CODA_IPA.get(word.coda or "")
+    if sound and out[-1].ipa and out[-1].ipa.endswith(sound):
+        out[-1] = VoiceSegment(out[-1].text, out[-1].ipa[: -len(sound)])
+    return out
+
+
+def caboose_segment(word: TargetWord) -> VoiceSegment | None:
+    """Le fourgon seul : sa consonne (« ch » → /ʃ/, « sse » → /s/)."""
+    if word.coda is None or word.caboose is None:
+        return None
+    return VoiceSegment(word.caboose, CODA_IPA[word.coda])
+
+
 def problems(lex: Lexicon) -> list[str]:
     """Contrôles de cohérence (vides = lexique sain)."""
     out = []

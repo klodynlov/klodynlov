@@ -217,6 +217,25 @@ final class LexiconTests: XCTestCase {
         XCTAssertEqual(ipaSyllables("duʃ"), ["duʃ"])
     }
 
+    /// Toucher un wagon fait entendre SA syllabe ; le fourgon, sa consonne (miroir de
+    /// `test_touching_a_wagon_says_its_syllable`).
+    func testTouchingAWagonSaysItsSyllable() throws {
+        let fr = try load("fr-FR")
+        let minouche = try XCTUnwrap(fr.word(id: "fr.minouche"))
+        XCTAssertEqual(minouche.wagonSegments, [VoiceSegment(text: "mi", ipa: "mi"), VoiceSegment(text: "nou", ipa: "nu")])
+        XCTAssertEqual(minouche.cabooseSegment, VoiceSegment(text: "ch", ipa: "ʃ"))
+        let tasse = try XCTUnwrap(fr.word(id: "fr.tasse"))
+        XCTAssertEqual(tasse.wagonSegments, [VoiceSegment(text: "ta", ipa: "ta")])
+        XCTAssertEqual(tasse.cabooseSegment?.ipa, "s")
+        for locale in ["fr-FR", "en-US"] {
+            for w in try load(locale).words {
+                XCTAssertEqual(w.wagonSegments.count, w.wagons.count, w.id)
+                let whole = w.wagonSegments.compactMap(\.ipa).joined() + (w.cabooseSegment?.ipa ?? "")
+                XCTAssertEqual(whole, ipaSyllables(w.ipa ?? "").joined(), w.id)
+            }
+        }
+    }
+
     func testCustomFamilyWord() throws {
         let w = try customWord(text: "Minouche", wagons: ["Mi", "nou"], coda: "S", locale: "fr-FR")
         XCTAssertEqual(w.nuclei, 2)

@@ -266,6 +266,9 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     `Stars.earned` (3/2/2/1/0, jamais de perte ; `StarsView` : volée du train au compteur, trésor sur
     l'accueil, masquable/vidable). Réf. Python `policy.py`/`lexicon.py` → **82 tests** ; miroirs Swift
     dans `WordEndCore` + `VoiceCatalogTests`.
+  - ✅ Toucher un wagon = sa syllabe (`wagonSegments`, dernière sans la coda), le fourgon = vapeur +
+    consonne (`cabooseSegment`) ; hors écoute/modèle. Dings de validation (arpège do-mi-sol-do) par
+    wagon allumé, JOUÉS APRÈS l'écoute (jamais micro ouvert : le détecteur les entendrait). 83 tests Python.
   - ✅ Coloriage : palette **24 couleurs** (4 peaux ; 3×8 portrait, 6×4 paysage ; `WorkshopLayout`
     recalculé, tests de mise en page à jour), **gomme** (`PaintLayer.transparent`, pochoir, rayon 0,04),
     dessins/page suivante dans l'en-tête, **mode interactif** (`SuiteSettings.coloringInteractiveKey`,

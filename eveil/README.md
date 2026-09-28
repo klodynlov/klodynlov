@@ -144,7 +144,15 @@ pour le nombre de fois que l'enfant doit répéter » :
   total) s'affiche sur l'accueil et en fin de voyage ; l'adulte peut masquer les étoiles ou vider le
   trésor. Ce n'est **pas** un score de langage (pas de pourcentage, de courbe, de détail par son, ni
   d'export — [docs/EVEIL.md § 7.3](../docs/EVEIL.md#73-la-frontière-du-dispositif-médical)).
-  Référence : `policy.stars_for` ; 82 tests Python (69 → 82).
+  Référence : `policy.stars_for`.
+- **Toucher les syllabes** (« entendre les syllabes quand on les touche ») : toucher un wagon fait
+  dire SA syllabe (la dernière sans la consonne finale, qui est dans le fourgon : « mi », « nou ») ;
+  toucher le fourgon fait sa vapeur (« chhh ») ou son serpent (« sss ») et la voix dit la consonne.
+  Jamais pendant l'écoute ni pendant le modèle. Référence : `lexicon.wagon_segments`,
+  `caboose_segment` (wagons + fourgon = le mot, vérifié sur les 45 mots).
+- **Un son pour chaque syllabe bien dite** : le micro ne doit jamais entendre le jeu (il prendrait
+  un « ding » pour une syllabe) ; donc, dès la fin de l'écoute, le train rejoue ses wagons — un ding
+  par wagon allumé, en arpège (do, mi, sol, do), puis le « chhh » du fourgon accroché.
 - **L'atelier de coloriage** (« plus de couleurs, la gomme, un mode interactif au choix ») :
   **24 couleurs** (dont quatre couleurs de peau), toutes visibles d'un coup — 3 rangées de 8 en
   portrait, 6 rangées de 4 en paysage ; la **gomme** rend le papier blanc sans déborder de sa zone
