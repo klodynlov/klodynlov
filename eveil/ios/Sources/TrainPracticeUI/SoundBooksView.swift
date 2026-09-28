@@ -43,7 +43,7 @@ public struct SoundBooksView: View {
     public var body: some View {
         GeometryReader { geo in
             let columns = geo.size.width > geo.size.height ? 6 : 4
-            let side = min(170, (geo.size.width - 60 - CGFloat(columns - 1) * 18) / CGFloat(columns))
+            let side = max(60, min(170, (geo.size.width - 60 - CGFloat(columns - 1) * 18) / CGFloat(columns)))
             ZStack {
                 SceneryView()
                 VStack(spacing: 16) {

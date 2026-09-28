@@ -130,6 +130,22 @@ class TestEnCours(unittest.TestCase):
                 self.assertGreaterEqual(len(b.pages), MIN_MOTS, b.son.etiquette)
                 self.assertTrue(all(pg.mot in mots for pg in b.pages), b.son.etiquette)
 
+    def test_jamais_un_litteral_geant(self):
+        """L'app se fermait en ouvrant les livres : 349 Ko de littéral dans un seul `static let`
+        débordaient la pile en Debug. Désormais `all` n'appelle que des constructeurs, un par livre."""
+        from .generer import MAX_PAR_LITTERAL, swift_source
+        source = swift_source(TOUS)
+        debut = source.index("public static let all")
+        tableau = source[debut:source.index("    ]", debut)]
+        self.assertNotIn("SoundBook(", tableau)
+        n = sum(len(livres(loc)) for loc in ("fr-FR", "en-US"))
+        self.assertEqual(source.count("private static func book"), n)
+        self.assertEqual(source.count("private static func words"), n)
+        self.assertEqual(source.count("private static func sentences"), n)
+        for loc in ("fr-FR", "en-US"):
+            for b in livres(loc):
+                self.assertLessEqual(len(b.pages), MAX_PAR_LITTERAL, b.son.etiquette)
+
     def test_l_entete_dit_si_c_est_en_cours(self):
         from .generer import swift_source
         self.assertNotIn("EN COURS", swift_source(TOUS))
