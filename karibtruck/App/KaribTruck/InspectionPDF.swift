@@ -39,7 +39,7 @@ struct InspectionPDF {
     // MARK: - Sections
 
     private func cover(_ w: inout Writer) {
-        w.banner("KaribBanner")                         // logo de marque en tête du dossier
+        w.banner("KaribBanner", widthFraction: 0.5)     // logo de marque, réduit et centré
         w.text("Dossier de contrôle HACCP", font: .boldSystemFont(ofSize: 24))
         w.text("Food truck KaribTruck — registres d'hygiène (PMS)", font: .systemFont(ofSize: 13), color: .darkGray)
         w.space(10)
@@ -248,12 +248,13 @@ private struct Writer {
     mutating func ensure(_ h: CGFloat) { if y + h > bottom { newPage() } }
     mutating func space(_ h: CGFloat) { y += h }
 
-    /// Dessine une image (ex. le logo) sur toute la largeur utile, hauteur proportionnelle.
-    mutating func banner(_ named: String, gap: CGFloat = 10) {
+    /// Dessine une image (ex. le logo) centrée, à une fraction de la largeur utile.
+    mutating func banner(_ named: String, widthFraction: CGFloat = 1, gap: CGFloat = 10) {
         guard let img = UIImage(named: named), img.size.width > 0 else { return }
-        let h = width * img.size.height / img.size.width
+        let w = width * widthFraction
+        let h = w * img.size.height / img.size.width
         ensure(h)
-        img.draw(in: CGRect(x: margin, y: y, width: width, height: h))
+        img.draw(in: CGRect(x: margin + (width - w) / 2, y: y, width: w, height: h))
         y += h + gap
     }
 
