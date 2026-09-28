@@ -1,50 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 510" width="1600" height="510">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 360" width="1600" height="360">
 <defs><radialGradient id="sun" cx="0.5" cy="0.45" r="0.55">
 <stop offset="0" stop-color="#FFE23A"/><stop offset="0.6" stop-color="#FF9E1B"/><stop offset="1" stop-color="#FF6A13"/>
 </radialGradient></defs>
-<rect width="1600" height="510" fill="#ED0F7C"/>
-<circle cx="1220" cy="250" r="195" fill="url(#sun)"/>
-<path d="M1300,472 C1330,322 1320,245 1360,105" fill="none" stroke="#8A5A2E" stroke-width="22" stroke-linecap="round"/><line x1="1306" y1="380" x2="1324" y2="380" stroke="#71481F" stroke-width="3.0"/><line x1="1318" y1="307" x2="1336" y2="307" stroke="#71481F" stroke-width="3.0"/><line x1="1330" y1="233" x2="1348" y2="233" stroke="#71481F" stroke-width="3.0"/><line x1="1340" y1="171" x2="1358" y2="171" stroke="#71481F" stroke-width="3.0"/>
-<path d="M1360,105 Q1304,76 1225,217 Q1325,119 1360,105 Z" fill="#2AA24E"/>
-<path d="M1360,105 Q1309,40 1196,116 Q1299,87 1360,105 Z" fill="#2AA24E"/>
-<path d="M1360,105 Q1333,18 1232,36 Q1300,54 1360,105 Z" fill="#2AA24E"/>
-<path d="M1360,105 Q1365,13 1307,-11 Q1319,27 1360,105 Z" fill="#2AA24E"/>
-<path d="M1360,105 Q1395,24 1395,-13 Q1348,14 1360,105 Z" fill="#2AA24E"/>
-<path d="M1360,105 Q1418,53 1481,34 Q1384,18 1360,105 Z" fill="#2AA24E"/>
-<path d="M1360,105 Q1414,90 1508,125 Q1406,43 1360,105 Z" fill="#2AA24E"/>
-<path d="M1360,105 Q1388,114 1470,200 Q1407,70 1360,105 Z" fill="#2AA24E"/>
-<circle cx="1346" cy="121" r="11" fill="#7A4A22"/><circle cx="1374" cy="123" r="11" fill="#7A4A22"/><circle cx="1360" cy="131" r="11" fill="#7A4A22"/>
-<path d="M1360,105 Q1314,97 1225,217" fill="none" stroke="#178038" stroke-width="4.0" stroke-linecap="round"/>
-<path d="M1360,105 Q1304,63 1196,116" fill="none" stroke="#178038" stroke-width="4.0" stroke-linecap="round"/>
-<path d="M1360,105 Q1317,36 1232,36" fill="none" stroke="#178038" stroke-width="4.0" stroke-linecap="round"/>
-<path d="M1360,105 Q1342,20 1307,-11" fill="none" stroke="#178038" stroke-width="4.0" stroke-linecap="round"/>
-<path d="M1360,105 Q1372,19 1395,-13" fill="none" stroke="#178038" stroke-width="4.0" stroke-linecap="round"/>
-<path d="M1360,105 Q1401,35 1481,34" fill="none" stroke="#178038" stroke-width="4.0" stroke-linecap="round"/>
-<path d="M1360,105 Q1410,66 1508,125" fill="none" stroke="#178038" stroke-width="4.0" stroke-linecap="round"/>
-<path d="M1360,105 Q1397,92 1470,200" fill="none" stroke="#178038" stroke-width="4.0" stroke-linecap="round"/>
-<path d="M1150,472 C1168,382 1081,299 1105,215" fill="none" stroke="#8A5A2E" stroke-width="13" stroke-linecap="round"/><line x1="1133" y1="408" x2="1144" y2="408" stroke="#71481F" stroke-width="1.8"/><line x1="1124" y1="356" x2="1135" y2="356" stroke="#71481F" stroke-width="1.8"/><line x1="1115" y1="305" x2="1126" y2="305" stroke="#71481F" stroke-width="1.8"/><line x1="1108" y1="261" x2="1118" y2="261" stroke="#71481F" stroke-width="1.8"/>
-<path d="M1105,215 Q1053,206 970,308 Q1065,232 1105,215 Z" fill="#2AA24E"/>
-<path d="M1105,215 Q1052,171 941,208 Q1046,199 1105,215 Z" fill="#2AA24E"/>
-<path d="M1105,215 Q1071,147 977,128 Q1052,169 1105,215 Z" fill="#2AA24E"/>
-<path d="M1105,215 Q1101,138 1052,81 Q1073,146 1105,215 Z" fill="#2AA24E"/>
-<path d="M1105,215 Q1131,144 1140,78 Q1103,138 1105,215 Z" fill="#2AA24E"/>
-<path d="M1105,215 Q1156,168 1226,126 Q1136,147 1105,215 Z" fill="#2AA24E"/>
-<path d="M1105,215 Q1158,202 1253,217 Q1153,174 1105,215 Z" fill="#2AA24E"/>
-<path d="M1105,215 Q1136,227 1215,291 Q1148,200 1105,215 Z" fill="#2AA24E"/>
-<circle cx="1097" cy="225" r="7" fill="#7A4A22"/><circle cx="1113" cy="226" r="7" fill="#7A4A22"/><circle cx="1105" cy="231" r="7" fill="#7A4A22"/>
-<path d="M1105,215 Q1059,219 970,308" fill="none" stroke="#178038" stroke-width="2.4" stroke-linecap="round"/>
-<path d="M1105,215 Q1049,185 941,208" fill="none" stroke="#178038" stroke-width="2.4" stroke-linecap="round"/>
-<path d="M1105,215 Q1062,158 977,128" fill="none" stroke="#178038" stroke-width="2.4" stroke-linecap="round"/>
-<path d="M1105,215 Q1087,142 1052,81" fill="none" stroke="#178038" stroke-width="2.4" stroke-linecap="round"/>
-<path d="M1105,215 Q1117,141 1140,78" fill="none" stroke="#178038" stroke-width="2.4" stroke-linecap="round"/>
-<path d="M1105,215 Q1146,157 1226,126" fill="none" stroke="#178038" stroke-width="2.4" stroke-linecap="round"/>
-<path d="M1105,215 Q1155,188 1253,217" fill="none" stroke="#178038" stroke-width="2.4" stroke-linecap="round"/>
-<path d="M1105,215 Q1142,214 1215,291" fill="none" stroke="#178038" stroke-width="2.4" stroke-linecap="round"/>
-<g fill="none" stroke-linecap="round">
-<path d="M960,470 q34,-22 68,0 t68,0 t68,0 t68,0 t68,0 t68,0 t68,0 t68,0 t68,0" stroke="#123FC4" stroke-width="18"/>
-<path d="M978,496 q34,-22 68,0 t68,0 t68,0 t68,0 t68,0 t68,0 t68,0 t68,0 t68,0" stroke="#2E6BF0" stroke-width="16"/>
-</g>
-<text x="120" y="190" text-anchor="start" font-family="Kaushan Script" font-size="176" fill="rgba(90,0,45,0.35)" transform="translate(5,6)">Karib</text><text x="120" y="190" text-anchor="start" font-family="Kaushan Script" font-size="176" fill="#FFFFFF">Karib</text>
-<text x="232" y="328" text-anchor="start" font-family="Kaushan Script" font-size="176" fill="rgba(90,0,45,0.35)" transform="translate(5,6)">Truck</text><text x="232" y="328" text-anchor="start" font-family="Kaushan Script" font-size="176" fill="#FFFFFF">Truck</text>
-<text x="165" y="415" text-anchor="start" font-family="Kaushan Script" font-size="56" fill="rgba(90,0,45,0.35)" transform="translate(5,6)">Saveurs Créoles</text><text x="165" y="415" text-anchor="start" font-family="Kaushan Script" font-size="56" fill="#FFFFFF">Saveurs Créoles</text>
+<rect width="1600" height="360" fill="#ED0F7C"/>
+<circle cx="1275" cy="178" r="150" fill="url(#sun)"/>
+<path d="M1345,338 C1370,215 1362,173 1395,58" fill="none" stroke="#8A5A2E" stroke-width="18" stroke-linecap="round"/>
+<path d="M1395,58 Q1341,38 1260,161 Q1358,73 1395,58 Z" fill="#2AA24E"/>
+<path d="M1395,58 Q1343,2 1231,61 Q1335,41 1395,58 Z" fill="#2AA24E"/>
+<path d="M1395,58 Q1365,-20 1267,-19 Q1338,9 1395,58 Z" fill="#2AA24E"/>
+<path d="M1395,58 Q1396,-28 1342,-66 Q1358,-15 1395,58 Z" fill="#2AA24E"/>
+<path d="M1395,58 Q1426,-18 1430,-69 Q1388,-27 1395,58 Z" fill="#2AA24E"/>
+<path d="M1395,58 Q1450,8 1516,-21 Q1422,-20 1395,58 Z" fill="#2AA24E"/>
+<path d="M1395,58 Q1449,44 1543,70 Q1442,5 1395,58 Z" fill="#2AA24E"/>
+<path d="M1395,58 Q1424,68 1505,145 Q1440,32 1395,58 Z" fill="#2AA24E"/>
+<circle cx="1384" cy="71" r="9" fill="#7A4A22"/><circle cx="1406" cy="73" r="9" fill="#7A4A22"/><circle cx="1395" cy="79" r="9" fill="#7A4A22"/>
+<path d="M1395,58 Q1349,56 1260,161" fill="none" stroke="#178038" stroke-width="3.3" stroke-linecap="round"/>
+<path d="M1395,58 Q1339,22 1231,61" fill="none" stroke="#178038" stroke-width="3.3" stroke-linecap="round"/>
+<path d="M1395,58 Q1352,-6 1267,-19" fill="none" stroke="#178038" stroke-width="3.3" stroke-linecap="round"/>
+<path d="M1395,58 Q1377,-22 1342,-66" fill="none" stroke="#178038" stroke-width="3.3" stroke-linecap="round"/>
+<path d="M1395,58 Q1407,-22 1430,-69" fill="none" stroke="#178038" stroke-width="3.3" stroke-linecap="round"/>
+<path d="M1395,58 Q1436,-6 1516,-21" fill="none" stroke="#178038" stroke-width="3.3" stroke-linecap="round"/>
+<path d="M1395,58 Q1445,25 1543,70" fill="none" stroke="#178038" stroke-width="3.3" stroke-linecap="round"/>
+<path d="M1395,58 Q1432,50 1505,145" fill="none" stroke="#178038" stroke-width="3.3" stroke-linecap="round"/>
+<path d="M1200,338 C1215,263 1138,220 1158,150" fill="none" stroke="#8A5A2E" stroke-width="11" stroke-linecap="round"/>
+<path d="M1158,150 Q1107,147 1023,239 Q1117,168 1158,150 Z" fill="#2AA24E"/>
+<path d="M1158,150 Q1105,111 994,138 Q1100,135 1158,150 Z" fill="#2AA24E"/>
+<path d="M1158,150 Q1123,87 1030,58 Q1107,105 1158,150 Z" fill="#2AA24E"/>
+<path d="M1158,150 Q1152,76 1105,11 Q1129,84 1158,150 Z" fill="#2AA24E"/>
+<path d="M1158,150 Q1182,82 1193,9 Q1158,77 1158,150 Z" fill="#2AA24E"/>
+<path d="M1158,150 Q1207,104 1279,56 Q1191,87 1158,150 Z" fill="#2AA24E"/>
+<path d="M1158,150 Q1210,138 1306,147 Q1206,114 1158,150 Z" fill="#2AA24E"/>
+<path d="M1158,150 Q1190,163 1268,222 Q1200,141 1158,150 Z" fill="#2AA24E"/>
+<circle cx="1151" cy="158" r="6" fill="#7A4A22"/><circle cx="1165" cy="159" r="6" fill="#7A4A22"/><circle cx="1158" cy="163" r="6" fill="#7A4A22"/>
+<path d="M1158,150 Q1112,157 1023,239" fill="none" stroke="#178038" stroke-width="2.0" stroke-linecap="round"/>
+<path d="M1158,150 Q1102,123 994,138" fill="none" stroke="#178038" stroke-width="2.0" stroke-linecap="round"/>
+<path d="M1158,150 Q1115,96 1030,58" fill="none" stroke="#178038" stroke-width="2.0" stroke-linecap="round"/>
+<path d="M1158,150 Q1140,80 1105,11" fill="none" stroke="#178038" stroke-width="2.0" stroke-linecap="round"/>
+<path d="M1158,150 Q1170,79 1193,9" fill="none" stroke="#178038" stroke-width="2.0" stroke-linecap="round"/>
+<path d="M1158,150 Q1199,95 1279,56" fill="none" stroke="#178038" stroke-width="2.0" stroke-linecap="round"/>
+<path d="M1158,150 Q1208,126 1306,147" fill="none" stroke="#178038" stroke-width="2.0" stroke-linecap="round"/>
+<path d="M1158,150 Q1195,152 1268,222" fill="none" stroke="#178038" stroke-width="2.0" stroke-linecap="round"/>
+<text x="95" y="138" text-anchor="start" font-family="Kaushan Script" font-size="138" fill="rgba(90,0,45,0.35)" transform="translate(4,5)">Karib</text><text x="95" y="138" text-anchor="start" font-family="Kaushan Script" font-size="138" fill="#FFFFFF">Karib</text>
+<text x="185" y="250" text-anchor="start" font-family="Kaushan Script" font-size="138" fill="rgba(90,0,45,0.35)" transform="translate(4,5)">Truck</text><text x="185" y="250" text-anchor="start" font-family="Kaushan Script" font-size="138" fill="#FFFFFF">Truck</text>
+<text x="120" y="312" text-anchor="start" font-family="Kaushan Script" font-size="46" fill="rgba(90,0,45,0.35)" transform="translate(4,5)">Saveurs Créoles</text><text x="120" y="312" text-anchor="start" font-family="Kaushan Script" font-size="46" fill="#FFFFFF">Saveurs Créoles</text>
 </svg>
