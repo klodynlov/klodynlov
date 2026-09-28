@@ -1,6 +1,9 @@
 """Album « La fête » : jeux, spectacles, ciel en fête.
 
 (La cloche est dessinée à la main dans l'app : PagesThings.swift.)
+
+Les parties nommées du sujet (`nom=`, `nomme`) servent aux consignes du mode interactif
+(« Colorie la couronne en jaune ») ; un même nom sur plusieurs zones : n'importe laquelle.
 """
 from __future__ import annotations
 
@@ -8,7 +11,7 @@ import math
 
 from .dessin import (
     Contour, arc, arche, cercle, coeur, courbe, deplace, detail, ellipse, encre, etoile, goutte, ligne,
-    lisse, page, poly, rect, tourne, trait, trou, tube, zone,
+    lisse, nomme, page, poly, rect, tourne, trait, trou, tube, zone,
 )
 from .dessin import nuage as bosses
 from .motifs import etoiles_scintillantes, feuille, nuage, oeil, oiseau, roue, sol, soleil
@@ -19,17 +22,19 @@ def ballon(cx: float, cy: float, rx: float, ry: float) -> list:
                   (cx, cy + ry), (cx - 0.68 * rx, cy + 0.7 * ry), (cx - rx, cy), (cx - 0.8 * rx, cy - 0.6 * ry)])
 
 
+_BALLONS = ("les ballons", "the balloons", None)
+
 BALLONS = page(
     "ballons", "fete", "Les ballons", "The balloons",
     nuage(170, 150, 100, 45), nuage(860, 520, 90, 40),
     trait(courbe([(330, 488), (380, 640), (470, 790), (500, 900)]),
           courbe([(680, 458), (620, 620), (540, 780), (500, 900)]),
           courbe([(500, 588), (480, 720), (500, 900)])),
-    zone(ballon(330, 330, 118, 142)),
+    zone(ballon(330, 330, 118, 142), nom=_BALLONS),
     detail(poly([(312, 492), (348, 492), (330, 464)], r=4)),
-    zone(ballon(680, 300, 118, 142)),
+    zone(ballon(680, 300, 118, 142), nom=_BALLONS),
     detail(poly([(662, 462), (698, 462), (680, 434)], r=4)),
-    zone(ballon(500, 430, 122, 148)),
+    zone(ballon(500, 430, 122, 148), nom=_BALLONS),
     detail(poly([(482, 596), (518, 596), (500, 570)], r=4)),
     trait(arc(300, 290, 60, 200, 260), arc(650, 260, 60, 200, 260), arc(470, 390, 62, 200, 260)),
     detail(ellipse(456, 900, 48, 26, rot=20)), detail(ellipse(544, 900, 48, 26, rot=-20)),
@@ -39,7 +44,8 @@ BALLONS = page(
 
 SOLEIL = page(
     "soleil", "fete", "Le soleil", "The sun",
-    *soleil(500, 430, 190, rayons=12, visage=False),
+    # ici le soleil est le sujet de la page, pas un décor : il passe au rang du sujet
+    *nomme(soleil(500, 430, 190, rayons=12, visage=False), "le soleil", "the sun", "jaune"),
     *oeil(435, 395, 36, dy=6, p=0.55), *oeil(565, 395, 36, dy=6, p=0.55),
     detail(cercle(388, 482, 34), cercle(612, 482, 34)),
     trait(arc(500, 450, 90, 25, 155)),
@@ -79,10 +85,11 @@ def croissant(ax: float, ay: float, ar: float, bx: float, by: float, br: float) 
 
 LUNE = page(
     "lune", "fete", "La lune et les étoiles", "The moon and the stars",
-    zone(croissant(430, 430, 250, 560, 360, 215)),
+    zone(croissant(430, 430, 250, 560, 360, 215), nom=("la lune", "the moon", "jaune")),
     trait(arc(292, 410, 32, 20, 160), arc(300, 560, 40, 30, 140)),
     detail(cercle(252, 480, 28)),
-    zone(etoile(760, 170, 70)),
+    # la seule grande étoile (les autres sont des détails)
+    zone(etoile(760, 170, 70), nom=("l'étoile", "the star", "jaune")),
     detail(etoile(880, 420, 50), etoile(640, 650, 46), etoile(110, 150, 40), etoile(820, 740, 38),
            etoile(450, 800, 34)),
     encre(cercle(560, 160, 10), cercle(930, 230, 10), cercle(700, 470, 10), cercle(90, 700, 10)),
@@ -108,17 +115,20 @@ def _cordes(cx: float, cy: float, rx: float, ry: float, rot: float, pas: float =
     return out
 
 
+_RAQUETTE = ("la raquette", "the racket", None)
+
 TENNIS = page(
     "tennis", "fete", "Le tennis", "Tennis",
     zone(rect(0, 870, 1000, 130)),
     trait(ligne((0, 935), (1000, 935))),
     zone(tube([(548, 581), (700, 846)], 46)),
-    zone(tube([(622, 710), (705, 855)], 64)),
+    zone(tube([(622, 710), (705, 855)], 64), nom=_RAQUETTE),
     trait(ligne((636, 752), (676, 736)), ligne((650, 778), (690, 762)), ligne((664, 804), (704, 788))),
     zone(ellipse(420, 360, 175, 225, rot=-30)),
     trait(_cordes(420, 360, 175, 225, -30)),
-    zone(ellipse(420, 360, 205, 255, rot=-30), trou(ellipse(420, 360, 175, 225, rot=-30))),
-    zone(cercle(790, 330, 110)),
+    # la raquette : son cadre et son manche (le cou, trop fin, et le cordage n'en sont pas)
+    zone(ellipse(420, 360, 205, 255, rot=-30), trou(ellipse(420, 360, 175, 225, rot=-30)), nom=_RAQUETTE),
+    zone(cercle(790, 330, 110), nom=("la balle", "the ball", "jaune")),
     trait(arc(705, 330, 90, -58, 58), arc(875, 330, 90, 122, 238)),
     trait(ligne((880, 470), (930, 500)), ligne((850, 490), (880, 540))),
 )
@@ -159,17 +169,21 @@ def _deplace_bd(f):
     return deplace(tourne(f, 10, 675, 675), 96, 88)
 
 
+_PIECES = ("les pièces du puzzle", "the puzzle pieces", None)
+
 PUZZLE = page(
     "puzzle", "fete", "Les pièces du puzzle", "The puzzle pieces",
-    zone(piece(droit((150, 150), (500, 150)), E1, E3.reversed(), droit((150, 500), (150, 150)))),
-    zone(piece(droit((500, 150), (850, 150)), droit((850, 150), (850, 500)), E4.reversed(), E1.reversed())),
-    zone(piece(E3, E2, droit((500, 850), (150, 850)), droit((150, 850), (150, 500)))),
-    zone(etoile(310, 320, 86)),
-    zone(coeur(690, 330, 70)),
+    zone(piece(droit((150, 150), (500, 150)), E1, E3.reversed(), droit((150, 500), (150, 150))), nom=_PIECES),
+    zone(piece(droit((500, 150), (850, 150)), droit((850, 150), (850, 500)), E4.reversed(), E1.reversed()),
+         nom=_PIECES),
+    zone(piece(E3, E2, droit((500, 850), (150, 850)), droit((150, 850), (150, 500))), nom=_PIECES),
+    zone(etoile(310, 320, 86), nom=("l'étoile", "the star", "jaune")),
+    zone(coeur(690, 330, 70), nom=("le cœur", "the heart", "rouge")),
     zone(cercle(310, 690, 76)),
     trait(arc(310, 700, 36, 30, 150)),
     encre(cercle(286, 668, 10), cercle(334, 668, 10)),
-    zone(_deplace_bd(piece(E4, droit((850, 500), (850, 850)), droit((850, 850), (500, 850)), E2.reversed()))),
+    zone(_deplace_bd(piece(E4, droit((850, 500), (850, 850)), droit((850, 850), (500, 850)), E2.reversed())),
+         nom=_PIECES),
     zone(_deplace_bd(bosses(690, 690, 56, 56, bosses=6, hauteur=1.0))),
     detail(_deplace_bd(cercle(690, 690, 24))),
 )
@@ -184,10 +198,10 @@ CIRQUE = page(
     # les murs rayés, l'entrée
     zone(poly([(190, 500), (810, 500), (850, 830), (150, 830)], r=[0, 0, 10, 10])),
     trait(*[ligne((x, 500), (x + (x - 500) * 0.12, 830)) for x in (290, 390, 610, 710)]),
-    zone(arche(426, 610, 148, 220)),
+    zone(arche(426, 610, 148, 220), nom=("la porte", "the door", None)),
     trait(courbe([(430, 690), (470, 700), (500, 690)]), courbe([(500, 690), (530, 700), (570, 690)])),
     # le toit en pointe, ses bandes, le feston
-    zone(poly([(500, 190), (860, 490), (140, 490)], r=[16, 16, 16])),
+    zone(poly([(500, 190), (860, 490), (140, 490)], r=[16, 16, 16]), nom=("le toit", "the roof", "rouge")),
     trait(ligne((500, 196), (330, 500)), ligne((500, 196), (670, 500))),
     zone(bosses(500, 500, 372, 26, bosses=12, hauteur=0.6, depart=15)),
     detail(etoile(150, 190, 40), etoile(860, 250, 44), etoile(80, 420, 30), etoile(930, 600, 32)),
@@ -195,17 +209,21 @@ CIRQUE = page(
 )
 
 
+_CHEVEUX = ("les cheveux", "the hair", None)
+_ROBE = ("la robe", "the dress", None)
+
 PRINCESSE = page(
     "princesse", "fete", "La princesse", "The princess",
     etoiles_scintillantes([(130, 180, 30), (870, 200, 34), (100, 560, 24), (900, 560, 26)]),
     # les cheveux, derrière
     zone(lisse([(500, 150), (680, 230), (740, 420), (760, 650), (660, 700), (500, 690), (340, 700), (240, 650),
-                (260, 420), (320, 230)])),
+                (260, 420), (320, 230)]), nom=_CHEVEUX),
     # la robe, les manches bouffantes, le cou
-    zone(poly([(290, 1000), (300, 780), (390, 700), (610, 700), (700, 780), (710, 1000)], r=[0, 50, 30, 30, 50, 0])),
-    zone(ellipse(300, 770, 90, 74)), zone(ellipse(700, 770, 90, 74)),
+    zone(poly([(290, 1000), (300, 780), (390, 700), (610, 700), (700, 780), (710, 1000)], r=[0, 50, 30, 30, 50, 0]),
+         nom=_ROBE),
+    zone(ellipse(300, 770, 90, 74), nom=_ROBE), zone(ellipse(700, 770, 90, 74), nom=_ROBE),
     zone(rect(456, 580, 88, 140, r=30)),
-    zone(poly([(410, 700), (590, 700), (500, 800)], r=[10, 10, 16])),
+    zone(poly([(410, 700), (590, 700), (500, 800)], r=[10, 10, 16]), nom=_ROBE),
     # le visage
     zone(ellipse(500, 470, 170, 180)),
     *oeil(440, 470, 32, dy=6, p=0.58, ry=38), *oeil(560, 470, 32, dy=6, p=0.58, ry=38),
@@ -215,10 +233,10 @@ PRINCESSE = page(
     trait(arc(500, 540, 50, 30, 150), arc(500, 500, 12, 20, 160)),
     # la frange
     zone(lisse([(330, 400), (360, 320), (440, 290), (500, 300), (560, 290), (640, 320), (670, 400), (600, 350),
-                (500, 370), (400, 350)])),
+                (500, 370), (400, 350)]), nom=_CHEVEUX),
     # la couronne et ses pierres
     zone(poly([(390, 300), (380, 180), (440, 236), (500, 150), (560, 236), (620, 180), (610, 300)],
-              r=[8, 10, 8, 10, 8, 10, 8])),
+              r=[8, 10, 8, 10, 8, 10, 8]), nom=("la couronne", "the crown", "jaune")),
     detail(cercle(500, 250, 20), coeur(420, 270, 16), coeur(580, 270, 16)),
     detail(coeur(500, 740, 22)),
 )
@@ -229,15 +247,13 @@ FLECHE = page(
     sol(860, vague=8),
     # le pied de la cible
     zone(tube([(560, 700), (500, 900)], 36)), zone(tube([(760, 700), (820, 900)], 36)),
-    # la cible
-    zone(cercle(660, 470, 290)),
-    zone(cercle(660, 470, 218)),
-    zone(cercle(660, 470, 146)),
-    zone(cercle(660, 470, 74)),
+    # la cible : ses anneaux, et son milieu à part
+    *nomme([zone(cercle(660, 470, 290)), zone(cercle(660, 470, 218)), zone(cercle(660, 470, 146))],
+           "la cible", "the target"),
+    zone(cercle(660, 470, 74), nom=("le milieu de la cible", "the middle of the target", "rouge")),
     # la flèche, plantée au centre, et son empennage
-    zone(tube([(100, 330), (650, 468)], 26)),
-    zone(feuille((160, 344), (40, 262), 72)),
-    zone(feuille((160, 344), (70, 424), 72)),
+    *nomme([zone(tube([(100, 330), (650, 468)], 26)), zone(feuille((160, 344), (40, 262), 72)),
+            zone(feuille((160, 344), (70, 424), 72))], "la flèche", "the arrow"),
     trait(ligne((40, 200), (140, 225)), ligne((70, 150), (170, 175)), ligne((20, 470), (110, 492))),
 )
 
@@ -245,18 +261,18 @@ FLECHE = page(
 POUSSER = page(
     "pousser", "fete", "La caisse à jouets", "Pushing the toy box",
     zone(rect(0, 850, 1000, 150)),
-    # ce qui dépasse de la caisse
-    zone(cercle(500, 400, 110)),
+    # ce qui dépasse de la caisse : le ballon, le nounours, le cube
+    zone(cercle(500, 400, 110), nom=("le ballon", "the ball", None)),
     trait(arc(500, 400, 110, 250, 350, ry=40), courbe([(430, 318), (470, 400), (440, 490)])),
     detail(cercle(718, 350, 46), cercle(838, 350, 46)),
-    zone(cercle(778, 410, 88)),
+    zone(cercle(778, 410, 88), nom=("le nounours", "the teddy bear", "marron")),
     *oeil(748, 394, 17, dy=3, p=0.62), *oeil(808, 394, 17, dy=3, p=0.62),
     encre(ellipse(778, 440, 17, 13)),
     trait(arc(778, 446, 22, 30, 150)),
     zone(tourne(rect(300, 360, 120, 120, r=14), -12, 360, 420)),
     detail(tourne(etoile(360, 420, 36), -12, 360, 420)),
     # la caisse en planches, sur roulettes
-    zone(rect(260, 470, 640, 330, r=20)),
+    zone(rect(260, 470, 640, 330, r=20), nom=("la caisse", "the box", None)),
     trait(ligne((260, 580), (900, 580)), ligne((260, 690), (900, 690))),
     *roue(340, 820, 44), *roue(820, 820, 44),
     # le bras et la main qui poussent
@@ -269,20 +285,23 @@ POUSSER = page(
 )
 
 
+_FLAQUE = ("la flaque", "the puddle", "bleu")
+_BOTTE = ("la botte", "the boot", None)
+
 PLOUF = page(
     "plouf", "fete", "Plouf dans la flaque !", "Splash!",
     nuage(260, 130, 170, 70, bosses=9), nuage(760, 150, 150, 62, bosses=8),
     detail(*[goutte(x, y, 14, 34) for x, y in [(180, 280), (300, 330), (420, 270), (680, 300), (800, 270),
                                                 (900, 330)]]),
     zone(rect(0, 820, 1000, 180)),
-    zone(ellipse(500, 850, 400, 90)),
+    zone(ellipse(500, 850, 400, 90), nom=_FLAQUE),
     # la botte
-    zone(rect(410, 370, 170, 330, r=24)),
-    zone(rect(390, 350, 210, 60, r=24)),
-    zone(lisse([(410, 640), (580, 620), (700, 650), (720, 740), (640, 770), (420, 770)])),
-    # la couronne d'eau qui jaillit, les gouttes
+    zone(rect(410, 370, 170, 330, r=24), nom=_BOTTE),
+    zone(rect(390, 350, 210, 60, r=24), nom=_BOTTE),
+    zone(lisse([(410, 640), (580, 620), (700, 650), (720, 740), (640, 770), (420, 770)]), nom=_BOTTE),
+    # la couronne d'eau qui jaillit (l'eau de la flaque), les gouttes
     zone(lisse([(250, 800), (230, 640), (300, 720), (330, 590), (380, 700), (440, 620), (500, 720),
-                (560, 610), (620, 710), (680, 600), (720, 710), (780, 630), (770, 800), (500, 830)])),
+                (560, 610), (620, 710), (680, 600), (720, 710), (780, 630), (770, 800), (500, 830)]), nom=_FLAQUE),
     detail(cercle(170, 560, 32), cercle(840, 520, 32), cercle(300, 470, 28), cercle(700, 470, 22),
            cercle(120, 680, 22), cercle(900, 690, 24)),
 )
