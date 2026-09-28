@@ -39,7 +39,7 @@ struct InspectionPDF {
     // MARK: - Sections
 
     private func cover(_ w: inout Writer) {
-        w.banner("KaribBanner", widthFraction: 0.5)     // logo de marque, réduit et centré
+        w.banner("KaribBanner", widthFraction: 0.4)     // logo de marque, réduit et centré
         w.text("Dossier de contrôle HACCP", font: .boldSystemFont(ofSize: 24))
         w.text("Food truck KaribTruck — registres d'hygiène (PMS)", font: .systemFont(ofSize: 13), color: .darkGray)
         w.space(10)
