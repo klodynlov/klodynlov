@@ -2,7 +2,8 @@
 
 ## Troisième tour (28/09/2026) : compiler et installer
 
-La session cloud a poussé le troisième tour sans pouvoir le compiler. Il contient le train des
+La session cloud a poussé le troisième tour sans pouvoir le compiler. Une session sur le Mac a déjà
+remis `swift test` en marche le 28/09 (`fullScreenCover` absent de macOS) et ajouté l'icône de l'app. Il contient le train des
 phrases, les jeux d'écoute, les livres des sons, la voix, le décompte, les étoiles et le coloriage.
 Sur le Mac, ouvre Claude Code **à la racine du dépôt** et dis-lui : « suis la section *Troisième
 tour* d'`eveil/REPRISE-LOCALE.md` ». Tu peux aussi coller ce prompt :
@@ -12,7 +13,7 @@ Compile, teste et installe le troisième tour de la Suite Éveil, poussé depuis
 
 0. git fetch origin ; git switch claude/ios-educational-apps-suite-dljtt6 ; git pull. Relis CLAUDE.md, section « Suite Éveil », puis « Troisième tour ».
 1. Python (stdlib) : depuis la racine, python3 -m unittest discover -s eveil/outils (83 tests) ; depuis eveil/reference, python3 -m unittest discover -s wordend -t . (83 tests). Si c'est rouge, arrête-toi et montre-moi.
-2. Swift, pas compilé depuis le 25/09 :
+2. Swift, à relancer après chaque pull (swift test repasse sur macOS depuis le commit b936373 du 28/09) :
    - cd eveil/ios/WordEndCore && swift test ;
    - puis cd eveil/ios && swift test ;
    - puis xcodebuild -scheme EveilTrain-Package -destination 'generic/platform=iOS Simulator' build.
