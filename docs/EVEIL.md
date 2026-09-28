@@ -265,12 +265,12 @@ valider avec le panel** (§ 8).
 
 **Les livres des sons.** OrthoPicto propose un livre par son. Ici chaque livre est **calculé** à
 partir des mots dessinés : tous ceux dont la transcription contient le son, rangés « au début »,
-« au milieu », « à la fin » ([`eveil/outils/livres`](../eveil/outils/livres)). Avec tous les mots
-dessinés : 16 livres en français (ch, s, z, j, f, v, p, b, t, d, k, g, m, n, l, r), 15 en anglais ;
-un son qui a moins de 5 mots n'a pas encore de livre (« gn » ; en anglais « ch », « v », « th »).
-Pour que chaque son ait son livre, 57 mots s'ajoutent (fleur, girafe, cheval…) aux dessins du petit
-train et du train des phrases ; un mot entre dans les livres quand il a son dessin
-(`livres.generer --en-cours`), jamais avec une image manquante.
+« au milieu », « à la fin » ([`eveil/outils/livres`](../eveil/outils/livres)) : 16 livres en français
+(ch, s, z, j, f, v, p, b, t, d, k, g, m, n, l, r), 15 en anglais ; un son qui a moins de 5 mots n'a
+pas encore de livre (« gn » ; en anglais « ch », « v », « th »). Pour que chaque son ait son livre,
+57 mots ont été dessinés (fleur, girafe, cheval…), en plus des dessins du petit train et du train
+des phrases ; un mot ajouté n'entre dans les livres qu'avec son dessin (`livres.generer
+--en-cours`), jamais avec une image manquante.
 - Le livre se parcourt dans le **petit train** : la voix dit le mot syllabe par syllabe ; le wagon
   du son porte une étoile et ses **lettres sont colorées** (« gi » : le « g ») ; toucher un wagon
   redit sa syllabe ; décompte, étoiles, mondes et bestioles comme au petit train ; chaque livre

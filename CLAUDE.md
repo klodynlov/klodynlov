@@ -292,12 +292,13 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     manche) et « Où est… ? » (2 à 4 images) ; jamais « non » : l'autre image est nommée puis on
     réécoute ; manches en ordre fixe (`EarGames.pick`, vérifié en Python). Accueil : cartes sur deux
     rangées.
-  - 🚧 Tranche 3, **livres des sons** (`SoundBooksView`, `outils/livres`, juge adulte dans
+  - ✅ Tranche 3, **livres des sons** (`SoundBooksView`, `outils/livres`, juge adulte dans
     `PracticeView` : « Il l'a dit ! », wagon du son étoilé + lettres colorées, conseils « pour les
-    grands ») : poussée **EN COURS** — `livres.generer --en-cours` ne garde que les mots déjà dessinés
-    (75/103 → 12 livres FR, 14 EN). Lot B (29 noms, `pictos/mots_b.py`) intégré ; lot A (28 noms,
-    `mots_a.py`, sous-agent) attendu, puis `python3 -m livres.generer` complet (16 FR, 15 EN ;
-    `--check` exige tout).
+    grands ») : **complète** — 103 mots tous dessinés (57 nouveaux pictos `mot.*` en deux lots de
+    sous-agents, `pictos/mots_a.py` + `mots_b.py`, relus sur planches), **16 livres FR, 15 EN**
+    (`python3 -m livres.generer --check`). `--en-cours` = seulement les mots déjà dessinés (utile si
+    on ajoute des mots avant leurs dessins). Faibles à revoir avec un illustrateur : genou, neige,
+    lapin, moto, nuage (air d'icône), nez.
     18 tests Python (`livres/test_livres.py`) ; Swift : `SoundBooksTests`, `SoundBooksViewTests`,
     `AdultJudgeTests`.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
@@ -348,8 +349,8 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 ---
 
 _Dernière mise à jour mémoire : Suite Éveil — **troisième tour, tranches 2 et 4** (28/09/2026, session
-cloud : train des phrases avec scènes animées, jeux d'écoute ; livres des sons EN COURS, 12 + 14 livres en
-attendant les 28 dessins du lot A ; à compiler sur le Mac). Avant : **tranche 1** (voix féminine choisie et syllabique, décompte des répétitions,
+cloud : train des phrases avec scènes animées, jeux d'écoute, livres des sons complets — 16 + 15 livres,
+57 nouveaux pictos ; à compiler sur le Mac). Avant : **tranche 1** (voix féminine choisie et syllabique, décompte des répétitions,
 étoiles de jeu, syllabes au toucher, dings, coloriage 24 couleurs + gomme + mode interactif).
 Avant : **atelier de coloriage : 70 pages en 7 albums** (25/09/2026,
 session cloud : 55 pages dessinées et vérifiées en Python dans `eveil/outils/coloriages/`, un dessin par mot
