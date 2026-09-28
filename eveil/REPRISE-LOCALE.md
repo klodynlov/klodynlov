@@ -2,9 +2,9 @@
 
 ## Troisième tour (28/09/2026) : compiler et installer
 
-La session cloud a poussé le troisième tour sans pouvoir le compiler. Une session sur le Mac a déjà
-remis `swift test` en marche le 28/09 (`fullScreenCover` absent de macOS) et ajouté l'icône de l'app. Il contient le train des
-phrases, les jeux d'écoute, les livres des sons, la voix, le décompte, les étoiles et le coloriage.
+La session cloud a poussé le troisième tour sans pouvoir le compiler : train des phrases, jeux
+d'écoute, livres des sons, voix, décompte, étoiles et coloriage. Une session sur le Mac a déjà remis
+`swift test` en marche le 28/09 (`fullScreenCover` absent de macOS) et ajouté l'icône de l'app.
 Sur le Mac, ouvre Claude Code **à la racine du dépôt** et dis-lui : « suis la section *Troisième
 tour* d'`eveil/REPRISE-LOCALE.md` ». Tu peux aussi coller ce prompt :
 
