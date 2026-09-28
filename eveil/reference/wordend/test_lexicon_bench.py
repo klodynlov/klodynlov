@@ -8,7 +8,7 @@ from pathlib import Path
 from wordend import golden
 from wordend.bench import (Gate, build_demo_corpus, cohen_kappa, evaluate_corpus, read_annotations,
                            read_wav, wilson, write_wav)
-from wordend.lexicon import custom_word, load_locale, problems
+from wordend.lexicon import custom_word, ipa_syllables, load_locale, problems, voice_segments
 from wordend.synth import LIBRARY, synthesize, utterance
 
 
@@ -31,6 +31,29 @@ class TestLexicons(unittest.TestCase):
             lex = load_locale(locale)
             self.assertTrue(all(w.nuclei == 1 for w in lex.words if w.level == 1))
             self.assertTrue(any(w.nuclei == 2 for w in lex.words if w.level == 2))
+
+    def test_voice_follows_the_wagons(self):
+        """La voix modèle dit un segment par wagon ; le dernier garde la consonne finale."""
+        fr = load_locale("fr-FR")
+        segs = voice_segments(fr.by_id("fr.minouche"))
+        self.assertEqual([(s.text, s.ipa) for s in segs], [("mi", "mi"), ("nouch", "nuʃ")])
+        segs = voice_segments(load_locale("en-US").by_id("en.radish"))
+        self.assertEqual([(s.text, s.ipa) for s in segs], [("ra", "ɹæ"), ("dish", "dɪʃ")])
+        for locale in ("fr-FR", "en-US"):
+            for w in load_locale(locale).words:
+                segs = voice_segments(w)
+                self.assertEqual(len(segs), len(w.wagons), w.id)
+                self.assertTrue(all(s.ipa for s in segs), w.id)
+                self.assertEqual("".join(s.ipa for s in segs), "".join(ipa_syllables(w.ipa)), w.id)
+
+    def test_voice_without_ipa_reads_the_wagons(self):
+        w = custom_word("Minouche", ["Mi", "nou"], "S", "fr-FR")
+        self.assertEqual([(s.text, s.ipa) for s in voice_segments(w)], [("Mi", None), ("nou", None)])
+
+    def test_ipa_syllables(self):
+        self.assertEqual(ipa_syllables("ˈɹæ.dɪʃ"), ["ɹæ", "dɪʃ"])
+        self.assertEqual(ipa_syllables("pʁɛ̃.sɛs"), ["pʁɛ̃", "sɛs"])
+        self.assertEqual(ipa_syllables("duʃ"), ["duʃ"])
 
     def test_custom_family_word(self):
         w = custom_word("Minouche", ["Mi", "nou"], "S", "fr-FR")

@@ -212,6 +212,18 @@ signifiants [B3][B4]. Deux rôles distincts dans le lexique :
 - **Voix du parent** comme modèle (option envisagée) : enregistrée et gardée sur l'iPad.
 - **Aucun design manipulatoire** : pas de séries de jours culpabilisantes, pas de récompenses
   aléatoires, pas de notifications de relance [E20].
+- **Décompte et étoiles** (demandes de l'utilisateur, 28/09/2026) : l'adulte choisit combien de fois
+  le mot est redit (1 à 5, 3 par défaut) ; un décompte (chiffre + lanternes) le montre à l'enfant, et
+  seul un mot bien dit le fait avancer — la règle d'or « pas de boucle d'échec » vaut pour chaque
+  répétition. Chaque essai rapporte des **étoiles de jeu**, fixes et prévisibles (mot entier 3, sans
+  la fin 2, doute du détecteur 2, syllabe en moins 1, rien entendu 0) ; on n'en perd jamais, le
+  trésor est un simple total gardé sur l'iPad, masquable par l'adulte. Ce n'est **pas** un score de
+  langage : ni pourcentage, ni courbe, ni détail par son, ni export (§ 7.3) — et tant que le
+  détecteur n'a pas passé la porte V1, ses erreurs ne coûtent au pire qu'une étoile.
+- **Voix du modèle** (retour de l'utilisateur, 28/09/2026 : « voix féminine naturelle, qui suit les
+  syllabes ») : en attendant les voix enregistrées, la meilleure voix féminine installée (premium,
+  améliorée, puis standard), prononciation imposée par l'API du lexique ; le mot se dit d'abord
+  syllabe par syllabe, chaque wagon s'allumant avec la sienne, puis entier.
 
 ### 4.7 Accessibilité
 

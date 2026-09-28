@@ -32,6 +32,44 @@ public struct TargetWord: Codable, Equatable, Sendable, Identifiable, TargetShap
     public var custom: Bool?
 }
 
+/// Ce que la voix modèle dit pour UN wagon : le texte (repli) et sa prononciation (API).
+public struct VoiceSegment: Equatable, Sendable {
+    public var text: String
+    public var ipa: String?
+
+    public init(text: String, ipa: String?) {
+        self.text = text
+        self.ipa = ipa
+    }
+}
+
+/// Les syllabes d'une transcription (« ka.niʃ » → ["ka", "niʃ"]), accents retirés.
+public func ipaSyllables(_ ipa: String) -> [String] {
+    let clean = ipa.filter { $0 != "ˈ" && $0 != "ˌ" }
+    return clean.split(separator: ".").map(String.init).filter { !$0.isEmpty }
+}
+
+public extension TargetWord {
+    /// Le mot modèle, wagon par wagon : « mi · nou(ch) » (miroir de `voice_segments`).
+    ///
+    /// Demande de l'utilisateur (28/09/2026) : une voix « qui suit les syllabes ». Chaque
+    /// wagon s'allume pendant que la voix dit SA syllabe ; la dernière garde la consonne
+    /// finale (« nuʃ ») : la voix finit le mot, le fourgon s'accroche à la fin. La
+    /// prononciation vient de l'API ; sans API (mots de la famille), la voix lit les
+    /// wagons écrits, sans consonne finale.
+    var voiceSegments: [VoiceSegment] {
+        let syllables = ipa.map(ipaSyllables) ?? []
+        guard syllables.count == wagons.count else {
+            return wagons.map { VoiceSegment(text: $0, ipa: nil) }
+        }
+        var out = zip(wagons, syllables).map { VoiceSegment(text: $0.0, ipa: $0.1) }
+        if let caboose, !out.isEmpty {
+            out[out.count - 1].text += caboose
+        }
+        return out
+    }
+}
+
 public struct Lexicon: Codable, Equatable, Sendable {
     public var schema: String
     public var locale: String
@@ -42,6 +80,8 @@ public struct Lexicon: Codable, Equatable, Sendable {
     public var words: [TargetWord]
 
     public static let supportedCodas: Set<String> = ["S", "s"]   // v0 : /ʃ/ et /s/
+    /// La consonne que porte le fourgon, en API.
+    public static let codaIPA: [String: String] = ["S": "ʃ", "s": "s"]
     public static let maxWagons = 4
 
     /// Décode un lexique (clés JSON en snake_case).
@@ -67,6 +107,13 @@ public struct Lexicon: Codable, Equatable, Sendable {
             if (w.coda == nil) != (w.caboose == nil) { out.append("\(w.id): fourgon et consonne finale") }
             if let c = w.coda, cabooseSounds[c] == nil { out.append("\(w.id): pas de symbole sonore") }
             if let c = w.contrast, c.text == w.text { out.append("\(w.id): contraste identique") }
+            if let ipa = w.ipa, !ipa.isEmpty {
+                let syllables = ipaSyllables(ipa)
+                if syllables.count != w.wagons.count { out.append("\(w.id): syllabes de l'API ≠ wagons") }
+                if let c = w.coda, let last = syllables.last, let sound = Lexicon.codaIPA[c], !last.hasSuffix(sound) {
+                    out.append("\(w.id): l'API ne finit pas par la consonne du fourgon")
+                }
+            }
         }
         return out
     }

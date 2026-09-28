@@ -1,15 +1,18 @@
 // ParentZoneView.swift — l'espace parent (derrière le contrôle parental).
 //
 // On y règle : la langue (FR, EN, ou les deux en alternance pour les familles
-// bilingues), le micro (accès, test, essai par un adulte), les mots du train
-// (jusqu'à quel niveau), le coloriage (remplir d'un toucher, ou pinceau seul), le
-// temps d'écran quotidien, les mots de la famille. On
+// bilingues), la voix du modèle (la meilleure voix féminine installée, ou une autre ;
+// syllabe par syllabe ou non) et le nombre de répétitions par mot (le décompte), le
+// micro (accès, test, essai par un adulte), les mots du train (jusqu'à quel niveau),
+// le coloriage (remplir d'un toucher, ou pinceau seul), le temps d'écran quotidien,
+// les mots de la famille. On
 // y trouve : comment jouer AVEC l'enfant, et quand demander l'avis d'un professionnel.
 // On n'y trouve PAS de score de langage : l'app est un jeu d'éveil, pas un bilan.
 
-#if canImport(SwiftUI)
+#if canImport(SwiftUI) && canImport(AVFoundation)
 import EveilDesign
 import SwiftUI
+import WordEndAudio
 import WordEndCore
 
 public struct ParentZoneView: View {
@@ -21,6 +24,14 @@ public struct ParentZoneView: View {
     @AppStorage(ListeningSettings.adultTrialKey) private var adultTrial = false
     @AppStorage(WordDeck.maxLevelKey) private var maxLevel = 3
     @AppStorage(SuiteSettings.tapToFillKey) private var tapToFill = SuiteSettings.tapToFillDefault
+    @AppStorage(VoiceCatalog.settingKey) private var voiceId = ""
+    @AppStorage(ListeningSettings.syllableModelKey) private var syllableModel = true
+    @AppStorage(Repetitions.settingKey) private var repetitions = Repetitions.defaultCount
+    @AppStorage(Stars.settingKey) private var starsOn = true
+    @AppStorage(Stars.totalKey) private var starsTotal = 0
+    @State private var voices: [VoiceOption] = []
+    @State private var canAskPersonalVoice = false
+    @State private var voicePlayer = ModelVoicePlayer()
     @State private var familyText = ""
     @State private var familyWagons = ""
     @State private var familyCoda = "S"
@@ -41,6 +52,7 @@ public struct ParentZoneView: View {
                     }
                     .pickerStyle(.segmented)
                 }
+                voiceSection
                 Section {
                     NavigationLink {
                         MicTestView(locale: locale)
@@ -125,7 +137,75 @@ public struct ParentZoneView: View {
             }
             .navigationTitle(fr ? "Espace des grands" : "Grown-ups")
             .toolbar { Button(fr ? "Fermer" : "Close") { dismiss() } }
+            .onAppear { refreshVoices() }
+            .onDisappear { voicePlayer.stop() }
         }
+    }
+
+    /// La voix du modèle, le modèle syllabe par syllabe, le décompte des répétitions.
+    private var voiceSection: some View {
+        Section {
+            Picker(fr ? "Voix" : "Voice", selection: $voiceId) {
+                Text(automaticLabel).tag("")
+                ForEach(voices) { v in
+                    Text(voiceLabel(v)).tag(v.id)
+                }
+            }
+            Button {
+                Task {
+                    voicePlayer.voiceIdentifier = voiceId
+                    await voicePlayer.speak(fr ? "Bonjour ! Je suis la voix du petit train. Mi… nou… minouche !"
+                                               : "Hello! I am the voice of the little train. Fi… fish!",
+                                            locale: locale, pace: .sentence)
+                }
+            } label: {
+                Label(fr ? "Écouter la voix" : "Listen to the voice", systemImage: "speaker.wave.2.fill")
+            }
+            if canAskPersonalVoice {
+                Button {
+                    Task {
+                        _ = await VoiceCatalog.requestPersonalVoice()
+                        refreshVoices()
+                    }
+                } label: {
+                    Label(fr ? "Utiliser ma Voix personnelle" : "Use my Personal Voice", systemImage: "person.wave.2.fill")
+                }
+            }
+            Toggle(fr ? "Le mot modèle syllabe par syllabe" : "Model word syllable by syllable", isOn: $syllableModel)
+            Stepper(value: $repetitions, in: Repetitions.range) {
+                Text(fr ? "Répétitions par mot : \(repetitions)" : "Repeats per word: \(repetitions)")
+            }
+            Toggle(fr ? "Étoiles à gagner (trésor : \(starsTotal))" : "Stars to earn (treasure: \(starsTotal))",
+                   isOn: $starsOn)
+            if starsTotal > 0 {
+                Button(fr ? "Vider le trésor d'étoiles" : "Empty the star treasure", role: .destructive) {
+                    starsTotal = 0
+                }
+            }
+        } header: {
+            Text(fr ? "Voix et répétitions" : "Voice and repeats")
+        } footer: {
+            Text(fr ? "Le jeu prend la meilleure voix féminine installée. Pour une voix plus naturelle, téléchargez une voix « Premium » ou « améliorée » : Réglages › Accessibilité › Contenu énoncé › Voix › Français. Syllabe par syllabe : chaque wagon s'allume avec sa syllabe, puis la voix dit le mot entier. Le décompte montre à l'enfant combien de fois il redit le mot ; seul un mot bien dit le fait avancer, et le train repart de toute façon après trois essais. Les étoiles récompensent l'essai et, davantage, le mot entier (3 étoiles) ; on n'en perd jamais. Ce ne sont pas des notes : elles ne mesurent pas le langage de votre enfant, et restent sur cet iPad."
+                    : "The game picks the best female voice installed. For a more natural voice, download a \"Premium\" or \"Enhanced\" voice: Settings › Accessibility › Spoken Content › Voices › English. Syllable by syllable: each wagon lights up with its syllable, then the voice says the whole word. The countdown shows how many times your child says the word; only a well-said word moves it forward, and the train leaves anyway after three tries. Stars reward trying and, even more, the whole word (3 stars); they are never lost. They are not grades: they do not measure your child's speech, and they stay on this iPad.")
+        }
+    }
+
+    private var automaticLabel: String {
+        let best = VoiceCatalog.automaticChoice(voices, locale: locale)
+        let name = best.map(voiceLabel) ?? (fr ? "voix du système" : "system voice")
+        return fr ? "Automatique : \(name)" : "Automatic: \(name)"
+    }
+
+    private func voiceLabel(_ v: VoiceOption) -> String {
+        var parts = [v.name, v.quality.label(locale: locale)]
+        if v.language != locale { parts.append(v.language) }
+        if v.isPersonal { parts.append(fr ? "voix personnelle" : "personal voice") }
+        return parts.joined(separator: " · ")
+    }
+
+    private func refreshVoices() {
+        voices = VoiceCatalog.voices(for: locale).filter { !$0.isNovelty || $0.id == voiceId }
+        canAskPersonalVoice = VoiceCatalog.canAskForPersonalVoice
     }
 
     private func addFamilyWord() {

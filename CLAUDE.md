@@ -251,6 +251,23 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
   vérifiables). **Décidé par l'utilisateur** : « Remplir d'un toucher » **réglable** dans l'espace des
   grands (`SuiteSettings.tapToFillKey`) et **désactivé par défaut** → pinceau seul tant que l'adulte ne
   l'active pas.
+- 🔊 **Troisième tour (session cloud, 28/09/2026 ; Swift à compiler sur le Mac)**. Demandes : « upgrade au
+  niveau d'OrthoPicto voire plus » (Symbolicone, orthophoniste : livres par son, phrases S-V-C avec pictos
+  qui s'animent, 3 niveaux, mode écrit — cf. tranches ci-dessous), puis en cours de route : « voix féminine
+  naturelle qui suit les syllabes », « décompte des répétitions », « score selon la prononciation » →
+  **étoiles de jeu** (pas un score de langage, cf. EVEIL.md § 4.6/7.3 ; accepté comme compromis, à
+  confirmer avec l'utilisateur), « coloriage : plus de couleurs, gomme, mode interactif au choix ».
+  - ✅ Tranche 1 : `VoiceCatalog` (meilleure voix féminine installée : accent du jeu > naturelle (ni
+    fantaisie ni Eloquence) > féminine > premium/améliorée/standard ; choix + « Écouter » + Voix
+    personnelle dans l'espace des grands) ; `ModelVoicePlayer` : API imposée
+    (`AVSpeechSynthesisIPANotationAttribute`), `speakSegments` (wagon allumé par syllabe, fourgon à la
+    fin, puis mot entier ; réglage `eveil.syllableModel`) ; décompte `RepetitionPlan` (1-5, défaut 3,
+    seul un verdict complet avance, pas de boucle d'échec par répétition ; `RepetitionMeter`) ; étoiles
+    `Stars.earned` (3/2/2/1/0, jamais de perte ; `StarsView` : volée du train au compteur, trésor sur
+    l'accueil, masquable/vidable). Réf. Python `policy.py`/`lexicon.py` → **82 tests** ; miroirs Swift
+    dans `WordEndCore` + `VoiceCatalogTests`.
+  - ⏭️ Ensuite, dans l'ordre : coloriage (palette, gomme, mode interactif) → train des phrases (pictos +
+    scènes animées, 3 niveaux, mode écrit) → livres des sons → jeux d'écoute.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur interdits) → 0 violation, 7 tests ;
   ignore les produits de compilation (`.build/`, `.swiftpm/`, `DerivedData/`).
@@ -298,7 +315,9 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : Suite Éveil — **atelier de coloriage : 70 pages en 7 albums** (25/09/2026,
+_Dernière mise à jour mémoire : Suite Éveil — **troisième tour, tranche 1** (28/09/2026, session cloud :
+voix féminine choisie et syllabique, décompte des répétitions, étoiles de jeu ; à compiler sur le Mac).
+Avant : **atelier de coloriage : 70 pages en 7 albums** (25/09/2026,
 session cloud : 55 pages dessinées et vérifiées en Python dans `eveil/outils/coloriages/`, un dessin par mot
 du petit train ; Swift à tester sur le Mac). Avant : **app sur l'iPad réel + second tour** (25/09/2026 : micro
 « essai par un adulte » et test du micro, voyage de monde en monde, 45 mots dessinés, bestioles et

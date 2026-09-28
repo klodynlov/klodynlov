@@ -19,6 +19,9 @@ import WordEndCore
 public enum ListeningSettings {
     /// Clé de l'espace des grands : « Essai par un adulte (voix grave acceptée) ».
     public static let adultTrialKey = "eveil.adultTrial"
+    /// « Le modèle syllabe par syllabe » (28/09/2026) : la voix dit « mi · nou(ch) » en
+    /// allumant chaque wagon, puis le mot entier. Activé par défaut.
+    public static let syllableModelKey = "eveil.syllableModel"
 
     /// Détecteur du jeu : les seuils de départ, sauf la garde « voix d'adulte »
     /// quand un adulte essaie lui-même.

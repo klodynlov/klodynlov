@@ -68,6 +68,93 @@ final class FeedbackPolicyTests: XCTestCase {
     }
 }
 
+/// Le décompte (« encore 2 fois ») — miroir de `TestRepetitions` (test_policy.py).
+final class RepetitionTests: XCTestCase {
+    func testSuccessWithRepetitionsLeftCelebratesAndWaits() {
+        let fb = FeedbackPolicy.feedback(for: sample(.complete), wagons: 2, hasCaboose: true, attempt: 1,
+                                         repetitionsLeft: 2)
+        XCTAssertEqual(fb.caboose, .hooked)
+        XCTAssertEqual(fb.mascot, .celebrate)
+        XCTAssertEqual(fb.message, .again)
+        XCTAssertFalse(fb.advance)
+        XCTAssertEqual(fb.litWagons, [true, true])
+        let last = FeedbackPolicy.feedback(for: sample(.complete), wagons: 2, hasCaboose: true, attempt: 1,
+                                           repetitionsLeft: 0)
+        XCTAssertEqual(last.message, .bravo)
+        XCTAssertTrue(last.advance)
+    }
+
+    func testRepetitionsNeverTrapTheChild() {
+        for kind in VerdictKind.allCases where kind != .complete {
+            let fb = FeedbackPolicy.feedback(for: sample(kind), wagons: 2, hasCaboose: true,
+                                             attempt: FeedbackPolicy.maxAttempts, repetitionsLeft: 4)
+            XCTAssertTrue(fb.advance, "\(kind)")
+        }
+    }
+
+    func testOnlyCompleteIsChangedByRepetitions() {
+        for kind in VerdictKind.allCases where kind != .complete {
+            for attempt in 1...FeedbackPolicy.maxAttempts {
+                XCTAssertEqual(
+                    FeedbackPolicy.feedback(for: sample(kind), wagons: 2, hasCaboose: true, attempt: attempt,
+                                            repetitionsLeft: 3),
+                    FeedbackPolicy.feedback(for: sample(kind), wagons: 2, hasCaboose: true, attempt: attempt),
+                    "\(kind) \(attempt)")
+            }
+        }
+    }
+
+    func testPlanCountsDown() {
+        var plan = RepetitionPlan(target: 3)
+        XCTAssertEqual(plan.remaining, 3)
+        XCTAssertEqual(plan.leftAfterSuccess, 2)
+        plan.recordSuccess()
+        plan.recordSuccess()
+        XCTAssertEqual(plan.remaining, 1)
+        XCTAssertEqual(plan.leftAfterSuccess, 0)
+        plan.recordSuccess()
+        plan.recordSuccess()                        // jamais au-delà
+        XCTAssertEqual(plan.done, 3)
+        XCTAssertTrue(plan.isComplete)
+        XCTAssertEqual(RepetitionPlan(target: 0).target, 1)
+        XCTAssertEqual(RepetitionPlan(target: 99).target, 5)
+        XCTAssertEqual(RepetitionPlan().target, Repetitions.defaultCount)
+    }
+
+    func testCountdownTexts() {
+        XCTAssertEqual(Repetitions.againText(remaining: 2, locale: "fr-FR"), "Bravo ! Encore 2 fois !")
+        XCTAssertEqual(Repetitions.againText(remaining: 1, locale: "fr-FR"), "Bravo ! Encore une fois !")
+        XCTAssertEqual(Repetitions.againText(remaining: 3, locale: "en-US"), "Great! 3 more times!")
+        XCTAssertEqual(Repetitions.againText(remaining: 1, locale: "en-US"), "Great! One more time!")
+        XCTAssertEqual(Repetitions.inviteText(count: 3, locale: "fr-FR"), "À toi ! Dis-le 3 fois au petit train.")
+        XCTAssertEqual(Repetitions.inviteText(count: 1, locale: "fr-FR"), MessageKey.invite.defaultText(locale: "fr-FR"))
+        XCTAssertEqual(Repetitions.inviteText(count: 2, locale: "en-US"), "Your turn! Say it 2 times to the little train.")
+    }
+}
+
+/// Les étoiles — miroir de `TestStars` (test_policy.py).
+final class StarsTests: XCTestCase {
+    func testCompleteIsTheBestAndNothingIsNegative() {
+        for kind in VerdictKind.allCases {
+            let s = Stars.earned(for: sample(kind))
+            XCTAssertGreaterThanOrEqual(s, 0, "\(kind)")
+            XCTAssertLessThanOrEqual(s, Stars.earned(for: sample(.complete)), "\(kind)")
+        }
+        XCTAssertEqual(Stars.earned(for: sample(.complete)), Stars.max)
+    }
+
+    func testOrderFollowsTheTrain() {
+        let s = { (k: VerdictKind) in Stars.earned(for: sample(k)) }
+        XCTAssertGreaterThan(s(.complete), s(.missingFinalConsonant))
+        XCTAssertGreaterThan(s(.missingFinalConsonant), s(.fewerSyllables))
+        XCTAssertGreaterThan(s(.fewerSyllables), s(.noSpeech))
+        XCTAssertEqual(s(.noSpeech), 0)
+        // Asymétrie : le doute ne coûte pas plus qu'une fin manquée.
+        XCTAssertGreaterThanOrEqual(s(.unsure), s(.missingFinalConsonant))
+        XCTAssertEqual(Stars.earned(for: sample(.missingFinalConsonant), hasCaboose: false), s(.unsure))
+    }
+}
+
 final class LexicalGuardTests: XCTestCase {
     func testAsrCanOnlyMakeVerdictsMoreCautious() {
         for kind in VerdictKind.allCases {
@@ -108,6 +195,26 @@ final class LexiconTests: XCTestCase {
         XCTAssertEqual(lexicalEvidence(transcript: "doux", word: douche), .consistent)
         XCTAssertEqual(lexicalEvidence(transcript: "le bain", word: douche), .inconsistent)
         XCTAssertEqual(lexicalEvidence(transcript: "  ?! ", word: douche), .notChecked)
+    }
+
+    /// La voix modèle dit un segment par wagon ; le dernier garde la consonne finale
+    /// (miroir de `test_voice_follows_the_wagons`).
+    func testVoiceFollowsTheWagons() throws {
+        let minouche = try XCTUnwrap(try load("fr-FR").word(id: "fr.minouche"))
+        XCTAssertEqual(minouche.voiceSegments, [VoiceSegment(text: "mi", ipa: "mi"), VoiceSegment(text: "nouch", ipa: "nuʃ")])
+        let radish = try XCTUnwrap(try load("en-US").word(id: "en.radish"))
+        XCTAssertEqual(radish.voiceSegments, [VoiceSegment(text: "ra", ipa: "ɹæ"), VoiceSegment(text: "dish", ipa: "dɪʃ")])
+        for locale in ["fr-FR", "en-US"] {
+            for w in try load(locale).words {
+                XCTAssertEqual(w.voiceSegments.count, w.wagons.count, w.id)
+                XCTAssertTrue(w.voiceSegments.allSatisfy { $0.ipa != nil }, w.id)
+                XCTAssertEqual(w.voiceSegments.compactMap(\.ipa).joined(), ipaSyllables(w.ipa ?? "").joined(), w.id)
+            }
+        }
+        let family = try customWord(text: "Minouche", wagons: ["Mi", "nou"], coda: "S", locale: "fr-FR")
+        XCTAssertEqual(family.voiceSegments, [VoiceSegment(text: "Mi", ipa: nil), VoiceSegment(text: "nou", ipa: nil)])
+        XCTAssertEqual(ipaSyllables("ˈɹæ.dɪʃ"), ["ɹæ", "dɪʃ"])
+        XCTAssertEqual(ipaSyllables("duʃ"), ["duʃ"])
     }
 
     func testCustomFamilyWord() throws {

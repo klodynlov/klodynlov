@@ -113,6 +113,39 @@ iPadOS 27) l'après-midi. Ses retours ont fait le second tour :
   les boucles d'animation SwiftUI faisaient clignoter ou trembler le train. « Réduire les
   animations » fige tout.
 
+**Troisième tour (28/09/2026, session cloud — à compiler et essayer sur le Mac)**, sur ses retours
+« voix trop générique : voix féminine naturelle, qui suit les syllabes » et « afficher un décompte
+pour le nombre de fois que l'enfant doit répéter » :
+
+- **La voix** ([`VoiceCatalog`](ios/Sources/WordEndAudio/VoiceCatalog.swift)) : le jeu prend la
+  meilleure voix **féminine** installée dans l'accent du jeu (fr-FR avant fr-CA), jamais une voix
+  fantaisie ni « Eloquence », premium puis améliorée puis standard. L'espace des grands montre la
+  voix choisie, en propose d'autres (« Écouter la voix »), et explique comment télécharger une voix
+  premium ou améliorée dans les Réglages de l'iPad (l'app ne télécharge rien). La **Voix
+  personnelle** d'un parent (iOS 17) peut aussi servir, sur autorisation ; elle reste sur l'iPad.
+- **Une voix qui suit les syllabes** : le mot modèle se dit d'abord **syllabe par syllabe**, chaque
+  wagon s'allumant avec SA syllabe et le fourgon s'accrochant sur la consonne finale (« mi · nouch »),
+  puis le mot entier ; le chat parle pendant ce temps. La prononciation est **imposée par l'API du
+  lexique** (`AVSpeechSynthesisIPANotationAttribute`) : la consonne finale est bien dite. Réglable
+  (« Le mot modèle syllabe par syllabe », activé par défaut). Référence Python :
+  `lexicon.voice_segments` ; les deux lexiques sont vérifiés (syllabes de l'API = wagons, et la
+  dernière syllabe finit par la consonne du fourgon).
+- **Le décompte** ([`RepetitionMeter`](ios/Sources/TrainPracticeUI/RepetitionMeter.swift)) : l'adulte
+  règle le nombre de répétitions par mot (1 à 5, **3 par défaut**) ; un gros chiffre (ce qui reste)
+  et une lanterne par répétition. Chaque mot bien dit allume une lanterne ; « Bravo ! Encore 2 fois ! »,
+  la voix dit « Encore ! » et le micro se rouvre ; le train part quand le décompte est fini. Seul un
+  mot bien dit fait avancer le décompte, et chaque répétition garde la règle « pas de boucle
+  d'échec » : après trois essais, on félicite l'effort et le train repart quand même. Référence
+  Python : `policy.RepetitionPlan`, `feedback_for(…, repetitions_left=…)`, portés dans
+  `WordEndCore` avec leurs tests miroirs.
+- **Les étoiles** (« plus c'est bien répété, plus de points ») : chaque essai rapporte des étoiles
+  de jeu qui s'envolent du train vers le compteur — mot entier 3, toutes les syllabes sans la fin 2,
+  doute du détecteur 2, syllabe en moins 1, rien entendu 0 ; on n'en perd jamais. Le trésor (un
+  total) s'affiche sur l'accueil et en fin de voyage ; l'adulte peut masquer les étoiles ou vider le
+  trésor. Ce n'est **pas** un score de langage (pas de pourcentage, de courbe, de détail par son, ni
+  d'export — [docs/EVEIL.md § 7.3](../docs/EVEIL.md#73-la-frontière-du-dispositif-médical)).
+  Référence : `policy.stars_for` ; 82 tests Python (69 → 82).
+
 ```bash
 open eveil/ios/App/EveilTrain.xcodeproj           # schéma EveilTrain, un iPad du simulateur, ▶︎
 cd eveil/ios && swift test                         # 103 tests : démo, écoute, sons, dessins, coloriage

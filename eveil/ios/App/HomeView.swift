@@ -15,6 +15,8 @@ struct HomeView: View {
     let parentAreaLocked: Bool
     @AppStorage("eveil.language") private var language = "fr-FR"
     @AppStorage(WordDeck.maxLevelKey) private var maxLevel = 3
+    @AppStorage(Stars.settingKey) private var starsOn = true
+    @AppStorage(Stars.totalKey) private var starsTotal = 0
     @State private var destination: Destination?
     @State private var showGate = false
     @State private var showParentZone = false
@@ -58,10 +60,14 @@ struct HomeView: View {
                     Spacer(minLength: 40)
                 }
                 .padding(.horizontal, 40)
-                if !parentAreaLocked {
-                    VStack {
-                        HStack {
-                            Spacer()
+                VStack {
+                    HStack {
+                        // Le trésor d'étoiles gagnées au petit train (un total, rien d'autre).
+                        if starsOn && starsTotal > 0 {
+                            StarCounter(count: starsTotal)
+                        }
+                        Spacer()
+                        if !parentAreaLocked {
                             Button { showGate = true } label: {
                                 Image(systemName: "gearshape.fill")
                                     .font(.system(size: 26))
@@ -70,11 +76,11 @@ struct HomeView: View {
                             }
                             .accessibilityLabel(fr ? "Espace des grands" : "Grown-ups area")
                         }
-                        Spacer()
                     }
-                    .padding(.horizontal, 28)
-                    .padding(.top, 20)
+                    Spacer()
                 }
+                .padding(.horizontal, 28)
+                .padding(.top, 20)
             }
         }
         .fullScreenCover(item: $destination) { dest in

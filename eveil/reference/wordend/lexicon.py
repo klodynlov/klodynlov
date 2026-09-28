@@ -15,6 +15,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 CODAS = {"S", "s"}                   # v0 : sibilantes sourdes /ʃ/ et /s/
+CODA_IPA = {"S": "ʃ", "s": "s"}      # la consonne que porte le fourgon, en API
+STRESS_MARKS = "ˈˌ"
 MAX_WAGONS = 4
 LEXICON_DIR = Path(__file__).resolve().parents[2] / "lexique"
 
@@ -84,6 +86,40 @@ def load_locale(locale: str) -> Lexicon:
     return load(LEXICON_DIR / f"{locale}.json")
 
 
+def ipa_syllables(ipa: str) -> list[str]:
+    """Les syllabes d'une transcription (« ka.niʃ » → ["ka", "niʃ"]), accents retirés."""
+    clean = "".join(ch for ch in ipa if ch not in STRESS_MARKS)
+    return [syl for syl in clean.split(".") if syl]
+
+
+@dataclass(frozen=True)
+class VoiceSegment:
+    """Ce que la voix modèle dit pour UN wagon : le texte (repli) et sa prononciation."""
+
+    text: str
+    ipa: str | None
+
+
+def voice_segments(word: TargetWord) -> list[VoiceSegment]:
+    """Le mot modèle, wagon par wagon : « mi · nou(ch) ».
+
+    Demande de l'utilisateur (28/09/2026) : une voix « qui suit les syllabes ». Chaque
+    wagon s'allume pendant que la voix dit SA syllabe ; la dernière syllabe garde la
+    consonne finale (« nuʃ ») : la voix finit le mot, et le fourgon s'accroche à la
+    fin de cette syllabe. La prononciation vient de l'API du lexique (la synthèse
+    vocale lirait mal « nou » + « ch » isolés) ; sans API (mots de la famille), la
+    voix lit les wagons écrits, sans consonne finale.
+    """
+    syllables = ipa_syllables(word.ipa) if word.ipa else []
+    if len(syllables) != len(word.wagons):
+        return [VoiceSegment(w, None) for w in word.wagons]
+    out = [VoiceSegment(w, syl) for w, syl in zip(word.wagons, syllables)]
+    if word.caboose:
+        last = out[-1]
+        out[-1] = VoiceSegment(last.text + word.caboose, last.ipa)
+    return out
+
+
 def problems(lex: Lexicon) -> list[str]:
     """Contrôles de cohérence (vides = lexique sain)."""
     out = []
@@ -107,6 +143,12 @@ def problems(lex: Lexicon) -> list[str]:
             out.append(f"{w.id}: pas de symbole sonore pour {w.coda!r}")
         if w.contrast is not None and w.contrast.text == w.text:
             out.append(f"{w.id}: le contraste doit différer du mot")
+        if w.ipa:
+            syllables = ipa_syllables(w.ipa)
+            if len(syllables) != len(w.wagons):
+                out.append(f"{w.id}: {len(syllables)} syllabes dans l'API, {len(w.wagons)} wagons")
+            if w.coda is not None and syllables and not syllables[-1].endswith(CODA_IPA[w.coda]):
+                out.append(f"{w.id}: l'API ne finit pas par la consonne du fourgon ({CODA_IPA[w.coda]})")
     return out
 
 

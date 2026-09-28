@@ -13,6 +13,20 @@
 // Autour du mot : l'image fait le bruit de l'objet quand on la touche, et des
 // petites bêtes volent derrière (on les attrape, elles font leur bruit) — mais
 // TOUT se tait pendant le mot modèle et l'écoute (`SoundBoard.isSuspended`).
+//
+// Retours de l'utilisateur (28/09/2026) :
+//   • « une voix féminine naturelle, qui suit les syllabes » : le modèle se dit
+//     d'abord syllabe par syllabe, chaque wagon s'allumant avec SA syllabe et le
+//     fourgon s'accrochant sur la consonne finale, puis le mot entier (voix choisie
+//     par `VoiceCatalog`, prononciation imposée par l'API du lexique) ;
+//   • « un décompte pour le nombre de fois que l'enfant doit répéter » : l'adulte
+//     règle le nombre de répétitions (3 par défaut) ; chaque mot bien dit allume une
+//     lanterne (`RepetitionMeter`), la voix annonce « Encore 2 fois ! » et le micro
+//     se rouvre ; le train part quand le décompte est fini — ou, pas de boucle
+//     d'échec, après trop d'essais ;
+//   • « plus c'est bien répété, plus de points » : chaque essai rapporte des étoiles
+//     de jeu (`Stars.earned` : mot entier 3, sans la fin 2, syllabe en moins 1), qui
+//     s'envolent du train vers le compteur — jamais un score de langage, jamais de perte.
 // Fin de séance ritualisée (`SessionPolicy`) + une « mission » hors écran.
 //
 // Mode démo (espace parent, ou argument de lancement `-eveil.demoMode 1`) : pas de
@@ -44,6 +58,11 @@ public struct PracticeView: View {
     @AppStorage(ListeningSettings.adultTrialKey) private var adultTrial = false
     @AppStorage(WordDeck.cursorKey) private var deckCursor = 0
     @AppStorage("eveil.world") private var worldRaw = 0
+    @AppStorage(VoiceCatalog.settingKey) private var voiceId = ""
+    @AppStorage(ListeningSettings.syllableModelKey) private var syllableModel = true
+    @AppStorage(Repetitions.settingKey) private var repetitions = Repetitions.defaultCount
+    @AppStorage(Stars.settingKey) private var starsOn = true
+    @AppStorage(Stars.totalKey) private var starsTotal = 0
     @State private var listener = ListeningController(stream: ListeningSettings.streamingConfig())
     @State private var voice = ModelVoicePlayer()
     @State private var index = 0
@@ -60,6 +79,14 @@ public struct PracticeView: View {
     @State private var picturePulse = 0
     @State private var firstWorld = World.countryside
     @State private var started = false
+    /// Pendant le modèle syllabe par syllabe : combien de wagons la voix a allumés (nil sinon).
+    @State private var modelLit: Int?
+    @State private var modelHooked = false
+    /// Le décompte du mot en cours.
+    @State private var plan = RepetitionPlan()
+    /// Étoiles de la séance, et la volée en vol (du train vers le compteur).
+    @State private var sessionStars = 0
+    @State private var burst: StarBurst?
 
     public init(words: [TargetWord], locale: String, cabooseSounds: [String: CabooseSound],
                 policy: SessionPolicy = SessionPolicy(), parentButtonHidden: Bool = false,
@@ -99,12 +126,23 @@ public struct PracticeView: View {
                 practice
             } else {
                 SceneryView(night: true)
-                SessionEndView(step: step, locale: locale, cue: word.coda.flatMap { cabooseSounds[$0]?.cue })
+                SessionEndView(step: step, locale: locale, cue: word.coda.flatMap { cabooseSounds[$0]?.cue },
+                               stars: starsOn ? sessionStars : nil, treasure: starsTotal)
             }
             VStack(spacing: 0) {
                 topBar
                 Spacer()
                 if demoMode && step == .continue { demoBar }
+            }
+            if let burst {
+                GeometryReader { geo in
+                    StarBurstLayer(burst: burst,
+                                   from: CGPoint(x: geo.size.width / 2, y: geo.size.height * 0.7),
+                                   to: CGPoint(x: geo.size.width - (parentButtonHidden ? 95 : 165), y: 52))
+                }
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
+                .id(burst.id)
             }
         }
         .sheet(isPresented: $showGate) {
@@ -116,7 +154,8 @@ public struct PracticeView: View {
         .task {
             guard !started else { return }
             started = true
-            try? await Task.sleep(nanoseconds: 1_200_000_000)      // le train entre en gare
+            plan = RepetitionPlan(target: repetitions)
+            try? await Task.sleep(nanoseconds: 1_500_000_000)      // le train entre en gare
             await present(word)
         }
         .onChange(of: listener.phase) { _, phase in
@@ -126,6 +165,7 @@ public struct PracticeView: View {
             SoundBoard.shared.isSuspended = !allowed
         }
         .onDisappear {
+            voice.stop()
             listener.reset()
             SoundBoard.shared.stopAll()
         }
@@ -137,6 +177,7 @@ public struct PracticeView: View {
         HStack(spacing: 16) {
             if let onHome {
                 Button {
+                    voice.stop()
                     listener.reset()
                     SoundBoard.shared.stopAll()
                     onHome()
@@ -154,6 +195,9 @@ public struct PracticeView: View {
                 JourneyStrip(stations: stations, current: wordsDone, locale: locale)
             }
             Spacer()
+            if starsOn && step == .continue {
+                StarCounter(count: sessionStars)
+            }
             if demoMode {
                 Label(fr ? "Démo" : "Demo", systemImage: "play.rectangle.fill")
                     .font(.system(size: 18, weight: .bold, design: .rounded))
@@ -200,7 +244,9 @@ public struct PracticeView: View {
                 HStack(alignment: .center, spacing: wide ? 44 : 22) {
                     WordPicture(word: word, size: card, pulse: picturePulse, onDark: world.isDark, onTap: tapPicture)
                     HStack(alignment: .center, spacing: 6) {
-                        MascotView(action: feedback?.mascot, isListening: listening, size: cat)
+                        // Pendant le modèle, c'est le chat qui dit le mot.
+                        MascotView(action: modelPlaying && feedback == nil ? MascotAction.modelWord : feedback?.mascot,
+                                   isListening: listening, size: cat)
                         SpeechBubble(bubbleText)
                             .frame(maxWidth: wide ? 380 : 300)
                     }
@@ -214,22 +260,29 @@ public struct PracticeView: View {
                     .id(word.id)
                     .frame(maxWidth: .infinity)
                     .allowsHitTesting(false)
-                Button {
-                    Task { await present(word) }
-                } label: {
-                    if listening {
-                        // Le train entend : des barres qui bougent avec la voix (le niveau, jamais le son).
-                        HStack(spacing: 14) {
-                            LevelBars(db: listener.inputLevelDb)
-                            Text(fr ? "Je t'écoute…" : "Listening…")
-                        }
-                    } else {
-                        Label(fr ? "À toi !" : "Your turn!", systemImage: "ear.fill")
+                HStack(spacing: 24) {
+                    if plan.target > 1 {
+                        RepetitionMeter(plan: plan, locale: locale)
+                            .opacity(traveling ? 0.4 : 1)
                     }
+                    Button {
+                        Task { await present(word) }
+                    } label: {
+                        if listening {
+                            // Le train entend : des barres qui bougent avec la voix (le niveau, jamais le son).
+                            HStack(spacing: 14) {
+                                LevelBars(db: listener.inputLevelDb)
+                                Text(fr ? "Je t'écoute…" : "Listening…")
+                            }
+                        } else {
+                            Label(fr ? "À toi !" : "Your turn!", systemImage: "ear.fill")
+                        }
+                    }
+                    .buttonStyle(KidButtonStyle())
+                    // Pendant la fête d'une répétition, le micro se rouvre tout seul (« Encore ! »).
+                    .disabled(listening || modelPlaying || traveling || feedback?.message == .again)
+                    .opacity(traveling ? 0.4 : 1)
                 }
-                .buttonStyle(KidButtonStyle())
-                .disabled(listening || modelPlaying || traveling)
-                .opacity(traveling ? 0.4 : 1)
                 .padding(.top, 22)
                 Spacer(minLength: demoMode ? 110 : 36)
             }
@@ -239,7 +292,12 @@ public struct PracticeView: View {
 
     private var bubbleText: String {
         if traveling { return fr ? "Tchou-tchou ! En route !" : "Choo-choo! All aboard!" }
-        return (feedback?.message ?? .invite).defaultText(locale: locale)
+        if modelLit != nil { return fr ? "Écoute bien le train…" : "Listen to the train…" }
+        switch feedback?.message {
+        case nil, .invite?: return Repetitions.inviteText(count: plan.remaining, locale: locale)
+        case .again?: return Repetitions.againText(remaining: plan.remaining, locale: locale)
+        case let message?: return message.defaultText(locale: locale)
+        }
     }
 
     /// Barre de présentation du mode démo (pour l'adulte qui montre l'app).
@@ -284,15 +342,18 @@ public struct PracticeView: View {
         .padding(.bottom, 26)
     }
 
-    // Aperçu en direct pendant l'écoute ; retour final ensuite.
+    // Le modèle allume les wagons avec ses syllabes ; aperçu en direct pendant l'écoute ;
+    // retour final ensuite.
     private var litWagons: [Bool] {
         if let feedback { return feedback.litWagons }
+        if let modelLit { return word.wagons.indices.map { $0 < modelLit } }
         return word.wagons.indices.map { $0 < listener.litWagons }
     }
 
     private var cabooseState: CabooseState {
         if let feedback { return feedback.caboose }
         guard word.coda != nil else { return .none }
+        if modelLit != nil { return modelHooked ? .hooked : .waiting }
         return listener.cabooseHeard ? .hooked : .waiting
     }
 
@@ -306,13 +367,55 @@ public struct PracticeView: View {
         let wordScene = WordScene.forWord(w)
         SoundBoard.shared.preload([wordScene.sound, .whistle] + [WordScene.hookSound(coda: w.coda)].compactMap { $0 })
         SoundBoard.shared.preload([WordScene.sound(of: wordScene.critter)], variants: Array(0..<wordScene.count))
+        SoundBoard.shared.preload([.twinkle], variants: Array(0..<Stars.max))
         modelPlaying = true
+        voice.voiceIdentifier = voiceId
         // TODO(contenu) : remplacer par les enregistrements validés (voix humaine FR/EN).
-        await voice.speak(w.text, locale: locale)
+        let wholeIPA = w.ipa.map { $0.replacingOccurrences(of: ".", with: "") }
+        if syllableModel {
+            // « mi · nou(ch) » : chaque wagon s'allume avec sa syllabe, le fourgon sur la fin.
+            let segments = w.voiceSegments
+            modelHooked = false
+            modelLit = 0
+            await voice.speakSegments(segments, locale: locale) { k in modelLit = k + 1 }
+            if w.coda != nil { modelHooked = true }
+            try? await Task.sleep(nanoseconds: 350_000_000)
+            // Puis le mot entier, d'une traite (un mot d'une syllabe vient d'être dit entier).
+            if segments.count > 1 && !Task.isCancelled {
+                await voice.speak(w.text, locale: locale, ipa: wholeIPA)
+            }
+        } else {
+            await voice.speak(w.text, locale: locale, ipa: wholeIPA)
+        }
+        modelLit = nil                                 // le train s'éteint : à l'enfant de l'allumer
+        modelHooked = false
+        guard !Task.isCancelled else {
+            modelPlaying = false
+            return
+        }
         if !demoMode && !traveling && step == .continue {
             listener.config = ListeningSettings.detectorConfig(adultTrial: adultTrial)
             listener.listen(for: w)                    // l'écoute démarre AVANT de rendre les sons
         }
+        modelPlaying = false
+    }
+
+    /// Le décompte continue : la voix annonce ce qui reste, puis le micro se rouvre
+    /// (sans rejouer le modèle : l'enfant vient de le dire).
+    private func listenAgainForCountdown(_ w: TargetWord) async {
+        guard step == .continue, !traveling, w.id == word.id else { return }
+        feedback = nil
+        listener.reset()
+        SoundBoard.shared.isSuspended = true
+        modelPlaying = true
+        voice.voiceIdentifier = voiceId
+        await voice.speak(fr ? "Encore !" : "Again!", locale: locale)
+        guard !Task.isCancelled, !traveling, step == .continue, w.id == word.id else {
+            modelPlaying = false
+            return
+        }
+        listener.config = ListeningSettings.detectorConfig(adultTrial: adultTrial)
+        listener.listen(for: w)
         modelPlaying = false
     }
 
@@ -325,12 +428,20 @@ public struct PracticeView: View {
 
     private func handle(_ verdict: Verdict) {
         let fb = FeedbackPolicy.feedback(for: verdict, wagons: word.wagons.count,
-                                         hasCaboose: word.coda != nil, attempt: attempt)
+                                         hasCaboose: word.coda != nil, attempt: attempt,
+                                         repetitionsLeft: plan.leftAfterSuccess)
         feedback = fb
-        // La démo n'est pas un enfant : rien n'entre dans le journal local de progression.
-        if verdict.kind == .complete && !demoMode { recordHook(word.id) }
-        let hook = verdict.kind == .complete ? WordScene.hookSound(coda: word.coda) : nil
-        if !fb.advance { attempt += 1 }               // la relance vient de l'enfant (« À toi ! »)
+        let current = word
+        if verdict.kind == .complete {
+            plan.recordSuccess()                      // une lanterne s'allume
+            attempt = 1                               // chaque répétition a ses essais
+            // La démo n'est pas un enfant : rien n'entre dans le journal local de progression.
+            if !demoMode { recordHook(current.id) }
+        } else if !fb.advance {
+            attempt += 1                              // la relance vient de l'enfant (« À toi ! »)
+        }
+        let hook = verdict.kind == .complete ? WordScene.hookSound(coda: current.coda) : nil
+        giveStars(Stars.earned(for: verdict, hasCaboose: current.coda != nil))
         Task {
             if let hook {
                 try? await Task.sleep(nanoseconds: 250_000_000)
@@ -338,8 +449,18 @@ public struct PracticeView: View {
             }
             if fb.mascot == .modelWord {
                 modelPlaying = true
-                await voice.speak(word.text, locale: locale)
+                voice.voiceIdentifier = voiceId
+                await voice.speak(current.text, locale: locale,
+                                  ipa: current.ipa.map { $0.replacingOccurrences(of: ".", with: "") })
                 modelPlaying = false
+            }
+            if fb.message == .again {
+                // Le décompte n'est pas fini : la fête, puis « Encore ! » et le micro se rouvre.
+                // En démo, c'est le présentateur qui relance (les boutons de la barre).
+                guard !demoMode else { return }
+                try? await Task.sleep(nanoseconds: 1_400_000_000)
+                await listenAgainForCountdown(current)
+                return
             }
             // En démo, c'est le présentateur qui avance (« Mot suivant ») : le résultat reste affiché.
             guard !demoMode, fb.advance else { return }
@@ -359,6 +480,7 @@ public struct PracticeView: View {
         try? await Task.sleep(nanoseconds: reduceMotion ? 300_000_000 : 1_150_000_000)
         wordsDone += 1
         attempt = 1
+        plan = RepetitionPlan(target: repetitions)    // nouveau mot, nouveau décompte
         let elapsed = Date().timeIntervalSince(sessionStart)
         let next = policy.nextStep(wordsDone: wordsDone, sessionSeconds: elapsed,
                                    todaySeconds: PracticeStore.secondsToday(in: context) + elapsed)
@@ -385,9 +507,29 @@ public struct PracticeView: View {
         withAnimation(.easeInOut(duration: 0.9)) { worldRaw = world.next.rawValue }
         try? await Task.sleep(nanoseconds: reduceMotion ? 100_000_000 : 450_000_000)
         withAnimation(.easeInOut(duration: 0.4)) { departing = false }
-        try? await Task.sleep(nanoseconds: reduceMotion ? 200_000_000 : 1_000_000_000)   // entrée en gare
+        try? await Task.sleep(nanoseconds: reduceMotion ? 200_000_000 : 1_500_000_000)   // entrée en gare
         traveling = false
         await present(word)
+    }
+
+    /// Les étoiles d'un essai s'envolent du train ; le compteur monte à chaque étoile posée.
+    /// La démo n'est pas un enfant : elle montre la volée, mais ne touche pas au trésor.
+    private func giveStars(_ earned: Int) {
+        guard starsOn, earned > 0 else { return }
+        let volley = StarBurst(count: earned, start: Date())
+        burst = volley
+        if !demoMode { starsTotal += earned }
+        Task {
+            for k in 0..<earned {
+                let landing = StarBurst.flight + StarBurst.stagger * Double(k)
+                let wait = landing - Date().timeIntervalSince(volley.start)
+                if wait > 0 { try? await Task.sleep(nanoseconds: UInt64(wait * 1_000_000_000)) }
+                sessionStars += 1
+                SoundBoard.shared.play(.twinkle, variant: k)
+            }
+            try? await Task.sleep(nanoseconds: 200_000_000)
+            if burst == volley { burst = nil }
+        }
     }
 
     private func tapPicture() {
@@ -500,6 +642,9 @@ struct SessionEndView: View {
     let step: SessionStep
     let locale: String
     let cue: String?
+    /// Étoiles de la séance (nil : étoiles masquées par l'adulte) et le trésor.
+    var stars: Int? = nil
+    var treasure: Int = 0
     private var fr: Bool { locale.hasPrefix("fr") }
 
     var body: some View {
@@ -511,6 +656,16 @@ struct SessionEndView: View {
                 .font(.system(size: 44, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
+            if let stars, stars > 0 {
+                VStack(spacing: 12) {
+                    StarCounter(count: stars, size: 40)
+                    Text(fr ? "étoiles gagnées pendant ce voyage — ton trésor : \(treasure) étoiles"
+                            : "stars earned on this trip — your treasure: \(treasure) stars")
+                        .font(.system(size: 22, weight: .semibold, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.85))
+                        .multilineTextAlignment(.center)
+                }
+            }
             if let cue {
                 Text(fr ? "Mission pour ce soir : jouez ensemble — \(cue) !"
                         : "Mission for tonight: play together — \(cue)!")
