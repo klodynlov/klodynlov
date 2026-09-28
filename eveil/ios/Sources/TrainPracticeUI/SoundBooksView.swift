@@ -13,6 +13,7 @@
 #if canImport(SwiftUI) && canImport(SwiftData) && canImport(AVFoundation) && canImport(Observation)
 import EveilDesign
 import PhraseCore
+import SwiftData
 import SwiftUI
 import WordEndCore
 
@@ -73,7 +74,7 @@ public struct SoundBooksView: View {
                 .padding(.top, 16)
             }
         }
-        .fullScreenCover(item: $open) { book in
+        .fullScreen(item: $open) { book in
             PracticeView(words: book.words.map(Self.targetWord), locale: book.locale, cabooseSounds: [:],
                          parentButtonHidden: parentButtonHidden, onHome: { open = nil }, judge: .adult,
                          targets: Dictionary(book.words.map {
@@ -90,6 +91,20 @@ public struct SoundBooksView: View {
     /// Un mot de livre pour le petit train : l'identifiant est son dessin.
     static func targetWord(_ w: SoundBookWord) -> TargetWord {
         .bookWord(id: w.drawing, text: w.text, ipa: w.ipa, wagons: w.wagons)
+    }
+}
+
+private extension View {
+    /// Plein écran sur iPad ; en feuille ailleurs (macOS n'a pas `fullScreenCover`, `swift test`).
+    @ViewBuilder
+    func fullScreen<Item: Identifiable, Content: View>(
+        item: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content
+    ) -> some View {
+        #if os(iOS)
+        fullScreenCover(item: item, content: content)
+        #else
+        sheet(item: item, content: content)
+        #endif
     }
 }
 
