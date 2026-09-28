@@ -1,5 +1,38 @@
 # Reprendre la Suite Éveil en local (Mac)
 
+## Troisième tour (28/09/2026) : compiler et installer
+
+La session cloud a poussé le troisième tour sans pouvoir le compiler. Il contient le train des
+phrases, les jeux d'écoute, les livres des sons, la voix, le décompte, les étoiles et le coloriage.
+Sur le Mac, ouvre Claude Code **à la racine du dépôt** et dis-lui : « suis la section *Troisième
+tour* d'`eveil/REPRISE-LOCALE.md` ». Tu peux aussi coller ce prompt :
+
+~~~text
+Compile, teste et installe le troisième tour de la Suite Éveil, poussé depuis une session cloud qui ne pouvait pas compiler le Swift. Réponds en français.
+
+0. git fetch origin ; git switch claude/ios-educational-apps-suite-dljtt6 ; git pull. Relis CLAUDE.md, section « Suite Éveil », puis « Troisième tour ».
+1. Python (stdlib) : depuis la racine, python3 -m unittest discover -s eveil/outils (83 tests) ; depuis eveil/reference, python3 -m unittest discover -s wordend -t . (83 tests). Si c'est rouge, arrête-toi et montre-moi.
+2. Swift, pas compilé depuis le 25/09 :
+   - cd eveil/ios/WordEndCore && swift test ;
+   - puis cd eveil/ios && swift test ;
+   - puis xcodebuild -scheme EveilTrain-Package -destination 'generic/platform=iOS Simulator' build.
+   Nouveautés à compiler :
+   - la cible PhraseCore ;
+   - le train des phrases (SentenceTrainView, SentenceStage, SentenceMotion, PictoArt) ;
+   - les jeux d'écoute (EarGamesView) et les livres des sons (SoundBooksView, PracticeView en juge adulte) ;
+   - la voix (VoiceCatalog, ModelVoicePlayer) ;
+   - le coloriage (24 couleurs, gomme, mode interactif).
+   Corrige les erreurs et les avertissements au plus près du code. Interdit :
+   - désactiver un test ou élargir une tolérance ;
+   - modifier à la main un fichier généré (PictoDessins.swift, PhraseLexiconData.swift, SoundBooksData.swift, PagesDessins.swift). Ils viennent d'eveil/outils : python3 -m <pictos|phrases|livres|coloriages>.generer.
+   Si un test révèle un vrai défaut, corrige la source : le Python, puis régénère ; ou bien le Swift.
+3. Planches : EVEIL_RENDER_DIR=/tmp/eveil-rendus swift test --filter SentenceStageTests, puis montre-moi les PNG des phrases jouées (phrase-*.png).
+4. iPad : ouvre App/EveilTrain.xcodeproj, compile et installe sur mon iPad (commandes xcrun devicectl dans eveil/README.md). L'ID d'équipe Apple ne va jamais dans le dépôt.
+5. Committe et pousse les corrections sur la même branche : git pull avant, jamais de force-push, messages en français. Consigne versions et résultats dans eveil/README.md et CLAUDE.md. Dis-moi combien de tests passent, les avertissements restants et ce qui a été corrigé.
+~~~
+
+## Premier tour (25/09/2026) : compiler et comparer à LibraryBrain
+
 La session cloud qui a produit ce travail ne pouvait ni **compiler le Swift** (téléchargement de la
 toolchain bloqué) ni **joindre LibraryBrain** (RAG local, `127.0.0.1:8765`). Ces deux chantiers se
 font sur le Mac : ouvrir Claude Code **à la racine du dépôt** et coller le prompt ci-dessous.
