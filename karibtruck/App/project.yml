@@ -34,6 +34,11 @@ targets:
       path: KaribTruck/Info.plist   # généré par XcodeGen à partir des propriétés ci-dessous
       properties:
         CFBundleDisplayName: KaribTruck
+        # Sans ces deux clés, XcodeGen fige « 1.0 (1) » dans l'Info.plist et ignore
+        # MARKETING_VERSION / CURRENT_PROJECT_VERSION ci-dessous (TestFlight refuse
+        # alors tout 2e envoi : numéro de build déjà utilisé).
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         # Chiffrement exempté (SHA-256 + protection de fichier iOS) : évite l'écran
         # de conformité export à chaque envoi TestFlight.
         ITSAppUsesNonExemptEncryption: false
@@ -50,7 +55,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: fr.karibtruck.haccp
         MARKETING_VERSION: "0.1.0"
-        CURRENT_PROJECT_VERSION: "1"
+        CURRENT_PROJECT_VERSION: "40"
         TARGETED_DEVICE_FAMILY: "1,2"   # iPhone + iPad (l'app cible l'iPad)
         SWIFT_VERSION: "5.9"
         CODE_SIGN_STYLE: Automatic

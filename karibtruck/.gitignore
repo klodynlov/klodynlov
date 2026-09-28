@@ -9,6 +9,9 @@ Package.resolved
 xcuserdata/
 DerivedData/
 
+# Archives / IPA TestFlight (xcodebuild archive + -exportArchive)
+App/build/
+
 # Généré par XcodeGen (source de vérité : App/project.yml)
 App/KaribTruck/Info.plist
 
