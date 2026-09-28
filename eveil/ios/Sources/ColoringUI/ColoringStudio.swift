@@ -181,6 +181,29 @@ final class ColoringStudio {
         }.value
     }
 
+    // MARK: Le mode papier
+
+    /// Lit la photo d'une page coloriée aux vrais crayons (PaperMode.swift), hors du fil principal :
+    /// la page ouverte, ou une autre page de l'atelier si c'est elle qu'on a photographiée.
+    func readPaper(_ photo: PaperPhoto) async -> PaperScan.Outcome {
+        guard let map else { return .unreadable }
+        let pages = pages, index = pageIndex
+        return await Task.detached(priority: .userInitiated) {
+            PaperScan.read(photo.image, pages: pages, index: index, map: map)
+        }.value
+    }
+
+    /// Pose les coups de crayon lus sur la photo (annulable d'un geste). `index` : la page
+    /// photographiée si ce n'est pas celle-ci — ouverte d'abord, avec sa carte `known`, déjà calculée.
+    func loadPaper(_ paint: [UInt32], page index: Int? = nil, map known: ZoneMap? = nil) {
+        if let index, index != pageIndex, pages.indices.contains(index) {
+            if let known { remember(known, for: pages[index].id) }
+            open(index)
+        }
+        guard let map, ensureLayer().load(paint, in: map) else { return }
+        refresh()
+    }
+
     // MARK: Pour les tests et les rendus
 
     /// Calcule la carte de la page ouverte tout de suite (tests, captures).

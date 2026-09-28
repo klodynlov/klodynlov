@@ -362,6 +362,20 @@ final class PaintLayer {
         return true
     }
 
+    /// Pose une image entière — les coups de crayon lus sur la photo d'une page coloriée sur papier —
+    /// à la place des couleurs ; annulable d'un geste, comme « tout effacer ».
+    @discardableResult
+    func load(_ values: [UInt32], in map: ZoneMap?) -> Bool {
+        guard values.count == count else { return false }
+        if let map { endStroke(in: map) }
+        push(.all(encode()))
+        values.withUnsafeBufferPointer { src in
+            guard let base = src.baseAddress else { return }
+            memcpy(pixels, base, count * 4)
+        }
+        return true
+    }
+
     private func push(_ step: Step) {
         history.append(step)
         historyBytes += step.bytes

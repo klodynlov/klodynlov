@@ -12,7 +12,7 @@ tour* d'`eveil/REPRISE-LOCALE.md` ». Tu peux aussi coller ce prompt :
 Compile, teste et installe le troisième tour de la Suite Éveil, poussé depuis une session cloud qui ne pouvait pas compiler le Swift. Réponds en français.
 
 0. git fetch origin ; git switch claude/ios-educational-apps-suite-dljtt6 ; git pull. Relis CLAUDE.md, section « Suite Éveil », puis « Troisième tour ».
-1. Python (stdlib) : depuis la racine, python3 -m unittest discover -s eveil/outils (115 tests) ; depuis eveil/reference, python3 -m unittest discover -s wordend -t . (83 tests). Si c'est rouge, arrête-toi et montre-moi.
+1. Python (stdlib) : depuis la racine, python3 -m unittest discover -s eveil/outils (125 tests) ; depuis eveil/reference, python3 -m unittest discover -s wordend -t . (83 tests). Si c'est rouge, arrête-toi et montre-moi.
 2. Swift, à relancer après chaque pull (swift test repasse sur macOS depuis le commit b936373 du 28/09) :
    - cd eveil/ios/WordEndCore && swift test ;
    - puis cd eveil/ios && swift test ;
@@ -27,13 +27,20 @@ Compile, teste et installe le troisième tour de la Suite Éveil, poussé depuis
      corrige son point dans PagesClassics/Animals/Things.swift ; pour une page générée, dans outils/coloriages/pages_*.py puis régénère) ;
    - le dessin qui prend vie (LivingDrawing.swift, LivingPaper dans ColoringView ; LivingDrawingTests : attaches comparées à vivant.py).
      Planches à relire : EVEIL_RENDER_DIR=/tmp/eveil-rendus swift test --filter LivingDrawingTests, puis montre-moi les vivant-*.png
-     (repos, puis trois instants : rien ne doit se décoller, ni laisser un trou blanc).
+     (repos, puis trois instants : rien ne doit se décoller, ni laisser un trou blanc) ;
+   - le mode papier (PaperMode.swift : PDF à repères, repères, homographie, lecture des coups de crayon ; PaperSheet.swift : la carte
+     « Colorier sur papier », l'impression, le scanner VisionKit ; PaperModeTests : le vrai PDF rendu, colorié et « photographié » de
+     travers, comparé à eveil/outils/papier). Planches : EVEIL_RENDER_DIR=/tmp/eveil-rendus swift test --filter PaperModeTests, puis
+     montre-moi papier-photo.png, papier-lu.png (les couleurs sous les traits, le grain du crayon) et papier-carte-*.png.
    Corrige les erreurs et les avertissements au plus près du code. Interdit :
    - désactiver un test ou élargir une tolérance ;
    - modifier à la main un fichier généré (PictoDessins.swift, PhraseLexiconData.swift, SoundBooksData.swift, PagesDessins.swift). Ils viennent d'eveil/outils : python3 -m <pictos|phrases|livres|coloriages>.generer.
    Si un test révèle un vrai défaut, corrige la source : le Python, puis régénère ; ou bien le Swift.
 3. Planches : EVEIL_RENDER_DIR=/tmp/eveil-rendus swift test --filter SentenceStageTests, puis montre-moi les PNG des phrases jouées (phrase-*.png) et des cartes « où ? » (phrase-cartes-ou.png : on doit VOIR dans, sur, sous, devant, derrière).
 4. iPad : ouvre App/EveilTrain.xcodeproj, compile et installe sur mon iPad (commandes xcrun devicectl dans eveil/README.md). L'ID d'équipe Apple ne va jamais dans le dépôt.
+   Mode papier, avec moi : dans l'atelier, bouton « Colorier sur papier » → « Imprimer la page » (A4, imprimante AirPrint ou PDF),
+   je colorie, puis « Photographier le coloriage » (l'iPad demande l'accès à la caméra la première fois : NSCameraUsageDescription
+   est dans le projet). Note ce qui ne va pas (repères non trouvés, couleurs ternes, page non reconnue) avec la photo si besoin.
 5. Committe et pousse les corrections sur la même branche : git pull avant, jamais de force-push, messages en français. Consigne versions et résultats dans eveil/README.md et CLAUDE.md. Dis-moi combien de tests passent, les avertissements restants et ce qui a été corrigé.
 ~~~
 

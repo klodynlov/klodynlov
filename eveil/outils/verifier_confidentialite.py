@@ -6,7 +6,8 @@ stocké. Ce script la rend VÉRIFIABLE à chaque modification (et en CI) :
 - interdit : réseau (URLSession, NWConnection…), URL http(s) dans le code,
   SDK d'analytics/publicité/crash, identifiant publicitaire, CloudKit,
   enregistrement audio sur disque (AVAudioRecorder, AVAudioFile en écriture),
-  reconnaissance vocale serveur (`requiresOnDeviceRecognition = false`) ;
+  reconnaissance vocale serveur (`requiresOnDeviceRecognition = false`),
+  photo du mode papier enregistrée (photothèque) ou convertie en fichier (JPEG/PNG/HEIC) ;
 - exigé : toute requête Speech force `requiresOnDeviceRecognition = true` ;
   toute configuration SwiftData déclare `cloudKitDatabase: .none`.
 
@@ -34,6 +35,8 @@ FORBIDDEN: list[tuple[str, str]] = [
     (r"\bAVAudioRecorder\b", "enregistrement audio sur disque"),
     (r"AVAudioFile\s*\(\s*forWriting", "écriture de fichier audio"),
     (r"requiresOnDeviceRecognition\s*=\s*false", "reconnaissance vocale sur serveur"),
+    (r"\b(UIImageWriteToSavedPhotosAlbum|PHPhotoLibrary|PHAsset\w*Request)\b", "photo enregistrée dans la photothèque"),
+    (r"\.(jpegData|pngData|heicData)\s*\(", "photo convertie en fichier (JPEG/PNG/HEIC)"),
 ]
 
 REQUIRED_IF: list[tuple[str, str, str]] = [

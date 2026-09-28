@@ -26,6 +26,15 @@ class TestRules(unittest.TestCase):
         self.assertTrue(self.rules("let r = try AVAudioRecorder(url: u, settings: [:])"))
         self.assertTrue(self.rules("let f = try AVAudioFile(forWriting: u, settings: s)"))
 
+    def test_photo_must_not_be_saved(self):
+        # Mode papier : la photo du coloriage se lit en mémoire, jamais écrite ni exportée.
+        self.assertTrue(self.rules("UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)"))
+        self.assertTrue(self.rules("PHPhotoLibrary.shared().performChanges { }"))
+        self.assertTrue(self.rules("let r = PHAssetCreationRequest.forAsset()"))
+        self.assertTrue(self.rules("let d = image.jpegData(compressionQuality: 0.9)"))
+        self.assertTrue(self.rules("let d = image.pngData()"))
+        self.assertEqual(self.rules("let photo = PaperPhoto(image: cg)"), [])
+
     def test_speech_must_stay_on_device(self):
         self.assertTrue(self.rules("let r = SFSpeechAudioBufferRecognitionRequest()"))
         ok = "let r = SFSpeechAudioBufferRecognitionRequest()\nr.requiresOnDeviceRecognition = true"

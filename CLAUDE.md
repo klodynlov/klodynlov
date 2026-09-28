@@ -364,8 +364,33 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     EN : « bleu ciel » = « light blue » (« Color the sky sky blue! » sonnait faux). Tests Swift :
     `ColoringPartsTests`, `ColoringInstructionsTests` (chaque consigne de chaque page se réussit d'un
     remplissage de sa couleur, jamais d'une autre). À compiler sur le Mac.
+  - ✅ **Mode papier** (choix de l'utilisateur, 28/09, « la suite ») : bouton « Colorier sur papier »
+    (en-tête de l'atelier, `doc.viewfinder`) → carte en 3 étapes (`PaperSheet` : imprimer, colorier,
+    photographier ; aperçu de la page imprimée ; `ReadingDots` pilotés par l'horloge). **Imprimer** :
+    PDF A4 fait en mémoire (`PaperPrint`, `PaperLayout` = mêmes nombres que `papier/mise_en_page.py` :
+    carré 480 pt en (57,64 ; 150), 4 repères pleins de 26 pt centrés à 26 pt des coins, hors du dessin,
+    ≥ 18 pt du bord), `UIPrintInteractionController` (niveaux de gris). **Photographier** :
+    `VNDocumentCameraViewController` (délégué `nonisolated` → `Task { @MainActor }`, photo mise à
+    l'endroit ≤ 2000 px → `PaperPhoto` `@unchecked Sendable`). **Lire** (`PaperScan.read`, hors du fil
+    principal) : repères cherchés sur la photo réduite à ~900 px (papier = 90e centile, sombre < 0,45 ×,
+    boîte 0,4–2,5 × le côté, rapport 0,6–1,67, remplie ≥ 80 %, la plus PROCHE de sa place dans 10 % de
+    la largeur ; sinon la photo = la page) → homographie (DLT 8×8) → carré redressé à la taille de la
+    carte → **accord** = part des pixels de trait qui sont de l'encre (clarté < 0,4 × papier ET chroma
+    < 60 ; seuil 0,5) ; sinon recherche parmi les 70 pages en 256 px → `.otherPage` (l'atelier OUVRE
+    cette page, avec sa carte) ; **coups de crayon** : balance des blancs (95e centile, gains 0,8–3),
+    colorié si chroma ≥ 45 ou clarté ≤ 150, près d'un trait (0,6 %) chroma ≥ 70 seulement, le reste
+    transparent (grain du crayon). `PaintLayer.load` (annulable, `.all`) → **le dessin prend vie** même
+    hors mode interactif (`paperArrived`, `paperPending` : la fête attend le `onChange` de la page).
+    Illisible : « Je n'ai pas bien vu la page. On réessaie ? » + conseil pour les grands.
+    `NSCameraUsageDescription` (pbxproj Debug/Release + `Info-additions.plist`). Python `outils/papier/`
+    (9 tests, **dans les conditions de l'app** : photo 1,6 px/pt, carte 1024 → repères à 0,3 px, bonne
+    page 1,0, autre 0,21, couleurs à ~20/255) ; planche `docs/ui/eveil-app/10-mode-papier.png` ;
+    Swift `PaperModeTests` (le vrai PDF rendu, colorié, photographié de travers ; rendus `papier-*.png`).
+    ⚠️ Performances Debug : boucles par pixel sur pointeurs bruts (comme `ZoneMap`), pas de tableau
+    littéral par pixel. À compiler sur le Mac, **puis à essayer avec une vraie imprimante**.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
-  (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur interdits) → 0 violation, 7 tests ;
+  (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur, photo enregistrée ou convertie en
+  fichier interdits) → 0 violation, 8 tests ;
   ignore les produits de compilation (`.build/`, `.swiftpm/`, `DerivedData/`).
 - 📚 LibraryBrain = RAG **local sur le Mac** (non joignable depuis le cloud) → relais
   `eveil/librarybrain/` : 28 sources en accès libre + `recuperer_sources.py` (à lancer en local),
@@ -402,7 +427,7 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
 enregistrées, illustrations et sons définitifs à la place des provisoires · acquérir les sources du rapport
 (§ 7) puis rejouer (P2) · alors seulement `--avec-notes` + veille arXiv · panel Delphi (mots, messages,
 nom, mascotte, voix) · protocole V1 (Jardé/CPP/CNIL à qualifier, corpus, calibration via le banc) ·
-App 2 : mode **papier** (VisionKit `VNDocumentCameraViewController` + SpriteKit) · décisions ouvertes :
+App 2 : mode papier **à essayer** avec une vraie imprimante et de vrais crayons (codé le 28/09) · décisions ouvertes :
 nom, iPadOS 17 vs 26, mode par défaut avant validation (écoute auto vs juge adulte).
 
 ### Autres projets (mentionnés au README, hors de ce dépôt)
@@ -411,7 +436,10 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : Suite Éveil — **le dessin prend vie** (28/09/2026, session cloud : au
+_Dernière mise à jour mémoire : Suite Éveil — **mode papier** (28/09/2026, session cloud : imprimer la
+page, la colorier aux vrais crayons, la photographier ; l'atelier retrouve les repères, reconnaît la page,
+pose les coups de crayon et le dessin prend vie ; référence Python dans les conditions de l'app, Swift à
+compiler sur le Mac puis à essayer avec une imprimante). Avant : **le dessin prend vie** (28/09/2026, session cloud : au
 « J'ai fini ! », les parties bougent avec les couleurs de l'enfant — roues, queues, ailes, soleil, nuages ;
 prototype Python relu sur planches, portage Swift à compiler sur le Mac). Avant : **consignes de coloriage** (28/09/2026, session cloud :
 « Colorie le soleil en jaune ! » en mode interactif, parties nommées sur les 70 pages ; correctif du

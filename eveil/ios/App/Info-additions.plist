@@ -7,6 +7,8 @@
 -->
 <plist version="1.0">
 <dict>
+	<key>NSCameraUsageDescription</key>
+	<string>L'atelier photographie le coloriage de votre enfant pour lui donner vie à l'écran. La photo reste en mémoire sur l'iPad : elle n'est jamais enregistrée ni envoyée.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Le petit train écoute votre enfant pour allumer ses wagons. Le son est analysé sur l'iPad, en mémoire : il n'est jamais enregistré ni envoyé.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>

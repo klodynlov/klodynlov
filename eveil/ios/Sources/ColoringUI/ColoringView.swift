@@ -8,7 +8,7 @@
 // mouvements de la main font l'intérêt du coloriage. Les couleurs passent SOUS les traits, qui restent nets et visibles :
 // rien ne fusionne. Grosses pastilles, annuler, tout effacer (annulable), choisir
 // une page parmi de grandes vignettes, page suivante. Rien n'est enregistré ni
-// envoyé. Le « mode papier » (photo d'un coloriage réel) viendra ensuite.
+// envoyé.
 //
 // Mise en page : portrait = outils à gauche, palette en bas ; paysage = palette en
 // colonne à droite, pour garder la plus grande page possible. Pastilles et
@@ -33,6 +33,11 @@
 //     se redit et un anneau montre où ; une autre couleur sur la bonne partie : « En jaune ! » et
 //     la bonne pastille s'éclaire ;
 //   • au plus cinq consignes par page, puis « Continue comme tu veux ».
+//
+// Mode papier (choix de l'utilisateur pour la suite, 28/09/2026 ; PaperMode.swift, PaperSheet.swift) :
+// on imprime la page, l'enfant la colorie aux vrais crayons, on la photographie ; ses coups de crayon
+// se posent sur la page (annulables) et le dessin prend vie — même hors du mode interactif, c'est la
+// promesse écrite sur la feuille. Photo d'une autre page de l'atelier : c'est elle qui s'ouvre.
 
 #if canImport(SwiftUI) && canImport(AVFoundation)
 import EveilDesign
@@ -70,6 +75,9 @@ public struct ColoringView: View {
     /// La zone où le dernier geste a commencé (le pinceau y reste).
     @State private var touchedZone = 0
     @State private var instructionTask: Task<Void, Never>?
+    /// Le mode papier : la carte ouverte, et la fête à faire quand la page photographiée sera ouverte.
+    @State private var showPaper = false
+    @State private var paperPending = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     public init(locale: String = "fr-FR", onHome: (() -> Void)? = nil) {
@@ -184,6 +192,13 @@ public struct ColoringView: View {
                                onClose: closePicker)
                         .transition(reduceMotion ? .opacity : .scale(scale: 0.92).combined(with: .opacity))
                 }
+                if showPaper {
+                    PaperSheet(page: studio.page, locale: locale,
+                               read: { photo in await readPaper(photo) },
+                               say: { text in say(text) },
+                               onClose: closePaper)
+                        .transition(reduceMotion ? .opacity : .scale(scale: 0.92).combined(with: .opacity))
+                }
             }
         }
         .onAppear {
@@ -193,7 +208,13 @@ public struct ColoringView: View {
         }
         .onChange(of: studio.page.id) { _, _ in
             endMasterpiece()
-            if interactive { startInstructions(after: 0.6) }
+            if paperPending {
+                // La page photographiée vient de s'ouvrir, avec ses coups de crayon : la fête.
+                paperPending = false
+                paperArrived()
+            } else if interactive {
+                startInstructions(after: 0.6)
+            }
         }
         .onDisappear {
             instructionTask?.cancel()
@@ -229,6 +250,8 @@ public struct ColoringView: View {
             Spacer(minLength: 0)
             toolButton("wand.and.stars", selected: interactive, size: WorkshopLayout.headerButton,
                        label: fr ? "Mode interactif" : "Interactive mode", action: toggleInteractive)
+            toolButton("doc.viewfinder", selected: false, size: WorkshopLayout.headerButton,
+                       label: fr ? "Colorier sur papier" : "Color on paper", action: openPaper)
             toolButton("square.grid.2x2.fill", selected: false, size: WorkshopLayout.headerButton,
                        label: fr ? "Choisir un dessin" : "Pick a picture", action: openPicker)
             toolButton("arrow.right", selected: false, size: WorkshopLayout.headerButton,
@@ -267,7 +290,7 @@ public struct ColoringView: View {
                 divider(layout)
                 // « J'ai fini ! » : le dessin prend vie (mode interactif).
                 toolButton("checkmark", selected: masterpieceAt != nil, size: layout.tool,
-                           label: fr ? "J'ai fini !" : "I'm done!", action: finishMasterpiece)
+                           label: fr ? "J'ai fini !" : "I'm done!") { finishMasterpiece() }
             }
         }
     }
@@ -554,13 +577,13 @@ public struct ColoringView: View {
 
     /// « J'ai fini ! » : le dessin danse, les confettis tombent, fanfare et bravo ; puis ses parties
     /// prennent vie avec les couleurs de l'enfant (LivingDrawing.swift), découpées pendant la fanfare.
-    private func finishMasterpiece() {
+    private func finishMasterpiece(saying text: String? = nil) {
         let start = Date()
         masterpieceAt = start
         living = nil
         livingAt = nil
         SoundBoard.shared.play(.fanfare)
-        say(fr ? "Bravo ! Quel beau dessin !" : "Well done! What a beautiful picture!")
+        say(text ?? (fr ? "Bravo ! Quel beau dessin !" : "Well done! What a beautiful picture!"))
         Task { @MainActor in
             if !reduceMotion, let drawing = await studio.livingDrawing(), masterpieceAt == start {
                 living = drawing
@@ -597,6 +620,43 @@ public struct ColoringView: View {
             try? await Task.sleep(nanoseconds: 1_200_000_000)
             if !Task.isCancelled { cheer = false }
         }
+    }
+
+    // MARK: Mode papier
+
+    private func openPaper() {
+        endMasterpiece()
+        if reduceMotion { showPaper = true } else { withAnimation(.spring(duration: 0.3)) { showPaper = true } }
+    }
+
+    private func closePaper() {
+        if reduceMotion { showPaper = false } else { withAnimation(.spring(duration: 0.3)) { showPaper = false } }
+    }
+
+    /// La photo d'une page coloriée sur papier : lue hors du fil principal, ses coups de crayon posés
+    /// sur sa page (celle-ci, ou celle qu'on a photographiée), puis la fête ; `false` : illisible.
+    private func readPaper(_ photo: PaperPhoto) async -> Bool {
+        switch await studio.readPaper(photo) {
+        case .unreadable:
+            return false
+        case let .painted(paint, _):
+            studio.loadPaper(paint)
+            closePaper()
+            paperArrived()
+        case let .otherPage(index, paint, map, _):
+            // La fête attend que l'atelier ait ouvert la page (onChange), sinon ce changement l'éteindrait.
+            paperPending = true
+            studio.loadPaper(paint, page: index, map: map)
+            closePaper()
+        }
+        return true
+    }
+
+    /// Le coloriage sur papier est sur la page : il prend vie (même hors du mode interactif) ; en mode
+    /// interactif, les consignes qui restent reprennent après la fête.
+    private func paperArrived() {
+        finishMasterpiece(saying: fr ? "Bravo ! Ton dessin prend vie !" : "Well done! Your picture comes alive!")
+        if interactive { startInstructions(after: LivingMotion.duration + 1.5) }
     }
 
     private func openPicker() {

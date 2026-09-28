@@ -225,6 +225,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Petit Train";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_NSCameraUsageDescription = "L'atelier photographie le coloriage de votre enfant pour lui donner vie à l'écran. La photo reste en mémoire sur l'iPad : elle n'est jamais enregistrée ni envoyée.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Le petit train écoute votre enfant pour allumer ses wagons. Le son est analysé sur l'iPad, en mémoire : il n'est jamais enregistré ni envoyé.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Option expérimentale, désactivée par défaut : vérifier sur l'iPad que votre enfant a bien tenté le mot demandé. Rien n'est envoyé.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -255,6 +256,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Petit Train";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_NSCameraUsageDescription = "L'atelier photographie le coloriage de votre enfant pour lui donner vie à l'écran. La photo reste en mémoire sur l'iPad : elle n'est jamais enregistrée ni envoyée.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Le petit train écoute votre enfant pour allumer ses wagons. Le son est analysé sur l'iPad, en mémoire : il n'est jamais enregistré ni envoyé.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Option expérimentale, désactivée par défaut : vérifier sur l'iPad que votre enfant a bien tenté le mot demandé. Rien n'est envoyé.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

@@ -27,7 +27,7 @@
 | Couche iOS (AVAudioEngine, SwiftUI, SwiftData) | 🟢 FAISABLE | Noms d'API vérifiés dans la doc Apple ; non compilé ici |
 | « Rien ne quitte l'iPad » | ✅ PROUVÉ *statiquement* | Garde-fou [`verifier_confidentialite.py`](../eveil/outils/verifier_confidentialite.py) : 0 violation sur 22 fichiers |
 | Validité sur de **vraies voix d'enfants de 3-5 ans** | 🟡 EXPÉRIMENTAL | À mesurer avec le banc et le protocole §8 — **aucun chiffre avant** |
-| App 2 — coloriage (mode papier + mode écran) | 🟢 conception | API vérifiées (§6) ; rien de codé |
+| App 2 — coloriage (mode écran + mode papier) | 🟢 FAISABLE | Mode écran joué sur l'iPad réel (zones, pochoir, 70 pages, consignes, dessin vivant) ; mode papier : référence Python testée sur photos simulées, portage Swift **à compiler sur Mac et à essayer avec une vraie imprimante** (§6.2) |
 | Haptique **au doigt** sur iPad | ⛔ NON VIABLE | Pas de moteur haptique dans l'iPad ; seulement Apple Pencil Pro [D6a] |
 | « Core ML qui évalue la clarté phonétique » dès la v1 | ⛔ NON VIABLE en l'état | Pas de corpus 3-5 ans FR sous licence compatible [C17] ; score = donnée de santé + dispositif médical [E10][E12] |
 
@@ -503,7 +503,40 @@ confirmer (§10).*
 | Geste | Vrais crayons, vraie friction, vraie prise | Doigt (ou stylet épais) : pinceau rond qui reste dans sa zone ; toucher une zone la remplit (ébauche, voir § 6.3) |
 | Guidage | Traits épais imprimés | **Pochoir par zones** + guidage **sonore et visuel** près des contours (à faire) ; haptique **Pencil Pro** en bonus |
 | Écran | Quelques secondes (numériser, regarder l'animation) | Toute l'activité |
-| API clés (vérifiées) | `VNDocumentCameraViewController` (iOS 13), `VNDetectDocumentSegmentationRequest` (iOS 15) | Ébauche : SwiftUI `Canvas` + carte des zones en Swift pur (aucune API spéciale). Option : PencilKit (`PKCanvasView` `.anyInput`, encre `.crayon`, `PKStroke(ink:path:transform:mask:)` iOS 14) si l'on veut sa texture de crayon |
+| API clés (vérifiées) | `VNDocumentCameraViewController` (iOS 13), `UIPrintInteractionController` ; `VNDetectDocumentSegmentationRequest` (iOS 15) inutile : le scanner détecte déjà la feuille, nos repères font le recalage fin | Ébauche : SwiftUI `Canvas` + carte des zones en Swift pur (aucune API spéciale). Option : PencilKit (`PKCanvasView` `.anyInput`, encre `.crayon`, `PKStroke(ink:path:transform:mask:)` iOS 14) si l'on veut sa texture de crayon |
+
+**Mode papier, fait le 28/09/2026 (choix de l'utilisateur)** — bouton « Colorier sur papier » de
+l'atelier : une carte en trois étapes (imprimer, colorier, photographier) avec la page telle qu'elle
+sortira de l'imprimante.
+
+1. **Imprimer** : un PDF A4 fait sur l'iPad (`PaperPrint`, jamais écrit sur disque) — le titre, le
+   dessin au trait dans un carré de 480 pt, et **quatre repères** (carrés pleins noirs de 26 pt) hors
+   du dessin, dans la partie imprimable ; feuille d'impression d'iPadOS, en niveaux de gris.
+2. **Photographier** : le scanner de documents de VisionKit détecte, redresse et recadre la feuille.
+   L'atelier y cherche chaque repère près de sa place attendue — la tache sombre **la plus proche**
+   qui a l'allure d'un carré plein (sombre, presque carrée, remplie à plus de 80 %, de la bonne
+   taille) : un coin du dessin colorié en noir ne trompe pas. Faute de repères, la photo est prise
+   pour la page entière.
+3. **Redresser et reconnaître** : l'homographie des repères redresse le carré du dessin à la taille de
+   la carte des zones (1024²). Est-ce bien cette page ? La part des pixels de trait qui sont de
+   l'**encre** (gris foncé presque sans couleur ; un ciel colorié en rouge, sombre lui aussi, n'en est
+   pas) : 1,0 pour la bonne page, 0,21 pour une autre dans les conditions de l'app. Sinon l'atelier
+   cherche parmi ses 70 pages et **ouvre celle qu'on a photographiée**.
+4. **Les coups de crayon** : balance des blancs d'après le papier ; un pixel est colorié s'il est
+   coloré ou sombre (crayon noir, marron) ; près d'un trait, seule une vraie couleur compte ; le reste
+   est transparent — **le grain blanc du crayon se voit**, comme sur la feuille. Les traits, l'app les
+   redessine par-dessus, nets. Posé sur la page, annulable d'un geste ; puis **le dessin prend vie**
+   (§ 6.4), même hors du mode interactif : c'est la promesse écrite sur la feuille.
+
+Jamais « raté » : une photo illisible, c'est « Je n'ai pas bien vu la page. On réessaie ? », avec un
+conseil pour les grands. La photo reste en mémoire le temps de la lire (§ 7.1). Référence
+`eveil/outils/papier/` (photos simulées : perspective, lumière chaude qui baisse vers les bords,
+bruit, 15 % de grain blanc ; repères à 0,3 px près, couleurs retrouvées à une vingtaine de niveaux
+près sur 255) → `ColoringUI/PaperMode.swift` (lecture) et `PaperSheet.swift` (carte, impression,
+scanner). **Reste à essayer** sur l'iPad avec une vraie imprimante et de vrais crayons (feutres,
+craies grasses, papier gris ou recyclé, lumière du soir).
+
+<img src="ui/eveil-app/10-mode-papier.png" width="560" alt="Trois pages coloriées : la photo de travers sous une lumière chaude, le dessin redressé, et ce que l'atelier en lit sous ses traits">
 
 ### 6.3 Mode écran : zones, pochoir et étayage progressif
 
@@ -581,7 +614,8 @@ pièce emporte ce qu'elle enferme (taches, yeux) et les zones sans nom qui ne ti
 de la queue). Le mouvement de chaque partie est une donnée de la page (une table par nom, corrigée
 page par page : la queue d'un avion ne remue pas). Référence Python `eveil/outils/coloriages/vivant.py`
 (relue sur planches, attaches de parité avec l'app) → `ColoringUI/LivingDrawing.swift`. Toucher la
-page arrête la fête ; « Réduire les animations » la retire.
+page arrête la fête ; « Réduire les animations » la retire. **En mode papier aussi** (28/09/2026) :
+les coups de crayon lus sur la photo deviennent le coloriage, et le même découpage s'applique.
 
 <img src="ui/eveil-app/9-dessin-vivant.png" width="560" alt="Six pages coloriées, au repos puis à trois instants de la fête : roues qui tournent, queues qui remuent, soleil qui bat">
 
@@ -592,7 +626,7 @@ page arrête la fête ; « Réduire les animations » la retire.
 | `ColoringCore` (Swift pur, testable) | ✅ carte des zones (`ZoneMap`), traits visibles (`Sketch`, `LineClipper`), calque de peinture et pochoir (`PaintLayer`) — dans `ColoringUI` pour l'ébauche ; à faire : champ de distance, couverture/débordement |
 | `ColoringCanvas` | ✅ `ColoringView` : SwiftUI `Canvas` (couleurs sous les traits) + suivi du geste, albums et choix des pages ; PencilKit en option |
 | `GuidanceEngine` | son (crayon, « tic »), halo, haptique Pencil Pro |
-| `PageScanner` | numérisation VisionKit + redressement + recalage sur le gabarit |
+| `PageScanner` | ✅ `PaperMode` (PDF à repères, repères, homographie, reconnaissance de la page, lecture des coups de crayon) + `PaperSheet` (carte en trois étapes, impression, scanner VisionKit), § 6.2 |
 | `AnimationStage` | ✅ en mode écran : `LivingDrawing` (pièces découpées dans le coloriage, attaches, mouvement piloté par l'horloge, § 6.4) ; un squelette SpriteKit seulement si l'on veut des pantins articulés |
 
 ---
@@ -605,6 +639,9 @@ Aucun compte, aucun serveur, aucun SDK tiers, aucun entitlement iCloud ; `Privac
 aucun suivi, aucune donnée collectée, UserDefaults déclaré (raison `CA92.1`) [D11b] ; script
 [`verifier_confidentialite.py`](../eveil/outils/verifier_confidentialite.py) exécuté à chaque
 changement. Réserve honnête : si l'ASR iOS 26 est activée, **le système** télécharge ses modèles.
+Mode papier : la photo du coloriage reste en mémoire le temps de la lire, jamais enregistrée ni
+envoyée — le script interdit aussi la photothèque et toute conversion de photo en fichier
+(JPEG/PNG/HEIC) ; l'autorisation caméra le dit à l'adulte.
 
 ### 7.2 COPPA / RGPD (faits vérifiés, pas un avis juridique)
 
@@ -701,7 +738,7 @@ un IC95 de [0 % ; 11,4 %] — **« zéro sur trente » n'est pas « zéro »** (
 | **M1** | `swift test` sur Mac (parité), app Xcode sur iPad réel, essais **adultes** au micro (sanité, pas de validation) | 🟢 |
 | **M2** | V0 — panel Delphi (mots, messages, durées), nom définitif, mascotte, voix modèles FR/EN | 🟡 |
 | **M3** | V1 — cadre éthique, corpus, calibration, porte GO/NO GO | 🟡 |
-| **M4** | App 2 — prototype **mode papier** d'abord, puis mode écran (pochoir) | 🟡 ébauche du mode écran faite à la demande de l'utilisateur (zones, pochoir, 70 pages) ; mode papier à faire |
+| **M4** | App 2 — prototype **mode papier** d'abord, puis mode écran (pochoir) | 🟢 mode écran joué sur l'iPad (zones, pochoir, 70 pages, consignes, dessin vivant) ; mode papier codé le 28/09/2026 (§ 6.2), à essayer avec une vraie imprimante |
 | **M5** | V2 — usage en famille | 🟡 |
 | **M6** | V3 — étude à cas unique | 🟡 |
 | Plus tard | Calibration par enfant (mots-témoins /s/ /ʃ/) · codas occlusives et fricatives voisées · chemin `SpeechAnalyzer` · ML **seulement** si données et cadre le permettent | 🟡 |
