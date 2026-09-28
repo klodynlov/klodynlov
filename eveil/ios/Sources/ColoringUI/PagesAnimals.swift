@@ -55,7 +55,7 @@ extension ColoringPages {
         s.part("la tête", "the head", at: [(0.36, 0.43)])
         s.part("les yeux", "the eyes", color: "rouge", at: [(0.415, 0.305), (0.585, 0.305)])
         s.part("le corps", "the body", at: [(0.5, 0.605), (0.5, 0.735), (0.5, 0.835)])
-        s.part("les ailes", "the wings", color: "bleu ciel", at: [(0.21, 0.44), (0.79, 0.44)])
+        s.part("les ailes", "the wings", color: "bleu ciel", motion: .sway(14), at: [(0.21, 0.44), (0.79, 0.44)])
     }
 
     static let cow = ColoringPage("vache", fr: "La vache", en: "The cow") { s in
@@ -171,10 +171,10 @@ extension ColoringPages {
         // Les consignes du mode interactif, dans l'ordre où elles viennent (ColoringInstructions).
         s.part("le poisson", "the fish", color: "orange", at: [(0.34, 0.46), (0.5475, 0.46), (0.72, 0.53)])
         s.part("les bandes", "the stripes", at: [(0.46, 0.46), (0.635, 0.46)])
-        s.part("la queue", "the tail", at: [(0.19, 0.46)])
+        s.part("la queue", "the tail", motion: .sway(12), at: [(0.19, 0.46)])
         s.part("l'eau", "the water", color: "turquoise", rank: 1, at: [(0.06, 0.06)])
         s.part("le sable", "the sand", color: "jaune", rank: 1, at: [(0.45, 0.95)])
-        s.part("l'étoile de mer", "the starfish", color: "rose", rank: 1, at: [(0.70, 0.915)])
+        s.part("l'étoile de mer", "the starfish", color: "rose", rank: 1, motion: .pulse(0.10), at: [(0.70, 0.915)])
     }
 
     static let butterfly = ColoringPage("papillon", fr: "Le papillon", en: "The butterfly") { s in
@@ -211,8 +211,8 @@ extension ColoringPages {
         s.ink(G.circle(0.525, 0.28, 0.012))
         s.line(G.arc(0.5, 0.295, 0.024, from: 30, to: 150))
         // Les consignes du mode interactif, dans l'ordre où elles viennent (ColoringInstructions).
-        s.part("les ailes du haut", "the top wings", at: [(0.40, 0.44), (0.60, 0.44)])
-        s.part("les ailes du bas", "the bottom wings", at: [(0.38, 0.59), (0.62, 0.59)])
+        s.part("les ailes du haut", "the top wings", motion: .sway(10), at: [(0.40, 0.44), (0.60, 0.44)])
+        s.part("les ailes du bas", "the bottom wings", motion: .sway(8), at: [(0.38, 0.59), (0.62, 0.59)])
         s.part("les ronds", "the dots",
                at: [(0.27, 0.70), (0.73, 0.70), (0.20, 0.29), (0.80, 0.29), (0.335, 0.36), (0.665, 0.36)])
         s.part("le corps", "the body", at: [(0.5, 0.43), (0.5, 0.565), (0.5, 0.71)])

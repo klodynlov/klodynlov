@@ -56,6 +56,9 @@ public struct ColoringView: View {
     @State private var voice = ModelVoicePlayer()
     /// « J'ai fini ! » : l'instant où le dessin a pris vie (nil au repos).
     @State private var masterpieceAt: Date?
+    /// Le dessin vivant (ses pièces découpées dans le coloriage) et l'instant où il s'anime.
+    @State private var living: LivingDrawing?
+    @State private var livingAt: Date?
     /// Consignes du mode interactif : celles de la page, et celle en cours.
     @State private var instructions: [ColoringInstruction] = []
     @State private var step = 0
@@ -189,6 +192,7 @@ public struct ColoringView: View {
             if interactive { startInstructions(after: 1.2) }
         }
         .onChange(of: studio.page.id) { _, _ in
+            endMasterpiece()
             if interactive { startInstructions(after: 0.6) }
         }
         .onDisappear {
@@ -229,7 +233,7 @@ public struct ColoringView: View {
                        label: fr ? "Choisir un dessin" : "Pick a picture", action: openPicker)
             toolButton("arrow.right", selected: false, size: WorkshopLayout.headerButton,
                        label: fr ? "Page suivante" : "Next page") {
-                masterpieceAt = nil
+                endMasterpiece()
                 studio.nextPage()
             }
         }
@@ -353,6 +357,11 @@ public struct ColoringView: View {
             let w = Self.dance(since: masterpieceAt, at: timeline.date, reduceMotion: reduceMotion)
             PaperView(studio: studio, side: layout.side,
                       onBegin: touchBegan, onMove: touchMoved, onEnd: touchEnded)
+                .overlay {
+                    if let living, let livingAt {
+                        LivingPaper(drawing: living, start: livingAt, side: layout.side)
+                    }
+                }
                 .overlay(alignment: .topLeading) {
                     if let markAt, let current {
                         InstructionMark(start: markAt, points: current.part.points, side: layout.side,
@@ -372,6 +381,7 @@ public struct ColoringView: View {
     // MARK: Gestes
 
     private func touchBegan(_ unit: CGPoint) {
+        if masterpieceAt != nil { endMasterpiece() }      // toucher la page : on revient au coloriage
         touchedZone = studio.zone(near: unit)
         switch active {
         case .fill:
@@ -530,7 +540,7 @@ public struct ColoringView: View {
             markAt = nil
             swatchHint = nil
             voice.stop()
-            masterpieceAt = nil
+            endMasterpiece()
         }
     }
 
@@ -542,16 +552,32 @@ public struct ColoringView: View {
         Task { await voice.speak(text, locale: locale, pace: .sentence) }
     }
 
-    /// « J'ai fini ! » : le dessin danse, les confettis tombent, fanfare et bravo.
+    /// « J'ai fini ! » : le dessin danse, les confettis tombent, fanfare et bravo ; puis ses parties
+    /// prennent vie avec les couleurs de l'enfant (LivingDrawing.swift), découpées pendant la fanfare.
     private func finishMasterpiece() {
         let start = Date()
         masterpieceAt = start
+        living = nil
+        livingAt = nil
         SoundBoard.shared.play(.fanfare)
         say(fr ? "Bravo ! Quel beau dessin !" : "Well done! What a beautiful picture!")
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: UInt64(ConfettiLayer.duration * 1_000_000_000))
-            if masterpieceAt == start { masterpieceAt = nil }
+            if !reduceMotion, let drawing = await studio.livingDrawing(), masterpieceAt == start {
+                living = drawing
+                livingAt = Date()
+                try? await Task.sleep(nanoseconds: UInt64(LivingMotion.duration * 1_000_000_000))
+            } else {
+                try? await Task.sleep(nanoseconds: UInt64(ConfettiLayer.duration * 1_000_000_000))
+            }
+            if masterpieceAt == start { endMasterpiece() }
         }
+    }
+
+    /// La fête s'arrête (à sa fin, au toucher, en changeant de page) : on recolorie.
+    private func endMasterpiece() {
+        masterpieceAt = nil
+        living = nil
+        livingAt = nil
     }
 
     /// La danse du dessin : il s'étire et se balance, de moins en moins, puis se pose.
@@ -574,13 +600,49 @@ public struct ColoringView: View {
     }
 
     private func openPicker() {
-        masterpieceAt = nil
+        endMasterpiece()
         studio.refreshThumbnail()
         if reduceMotion { showPicker = true } else { withAnimation(.spring(duration: 0.3)) { showPicker = true } }
     }
 
     private func closePicker() {
         if reduceMotion { showPicker = false } else { withAnimation(.spring(duration: 0.3)) { showPicker = false } }
+    }
+}
+
+// MARK: - Le dessin qui prend vie
+
+/// Le coloriage immobile, et ses pièces qui bougent par-dessus (roues, queues, ailes, soleil…).
+/// Piloté par l'horloge (TimelineView), comme tout mouvement de l'app ; ne capte aucun toucher.
+struct LivingPaper: View {
+    let drawing: LivingDrawing
+    let start: Date
+    let side: CGFloat
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 60, paused: reduceMotion)) { timeline in
+            let t = reduceMotion ? 0 : timeline.date.timeIntervalSince(start)
+            Canvas { ctx, size in
+                let k = size.width
+                ctx.draw(Image(decorative: drawing.base, scale: 1), in: CGRect(x: 0, y: 0, width: k, height: k))
+                for piece in drawing.pieces {
+                    let m = LivingMotion.transform(piece.motion, at: t, phase: piece.phase, sign: piece.sign)
+                    var layer = ctx
+                    layer.translateBy(x: (piece.pivot.x + CGFloat(m.dx)) * k, y: (piece.pivot.y + CGFloat(m.dy)) * k)
+                    layer.rotate(by: .radians(m.angle))
+                    layer.scaleBy(x: CGFloat(m.scale), y: CGFloat(m.scale))
+                    layer.translateBy(x: -piece.pivot.x * k, y: -piece.pivot.y * k)
+                    layer.draw(Image(decorative: piece.image, scale: 1),
+                               in: CGRect(x: piece.frame.minX * k, y: piece.frame.minY * k,
+                                          width: piece.frame.width * k, height: piece.frame.height * k))
+                }
+            }
+        }
+        .frame(width: side, height: side)
+        .clipShape(RoundedRectangle(cornerRadius: side * 0.04, style: .continuous))
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 }
 

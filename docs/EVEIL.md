@@ -568,6 +568,23 @@ flowchart LR
 
 SceneKit est écarté (déprécié en iOS 26) ; RealityKit seulement si l'on passe un jour à la 3D [D8a].
 
+**Fait en mode écran (28/09/2026, choix de l'utilisateur)**, sans SpriteKit ni squelette : le
+« pantin » vient des **parties nommées** des pages (celles des consignes, § 6.3). Au « J'ai fini ! »
+du mode interactif, pendant la fanfare, chaque partie qui bouge est **découpée** dans le coloriage de
+l'enfant (ses couleurs et les traits qui la bordent), son emplacement **rebouché** avec les couleurs
+voisines, puis elle bouge 6 s par-dessus, pilotée par l'horloge : les **roues** tournent (seul leur
+disque intérieur : rien ne se découvre, trois tours entiers pour se reposer sans saut), le **soleil**,
+les cœurs, les étoiles **battent** (grandir seulement), les **queues**, ailes, oreilles et feuillages
+**se balancent** autour de leur **attache** (le milieu du contact avec le reste du dessin, le tronc qui
+porte le feuillage, le crochet de la serviette), les **nuages** glissent, les ballons flottent. Une
+pièce emporte ce qu'elle enferme (taches, yeux) et les zones sans nom qui ne tiennent qu'à elle (le bout
+de la queue). Le mouvement de chaque partie est une donnée de la page (une table par nom, corrigée
+page par page : la queue d'un avion ne remue pas). Référence Python `eveil/outils/coloriages/vivant.py`
+(relue sur planches, attaches de parité avec l'app) → `ColoringUI/LivingDrawing.swift`. Toucher la
+page arrête la fête ; « Réduire les animations » la retire.
+
+<img src="ui/eveil-app/9-dessin-vivant.png" width="560" alt="Six pages coloriées, au repos puis à trois instants de la fête : roues qui tournent, queues qui remuent, soleil qui bat">
+
 ### 6.5 Modules envisagés
 
 | Module | Rôle |
@@ -576,7 +593,7 @@ SceneKit est écarté (déprécié en iOS 26) ; RealityKit seulement si l'on pas
 | `ColoringCanvas` | ✅ `ColoringView` : SwiftUI `Canvas` (couleurs sous les traits) + suivi du geste, albums et choix des pages ; PencilKit en option |
 | `GuidanceEngine` | son (crayon, « tic »), halo, haptique Pencil Pro |
 | `PageScanner` | numérisation VisionKit + redressement + recalage sur le gabarit |
-| `AnimationStage` | squelette SpriteKit, textures, animations |
+| `AnimationStage` | ✅ en mode écran : `LivingDrawing` (pièces découpées dans le coloriage, attaches, mouvement piloté par l'horloge, § 6.4) ; un squelette SpriteKit seulement si l'on veut des pantins articulés |
 
 ---
 

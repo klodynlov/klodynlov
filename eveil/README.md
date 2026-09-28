@@ -206,6 +206,16 @@ pour le nombre de fois que l'enfant doit répéter » :
   entières, assez grandes, jamais deux noms sur une zone ; l'ordre des consignes se règle par page :
   la coccinelle avant sa feuille) ; celles des 15 pages Swift reposent sur leurs points-témoins ; un
   test Swift vérifie que chaque consigne de chaque page se réussit.
+- **Le dessin prend vie** (la suite choisie ensuite) : au « J'ai fini ! » du mode interactif, les
+  parties bougent quelques secondes **avec les couleurs de l'enfant** — les roues tournent, le soleil
+  bat, la queue remue, les ailes battent, le feuillage se balance sur son tronc, les nuages glissent,
+  les ballons flottent, le tee-shirt tourne dans la machine. Chaque partie est découpée dans le
+  coloriage, son emplacement rebouché avec les couleurs voisines ; elle bouge autour de son attache
+  (le milieu de son contact avec le reste du dessin). Toucher la page arrête la fête. 69 pages sur 70
+  bougent (le cirque danse seulement en entier). Référence et planches en Python
+  ([`outils/coloriages/vivant.py`](outils/coloriages/vivant.py) :
+  `python3 -m coloriages.vivant --planche DOSSIER`), portage dans `ColoringUI/LivingDrawing.swift`.
+  [Planche](../docs/ui/eveil-app/9-dessin-vivant.png).
 
 ```bash
 open eveil/ios/App/EveilTrain.xcodeproj           # schéma EveilTrain, un iPad du simulateur, ▶︎

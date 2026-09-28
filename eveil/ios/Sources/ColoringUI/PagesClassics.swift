@@ -45,8 +45,8 @@ extension ColoringPages {
         // Les consignes du mode interactif, dans l'ordre où elles viennent (ColoringInstructions).
         s.part("la locomotive", "the engine", at: [(0.19, 0.60), (0.375, 0.60), (0.47, 0.60)])
         s.part("le wagon", "the wagon", at: [(0.80, 0.63)])
-        s.part("les ballons", "the balloons", at: [(0.705, 0.48), (0.905, 0.48), (0.805, 0.46)])
-        s.part("les roues", "the wheels", color: "noir",
+        s.part("les ballons", "the balloons", motion: .float(0.018), at: [(0.705, 0.48), (0.905, 0.48), (0.805, 0.46)])
+        s.part("les roues", "the wheels", color: "noir", motion: .roll,
                at: [(0.155, 0.7565), (0.335, 0.7565), (0.535, 0.7255), (0.72, 0.772), (0.885, 0.772)])
     }
 
@@ -94,8 +94,9 @@ extension ColoringPages {
         s.part("la tête", "the head", color: "orange", at: [(0.29, 0.45)])
         s.part("la casquette", "the cap", color: "rouge", at: [(0.42, 0.17), (0.42, 0.265), (0.60, 0.3085)])
         s.part("le manteau", "the coat", color: "bleu", at: [(0.40, 0.90)])
-        s.part("les oreilles", "the ears", color: "rose", at: [(0.244, 0.325), (0.756, 0.325)])
+        s.part("les oreilles", "the ears", color: "rose", motion: .sway(8), at: [(0.244, 0.325), (0.756, 0.325)])
         s.part("le col", "the collar", color: "jaune", at: [(0.50, 0.705)])
+        s.part("la queue", "the tail", motion: .sway(12), at: [(0.80, 0.915)])
     }
 
     static let house = ColoringPage("maison", fr: "La maison", en: "The house") { s in

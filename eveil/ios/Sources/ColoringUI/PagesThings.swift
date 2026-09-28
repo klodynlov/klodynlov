@@ -59,11 +59,11 @@ extension ColoringPages {
         s.shape(G.rect(0.27, 0.66, 0.46, 0.075, r: 0.025), at: (0.36, 0.6975))
         s.shape(G.heart(0.5, 0.835, 0.055), at: (0.5, 0.835))
         // Les consignes du mode interactif, dans l'ordre où elles viennent (ColoringInstructions).
-        s.part("la tulipe", "the tulip", color: "rouge", at: [(0.20, 0.37), (0.25, 0.35), (0.30, 0.37)])
-        s.part("la marguerite", "the daisy", color: "jaune",
+        s.part("la tulipe", "the tulip", color: "rouge", motion: .pulse(0.08), at: [(0.20, 0.37), (0.25, 0.35), (0.30, 0.37)])
+        s.part("la marguerite", "the daisy", color: "jaune", motion: .pulse(0.08),
                at: (0..<8).map { G.rotated((0.50, 0.095), CGFloat($0) * 45, around: (0.50, 0.205)) })
         s.part("le pot", "the pot", at: [(0.40, 0.87)])
-        s.part("le cœur", "the heart", color: "rose", at: [(0.5, 0.835)])
+        s.part("le cœur", "the heart", color: "rose", motion: .pulse(0.14), at: [(0.5, 0.835)])
         s.part("les feuilles", "the leaves", color: "vert", at: [(0.425, 0.55), (0.58, 0.485)])
     }
 
@@ -105,7 +105,7 @@ extension ColoringPages {
             s.line(G.line([(x, y - r), (x, y + r)]))
         }
         // Les consignes du mode interactif, dans l'ordre où elles viennent (ColoringInstructions).
-        s.part("la cerise", "the cherry", color: "rouge", at: [(0.555, 0.185)])
+        s.part("la cerise", "the cherry", color: "rouge", motion: .pulse(0.12), at: [(0.555, 0.185)])
         s.part("la boule du haut", "the top scoop", color: "rose", at: [(0.44, 0.31)])
         s.part("la boule du bas", "the bottom scoop", color: "marron", at: [(0.42, 0.49)])
         s.part("le cornet", "the cone", color: "orange",
@@ -209,7 +209,7 @@ extension ColoringPages {
         s.part("la fusée", "the rocket", at: [(0.43, 0.56), (0.43, 0.715)])
         s.part("les ailerons", "the fins", at: [(0.31, 0.70), (0.69, 0.70), (0.50, 0.72)])
         s.part("le hublot", "the window", color: "bleu ciel", at: [(0.515, 0.465)])
-        s.part("la flamme", "the flame", color: "orange", at: [(0.42, 0.81), (0.50, 0.84)])
+        s.part("la flamme", "the flame", color: "orange", motion: .sway(7), at: [(0.42, 0.81), (0.50, 0.84)])
     }
 
     static let dogHouse = ColoringPage("niche", fr: "La niche", en: "The dog house") { s in
@@ -251,9 +251,10 @@ extension ColoringPages {
         s.part("la niche", "the dog house", at: [(0.12, 0.72)])
         s.part("le toit", "the roof", color: "rouge", at: [(0.15, 0.459)])
         s.part("le chien", "the dog", color: "marron",
-               at: [(0.745, 0.37), (0.855, 0.66), (0.875, 0.815), (0.72, 0.80), (0.782, 0.80), (0.93, 0.70)])
-        s.part("les oreilles", "the ears", color: "noir", at: [(0.622, 0.47), (0.868, 0.47)])
+               at: [(0.745, 0.37), (0.855, 0.66), (0.875, 0.815), (0.72, 0.80), (0.782, 0.80)])
+        s.part("les oreilles", "the ears", color: "noir", motion: .sway(8), at: [(0.622, 0.47), (0.868, 0.47)])
         s.part("le collier", "the collar", at: [(0.705, 0.583)])
+        s.part("la queue", "the tail", color: "marron", motion: .sway(14), at: [(0.93, 0.70)])
     }
 
     static let bell = ColoringPage("cloche", fr: "La cloche", en: "The bell") { s in
@@ -295,10 +296,10 @@ extension ColoringPages {
         s.shape(G.rect(0.462, 0.13, 0.076, 0.08, r: 0.024), at: (0.50, 0.17))
         // Les consignes du mode interactif, dans l'ordre où elles viennent (ColoringInstructions).
         s.part("la cloche", "the bell", color: "jaune", at: [(0.50, 0.34), (0.35, 0.67)])
-        s.part("le nœud", "the bow", color: "rouge", at: [(0.37, 0.16), (0.63, 0.16), (0.50, 0.17)])
+        s.part("le nœud", "the bow", color: "rouge", motion: .pulse(0.10), at: [(0.37, 0.16), (0.63, 0.16), (0.50, 0.17)])
         s.part("l'étoile", "the star", at: [(0.50, 0.655)])
         s.part("la bande", "the stripe", at: [(0.50, 0.515)])
-        s.part("le battant", "the clapper", at: [(0.50, 0.85)])
+        s.part("le battant", "the clapper", motion: .sway(12), at: [(0.50, 0.85)])
     }
 }
 #endif

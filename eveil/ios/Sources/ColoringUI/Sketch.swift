@@ -59,8 +59,46 @@ public struct ColoringPart: Equatable, Sendable {
     public let rank: Int
     /// Un point au cœur de chacune de ses zones (unité de page).
     public let points: [CGPoint]
+    /// Comment elle bouge quand le dessin prend vie (« J'ai fini ! ») ; `nil` : elle ne bouge pas seule.
+    public let motion: PartMotion?
+
+    public init(fr: String, en: String, color: String?, rank: Int, points: [CGPoint], motion: PartMotion? = nil) {
+        self.fr = fr
+        self.en = en
+        self.color = color
+        self.rank = rank
+        self.points = points
+        self.motion = motion
+    }
 
     public func name(locale: String) -> String { locale.hasPrefix("fr") ? fr : en }
+}
+
+/// Le mouvement d'une partie quand le dessin prend vie (cf. LivingDrawing.swift ; même table que
+/// eveil/outils/coloriages/vivant.py, d'où viennent ceux des pages générées).
+public enum PartMotion: Equatable, Sendable {
+    /// Une roue : son disque intérieur tourne (rayons, moyeu, coups de pinceau).
+    case roll
+    /// Toute la pièce tourne sur elle-même (le tee-shirt dans la machine).
+    case spin
+    /// Grandit de `amplitude` (0,12 = +12 %) puis revient ; jamais plus petite qu'au repos.
+    case pulse(CGFloat)
+    /// Se balance de ± `degrees` autour de son attache.
+    case sway(CGFloat, pivot: SwayPivot = .contact)
+    /// Glisse de gauche à droite (± `distance`, unité de page) : les nuages.
+    case drift(CGFloat)
+    /// Monte et revient (`distance`, unité de page) : les ballons, le canard dans le bain.
+    case float(CGFloat)
+}
+
+/// Où tient une pièce qui se balance.
+public enum SwayPivot: Equatable, Sendable {
+    /// Au milieu de son contact avec le reste du dessin (ni le fond, ni une autre pièce qui bouge).
+    case contact
+    /// À son haut (une serviette à son crochet).
+    case top
+    /// Au contact de cette partie (le feuillage tient au tronc) ; sans contact, à son bas.
+    case part(String)
 }
 
 /// Un croquis : l'empilement des formes (du fond vers l'avant) et ce qu'on en attend.
@@ -116,14 +154,14 @@ public struct Sketch {
     /// Nomme une partie de la page (consignes) ; `at` : un point au cœur de chacune de ses zones.
     /// Le même nom deux fois : une seule partie, toutes ses zones.
     public mutating func part(_ fr: String, _ en: String, color: String? = nil, rank: Int = 0,
-                              at points: [(CGFloat, CGFloat)]) {
+                              motion: PartMotion? = nil, at points: [(CGFloat, CGFloat)]) {
         let pts = points.map { CGPoint(x: $0.0, y: $0.1) }
         if let k = namedParts.firstIndex(where: { $0.fr == fr }) {
             let old = namedParts[k]
             namedParts[k] = ColoringPart(fr: fr, en: en, color: old.color, rank: min(old.rank, rank),
-                                         points: old.points + pts)
+                                         points: old.points + pts, motion: old.motion ?? motion)
         } else {
-            namedParts.append(ColoringPart(fr: fr, en: en, color: color, rank: rank, points: pts))
+            namedParts.append(ColoringPart(fr: fr, en: en, color: color, rank: rank, points: pts, motion: motion))
         }
     }
 

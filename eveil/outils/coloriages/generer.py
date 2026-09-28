@@ -17,7 +17,7 @@ import html
 import sys
 from pathlib import Path
 
-from . import analyse, apercu, catalogue
+from . import analyse, apercu, catalogue, vivant
 from .dessin import ALBUMS, TRAIT
 
 SWIFT = catalogue.COLORING / "PagesDessins.swift"
@@ -53,7 +53,8 @@ def swift_source(analyses: list[analyse.Analyse]) -> str:
         "// d'encre, et un point au cœur de chaque zone d'après la carte des zones simulée comme `ZoneMap`",
         "// (mêmes règles de rastérisation et d'étiquetage, et robuste à ± 1 px de trait). Chaque page",
         "// n'est donc ici qu'un trait, ses encres et ses témoins (cf. SketchPathData.swift), et ses",
-        "// parties nommées pour les consignes du mode interactif (« Colorie le soleil en jaune »).",
+        "// parties nommées pour les consignes du mode interactif (« Colorie le soleil en jaune »), avec",
+        "// leur mouvement quand le dessin prend vie (cf. vivant.py et LivingDrawing.swift).",
         "",
         "#if canImport(CoreGraphics)",
         "import CoreGraphics",
@@ -81,7 +82,9 @@ def swift_source(analyses: list[analyse.Analyse]) -> str:
             out.append(f'        s.expectDetails("{_points(a.temoins.details)}")')
         for q in a.parties or []:
             couleur = f'"{_q(q.couleur)}"' if q.couleur else "nil"
-            out.append(f'        s.part("{_q(q.fr)}", "{_q(q.en)}", color: {couleur}, rank: {q.rang}, '
+            m = vivant.mouvement(p, q.fr)
+            bouge = f"motion: {vivant.swift(m)}, " if m else ""
+            out.append(f'        s.part("{_q(q.fr)}", "{_q(q.en)}", color: {couleur}, rank: {q.rang}, {bouge}'
                        f'at: "{_points(q.points)}")')
         out.append("    }")
     out += ["}", "#endif", ""]

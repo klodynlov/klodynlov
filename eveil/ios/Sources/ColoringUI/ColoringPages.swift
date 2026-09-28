@@ -60,7 +60,7 @@ extension Sketch {
     /// Soleil : un disque et des rayons (traits ouverts : ils ne ferment rien).
     mutating func sun(_ cx: CGFloat, _ cy: CGFloat, _ r: CGFloat, rays: Int = 8) {
         shape(G.circle(cx, cy, r), at: (cx, cy))
-        part("le soleil", "the sun", color: "jaune", rank: 1, at: [(cx, cy)])
+        part("le soleil", "the sun", color: "jaune", rank: 1, motion: .pulse(0.12), at: [(cx, cy)])
         for k in 0..<rays {
             let a = (CGFloat(k) / CGFloat(rays) * 360 + 22.5) * .pi / 180
             line(G.line([(cx + (r + 0.022) * cos(a), cy + (r + 0.022) * sin(a)),
@@ -71,7 +71,7 @@ extension Sketch {
     /// Nuage d'un seul contour (ses bosses sont réunies).
     mutating func cloud(_ cx: CGFloat, _ cy: CGFloat, _ w: CGFloat) {
         shape(G.cloud(cx, cy, w), at: (cx, cy + w * 0.06))
-        part("le nuage", "the cloud", rank: 1, at: [(cx, cy + w * 0.06)])
+        part("le nuage", "the cloud", rank: 1, motion: .drift(0.02), at: [(cx, cy + w * 0.06)])
     }
 
     /// Ligne d'horizon d'un bord à l'autre : l'herbe dessous est une zone.
@@ -122,7 +122,7 @@ extension Sketch {
             bumps.append(G.circle(cx + r * 0.62 * cos(a), cy + r * 0.62 * sin(a), r * 0.48))
         }
         shape(G.union(bumps), at: (cx + r * 0.8, cy))
-        part("la fleur", "the flower", rank: 1, at: [(cx + r * 0.8, cy)])
+        part("la fleur", "the flower", rank: 1, motion: .pulse(0.10), at: [(cx + r * 0.8, cy)])
         detail(G.circle(cx, cy, r * 0.42), at: (cx, cy))
     }
 }

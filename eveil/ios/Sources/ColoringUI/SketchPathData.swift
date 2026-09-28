@@ -68,9 +68,10 @@ extension Sketch {
         for p in G.points(text) { expectDetail(p.x, p.y) }
     }
 
-    /// Nomme une partie d'une page générée (un point « x y » par zone).
-    mutating func part(_ fr: String, _ en: String, color: String?, rank: Int, at text: String) {
-        part(fr, en, color: color, rank: rank, at: G.points(text).map { ($0.x, $0.y) })
+    /// Nomme une partie d'une page générée (un point « x y » par zone), et son mouvement.
+    mutating func part(_ fr: String, _ en: String, color: String?, rank: Int, motion: PartMotion? = nil,
+                       at text: String) {
+        part(fr, en, color: color, rank: rank, motion: motion, at: G.points(text).map { ($0.x, $0.y) })
     }
 }
 #endif

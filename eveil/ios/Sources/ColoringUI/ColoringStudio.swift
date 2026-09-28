@@ -168,6 +168,19 @@ final class ColoringStudio {
         }
     }
 
+    // MARK: Le dessin prend vie
+
+    /// Le dessin vivant de la page ouverte (« J'ai fini ! »), découpé hors du fil principal ;
+    /// `nil` si rien n'y bouge seul, ou si la carte des zones n'est pas prête.
+    func livingDrawing() async -> LivingDrawing? {
+        guard let map, let layer else { return nil }
+        let page = self.page
+        let paint = layer.copyPixels()
+        return await Task.detached(priority: .userInitiated) {
+            LivingDrawing(page: page, map: map, paint: paint)
+        }.value
+    }
+
     // MARK: Pour les tests et les rendus
 
     /// Calcule la carte de la page ouverte tout de suite (tests, captures).

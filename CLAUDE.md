@@ -341,6 +341,26 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     305 parties, 279 consignes, ≥ 2 par page, 1re = sujet (`test_chaque_sujet_est_nomme`). 15 pages
     Swift nommées à la main sur leurs **points-témoins** (déjà vérifiés : zone propre, ≥ 0,3 %) + le
     ciel au coin.
+  - ✅ **Le dessin prend vie** (choix de l'utilisateur, 28/09, « la suite ») : au « J'ai fini ! » (mode
+    interactif), 6 s de fête où les **parties bougent avec les couleurs de l'enfant**. Donnée :
+    `ColoringPart.motion` (`PartMotion` : `.roll` roue = disque intérieur seul · `.spin` · `.pulse(a)`
+    grandit seulement · `.sway(°, pivot: .contact/.top/.part("le tronc"))` · `.drift` · `.float`) ;
+    pages générées : table par nom + corrections par page dans `outils/coloriages/vivant.py`
+    (`MOUVEMENTS`, `PAR_PAGE` : la queue de l'avion ne remue pas, la coccinelle respire, le tee-shirt
+    tourne, la flèche vibre), émise dans PagesDessins.swift ; pages Swift à la main (chat et chien
+    gagnent « la queue », 6e partie, hors consignes). Algorithme (`vivant.py` = référence relue sur
+    planches → `LivingDrawing.swift`) : pièces = zones voisines de la partie + zones sans nom qui ne
+    tiennent qu'à elle + trous bouchés ; attache = milieu du contact (pas le fond, pas une pièce qui
+    bouge ; « porteur » : le tronc, sinon le bas ; « suspendue » : le haut) ; découpe (silhouette +
+    traits qui la bordent, +1 px), fond rebouché par propagation des couleurs voisines, pièce
+    transformée par-dessus (`LivingPaper`, TimelineView) ; roues : 3 tours entiers (période 1,8 s),
+    tee-shirt 2 (2,7 s) → pas de saut au repos (bug trouvé par le test). ⚠️ Pièges vus : le carrelage
+    autour d'une serviette fausse le contact (→ `.top`) ; un feuillage qui frôle la tête de la biche
+    tirait l'attache (→ `.part("le tronc")`) ; une roue entamée par le sol montrait une encoche (→
+    disque intérieur). 69/70 pages bougent (cirque : danse d'ensemble seulement). Python : 15 tests
+    (`test_vivant.py`) ; Swift : `LivingDrawingTests` (temps, attaches de parité à 1,5 %, toutes les
+    pages, rendus `vivant-*.png` via `EVEIL_RENDER_DIR`). Planche `docs/ui/eveil-app/9-dessin-vivant.png`.
+    Toucher la page arrête la fête ; « Réduire les animations » la retire. À compiler sur le Mac.
     EN : « bleu ciel » = « light blue » (« Color the sky sky blue! » sonnait faux). Tests Swift :
     `ColoringPartsTests`, `ColoringInstructionsTests` (chaque consigne de chaque page se réussit d'un
     remplissage de sa couleur, jamais d'une autre). À compiler sur le Mac.
@@ -391,7 +411,9 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : Suite Éveil — **consignes de coloriage** (28/09/2026, session cloud :
+_Dernière mise à jour mémoire : Suite Éveil — **le dessin prend vie** (28/09/2026, session cloud : au
+« J'ai fini ! », les parties bougent avec les couleurs de l'enfant — roues, queues, ailes, soleil, nuages ;
+prototype Python relu sur planches, portage Swift à compiler sur le Mac). Avant : **consignes de coloriage** (28/09/2026, session cloud :
 « Colorie le soleil en jaune ! » en mode interactif, parties nommées sur les 70 pages ; correctif du
 plantage à l'ouverture des livres, à confirmer sur l'iPad ; à compiler sur le Mac). Avant : **phrases des livres** (28/09/2026, session cloud : 3 niveaux
 par livre, 6 phrases à reconstruire par niveau, cartes « où ? » avec le sujet à sa place, lettres du son
