@@ -39,7 +39,7 @@ final class ColoringPartsTests: XCTestCase {
                 named += 1
             }
         }
-        XCTAssertGreaterThan(named, 80)
+        XCTAssertGreaterThan(named, 250)
     }
 
     /// Le sujet d'abord, puis le décor ; le même nom deux fois = une seule partie.

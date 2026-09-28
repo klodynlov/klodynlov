@@ -12,7 +12,7 @@ tour* d'`eveil/REPRISE-LOCALE.md` ». Tu peux aussi coller ce prompt :
 Compile, teste et installe le troisième tour de la Suite Éveil, poussé depuis une session cloud qui ne pouvait pas compiler le Swift. Réponds en français.
 
 0. git fetch origin ; git switch claude/ios-educational-apps-suite-dljtt6 ; git pull. Relis CLAUDE.md, section « Suite Éveil », puis « Troisième tour ».
-1. Python (stdlib) : depuis la racine, python3 -m unittest discover -s eveil/outils (83 tests) ; depuis eveil/reference, python3 -m unittest discover -s wordend -t . (83 tests). Si c'est rouge, arrête-toi et montre-moi.
+1. Python (stdlib) : depuis la racine, python3 -m unittest discover -s eveil/outils (100 tests) ; depuis eveil/reference, python3 -m unittest discover -s wordend -t . (83 tests). Si c'est rouge, arrête-toi et montre-moi.
 2. Swift, à relancer après chaque pull (swift test repasse sur macOS depuis le commit b936373 du 28/09) :
    - cd eveil/ios/WordEndCore && swift test ;
    - puis cd eveil/ios && swift test ;

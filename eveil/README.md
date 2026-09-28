@@ -199,9 +199,13 @@ pour le nombre de fois que l'enfant doit répéter » :
   (un remplissage, ou quelques coups de pinceau) : étincelles, « Bravo ! », la suivante ; cinq au
   plus par page. Jamais « faux » : colorier ailleurs ne coûte rien (au deuxième essai, la consigne
   se redit et un anneau montre où) ; une autre couleur sur la bonne partie : « En jaune ! », et la
-  bonne pastille s'éclaire. Les parties des 55 pages dessinées en Python sont nommées et contrôlées
-  par l'outil (des zones entières, assez grandes, jamais deux noms sur une zone) ; celles des 15
-  pages Swift reposent sur leurs points-témoins ; un test Swift vérifie chaque consigne de chaque page.
+  bonne pastille s'éclaire. Quelques parties sont **au choix** : « Colorie les mains, de la couleur
+  que tu veux ! » — pour la peau, on n'impose jamais une couleur (aussi la tache de peinture, la
+  voiture de police). 305 parties nommées sur les 70 pages, 279 consignes (2 à 5 par page). Les
+  parties des 55 pages dessinées en Python sont nommées et contrôlées par l'outil (des zones
+  entières, assez grandes, jamais deux noms sur une zone ; l'ordre des consignes se règle par page :
+  la coccinelle avant sa feuille) ; celles des 15 pages Swift reposent sur leurs points-témoins ; un
+  test Swift vérifie que chaque consigne de chaque page se réussit.
 
 ```bash
 open eveil/ios/App/EveilTrain.xcodeproj           # schéma EveilTrain, un iPad du simulateur, ▶︎

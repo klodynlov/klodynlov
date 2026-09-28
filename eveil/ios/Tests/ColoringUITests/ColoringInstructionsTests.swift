@@ -101,7 +101,10 @@ final class ColoringInstructionsTests: XCTestCase {
             let studio = ColoringStudio(pages: [page])
             studio.open(0)
             studio.loadSynchronously()
-            for i in ColoringInstructions.list(for: page.parts, palette: palette) {
+            let list = ColoringInstructions.list(for: page.parts, palette: palette)
+            XCTAssertGreaterThanOrEqual(list.count, 2, "\(page.id) : une page, au moins deux consignes")
+            XCTAssertEqual(list.first?.part.rank, 0, "\(page.id) : la première consigne est du sujet")
+            for i in list {
                 let label = "\(page.id) : « \(i.part.fr) »"
                 let point = i.part.points[i.part.points.count - 1]
                 XCTAssertFalse(studio.isDone(i, palette: palette), "\(label) déjà faite")
@@ -116,7 +119,7 @@ final class ColoringInstructionsTests: XCTestCase {
                 done += 1
             }
         }
-        XCTAssertGreaterThan(done, 100)
+        XCTAssertGreaterThan(done, 3 * ColoringPages.all.count)
     }
 
     /// Au pinceau (le réglage par défaut), une vitre se fait d'un seul coup.

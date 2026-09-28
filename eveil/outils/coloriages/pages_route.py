@@ -30,11 +30,11 @@ BUS = page(
     # le bus scolaire jaune, comme son dessin dans le petit train (la bande compte pour le bus)
     zone(rect(70, 300, 860, 432, r=50), nom=("le bus", "the bus", "jaune")),
     zone(rect(70, 572, 860, 46), nom=("le bus", "the bus", "jaune")),
-    zone(rect(95, 340, 124, 200, r=22), nom=("les fenêtres", "the windows", None)),
+    zone(rect(95, 340, 124, 200, r=22), nom=("les fenêtres", "the windows", "bleu ciel")),
     zone(rect(244, 340, 104, 360, r=14), nom=("la porte", "the door", None)),
     trait(ligne((296, 352), (296, 688))),
     zone(rect(376, 340, 130, 136, r=18), rect(526, 340, 130, 136, r=18), rect(676, 340, 130, 136, r=18),
-         rect(826, 340, 84, 136, r=18), nom=("les fenêtres", "the windows", None)),
+         rect(826, 340, 84, 136, r=18), nom=("les fenêtres", "the windows", "bleu ciel")),
     zone(cercle(441, 424, 48)), zone(cercle(741, 424, 48)),
     trait(arc(441, 438, 20, 30, 150), arc(741, 438, 20, 30, 150)),
     encre(cercle(426, 414, 7), cercle(456, 414, 7), cercle(726, 414, 7), cercle(756, 414, 7)),
@@ -54,8 +54,8 @@ VOITURE = page(
     *route(665),
     zone(poly([(300, 422), (362, 300), (600, 300), (702, 422)], r=[10, 30, 30, 10]),
          nom=("le toit", "the roof", None)),
-    zone(poly([(330, 418), (382, 330), (490, 330), (490, 418)], r=10), nom=("les fenêtres", "the windows", None)),
-    zone(poly([(515, 418), (515, 330), (590, 330), (662, 418)], r=10), nom=("les fenêtres", "the windows", None)),
+    zone(poly([(330, 418), (382, 330), (490, 330), (490, 418)], r=10), nom=("les fenêtres", "the windows", "bleu ciel")),
+    zone(poly([(515, 418), (515, 330), (590, 330), (662, 418)], r=10), nom=("les fenêtres", "the windows", "bleu ciel")),
     zone(rect(150, 410, 700, 172, r=60), nom=("la voiture", "the car", None)),
     trait(ligne((502, 426), (502, 562))),
     detail(rect(520, 442, 54, 18, r=9)),
@@ -64,6 +64,7 @@ VOITURE = page(
     detail(ellipse(830, 470, 20, 30)),
     detail(rect(150, 446, 28, 48, r=8)),
     detail(rect(806, 540, 74, 38, r=14), rect(120, 540, 74, 38, r=14)),
+    consignes=("la voiture", "les fenêtres", "le toit"),
 )
 
 
@@ -81,6 +82,7 @@ AVION = page(
          nom=("l'aile", "the wing", None)),
     detail(cercle(868, 496, 34)),
     trait(ligne((60, 470), (130, 470)), ligne((40, 520), (120, 520))),
+    consignes=("l'avion", "l'aile", "la queue"),
 )
 
 
@@ -102,6 +104,7 @@ BROUETTE = page(
     zone(rect(232, 452, 516, 40, r=16), nom=("la brouette", "the wheelbarrow", None)),
     *roue(740, 700, 90, rayons=6),
     *fleur(110, 890, 46), *fleur(910, 900, 44),
+    consignes=("la brouette", "les légumes"),
 )
 
 
@@ -119,7 +122,7 @@ POLICE = page(
     zone(poly([(270, 440), (350, 266), (650, 266), (770, 440)], r=[10, 36, 36, 10])),
     zone(poly([(304, 432), (370, 294), (488, 294), (488, 432)], r=12)),
     zone(poly([(512, 432), (512, 294), (630, 294), (730, 432)], r=12)),
-    zone(rect(110, 424, 780, 200, r=64), nom=("la voiture", "the car", None)),
+    zone(rect(110, 424, 780, 200, r=64), nom=("la voiture", "the car", "au choix")),
     zone(rect(110, 484, 780, 50), nom=("la bande", "the stripe", "bleu")),
     trait(ligne((500, 436), (500, 484))),
     detail(rect(520, 446, 54, 18, r=9), rect(426, 446, 54, 18, r=9)),
@@ -130,6 +133,7 @@ POLICE = page(
     # un cône de chantier
     zone(poly([(870, 910), (960, 910), (924, 760), (906, 760)], r=[6, 6, 8, 8])),
     zone(rect(846, 900, 138, 36, r=10)),
+    consignes=("la voiture", "le gyrophare", "la bande"),
 )
 
 

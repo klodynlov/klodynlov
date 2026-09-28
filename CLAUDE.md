@@ -330,8 +330,17 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     Pages Python : `nomme(…)`/motifs nommés (soleil, nuage, herbe, mer, roue, tronc, feuilles, sapin,
     fleur…), le ciel ajouté seul (bleu ciel) quand herbe/mer, contrôles `analyse.nommer` (zone entière
     ≥ 0,4 %, pas sur un trait, un seul nom par zone, couleur de la palette), étiquettes sur les
-    aperçus ; sujets des 55 pages : nommage par 3 sous-agents EN COURS (relecture sur planches). 15 pages Swift nommées à la
-    main sur leurs **points-témoins** (déjà vérifiés : zone propre, ≥ 0,3 %) + le ciel au coin.
+    aperçus ; sujets des 55 pages nommés par 3 sous-agents (relus sur planches), puis relus ici :
+    ordre par page `page(…, consignes=(…))` (le sujet avant sa feuille), animaux d'une couleur
+    fusionnés (« la biche » marron, pas 4 consignes « en marron »), couleurs corrigées (os jaune clair,
+    bois de l'élan, vitres bleu ciel…), la dent de la brosse à dents non nommée (jaune = contre-
+    message). ⚠️ Le motif `nuage` sert aussi de buisson/feuillage/mousse/brocoli : le renommer avec
+    `nomme(…)` (sinon « le nuage »). **« au choix »** (`AU_CHOIX`, `ColoringInstructions.anyColor`) :
+    l'enfant choisit — pour la **peau jamais de couleur imposée** (les mains), aussi la tache, la
+    voiture de police ; consigne sans couleur, réussie de n'importe quelle couleur posée. Total :
+    305 parties, 279 consignes, ≥ 2 par page, 1re = sujet (`test_chaque_sujet_est_nomme`). 15 pages
+    Swift nommées à la main sur leurs **points-témoins** (déjà vérifiés : zone propre, ≥ 0,3 %) + le
+    ciel au coin.
     EN : « bleu ciel » = « light blue » (« Color the sky sky blue! » sonnait faux). Tests Swift :
     `ColoringPartsTests`, `ColoringInstructionsTests` (chaque consigne de chaque page se réussit d'un
     remplissage de sa couleur, jamais d'une autre). À compiler sur le Mac.

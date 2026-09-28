@@ -38,7 +38,7 @@ LOCOMOTIVE = page(
     zone(rect(410, 88, 180, 50, r=18), nom=("la cheminée", "the chimney", None)),
     # chaudière vue de face, avec son visage
     zone(cercle(500, 470, 215)),
-    zone(cercle(500, 470, 170), nom=("le visage", "the face", None)),
+    zone(cercle(500, 470, 170), nom=("le visage", "the face", "jaune")),
     *oeil(435, 425, 44, dx=6, dy=8),
     *oeil(565, 425, 44, dx=-6, dy=8),
     detail(cercle(398, 518, 30), cercle(602, 518, 30)),
@@ -49,6 +49,7 @@ LOCOMOTIVE = page(
     zone(rect(326, 650, 74, 72, r=12), rect(600, 650, 74, 72, r=12)),
     zone(poly([(390, 730), (610, 730), (570, 810), (430, 810)], r=12)),
     *roue(250, 790, 60, rayons=6), *roue(750, 790, 60, rayons=6),
+    consignes=("le visage", "le toit", "la cheminée"),
 )
 
 

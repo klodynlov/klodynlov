@@ -538,9 +538,11 @@ confirmer (§10).*
   quand l'une des zones de la partie a reçu assez de la couleur demandée (un huitième de la zone,
   au plus 2 % de la page, jamais moins de 120 px) : mesuré localement, jamais présenté comme une
   note. Pas d'échec : colorier ailleurs ne coûte rien (au deuxième essai, la consigne se redit et un
-  anneau montre où) ; une autre couleur sur la bonne partie : « En jaune ! ». Le nommage est
-  contrôlé en Python pour les pages générées (zones entières, ≥ 0,4 % de la page, un seul nom par
-  zone) et par des tests Swift sur toutes les pages.
+  anneau montre où) ; une autre couleur sur la bonne partie : « En jaune ! ». Une partie peut être
+  **au choix** (« Colorie les mains, de la couleur que tu veux ! ») : pour la peau, on n'impose
+  jamais une couleur. Le nommage est contrôlé en Python pour les pages générées (zones entières,
+  ≥ 0,4 % de la page, un seul nom par zone, le sujet avant le décor) et par des tests Swift sur
+  toutes les pages (305 parties, 279 consignes).
 - **Guidage multisensoriel** (à faire) : un **champ de distance** pré-calculé par gabarit (distance au
   contour le plus proche — la carte des zones le rend peu coûteux) donne, en O(1) à chaque point du
   geste, la proximité du bord → son de crayon modulé par la vitesse, **« tic » doux** et halo lumineux

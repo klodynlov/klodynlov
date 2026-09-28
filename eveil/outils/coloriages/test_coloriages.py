@@ -58,6 +58,13 @@ class TestPages(unittest.TestCase):
             self.assertTrue(zones.ZONES_MIN <= a.carte.zones <= zones.ZONES_MAX, a.page.id)
             self.assertTrue(a.temoins.temoins, a.page.id)
 
+    def test_chaque_sujet_est_nomme(self):
+        """Consignes : chaque page nomme au moins une partie de son sujet, et la première consigne est
+        toujours du sujet (jamais le décor)."""
+        for a in self.analyses:
+            self.assertTrue(a.parties, a.page.id)
+            self.assertEqual(a.parties[0].rang, 0, a.page.id)
+
     def test_swift_a_jour(self):
         self.assertTrue(generer.SWIFT.exists())
         self.assertEqual(generer.SWIFT.read_text(encoding="utf-8"), generer.swift_source(self.analyses),
