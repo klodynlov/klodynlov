@@ -232,6 +232,35 @@ respecté, grandes cibles, aucune lecture requise pour l'enfant, WCAG 2.2 AA com
 volontaire [E28]. Alternative sans micro prévue : **mode « juge adulte »** (l'adulte touche « il l'a
 dit ! ») — utile tant que le détecteur n'a pas passé la porte de validation.
 
+### 4.8 Le train des phrases (demande du 28/09/2026 : « au niveau d'OrthoPicto, voire plus »)
+
+OrthoPicto (Symbolicone, conçu par une orthophoniste) : un livre par son (21 sons, 23 livres en
+version PRO), sur chaque page une phrase illustrée que l'enfant **reconstruit avec des pictos**
+(sujet, verbe, complément), puis l'image s'anime ; 3 niveaux, un module d'éveil à l'écrit,
+des conseils par son, des vidéos avec signes (LSF / LSQ), accents français et québécois, anglais
+[F12] (lu dans les résumés de recherche : les pages de l'éditeur et de l'App Store sont bloquées
+par le proxy de la session). Ce que fait la suite :
+
+| OrthoPicto | Le train des phrases |
+|---|---|
+| Une page = une phrase fixe et sa vidéo | **N'importe quelle phrase se joue** : un mouvement par verbe (20), qui marche avec 14 sujets, 23 compléments, 8 lieux (3 ou 4 prépositions chacun, 31 mises en scène) — « la vache nage dans la baignoire » : on rit, on ne se trompe jamais |
+| Pictos à associer | La phrase est un **train** : la locomotive porte « qui ? », un wagon par morceau (« fait quoi ? », « quoi ? », « où ? »), couleurs par rôle comme les tableaux de communication (qui en jaune, fait quoi en vert, quoi en orange, où en bleu — *à valider*) |
+| 3 niveaux | **2 wagons** (le chat dort) · **3 wagons** (le chat mange la pêche) · **« où ? »** (le chat dort dans la boîte : dans, sur, sous, devant, derrière) |
+| — | La voix **pose la question avec ce qui est choisi** (« Que fait le chat ? », « Le chat mange quoi ? ») et nomme chaque picto ; la phrase se dit morceau par morceau (chaque wagon s'allume), puis d'une traite pendant la scène |
+| Module écrit | Mots sous les pictos, phrase écrite dans la couleur des wagons, **capitales** au choix |
+| — | **Aucun micro** : c'est l'adulte qui touche « Il l'a dite ! » quand l'enfant redit la phrase (juge adulte, § 4.7) → étoiles de jeu, jamais de note |
+| Vidéos avec LSF | **Non repris** : on n'invente pas de signes ; à faire avec des vidéos réelles et un·e locuteur·rice de LSF |
+| Voix enregistrées | Synthèse vocale provisoire (la meilleure voix féminine installée) |
+| Livres par son, conseils | Tranche suivante : les livres des sons (imagier du son, phrases du son, idées de jeu) |
+
+Mise en œuvre vérifiable : lexique, grammaire (articles, élision « l'autruche », noms propres,
+capitales), niveaux et plateaux en Python ([`eveil/outils/phrases`](../eveil/outils/phrases)),
+portés dans `PhraseCore` avec des vecteurs de parité ; pictos des verbes et des lieux dessinés en
+Python et relus sur planches ([`eveil/outils/pictos`](../eveil/outils/pictos)) ; mouvements de la
+scène testés (repos au début et à la fin, rien hors de la scène). Le plateau propose au plus 6 pictos
+et tourne dans un ordre fixe (§ 4.6). **Les listes de mots et de verbes sont des propositions, à
+valider avec le panel** (§ 8).
+
 ---
 
 ## 5. App 1 — Architecture technique

@@ -148,6 +148,20 @@ public enum Repetitions {
     }
 }
 
+// MARK: - Le juge adulte
+
+public extension Verdict {
+    /// Le verdict de l'ADULTE (« juge adulte », docs/EVEIL.md § 4.7) : il a entendu l'enfant dire
+    /// le mot entier et touche « Il l'a dit ! ». Sert là où le détecteur ne sait pas juger (les
+    /// livres des sons : un son au début ou au milieu du mot). Un adulte ne rend jamais d'autre
+    /// verdict : s'il ne touche rien, on continue sans rien compter.
+    static func adultHeard(wagons: Int, hasCaboose: Bool) -> Verdict {
+        Verdict(kind: .complete, heardNuclei: wagons, expectedNuclei: wagons, codaExpected: hasCaboose,
+                codaHeard: hasCaboose, codaPlace: nil, codaMs: 0, epenthesis: false, snrDb: 0,
+                reasons: ["adult_judge"])
+    }
+}
+
 // MARK: - Étoiles (points de jeu)
 
 /// Demande de l'utilisateur (28/09/2026) : « plus c'est bien répété, plus le user a des

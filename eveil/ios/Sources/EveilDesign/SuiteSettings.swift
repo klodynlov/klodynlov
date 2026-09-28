@@ -17,5 +17,12 @@ public enum SuiteSettings {
     /// l'enfant (ou l'adulte) l'allume d'un bouton de l'atelier.
     public static let coloringInteractiveKey = "eveil.coloring.interactive"
     public static let coloringInteractiveDefault = false
+    /// Éveil à la lecture (le « mode écrit » d'OrthoPicto, 28/09/2026) : les mots écrits sous les
+    /// pictos et la phrase écrite au-dessus du train. Activé par défaut (l'adulte lit, l'enfant voit
+    /// que la phrase s'écrit) ; en capitales d'imprimerie au choix, comme à l'école maternelle.
+    public static let writtenWordsKey = "eveil.writtenWords"
+    public static let writtenWordsDefault = true
+    public static let capitalsKey = "eveil.capitals"
+    public static let capitalsDefault = false
 }
 #endif

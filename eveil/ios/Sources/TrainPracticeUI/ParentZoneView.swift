@@ -24,6 +24,8 @@ public struct ParentZoneView: View {
     @AppStorage(ListeningSettings.adultTrialKey) private var adultTrial = false
     @AppStorage(WordDeck.maxLevelKey) private var maxLevel = 3
     @AppStorage(SuiteSettings.tapToFillKey) private var tapToFill = SuiteSettings.tapToFillDefault
+    @AppStorage(SuiteSettings.writtenWordsKey) private var writtenWords = SuiteSettings.writtenWordsDefault
+    @AppStorage(SuiteSettings.capitalsKey) private var capitals = SuiteSettings.capitalsDefault
     @AppStorage(VoiceCatalog.settingKey) private var voiceId = ""
     @AppStorage(ListeningSettings.syllableModelKey) private var syllableModel = true
     @AppStorage(Repetitions.settingKey) private var repetitions = Repetitions.defaultCount
@@ -79,6 +81,16 @@ public struct ParentZoneView: View {
                 } footer: {
                     Text(fr ? "« Tous » ajoute les mots à groupe de consonnes (cloche, glace, brosse…). Les listes sont des propositions, à valider par des orthophonistes."
                             : "\"All\" adds words with consonant clusters (splash, brush…). The lists are proposals, to be validated by speech-language pathologists.")
+                }
+                Section {
+                    Toggle(fr ? "Mots écrits sous les images" : "Written words under pictures", isOn: $writtenWords)
+                    Toggle(fr ? "En capitales (MAJUSCULES)" : "In capital letters", isOn: $capitals)
+                        .disabled(!writtenWords)
+                } header: {
+                    Text(fr ? "Train des phrases : éveil à la lecture" : "Sentence train: early reading")
+                } footer: {
+                    Text(fr ? "La phrase construite s'écrit au-dessus du train, chaque morceau dans la couleur de son wagon (qui en jaune, fait quoi en vert, quoi en orange, où en bleu). Les capitales sont souvent les premières lettres qu'on apprend à l'école maternelle. Aucun micro dans ce jeu : c'est vous qui dites « Il l'a dite ! » quand votre enfant redit la phrase."
+                            : "The sentence is written above the train, each part in its wagon's color (who in yellow, does what in green, what in orange, where in blue). No microphone in this game: you tap \"Said it!\" when your child repeats the sentence.")
                 }
                 Section {
                     Toggle(fr ? "Remplir d'un toucher" : "Tap to fill", isOn: $tapToFill)

@@ -1,8 +1,8 @@
-// HomeView.swift — l'accueil de la suite : le chat chef de gare propose deux jeux.
+// HomeView.swift — l'accueil de la suite : le chat chef de gare propose ses jeux.
 //
-// Deux grandes cartes (le Petit Train des mots, l'Atelier de coloriage), un seul
-// geste pour entrer, une maison pour revenir. L'espace des grands reste derrière
-// le contrôle parental (et disparaît pendant l'Accès guidé).
+// De grandes cartes (le Petit Train des mots, le Train des phrases, l'Atelier de coloriage,
+// les Jeux d'écoute), un seul geste pour entrer, une maison pour revenir. L'espace des grands
+// reste derrière le contrôle parental (et disparaît pendant l'Accès guidé).
 
 import EveilDesign
 import SwiftData
@@ -22,8 +22,8 @@ struct HomeView: View {
     @State private var showParentZone = false
     @Environment(\.modelContext) private var context
 
-    enum Destination: String, Identifiable {
-        case train, coloring
+    enum Destination: String, Identifiable, CaseIterable {
+        case train, sentences, coloring, ears
         var id: String { rawValue }
     }
 
@@ -35,29 +35,26 @@ struct HomeView: View {
             let wide = geo.size.width > geo.size.height
             ZStack {
                 SceneryView()
-                VStack(spacing: wide ? 36 : 48) {
-                    Spacer(minLength: 40)
+                // Les jeux sur deux rangées en paysage, deux colonnes en portrait.
+                let columns = wide ? (Destination.allCases.count + 1) / 2 : 2
+                let rows = (Destination.allCases.count + columns - 1) / columns
+                let cardWidth = min(wide ? 360 : 380, (geo.size.width - 80 - CGFloat(columns - 1) * 22) / CGFloat(columns))
+                let cardHeight = min(wide ? 250 : 240, (geo.size.height - (wide ? 230 : 300)) / CGFloat(rows) - 20)
+                VStack(spacing: wide ? 18 : 26) {
+                    Spacer(minLength: 16)
                     HStack(alignment: .center, spacing: 8) {
-                        CatStationMaster(mood: .hello, size: wide ? 230 : 250)
+                        CatStationMaster(mood: .hello, size: wide ? 150 : 200)
                         SpeechBubble(fr ? "Bonjour ! À quoi on joue ?" : "Hello! What shall we play?")
                     }
-                    let cards = Group {
-                        GameCard(title: fr ? "Le petit train des mots" : "The little word train",
-                                 color: EveilPalette.loco) { destination = .train } art: {
-                            TrainView(wagons: ["mi", "nou"], lit: [true, true], cabooseLabel: "ch",
-                                      caboose: .hooked, scale: 0.62)
-                        }
-                        GameCard(title: fr ? "L'atelier de coloriage" : "The coloring workshop",
-                                 color: Color.purple) { destination = .coloring } art: {
-                            ColoringArt()
+                    ForEach(0..<rows, id: \.self) { row in
+                        HStack(spacing: 22) {
+                            ForEach(Array(Destination.allCases.enumerated()).filter { $0.offset / columns == row },
+                                    id: \.offset) { _, game in
+                                card(game, width: cardWidth, height: cardHeight)
+                            }
                         }
                     }
-                    if wide {
-                        HStack(spacing: 44) { cards }
-                    } else {
-                        VStack(spacing: 36) { cards }
-                    }
-                    Spacer(minLength: 40)
+                    Spacer(minLength: 16)
                 }
                 .padding(.horizontal, 40)
                 VStack {
@@ -97,8 +94,13 @@ struct HomeView: View {
                 } else {
                     Text("Lexique introuvable dans le paquet de l'app.")
                 }
+            case .sentences:
+                SentenceTrainView(locale: locale, parentButtonHidden: parentAreaLocked,
+                                  onHome: { destination = nil })
             case .coloring:
                 ColoringView(locale: locale, onHome: { destination = nil })
+            case .ears:
+                EarGamesView(locale: locale, parentButtonHidden: parentAreaLocked, onHome: { destination = nil })
             }
         }
         .sheet(isPresented: $showGate) {
@@ -110,26 +112,59 @@ struct HomeView: View {
     }
 }
 
+extension HomeView {
+    /// La carte d'un jeu : titre, couleur, illustration.
+    @ViewBuilder
+    func card(_ game: Destination, width: CGFloat, height: CGFloat) -> some View {
+        switch game {
+        case .train:
+            GameCard(title: fr ? "Le petit train des mots" : "The little word train",
+                     color: EveilPalette.loco, width: width, height: height) { destination = .train } art: {
+                TrainView(wagons: ["mi", "nou"], lit: [true, true], cabooseLabel: "ch", caboose: .hooked, scale: 0.5)
+            }
+        case .sentences:
+            GameCard(title: fr ? "Le train des phrases" : "The sentence train",
+                     color: EveilPalette.go, width: width, height: height) { destination = .sentences } art: {
+                SentenceArt()
+            }
+        case .coloring:
+            GameCard(title: fr ? "L'atelier de coloriage" : "The coloring workshop",
+                     color: Color.purple, width: width, height: height) { destination = .coloring } art: {
+                ColoringArt()
+            }
+        case .ears:
+            GameCard(title: fr ? "Les jeux d'écoute" : "Listening games",
+                     color: Color(red: 0.16, green: 0.55, blue: 0.78), width: width, height: height) {
+                destination = .ears
+            } art: {
+                EarArt()
+            }
+        }
+    }
+}
+
 /// Une grande carte de jeu : une illustration, un titre, toute la carte est touchable.
 struct GameCard<Art: View>: View {
     let title: String
     let color: Color
+    var width: CGFloat = 440
+    var height: CGFloat = 320
     let action: () -> Void
     @ViewBuilder let art: () -> Art
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 18) {
+            VStack(spacing: 14) {
                 art()
-                    .frame(height: 170)
+                    .frame(height: height * 0.52)
                 Text(title)
-                    .font(.system(size: 32, weight: .heavy, design: .rounded))
+                    .font(.system(size: 30, weight: .heavy, design: .rounded))
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.center)
-                    .minimumScaleFactor(0.7)
+                    .minimumScaleFactor(0.6)
             }
-            .padding(28)
-            .frame(width: 440, height: 320)
+            .padding(22)
+            .frame(width: width, height: height)
             .background(
                 RoundedRectangle(cornerRadius: 40, style: .continuous)
                     .fill(color.gradient)
@@ -138,6 +173,38 @@ struct GameCard<Art: View>: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(title)
+    }
+}
+
+/// Petite illustration du train des phrases : qui (le chat), fait quoi (mange), quoi (la pêche).
+struct SentenceArt: View {
+    var body: some View {
+        HStack(spacing: 10) {
+            ForEach(Array(zip(["fr.minouche", "verbe.manger", "fr.peche"],
+                              [Color(red: 1.0, green: 0.8, blue: 0.2), Color(red: 0.42, green: 0.8, blue: 0.37),
+                               Color(red: 1.0, green: 0.6, blue: 0.26)]).enumerated()), id: \.offset) { _, item in
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(item.1)
+                    .frame(width: 96, height: 96)
+                    .overlay(PictoView(id: item.0, size: 84))
+                    .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
+            }
+        }
+    }
+}
+
+/// Petite illustration des jeux d'écoute : une oreille, et la vache qui meugle.
+struct EarArt: View {
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: "ear.fill")
+                .font(.system(size: 90))
+                .foregroundStyle(.white)
+            Image(systemName: "music.note")
+                .font(.system(size: 44, weight: .bold))
+                .foregroundStyle(.yellow)
+            PictoView(id: "fr.vache", size: 120)
+        }
     }
 }
 

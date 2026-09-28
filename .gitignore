@@ -17,3 +17,6 @@ eveil/librarybrain/resultats/
 # Sorties locales de l'outil de classement
 rapport.md
 sessions.csv
+
+# Copies de travail des sous-agents (Claude Code)
+.claude/worktrees/

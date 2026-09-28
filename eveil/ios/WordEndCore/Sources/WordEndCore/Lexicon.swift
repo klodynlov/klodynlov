@@ -93,6 +93,15 @@ public extension TargetWord {
     }
 }
 
+public extension TargetWord {
+    /// Un mot des livres des sons (28/09/2026) : ses wagons sont ses syllabes orales écrites, sans
+    /// fourgon (le son travaillé peut être au début, au milieu ou à la fin). `id` = son dessin.
+    static func bookWord(id: String, text: String, ipa: String?, wagons: [String]) -> TargetWord {
+        TargetWord(id: id, text: text, ipa: ipa, level: 1, wagons: wagons, caboose: nil, nuclei: wagons.count,
+                   coda: nil, contrast: nil, notes: nil, custom: nil)
+    }
+}
+
 public struct Lexicon: Codable, Equatable, Sendable {
     public var schema: String
     public var locale: String

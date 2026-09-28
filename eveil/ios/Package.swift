@@ -13,6 +13,8 @@
 //                    remplir au doigt ou peindre au pinceau-pochoir.
 //   EveilSounds      les bruitages, SYNTHÉTISÉS sur l'appareil (aucun fichier son,
 //                    rien d'enregistré) : train, bestioles, objets des mots.
+//   PhraseCore       le train des phrases (Swift pur) : lexique qui/fait quoi/quoi/où,
+//                    grammaire FR/EN, niveaux et plateaux — parité avec eveil/outils/phrases.
 //
 // Les cibles sont protégées par `#if canImport(...)` : hors plateformes Apple
 // elles compilent à vide. Xcode 16+ recommandé (SwiftUI `View` isolée MainActor).
@@ -39,17 +41,18 @@ let package = Package(
         ),
         .target(name: "EveilDesign"),
         .target(name: "EveilSounds"),
+        .target(name: "PhraseCore"),
         .target(
             name: "TrainPracticeUI",
             dependencies: [.product(name: "WordEndCore", package: "WordEndCore"), "WordEndAudio", "EveilDesign",
-                           "EveilSounds"]
+                           "EveilSounds", "PhraseCore"]
         ),
         // Mode interactif (28/09/2026) : la voix nomme les couleurs, chaque couleur a sa note.
         .target(name: "ColoringUI", dependencies: ["EveilDesign", "EveilSounds", "WordEndAudio"]),
         // Le mode démo montre ce qu'il annonce, pour chaque mot (macOS : `swift test` ici).
         .testTarget(
             name: "EveilTrainTests",
-            dependencies: ["TrainPracticeUI", "EveilSounds", "EveilDesign", "WordEndAudio",
+            dependencies: ["TrainPracticeUI", "EveilSounds", "EveilDesign", "WordEndAudio", "PhraseCore",
                            .product(name: "WordEndCore", package: "WordEndCore")]
         ),
         // Chaque bruitage se calcule, reste fini, audible et sans saturation.
@@ -58,5 +61,7 @@ let package = Package(
         .testTarget(name: "EveilDesignTests", dependencies: ["EveilDesign"]),
         // Zones du coloriage : ce que les traits délimitent, et rien d'autre.
         .testTarget(name: "ColoringUITests", dependencies: ["ColoringUI", "EveilDesign"]),
+        // Le train des phrases : mêmes phrases et mêmes plateaux que la référence Python.
+        .testTarget(name: "PhraseCoreTests", dependencies: ["PhraseCore"], exclude: ["Resources"]),
     ]
 )

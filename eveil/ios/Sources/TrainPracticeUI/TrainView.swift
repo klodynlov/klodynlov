@@ -29,6 +29,9 @@ public struct TrainView: View {
     /// Absent (nil) : le train ne réagit pas au toucher (vignette de l'accueil).
     public var onTapWagon: ((Int) -> Void)?
     public var onTapCaboose: (() -> Void)?
+    /// Livres des sons : le wagon où est le son travaillé, et les lettres qui l'écrivent (colorées).
+    public var targetWagon: Int?
+    public var targetLetters: String?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// Mouvement piloté par l'HORLOGE : l'instant d'entrée en gare et de départ.
@@ -43,7 +46,8 @@ public struct TrainView: View {
 
     public init(wagons: [String], lit: [Bool], cabooseLabel: String?, caboose: CabooseState,
                 showsLetters: Bool = true, scale: CGFloat = 1, departing: Bool = false,
-                onTapWagon: ((Int) -> Void)? = nil, onTapCaboose: (() -> Void)? = nil) {
+                onTapWagon: ((Int) -> Void)? = nil, onTapCaboose: (() -> Void)? = nil,
+                targetWagon: Int? = nil, targetLetters: String? = nil) {
         self.wagons = wagons
         self.lit = lit
         self.cabooseLabel = cabooseLabel
@@ -53,6 +57,8 @@ public struct TrainView: View {
         self.departing = departing
         self.onTapWagon = onTapWagon
         self.onTapCaboose = onTapCaboose
+        self.targetWagon = targetWagon
+        self.targetLetters = targetLetters
     }
 
     // Dimensions de base (avant `scale`).
@@ -86,7 +92,8 @@ public struct TrainView: View {
                     LocomotiveView(travel: x, steaming: moving || caboose == .hooked)
                     ForEach(Array(wagons.enumerated()), id: \.offset) { index, label in
                         WagonCar(label: label, lit: lit.indices.contains(index) && lit[index],
-                                 showsLetters: showsLetters, travel: x)
+                                 showsLetters: showsLetters, travel: x,
+                                 target: targetWagon == index ? (targetLetters ?? "") : nil)
                             .modifier(TapIfPossible(action: onTapWagon.map { tap -> () -> Void in { tap(index) } }))
                     }
                     .animation(reduceMotion ? nil : .spring(duration: 0.45), value: lit)
@@ -303,6 +310,21 @@ struct WagonCar: View {
     let lit: Bool
     let showsLetters: Bool
     let travel: CGFloat
+    /// Le son travaillé est dans ce wagon : ses lettres (colorées), et une étoile sur le toit.
+    var target: String? = nil
+
+    /// Le mot du wagon, lettres du son en couleur (« gi » : le « g » en rouge).
+    private var labelText: Text {
+        guard showsLetters else { return Text(" ") }
+        guard let target, !target.isEmpty, let range = label.range(of: target, options: [.caseInsensitive]) else {
+            return Text(label)
+        }
+        return Text(String(label[..<range.lowerBound]))
+            + Text(String(label[range])).foregroundStyle(WagonCar.soundColor)
+            + Text(String(label[range.upperBound...]))
+    }
+
+    static let soundColor = Color(red: 0.86, green: 0.16, blue: 0.3)
 
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -313,11 +335,20 @@ struct WagonCar: View {
                 .frame(width: 116, height: 84).offset(x: 8, y: 40)
             RoundedRectangle(cornerRadius: 6).fill(Color.white.opacity(0.35))
                 .frame(width: 100, height: 10).offset(x: 16, y: 48)
-            Text(showsLetters ? label : " ")
+            labelText
                 .font(.system(size: 44, weight: .heavy, design: .rounded))
                 .foregroundStyle(lit ? EveilPalette.ink : Color.gray)
                 .minimumScaleFactor(0.5)
                 .frame(width: 116, height: 70).offset(x: 8, y: 56)
+            if target != nil {
+                // Le wagon du son : un liseré de sa couleur et une étoile sur le toit.
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(WagonCar.soundColor, lineWidth: 5)
+                    .frame(width: 116, height: 84).offset(x: 8, y: 40)
+                Image(systemName: "star.fill").font(.system(size: 22))
+                    .foregroundStyle(WagonCar.soundColor)
+                    .offset(x: 55, y: 14)
+            }
             RoundedRectangle(cornerRadius: 4).fill(Color(white: 0.25))
                 .frame(width: 110, height: 10).offset(x: 11, y: 124)
             Wheel(diameter: 34, travel: travel).offset(x: 22, y: 128)

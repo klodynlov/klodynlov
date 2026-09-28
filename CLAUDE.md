@@ -276,8 +276,25 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     qui danse + `ConfettiLayer` + fanfare). ColoringUI dépend désormais d'EveilSounds et WordEndAudio.
     Reste possible : consignes « Colorie le soleil en jaune » (demande des noms de zones dans
     `outils/coloriages/`, non fait).
-  - ⏭️ Ensuite : train des phrases (pictos + scènes animées, 3 niveaux, mode écrit) → livres des sons
-    → jeux d'écoute.
+  - ✅ Tranche 2, **le train des phrases** (`SentenceTrainView`) : locomotive « qui ? » + un wagon par
+    morceau (fait quoi / quoi / où), couleurs par rôle (jaune/vert/orange/bleu, à valider) ; niveaux
+    2 wagons · 3 wagons · « où ? » ; plateau ≤ 6 pictos en rotation fixe ; la voix pose la question avec
+    ce qui est choisi puis dit la phrase morceau par morceau, et la **scène la joue** (n'importe quelle
+    phrase : 20 verbes, 14 sujets, 23 compléments, 8 lieux / 31 mises en scène). Mode écrit (mots,
+    phrase colorée, capitales au choix, réglages dans l'espace des grands) ; « Il l'a dite ! » (juge
+    adulte) → étoiles. Python : `outils/phrases` (lexique, grammaire FR/EN avec élision, niveaux,
+    vecteurs de parité → cible Swift pure **`PhraseCore`** + `PhraseCoreTests`) et `outils/pictos`
+    (Lou, 20 verbes, 8 lieux à **ancres** par préposition, mesurées par `scene.py` ; → `PictoDessins.swift`).
+    Scène : `SentenceMotion` (fonctions pures, testées : repos au début/fin, rien hors scène) peinte par
+    `StagePainter`. ⚠️ Une ancre = **bas-milieu du carré** du personnage, pieds 21/200 plus haut
+    (`StagePainter.stand`, test `testEveryAnchorKeepsTheSubjectOnStage`).
+  - ✅ Tranche 4, **jeux d'écoute** (`EarGamesView`) : loto des bruits (19 images à bruit unique, 3 par
+    manche) et « Où est… ? » (2 à 4 images) ; jamais « non » : l'autre image est nommée puis on
+    réécoute ; manches en ordre fixe (`EarGames.pick`, vérifié en Python). Accueil : cartes sur deux
+    rangées.
+  - 🚧 Tranche 3, **livres des sons** (`SoundBooksView`, `outils/livres`, juge adulte dans
+    `PracticeView`, wagon du son + lettres colorées) : codé mais **non poussé** tant que les 57 noms
+    nouveaux (`pictos/mots_a.py`, `mots_b.py`) ne sont pas dessinés (`livres.generer --check` les exige).
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur interdits) → 0 violation, 7 tests ;
   ignore les produits de compilation (`.build/`, `.swiftpm/`, `DerivedData/`).
@@ -325,8 +342,10 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : Suite Éveil — **troisième tour, tranche 1** (28/09/2026, session cloud :
-voix féminine choisie et syllabique, décompte des répétitions, étoiles de jeu ; à compiler sur le Mac).
+_Dernière mise à jour mémoire : Suite Éveil — **troisième tour, tranches 2 et 4** (28/09/2026, session
+cloud : train des phrases avec scènes animées, jeux d'écoute ; livres des sons en attente des dessins ; à
+compiler sur le Mac). Avant : **tranche 1** (voix féminine choisie et syllabique, décompte des répétitions,
+étoiles de jeu, syllabes au toucher, dings, coloriage 24 couleurs + gomme + mode interactif).
 Avant : **atelier de coloriage : 70 pages en 7 albums** (25/09/2026,
 session cloud : 55 pages dessinées et vérifiées en Python dans `eveil/outils/coloriages/`, un dessin par mot
 du petit train ; Swift à tester sur le Mac). Avant : **app sur l'iPad réel + second tour** (25/09/2026 : micro

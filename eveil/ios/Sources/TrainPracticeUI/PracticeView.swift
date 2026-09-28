@@ -34,6 +34,11 @@
 //     arpège, puis le « chhh » du fourgon accroché.
 // Fin de séance ritualisée (`SessionPolicy`) + une « mission » hors écran.
 //
+// Livres des sons (28/09/2026) : le même train, mais c'est l'ADULTE qui juge
+// (`judge: .adult`, docs/EVEIL.md § 4.7) — le détecteur ne sait juger que la fin des mots en
+// « ch » ou « s » ; dans un livre, le son est au début, au milieu ou à la fin. Pas de micro :
+// l'adulte touche « Il l'a dit ! » ; le wagon du son est marqué et ses lettres colorées.
+//
 // Mode démo (espace parent, ou argument de lancement `-eveil.demoMode 1`) : pas de
 // micro ; une barre de présentation fait « parler » le train avec une pseudo-parole
 // synthétique (`DemoScenario`) qui passe par le vrai détecteur.
@@ -46,6 +51,23 @@ import SwiftUI
 import WordEndAudio
 import WordEndCore
 
+/// Qui dit que le mot est bien dit : le détecteur (micro), ou l'adulte (livres des sons).
+public enum PracticeJudge: Sendable {
+    case listen
+    case adult
+}
+
+/// Le son travaillé dans un mot (livres des sons) : son wagon et ses lettres.
+public struct WordTarget: Equatable, Sendable {
+    public let wagon: Int
+    public let letters: String
+
+    public init(wagon: Int, letters: String) {
+        self.wagon = wagon
+        self.letters = letters
+    }
+}
+
 @MainActor
 public struct PracticeView: View {
     public let words: [TargetWord]
@@ -56,12 +78,18 @@ public struct PracticeView: View {
     public let parentButtonHidden: Bool
     /// Retour à l'accueil de la suite (absent : pas de bouton).
     public let onHome: (() -> Void)?
+    public let judge: PracticeJudge
+    /// Livres des sons : le son travaillé dans chaque mot (par identifiant de mot).
+    public let targets: [String: WordTarget]
+    /// Livres des sons : le titre du livre (« Le livre du « ch » »), en haut.
+    public let title: String?
 
     @Environment(\.modelContext) private var context
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage("eveil.demoMode") private var demoMode = false
     @AppStorage(ListeningSettings.adultTrialKey) private var adultTrial = false
-    @AppStorage(WordDeck.cursorKey) private var deckCursor = 0
+    /// Où reprendre (un curseur par liste : le petit train, et chaque livre des sons).
+    private let cursorKey: String
     @AppStorage("eveil.world") private var worldRaw = 0
     @AppStorage(VoiceCatalog.settingKey) private var voiceId = ""
     @AppStorage(ListeningSettings.syllableModelKey) private var syllableModel = true
@@ -98,7 +126,9 @@ public struct PracticeView: View {
 
     public init(words: [TargetWord], locale: String, cabooseSounds: [String: CabooseSound],
                 policy: SessionPolicy = SessionPolicy(), parentButtonHidden: Bool = false,
-                onHome: (() -> Void)? = nil) {
+                onHome: (() -> Void)? = nil, judge: PracticeJudge = .listen,
+                targets: [String: WordTarget] = [:], title: String? = nil,
+                cursorKey: String = WordDeck.cursorKey) {
         precondition(!words.isEmpty, "liste de mots vide")
         self.words = words
         self.locale = locale
@@ -106,9 +136,13 @@ public struct PracticeView: View {
         self.policy = policy
         self.parentButtonHidden = parentButtonHidden
         self.onHome = onHome
+        self.judge = judge
+        self.targets = targets
+        self.title = title
+        self.cursorKey = cursorKey
         // Le voyage reprend où la séance précédente l'a laissé (mot et monde).
         let defaults = UserDefaults.standard
-        _index = State(initialValue: max(0, defaults.integer(forKey: WordDeck.cursorKey)) % words.count)
+        _index = State(initialValue: max(0, defaults.integer(forKey: cursorKey)) % words.count)
         _firstWorld = State(initialValue: World(rawValue: defaults.integer(forKey: "eveil.world")) ?? .countryside)
     }
 
@@ -200,6 +234,14 @@ public struct PracticeView: View {
                 .accessibilityLabel(fr ? "Retour à l'accueil" : "Back home")
             }
             Spacer()
+            if let title {
+                Text(title)
+                    .font(.system(size: 24, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 16).padding(.vertical, 8)
+                    .background(Capsule().fill(WagonCar.soundColor.opacity(0.85)))
+                    .lineLimit(1)
+            }
             if step == .continue {
                 JourneyStrip(stations: stations, current: wordsDone, locale: locale)
             }
@@ -266,7 +308,8 @@ public struct PracticeView: View {
                 Spacer(minLength: 20)
                 TrainView(wagons: word.wagons, lit: litWagons, cabooseLabel: word.caboose,
                           caboose: cabooseState, scale: trainScale, departing: departing,
-                          onTapWagon: hearWagon, onTapCaboose: hearCaboose)
+                          onTapWagon: hearWagon, onTapCaboose: hearCaboose,
+                          targetWagon: targets[word.id]?.wagon, targetLetters: targets[word.id]?.letters)
                     .id(word.id)
                     .frame(maxWidth: .infinity)
                 HStack(spacing: 24) {
@@ -274,10 +317,28 @@ public struct PracticeView: View {
                         RepetitionMeter(plan: plan, locale: locale)
                             .opacity(traveling ? 0.4 : 1)
                     }
+                    if judge == .adult {
+                        Button {
+                            Task { await present(word) }
+                        } label: {
+                            Image(systemName: "speaker.wave.2.fill")
+                                .font(.system(size: 30, weight: .bold))
+                                .frame(width: 44, height: 44)
+                        }
+                        .buttonStyle(KidButtonStyle(color: EveilPalette.ink.opacity(0.55)))
+                        .disabled(modelPlaying || traveling)
+                        .accessibilityLabel(fr ? "Réécouter le mot" : "Listen again")
+                    }
                     Button {
-                        Task { await present(word) }
+                        if judge == .adult {
+                            adultHeard()
+                        } else {
+                            Task { await present(word) }
+                        }
                     } label: {
-                        if listening {
+                        if judge == .adult {
+                            Label(fr ? "Il l'a dit !" : "Said it!", systemImage: "hand.thumbsup.fill")
+                        } else if listening {
                             // Le train entend : des barres qui bougent avec la voix (le niveau, jamais le son).
                             HStack(spacing: 14) {
                                 LevelBars(db: listener.inputLevelDb)
@@ -407,17 +468,30 @@ public struct PracticeView: View {
             modelPlaying = false
             return
         }
-        if !demoMode && !traveling && step == .continue {
+        if judge == .listen && !demoMode && !traveling && step == .continue {
             listener.config = ListeningSettings.detectorConfig(adultTrial: adultTrial)
             listener.listen(for: w)                    // l'écoute démarre AVANT de rendre les sons
         }
         modelPlaying = false
     }
 
+    /// Le juge adulte : l'enfant a bien dit le mot (livres des sons).
+    private func adultHeard() {
+        guard judge == .adult, !modelPlaying, !traveling, feedback?.message != .again else { return }
+        handle(.adultHeard(wagons: word.wagons.count, hasCaboose: word.coda != nil))
+    }
+
     /// Le décompte continue : la voix annonce ce qui reste, puis le micro se rouvre
     /// (sans rejouer le modèle : l'enfant vient de le dire).
     private func listenAgainForCountdown(_ w: TargetWord) async {
         guard step == .continue, !traveling, w.id == word.id else { return }
+        if judge == .adult {
+            // Pas de micro : on relance juste le décompte (« Encore ! »), l'adulte juge.
+            feedback = nil
+            voice.voiceIdentifier = voiceId
+            await voice.speak(fr ? "Encore !" : "Again!", locale: locale)
+            return
+        }
         feedback = nil
         listener.reset()
         SoundBoard.shared.isSuspended = true
@@ -505,7 +579,7 @@ public struct PracticeView: View {
         let elapsed = Date().timeIntervalSince(sessionStart)
         let next = policy.nextStep(wordsDone: wordsDone, sessionSeconds: elapsed,
                                    todaySeconds: PracticeStore.secondsToday(in: context) + elapsed)
-        deckCursor = (index + 1) % words.count
+        UserDefaults.standard.set((index + 1) % words.count, forKey: cursorKey)
         guard next == .continue else {
             index += 1                                  // la prochaine séance reprendra au mot suivant
             feedback = nil
@@ -614,7 +688,7 @@ struct WordPicture: View {
 
     var body: some View {
         VStack(spacing: 10) {
-            WordArt(wordId: word.id, size: size * 0.9, pulse: pulse)
+            PictoView(id: word.id, size: size * 0.9, pulse: pulse)
                 .frame(width: size, height: size)
                 .background(
                     RoundedRectangle(cornerRadius: size * 0.14, style: .continuous).fill(.white)

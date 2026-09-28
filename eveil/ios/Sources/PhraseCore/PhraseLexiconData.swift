@@ -1,0 +1,71 @@
+// PhraseLexiconData.swift — FICHIER GÉNÉRÉ par eveil/outils/phrases/generer.py : ne pas modifier à la main.
+//
+// Le lexique du train des phrases (source : eveil/outils/phrases/lexique.py) : les noms
+// (qui ? quoi ? où ?) et les verbes, en français et en anglais. Propositions, à valider
+// avec le panel (docs/EVEIL.md § 8).
+
+extension PhraseLexicon {
+    public static let nouns: [PhraseNoun] = [
+        PhraseNoun(id: "chat", drawing: "fr.minouche", gender: .masculine, fr: "chat", frIPA: "ʃa", en: "cat", enIPA: "kæt", roles: [.qui, .quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "chien", drawing: "fr.caniche", gender: .masculine, fr: "chien", frIPA: "ʃjɛ̃", en: "dog", enIPA: "dɔɡ", roles: [.qui, .quoi], facesLeft: true, prepositions: []),
+        PhraseNoun(id: "vache", drawing: "fr.vache", gender: .feminine, fr: "vache", frIPA: "vaʃ", en: "cow", enIPA: "kaʊ", roles: [.qui, .quoi], facesLeft: true, prepositions: []),
+        PhraseNoun(id: "biche", drawing: "fr.biche", gender: .feminine, fr: "biche", frIPA: "biʃ", en: "deer", enIPA: "dɪɹ", roles: [.qui], facesLeft: true, prepositions: []),
+        PhraseNoun(id: "mouche", drawing: "fr.mouche", gender: .feminine, fr: "mouche", frIPA: "muʃ", en: "fly", enIPA: "flaɪ", roles: [.qui, .quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "oiseau", drawing: "fr.perruche", gender: .masculine, fr: "oiseau", frIPA: "wazo", en: "bird", enIPA: "bɝd", roles: [.qui, .quoi], facesLeft: true, prepositions: []),
+        PhraseNoun(id: "limace", drawing: "fr.limace", gender: .feminine, fr: "limace", frIPA: "limas", en: "slug", enIPA: "slʌɡ", roles: [.qui], facesLeft: true, prepositions: []),
+        PhraseNoun(id: "autruche", drawing: "fr.autruche", gender: .feminine, fr: "autruche", frIPA: "otʁyʃ", en: "ostrich", enIPA: "ˈɑstɹɪtʃ", roles: [.qui], facesLeft: true, prepositions: []),
+        PhraseNoun(id: "poisson", drawing: "en.fish", gender: .masculine, fr: "poisson", frIPA: "pwasɔ̃", en: "fish", enIPA: "fɪʃ", roles: [.qui, .quoi], facesLeft: true, prepositions: []),
+        PhraseNoun(id: "oie", drawing: "en.goose", gender: .feminine, fr: "oie", frIPA: "wa", en: "goose", enIPA: "ɡus", roles: [.qui], facesLeft: true, prepositions: []),
+        PhraseNoun(id: "elan", drawing: "en.moose", gender: .masculine, fr: "élan", frIPA: "elɑ̃", en: "moose", enIPA: "mus", roles: [.qui], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "souris", drawing: "en.mouse", gender: .feminine, fr: "souris", frIPA: "suʁi", en: "mouse", enIPA: "maʊs", roles: [.qui, .quoi], facesLeft: true, prepositions: []),
+        PhraseNoun(id: "princesse", drawing: "fr.princesse", gender: .feminine, fr: "princesse", frIPA: "pʁɛ̃sɛs", en: "princess", enIPA: "ˈpɹɪnsɛs", roles: [.qui], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "lou", drawing: "perso.lou", gender: .proper, fr: "Lou", frIPA: "lu", en: "Lou", enIPA: "lu", roles: [.qui], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "peche", drawing: "fr.peche", gender: .feminine, fr: "pêche", frIPA: "pɛʃ", en: "peach", enIPA: "pitʃ", roles: [.quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "saucisse", drawing: "fr.saucisse", gender: .feminine, fr: "saucisse", frIPA: "sosis", en: "sausage", enIPA: "ˈsɔsɪdʒ", roles: [.quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "glace", drawing: "fr.glace", gender: .feminine, fr: "glace", frIPA: "ɡlas", en: "ice cream", enIPA: "ˈaɪs kɹim", roles: [.quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "os", drawing: "fr.os", gender: .masculine, fr: "os", frIPA: "ɔs", en: "bone", enIPA: "boʊn", roles: [.quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "radis", drawing: "en.radish", gender: .masculine, fr: "radis", frIPA: "ʁadi", en: "radish", enIPA: "ˈɹædɪʃ", roles: [.quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "jus", drawing: "en.juice", gender: .masculine, fr: "jus", frIPA: "ʒy", en: "juice", enIPA: "dʒus", roles: [.quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "tasse", drawing: "fr.tasse", gender: .feminine, fr: "tasse", frIPA: "tas", en: "cup", enIPA: "kʌp", roles: [.quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "assiette", drawing: "en.dish", gender: .feminine, fr: "assiette", frIPA: "asjɛt", en: "plate", enIPA: "pleɪt", roles: [.quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "brosse", drawing: "fr.brosse", gender: .feminine, fr: "brosse", frIPA: "bʁɔs", en: "brush", enIPA: "bɹʌʃ", roles: [.quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "cloche", drawing: "fr.cloche", gender: .feminine, fr: "cloche", frIPA: "klɔʃ", en: "bell", enIPA: "bɛl", roles: [.quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "trousse", drawing: "fr.trousse", gender: .feminine, fr: "trousse", frIPA: "tʁus", en: "pencil case", enIPA: "ˈpɛnsəl keɪs", roles: [.quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "fleche", drawing: "fr.fleche", gender: .feminine, fr: "flèche", frIPA: "flɛʃ", en: "arrow", enIPA: "ˈæɹoʊ", roles: [.quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "buche", drawing: "fr.buche", gender: .feminine, fr: "bûche", frIPA: "byʃ", en: "log", enIPA: "lɔɡ", roles: [.quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "balle", drawing: "en.tennis", gender: .feminine, fr: "balle", frIPA: "bal", en: "ball", enIPA: "bɔl", roles: [.quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "bus", drawing: "en.bus", gender: .masculine, fr: "bus", frIPA: "bys", en: "bus", enIPA: "bʌs", roles: [.quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "carrosse", drawing: "fr.carrosse", gender: .masculine, fr: "carrosse", frIPA: "kaʁɔs", en: "carriage", enIPA: "ˈkæɹɪdʒ", roles: [.quoi], facesLeft: false, prepositions: []),
+        PhraseNoun(id: "boite", drawing: "lieu.boite", gender: .feminine, fr: "boîte", frIPA: "bwat", en: "box", enIPA: "bɑks", roles: [.ou], facesLeft: false, prepositions: ["dans", "sur", "devant", "derriere"]),
+        PhraseNoun(id: "niche", drawing: "lieu.niche", gender: .feminine, fr: "niche", frIPA: "niʃ", en: "doghouse", enIPA: "ˈdɔɡhaʊs", roles: [.ou], facesLeft: false, prepositions: ["dans", "sur", "devant", "derriere"]),
+        PhraseNoun(id: "maison", drawing: "lieu.maison", gender: .feminine, fr: "maison", frIPA: "mɛzɔ̃", en: "house", enIPA: "haʊs", roles: [.ou], facesLeft: false, prepositions: ["dans", "sur", "devant", "derriere"]),
+        PhraseNoun(id: "table", drawing: "lieu.table", gender: .feminine, fr: "table", frIPA: "tabl", en: "table", enIPA: "ˈteɪbəl", roles: [.ou], facesLeft: false, prepositions: ["sur", "sous", "devant", "derriere"]),
+        PhraseNoun(id: "lit", drawing: "lieu.lit", gender: .masculine, fr: "lit", frIPA: "li", en: "bed", enIPA: "bɛd", roles: [.ou], facesLeft: false, prepositions: ["dans", "sur", "sous", "devant"]),
+        PhraseNoun(id: "arbre", drawing: "lieu.arbre", gender: .masculine, fr: "arbre", frIPA: "aʁbʁ", en: "tree", enIPA: "tɹi", roles: [.ou], facesLeft: false, prepositions: ["dans", "sous", "devant", "derriere"]),
+        PhraseNoun(id: "baignoire", drawing: "lieu.baignoire", gender: .feminine, fr: "baignoire", frIPA: "bɛɲwaʁ", en: "bathtub", enIPA: "ˈbæθtʌb", roles: [.ou], facesLeft: false, prepositions: ["dans", "devant", "derriere"]),
+        PhraseNoun(id: "voiture", drawing: "lieu.voiture", gender: .feminine, fr: "voiture", frIPA: "vwatyʁ", en: "car", enIPA: "kɑɹ", roles: [.ou], facesLeft: false, prepositions: ["dans", "sur", "devant", "derriere"]),
+    ]
+
+    public static let verbs: [PhraseVerb] = [
+        PhraseVerb(id: "dormir", fr: "dort", frIPA: "dɔʁ", en: "sleeps", enIPA: "slips", transitive: false, absolute: false, objects: [], prepositions: ["dans", "sur", "sous"], places: []),
+        PhraseVerb(id: "sauter", fr: "saute", frIPA: "sot", en: "jumps", enIPA: "dʒʌmps", transitive: false, absolute: false, objects: [], prepositions: ["sur", "dans", "devant"], places: []),
+        PhraseVerb(id: "danser", fr: "danse", frIPA: "dɑ̃s", en: "dances", enIPA: "ˈdænsɪz", transitive: false, absolute: false, objects: [], prepositions: ["sur", "devant", "dans"], places: []),
+        PhraseVerb(id: "courir", fr: "court", frIPA: "kuʁ", en: "runs", enIPA: "ɹʌnz", transitive: false, absolute: false, objects: [], prepositions: ["devant", "derriere", "dans"], places: []),
+        PhraseVerb(id: "chanter", fr: "chante", frIPA: "ʃɑ̃t", en: "sings", enIPA: "sɪŋz", transitive: false, absolute: false, objects: [], prepositions: ["dans", "sur", "devant", "sous"], places: []),
+        PhraseVerb(id: "nager", fr: "nage", frIPA: "naʒ", en: "swims", enIPA: "swɪmz", transitive: false, absolute: false, objects: [], prepositions: ["dans"], places: ["baignoire"]),
+        PhraseVerb(id: "voler", fr: "vole", frIPA: "vɔl", en: "flies", enIPA: "flaɪz", transitive: false, absolute: false, objects: [], prepositions: ["dans", "devant", "derriere", "sur"], places: []),
+        PhraseVerb(id: "tourner", fr: "tourne", frIPA: "tuʁn", en: "spins", enIPA: "spɪnz", transitive: false, absolute: false, objects: [], prepositions: ["sur", "devant", "dans"], places: []),
+        PhraseVerb(id: "rire", fr: "rit", frIPA: "ʁi", en: "laughs", enIPA: "læfs", transitive: false, absolute: false, objects: [], prepositions: ["dans", "sur", "sous", "devant", "derriere"], places: []),
+        PhraseVerb(id: "se_cacher", fr: "se cache", frIPA: "sə kaʃ", en: "hides", enIPA: "haɪdz", transitive: false, absolute: false, objects: [], prepositions: ["dans", "sous", "derriere"], places: []),
+        PhraseVerb(id: "manger", fr: "mange", frIPA: "mɑ̃ʒ", en: "eats", enIPA: "its", transitive: true, absolute: true, objects: ["peche", "saucisse", "glace", "os", "radis"], prepositions: [], places: []),
+        PhraseVerb(id: "boire", fr: "boit", frIPA: "bwa", en: "drinks", enIPA: "dɹɪŋks", transitive: true, absolute: true, objects: ["jus", "tasse"], prepositions: [], places: []),
+        PhraseVerb(id: "pousser", fr: "pousse", frIPA: "pus", en: "pushes", enIPA: "ˈpʊʃɪz", transitive: true, absolute: false, objects: ["bus", "carrosse", "buche", "trousse", "balle", "cloche"], prepositions: [], places: []),
+        PhraseVerb(id: "porter", fr: "porte", frIPA: "pɔʁt", en: "carries", enIPA: "ˈkæɹiz", transitive: true, absolute: false, objects: ["trousse", "buche", "os", "tasse", "cloche", "peche", "brosse"], prepositions: [], places: []),
+        PhraseVerb(id: "lancer", fr: "lance", frIPA: "lɑ̃s", en: "throws", enIPA: "θɹoʊz", transitive: true, absolute: false, objects: ["balle", "os", "peche", "fleche", "brosse", "trousse"], prepositions: [], places: []),
+        PhraseVerb(id: "laver", fr: "lave", frIPA: "lav", en: "washes", enIPA: "ˈwɑʃɪz", transitive: true, absolute: false, objects: ["tasse", "assiette", "chien", "vache", "bus", "brosse", "carrosse"], prepositions: [], places: []),
+        PhraseVerb(id: "attraper", fr: "attrape", frIPA: "atʁap", en: "catches", enIPA: "ˈkætʃɪz", transitive: true, absolute: false, objects: ["balle", "mouche", "os", "peche", "fleche"], prepositions: [], places: []),
+        PhraseVerb(id: "lecher", fr: "lèche", frIPA: "lɛʃ", en: "licks", enIPA: "lɪks", transitive: true, absolute: false, objects: ["glace", "os", "assiette", "chat"], prepositions: [], places: []),
+        PhraseVerb(id: "sentir", fr: "sent", frIPA: "sɑ̃", en: "smells", enIPA: "smɛlz", transitive: true, absolute: false, objects: ["peche", "saucisse", "glace", "radis", "jus"], prepositions: [], places: []),
+        PhraseVerb(id: "tirer", fr: "tire", frIPA: "tiʁ", en: "pulls", enIPA: "pʊlz", transitive: true, absolute: false, objects: ["carrosse", "bus", "buche", "trousse", "brosse"], prepositions: [], places: []),
+    ]
+}

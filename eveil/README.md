@@ -153,6 +153,22 @@ pour le nombre de fois que l'enfant doit répéter » :
 - **Un son pour chaque syllabe bien dite** : le micro ne doit jamais entendre le jeu (il prendrait
   un « ding » pour une syllabe) ; donc, dès la fin de l'écoute, le train rejoue ses wagons — un ding
   par wagon allumé, en arpège (do, mi, sol, do), puis le « chhh » du fourgon accroché.
+- **Le train des phrases** (« au niveau d'OrthoPicto, voire plus », cf.
+  [docs/EVEIL.md § 4.8](../docs/EVEIL.md#48-le-train-des-phrases-demande-du-28092026--au-niveau-dorthopicto-voire-plus)) :
+  l'enfant construit une phrase avec des pictos — la locomotive porte « qui ? », un wagon par morceau
+  (« fait quoi ? », « quoi ? », « où ? »), couleurs par rôle — et la **scène la joue**, quelle qu'elle
+  soit : 20 verbes animés, 14 sujets, 23 compléments, 8 lieux (31 mises en scène avec « dans, sur, sous, devant, derrière ») (« la vache mange la
+  bûche », « Lou se cache sous la table »). Trois niveaux (2 wagons, 3 wagons, « où ? ») ; la voix pose
+  la question avec ce qui est choisi (« Que fait le chat ? ») et nomme chaque picto ; la phrase se dit
+  morceau par morceau puis d'une traite ; toucher un wagon le redit et permet de le changer. Éveil à la
+  lecture : mots écrits, phrase colorée par rôle, capitales au choix. Aucun micro : l'adulte touche
+  « Il l'a dite ! » → étoiles. Lexique, grammaire FR/EN (élision « l'autruche ») et niveaux en Python
+  ([`outils/phrases`](outils/phrases/)), portés dans `PhraseCore` (vecteurs de parité) ; pictos des
+  verbes et des lieux dessinés en Python ([`outils/pictos`](outils/pictos/)) ; mouvements testés.
+- **Les jeux d'écoute** (« voire plus ») : le **loto des bruits** (un bruit — « meuh » — et trois
+  images : laquelle fait ce bruit ? chaque image touchée sonne) et **« Où est… ? »** (2 à 4 images,
+  vocabulaire en compréhension). Jamais « faux » : une autre image est nommée (« Ça, c'est le chat. »)
+  et on réécoute ; manches dans un ordre fixe.
 - **L'atelier de coloriage** (« plus de couleurs, la gomme, un mode interactif au choix ») :
   **24 couleurs** (dont quatre couleurs de peau), toutes visibles d'un coup — 3 rangées de 8 en
   portrait, 6 rangées de 4 en paysage ; la **gomme** rend le papier blanc sans déborder de sa zone
