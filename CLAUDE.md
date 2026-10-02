@@ -454,6 +454,18 @@ nom, mascotte, voix) · protocole V1 (Jardé/CPP/CNIL à qualifier, corpus, cali
 App 2 : mode papier **à essayer** avec une vraie imprimante et de vrais crayons (codé le 28/09) · décisions ouvertes :
 nom, iPadOS 17 vs 26, mode par défaut avant validation (écoute auto vs juge adulte).
 
+### 🧭 Veille concurrence
+**Statut : branche `claude/popswitcher-review-90yhpc`.** `docs/CONCURRENCE.md` — une
+fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCONNU**.
+- **POP Switcher** (popswitcher.com) : app Mac gratuite, IA locale multimodale
+  (llama.cpp, stable-diffusion.cpp, ComfyUI), orchestrateur *The One*, RAG, Skills.
+  Niveau **DÉCLARÉ** (site bloqué par le proxy de session, infos issues de la
+  recherche web). Lecture : app perso grand public vs mon offre B2B ; il expose
+  surtout l'absence d'installable (→ prioriser jalon D de Klody) et occupe la
+  promesse « sans Terminal » de SilverBrain.
+- Reste : dérouler le protocole de test de la fiche sur le Mac (trafic sortant,
+  hors ligne, RAM, The One sur petit modèle, MCP).
+
 ### Autres projets (mentionnés au README, hors de ce dépôt)
 Klody Code AI (agent de code local, projet phare) · klody-ui · LibraryBrain (RAG local) ·
 VocalBrain (voix) · Dream × World (mondes IA persistants).
