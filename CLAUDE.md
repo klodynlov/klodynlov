@@ -67,7 +67,7 @@ Branche `claude/aiot-projects-96qbia` · portée par la session `session_01HU6u9
   plancher de précision SLM sub-1B après quantif 4-bit.
 
 ### 🚧 micro:bit en Bluetooth — matériel réel (jalon M1 « radio »)
-**Statut : branche `claude/microbit-bluetooth-connection-jb4jwf`, basée sur `main`.**
+**Statut : mergé dans `main` (PR #13).**
 Indépendant du code d'EdgeSense (qui vit encore dans la PR #4 non mergée) : aucun import
 croisé, seulement une continuité de récit et de discipline.
 
@@ -95,7 +95,7 @@ croisé, seulement une continuité de récit et de discipline.
   (MicroPython ne fait pas de BLE GATT) ; « No Pairing Required » recommandé.
 
 ### 🎵 KLOD Live Brain / KLOD GrooveDNA — coprocesseur musical temps réel
-**Statut : branche `claude/klod-live-brain-groovedna-hmm1nu`, basée sur `main`.**
+**Statut : mergé dans `main` (PR #16).**
 Nouvel axe (musique temps réel + agentique). Indépendant des autres modules :
 aucun import croisé, seulement la continuité de discipline (stdlib pur, tests
 sans matériel, honnêteté PROUVÉ/FAISABLE).
@@ -162,14 +162,18 @@ audio = EXPÉRIMENTAL. **On ne passe pas à l'IA tant que la chaîne matérielle
 n'est pas bouclée et chiffrée.**
 
 ### 🧭 Veille concurrence
-**Statut : branche `claude/popswitcher-review-90yhpc`.** `docs/CONCURRENCE.md` — une
+**Statut : mergé dans `main` (PR #18).** `docs/CONCURRENCE.md` — une
 fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCONNU**.
 - **POP Switcher** (popswitcher.com) : app Mac gratuite, IA locale multimodale
   (llama.cpp, stable-diffusion.cpp, ComfyUI), orchestrateur *The One*, RAG, Skills.
   Niveau **DÉCLARÉ** (site bloqué par le proxy de session, infos issues de la
   recherche web). Lecture : app perso grand public vs mon offre B2B ; il expose
   surtout l'absence d'installable (→ prioriser jalon D de Klody) et occupe la
-  promesse « sans Terminal » de SilverBrain.
+  promesse « sans Terminal » de SilverBrain. **Code source : aucun dépôt public
+  trouvé** sur GitHub ni Hugging Face (INCONNU, probablement propriétaire) →
+  argument d'auditabilité pour Klody (MIT, tests publics).
+- 📣 Post LinkedIn n° 8 (`docs/LINKEDIN-POSTS.md`) : positionnement « une IA locale,
+  ce n'est pas encore une IA de confiance », **sans nommer de concurrent**.
 - Reste : dérouler le protocole de test de la fiche sur le Mac (trafic sortant,
   hors ligne, RAM, The One sur petit modèle, MCP).
 
@@ -179,9 +183,8 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : nouvel axe **KLOD Live Brain / GrooveDNA** sur la branche
-`claude/klod-live-brain-groovedna-hmm1nu` — moteur de *feel* rythmique (capture/transfert/
-morphing, format versionné `KLOD_GROOVE_V1`), **couche musical prouvée en Python stdlib pur
-(35 tests)** + audit Phase 0 (`TECHNICAL_REALITY.md`). Couche réflexe Teensy = FAISABLE, à
-mesurer. Précédemment : connecteur `microbit/` (BLE + MCP, 33 tests) ; AIoT/EdgeSense au stade
-PR #4 (M0 codé, M2-M4 + TinyGuard en conception)._
+_Dernière mise à jour mémoire : **veille concurrence** mergée (PR #18) — fiche
+`docs/CONCURRENCE.md` sur POP Switcher (niveau DÉCLARÉ, aucun code public trouvé) + post
+LinkedIn n° 8 de positionnement. Statuts recalés sur `main` : micro:bit (PR #13) et KLOD Live
+Brain / GrooveDNA (PR #16) mergés. Toujours ouvert : AIoT/EdgeSense (PR #4, M0 codé, M2-M4 +
+TinyGuard en conception) ; reprise matérielle Teensy sur le Mac._
