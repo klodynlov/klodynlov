@@ -1,6 +1,6 @@
 # 📣 Posts LinkedIn — tirés des feuilles de route
 
-Sept posts prêts à publier, tirés des roadmaps [Klody Code AI](KLODY-ROADMAP.md),
+Huit posts prêts à publier, tirés des roadmaps [Klody Code AI](KLODY-ROADMAP.md),
 [SilverBrain](SILVERBRAIN-ROADMAP.md) et [Dream × World](DREAMXWORLD-ROADMAP.md).
 Chacun sert le positionnement **« ingénieur IA locale / on-premise »** et est calé
 sur un jalon daté — de quoi publier *au fil de l'avancement* (build in public).
@@ -26,6 +26,7 @@ sur un jalon daté — de quoi publier *au fil de l'avancement* (build in public
 | 5 | Garder un monde cohérent sur 100+ tours | Dream × World · jalon C | au run long |
 | 6 | Vos données ne peuvent pas aller dans le cloud ? | Consulting | en continu / relance |
 | 7 | Piloter ses ambitions avec un outil local | Meta / l'outil `objectifs.py` | quand tu veux |
+| 8 | Positionnement : une IA locale, ce n'est pas encore une IA de confiance | Veille [concurrence](CONCURRENCE.md) | dès que les apps d'IA locale grand public font parler d'elles |
 
 ---
 
@@ -252,6 +253,58 @@ inconfortable — et c'est exactement pour ça que ça marche.
 Vous suivez vos projets comment ? Outil du marché, ou bricolage perso ?
 
 #BuildInPublic #Productivité #Python #IALocale #Open
+```
+
+---
+
+## Post 8 — Positionnement : une IA locale, ce n'est pas encore une IA de confiance *(veille concurrence)*
+
+> **Visuel suggéré** : deux colonnes « une IA sur mon Mac » / « une IA à qui une équipe confie ses données ».
+> **Ton** : on salue la catégorie, on ne nomme ni ne vise personne. Voir la [fiche concurrence](CONCURRENCE.md).
+> **Premier commentaire** : lien vers la page [Les mesures](https://karaibart.fr/laboratoire/mesures/) et vers le README.
+
+```
+Installer une IA locale sur son Mac, c'est devenu facile.
+Tant mieux. Mais ce n'est pas ce que je vends.
+
+Les apps d'IA locale se multiplient : on installe, on clique, on discute
+avec un modèle sans rien envoyer dans le cloud. Excellente nouvelle — la
+catégorie existe, et plus personne n'a besoin d'un Terminal pour y goûter.
+
+Mais il y a un écart entre « une IA sur mon Mac » et « une IA à qui une
+équipe peut confier ses données sensibles ».
+
+La seconde exige autre chose :
+• des réponses reliées à leurs sources, et un refus clair quand la preuve
+  manque ;
+• des agents en lecture seule par défaut, avec approbation humaine avant
+  toute écriture sensible ;
+• plusieurs modèles qui tiennent dans un budget mémoire, supervisés et
+  mesurés à froid comme à chaud ;
+• des preuves, pas des promesses.
+
+C'est là que je travaille : aider les équipes qui manipulent des données
+sensibles à utiliser l'IA sans les envoyer dans le cloud.
+
+Ma vision tient en trois convictions :
+
+1. Le local deviendra le défaut pour tout ce qui est sensible. La question
+   ne sera plus « est-ce possible ? » mais « est-ce prouvé ? ».
+2. La valeur passe des modèles aux agents. Et un agent ne vaut que par ses
+   garde-fous.
+3. L'IA locale va sortir de l'écran. Avec MCP, un agent peut percevoir et
+   agir sur le monde physique — capteurs, cartes, instruments — toujours
+   sans cloud.
+
+Je ne demande pas qu'on me croie sur parole. Je publie mes mesures :
+2 829 tests sur mon agent de code, 1,8 million de passages indexés dans
+mon RAG local, 0 requête tierce sur mon site. Et je dis aussi ce qui n'est
+pas encore prouvé.
+
+Des documents, du code ou des procédures qui ne peuvent pas quitter votre
+infrastructure ? Parlons-en.
+
+#IALocale #Souveraineté #AgentsIA #MCP #Confidentialité
 ```
 
 ---
