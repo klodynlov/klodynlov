@@ -67,7 +67,7 @@ Branche `claude/aiot-projects-96qbia` · portée par la session `session_01HU6u9
   plancher de précision SLM sub-1B après quantif 4-bit.
 
 ### 🚧 micro:bit en Bluetooth — matériel réel (jalon M1 « radio »)
-**Statut : branche `claude/microbit-bluetooth-connection-jb4jwf`, basée sur `main`.**
+**Statut : mergé dans `main` (PR #13).**
 Indépendant du code d'EdgeSense (qui vit encore dans la PR #4 non mergée) : aucun import
 croisé, seulement une continuité de récit et de discipline.
 
@@ -95,7 +95,7 @@ croisé, seulement une continuité de récit et de discipline.
   (MicroPython ne fait pas de BLE GATT) ; « No Pairing Required » recommandé.
 
 ### 🎵 KLOD Live Brain / KLOD GrooveDNA — coprocesseur musical temps réel
-**Statut : branche `claude/klod-live-brain-groovedna-hmm1nu`, basée sur `main`.**
+**Statut : mergé dans `main` (PR #16).**
 Nouvel axe (musique temps réel + agentique). Indépendant des autres modules :
 aucun import croisé, seulement la continuité de discipline (stdlib pur, tests
 sans matériel, honnêteté PROUVÉ/FAISABLE).
@@ -455,14 +455,18 @@ App 2 : mode papier **à essayer** avec une vraie imprimante et de vrais crayons
 nom, iPadOS 17 vs 26, mode par défaut avant validation (écoute auto vs juge adulte).
 
 ### 🧭 Veille concurrence
-**Statut : branche `claude/popswitcher-review-90yhpc`.** `docs/CONCURRENCE.md` — une
+**Statut : mergé dans `main` (PR #18).** `docs/CONCURRENCE.md` — une
 fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCONNU**.
 - **POP Switcher** (popswitcher.com) : app Mac gratuite, IA locale multimodale
   (llama.cpp, stable-diffusion.cpp, ComfyUI), orchestrateur *The One*, RAG, Skills.
   Niveau **DÉCLARÉ** (site bloqué par le proxy de session, infos issues de la
   recherche web). Lecture : app perso grand public vs mon offre B2B ; il expose
   surtout l'absence d'installable (→ prioriser jalon D de Klody) et occupe la
-  promesse « sans Terminal » de SilverBrain.
+  promesse « sans Terminal » de SilverBrain. **Code source : aucun dépôt public
+  trouvé** sur GitHub ni Hugging Face (INCONNU, probablement propriétaire) →
+  argument d'auditabilité pour Klody (MIT, tests publics).
+- 📣 Post LinkedIn n° 8 (`docs/LINKEDIN-POSTS.md`) : positionnement « une IA locale,
+  ce n'est pas encore une IA de confiance », **sans nommer de concurrent**.
 - Reste : dérouler le protocole de test de la fiche sur le Mac (trafic sortant,
   hors ligne, RAM, The One sur petit modèle, MCP).
 
@@ -472,9 +476,13 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : Suite Éveil — **troisième tour compilé sur le Mac** (28/09/2026 au soir :
+_Dernière mise à jour mémoire : **veille concurrence** mergée (PR #18) — fiche
+`docs/CONCURRENCE.md` sur POP Switcher (niveau DÉCLARÉ, aucun code public trouvé) + post
+LinkedIn n° 8 de positionnement. Statuts recalés sur `main` : micro:bit (PR #13) et KLOD Live
+Brain / GrooveDNA (PR #16) mergés. Toujours ouvert : AIoT/EdgeSense (PR #4, M0 codé, M2-M4 +
+TinyGuard en conception) ; reprise matérielle Teensy sur le Mac ; Suite Éveil (PR #17, brouillon). Avant : Suite Éveil — **troisième tour compilé sur le Mac** (28/09/2026 au soir :
 214 tests Swift + 210 Python verts, 0 avertissement ; accord du mode papier calculé sur le cœur des traits ;
-app installée sur l'iPad). Avant : **mode papier** (28/09/2026, session cloud : imprimer la
+app installée sur l'iPad ; puis les livres des sons écoutent au micro comme le petit train). Avant : **mode papier** (28/09/2026, session cloud : imprimer la
 page, la colorier aux vrais crayons, la photographier ; l'atelier retrouve les repères, reconnaît la page,
 pose les coups de crayon et le dessin prend vie ; référence Python dans les conditions de l'app, Swift à
 compiler sur le Mac puis à essayer avec une imprimante). Avant : **le dessin prend vie** (28/09/2026, session cloud : au
