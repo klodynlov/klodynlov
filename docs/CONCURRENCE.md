@@ -47,6 +47,7 @@ documents) **sans Terminal** ni abonnement, pour un utilisateur seul sur sa mach
 | **Son / musique** | Génération audio | VocalBrain, SampleBrain, [GrooveDNA](../klod-live-brain/) (microtiming mesuré, 35 tests) | Pas le même sujet : génération vs analyse et transfert du *feel* |
 | **Inférence** | llama.cpp & co. | MLX + [ram-aware-scheduler](https://github.com/klodynlov/ram-aware-scheduler) (plusieurs modèles, un budget RAM) | Égalité : étendue (POP) vs optimisation Apple Silicon (moi) |
 | **MCP / monde physique** | Rien d'annoncé | MCP client + serveur, [micro:bit BLE](MICROBIT-BLUETOOTH.md), EdgeSense, Teensy | **Moi**, seul sur ce terrain |
+| **Code source / auditabilité** | Aucun dépôt public trouvé (**INCONNU**) : probablement propriétaire, distribué en binaire | Klody sous licence MIT, 2 829 tests publics | **Moi** : un client peut auditer mon code |
 | **Sécurité / preuves** | « Pas de cloud par défaut » + recherche web | Sandbox, anti-SSRF, CI sécurité, 0 requête tierce mesurée, discipline PROUVÉ/FAISABLE | **Moi** |
 | **Public non technique** | Cœur de sa promesse | SilverBrain (seniors), pas encore de prototype | **POP** aujourd'hui |
 
@@ -71,6 +72,8 @@ clients peu.
 - **La preuve** : tests, mesures publiques, audits honnêtes. C'est ce qu'achète
   un DSI ou un DPO.
 - **MCP et matériel** : aucun équivalent annoncé chez lui.
+- **Auditabilité** : aucun code publié chez lui à ma connaissance ; le mien est
+  ouvert et testé. Pour des données sensibles, pouvoir lire le code est un argument.
 - **« Zéro cloud » nuancé chez lui** : une recherche web fait sortir des requêtes ;
   mon « 0 requête tierce » est mesuré. (Activation par défaut ou à la demande :
   **INCONNU**.)
@@ -104,6 +107,12 @@ méthode que mes propres mesures.
 - [ ] **MCP** : en parle-t-il ? Si oui, mes serveurs (micro:bit, EdgeSense)
       pourraient devenir des « rôles » appelables — interopérabilité plutôt que
       concurrence.
+- [ ] **Code source** : le 2 octobre 2026, aucun dépôt trouvé sur GitHub ni sur
+      Hugging Face (recherche web seulement ; API Hugging Face et site bloqués par
+      la session). À confirmer depuis un navigateur
+      ([GitHub](https://github.com/search?q=popswitcher&type=repositories),
+      [Hugging Face](https://huggingface.co/search/full-text?q=popswitcher)) et
+      dans l'écran « À propos » de l'app (licence, lien vers le code).
 - [ ] **Modèle économique** : qu'est-ce qui financera la suite d'une app gratuite ?
 
 ### Sources
