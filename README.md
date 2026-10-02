@@ -86,6 +86,14 @@ Quatre piliers :
 - **[Dream × World](https://github.com/klodynlov/dream-x-world)** — générateur de **mondes IA persistants & cohérents**, 100 % local. Un *Canon Engine* (retrieve → generate → vérif anti-contradiction → Best-of-N) garde le monde non-contradictoire dans la durée ; simulation temporelle multi-agents et monde exposé en **MCP** pour que les agents y jouent. — 🗺️ [Feuille de route](docs/DREAMXWORLD-ROADMAP.md)
 - 📡 **[micro:bit en Bluetooth](docs/MICROBIT-BLUETOOTH.md)** — l'IA locale qui touche le monde physique : une carte **BBC micro:bit** connectée en **BLE** depuis Python (température, accéléromètre, boussole, boutons ⟶ afficheur LED, UART), exposée en **MCP** pour qu'un agent perçoive et agisse. Cœur sans dépendance + carte simulée ⟶ [33 tests](microbit/test_microbit.py) qui tournent sans matériel. — 🔌 [`microbit/`](microbit/)
 - 🥁 **[KLOD GrooveDNA](klod-live-brain/)** — le *feel* rythmique, capturé et transféré. Un moteur qui **mesure** le microtiming réel d'un musicien (kick en avance, snare en retard, swing des charleys), le stocke dans un format **versionné et indépendant du tempo**, puis l'applique à d'autres patterns ou **interpole** deux grooves. Premier module de **KLOD Live Brain** — un coprocesseur musical temps réel (Teensy 4.1 = réflexe, Mac = cerveau). Cœur stdlib pur ⟶ [35 tests](klod-live-brain/host/groovedna/test_groove.py) + un [audit de faisabilité honnête](klod-live-brain/docs/TECHNICAL_REALITY.md) (PROUVÉ / FAISABLE / EXPÉRIMENTAL). — 📁 [`klod-live-brain/`](klod-live-brain/)
+
+### 🔌 AIoT — l'IA locale rencontre les objets
+
+Prolongement edge de la démarche local-first : l'inférence tourne **sur** l'objet, les données des capteurs ne quittent jamais le réseau. → [**Note de conception & état de l'art AIoT 2025-2026**](docs/aiot-edge-projects.md) (synthèse sourcée + feuilles de route).
+
+- **[EdgeSense](edgesense/)** *(M0 codé ✓)* — passerelle **MCP** exposant capteurs & actionneurs (Raspberry Pi / ESP32) comme des *outils* que les agents locaux lisent et actionnent. Prolonge directement le positionnement *client & serveur MCP*. Le jalon M0 prouve la boucle *percevoir → agir* avec capteur/actionneur simulés (serveur MCP + garde-fous + journal tamper-evident, 9 tests).
+- **TinyGuard** *(conception)* — surveillance vidéo/audio **100 % edge** : détection sur modèle quantifié (INT8), rien dans le cloud, alertes locales exposables en MCP.
+
 - *(et d'autres explorations IA locale, audio, MCP…)*
 
 ## 🧰 Outils & feuille de route

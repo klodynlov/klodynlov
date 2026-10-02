@@ -1,0 +1,7 @@
+# EdgeSense — dépendances (M0)
+#
+# Le cœur (devices.py), la démo (demo.py) et les tests (test_devices.py) ne
+# requièrent QUE la bibliothèque standard Python 3.11+.
+#
+# Seul le serveur MCP (server.py) a besoin du SDK officiel :
+mcp>=1.2
