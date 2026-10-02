@@ -1,0 +1,7 @@
+# Connecteur micro:bit — dépendances
+#
+# Le cœur (profile.py) et le simulateur (fake.py) sont en stdlib pure :
+# les tests tournent sans rien installer.
+
+bleak>=0.22      # pile Bluetooth Low Energy multiplateforme (macOS, Linux, Windows)
+mcp>=1.2         # serveur MCP — requis uniquement pour `python3 -m microbit.server`

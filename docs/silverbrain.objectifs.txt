@@ -1,0 +1,50 @@
+// Suivi SilverBrain pour objectifs.py — jalons découpés en sous-tâches datées.
+//   python3 tools/objectifs.py docs/silverbrain.objectifs.txt --html silverbrain.html
+// Chaque « ambition » ci-dessous est un JALON ; ses « jalons » sont les sous-tâches.
+projet: 🌱 SilverBrain
+
+# 🎙️ Jalon 1 — Socle vocal + intentions (piliers 1 & 3)
+horizon: 2026-08-08
+statut: en cours
+> Boucle voix locale de bout en bout : on parle, l'assistant comprend l'intention et agit.
+- [ ] Boucle STT → Klody → TTS locale minimale (VocalBrain relié à Klody) ! @2026-07-25
+- [ ] Classifieur d'intentions (rappel, lecture, appeler_un_proche, question_simple, détresse) @2026-07-30
+- [ ] Réparation douce : question fermée quand la confiance est basse @2026-08-04
+- [ ] Confirmation orale avant toute action engageante @2026-08-06
+- [ ] Mémoire de conversation : résolution des références implicites @2026-08-08
+
+# 🧭 Jalon 2 — Profil local + orientation LibraryBrain (pilier 2)
+horizon: 2026-09-05
+statut: à venir
+> Le profil émerge de la conversation (jamais de questionnaire) et oriente les thématiques.
+- [ ] Schéma SQLite chiffré des traits (confiance, fraîcheur, source) @2026-08-13
+- [ ] Pipeline d'extraction de traits candidats depuis la conversation ! @2026-08-20
+- [ ] Consentement à voix haute + statut propose / confirme @2026-08-25
+- [ ] Requêtes traits confirmés → LibraryBrain (sqlite-vec + FTS5) @2026-08-30
+- [ ] Cold start (thématiques larges) + correction orale des traits @2026-09-05
+
+# 🗣️ Jalon 3 — Contrat de style + boucle de calibrage (pilier 4)
+horizon: 2026-09-26
+statut: à venir
+> Adapter *comment* l'assistant parle, et le recalibrer automatiquement sur les signaux.
+- [ ] Définir les 4 niveaux du contrat de style (simplicité, débit, registre, longueur) @2026-09-10
+- [ ] Injecter le contrat comme contraintes système à la génération @2026-09-15
+- [ ] Passe de simplification / lisibilité (Best-of-N) pour les messages importants ! @2026-09-20
+- [ ] Boucle de calibrage implicite : « hein ? » / silences → simplifie et ralentit @2026-09-26
+
+# 📞 Jalon 4 — Connecteurs MCP proches + interface aidant
+horizon: 2026-10-17
+statut: à venir
+> Garder le lien avec les proches ; un aidant paramètre, le senior ne règle rien.
+- [ ] Connecteur MCP appel + message (activé/paramétré par la famille) ! @2026-10-03
+- [ ] Carnet de contacts nommé en clair, résolu depuis le profil @2026-10-08
+- [ ] Interface aidant « gros boutons » (Tauri 2 + React) + résumé bienveillant @2026-10-15
+- [ ] Escalade douce d'un rappel non confirmé vers un proche @2026-10-17
+
+# 🧪 Jalon 5 — Test avec 3 seniors réels + durcissement
+horizon: 2026-10-31
+statut: à venir
+> Confronter le prototype à de vrais utilisateurs et ajuster sur leurs retours.
+- [ ] Protocole de test (tâches, consentement, mesures d'accessibilité) @2026-10-20
+- [ ] Sessions avec 3 utilisateurs seniors réels ! @2026-10-27
+- [ ] Synthèse des retours → ajustements intentions & contrat de style @2026-10-31

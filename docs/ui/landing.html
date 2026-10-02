@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SilverBrain — l'assistant IA qu'il n'y a rien à apprendre</title>
+<style>
+  :root{
+    --ground:#EFF3EE; --surface:#FFFFFF; --surface-2:#F5F8F3;
+    --ink:#15201B; --ink-2:#2C3A32; --muted:#5A675F; --line:rgba(20,45,32,.12);
+    --accent:#2F7D6B; --accent-2:#256556; --warm:#C87F2E; --warm-soft:#FBEFD9;
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif;
+    --sans:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --maxw:1080px; --r:20px;
+    --shadow:0 10px 40px rgba(20,45,32,.10);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ground:#0F1613; --surface:#18231E; --surface-2:#1F2C26;
+      --ink:#EAF1EB; --ink-2:#CBD8CF; --muted:#9BA89F; --line:rgba(255,255,255,.12);
+      --accent:#5BC6AB; --accent-2:#7BD6BF; --warm:#E7AC58; --warm-soft:#2A2315;
+      --shadow:0 14px 46px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="light"]{
+    --ground:#EFF3EE; --surface:#FFFFFF; --surface-2:#F5F8F3;
+    --ink:#15201B; --ink-2:#2C3A32; --muted:#5A675F; --line:rgba(20,45,32,.12);
+    --accent:#2F7D6B; --accent-2:#256556; --warm:#C87F2E; --warm-soft:#FBEFD9;
+    --shadow:0 10px 40px rgba(20,45,32,.10);
+  }
+  :root[data-theme="dark"]{
+    --ground:#0F1613; --surface:#18231E; --surface-2:#1F2C26;
+    --ink:#EAF1EB; --ink-2:#CBD8CF; --muted:#9BA89F; --line:rgba(255,255,255,.12);
+    --accent:#5BC6AB; --accent-2:#7BD6BF; --warm:#E7AC58; --warm-soft:#2A2315;
+    --shadow:0 14px 46px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;font-family:var(--sans);background:var(--ground);color:var(--ink);
+       line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(18px,5vw,40px)}
+  a{color:inherit}
+
+  /* header */
+  header{position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.2) blur(10px);
+         background:color-mix(in srgb,var(--ground) 82%,transparent);border-bottom:1px solid var(--line)}
+  .bar{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.12rem;letter-spacing:.2px}
+  .logo .seed{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;
+              background:var(--accent);color:#fff;font-size:.95rem}
+  .nav{display:flex;align-items:center;gap:6px}
+  .nav a{padding:8px 12px;border-radius:10px;text-decoration:none;color:var(--muted);font-weight:600;font-size:.94rem}
+  .nav a:hover{color:var(--ink);background:var(--surface-2)}
+  .toggle{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+          width:40px;height:40px;border-radius:11px;cursor:pointer;font-size:1.05rem}
+  .toggle:focus-visible,a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+  /* hero */
+  .hero{padding:clamp(56px,10vw,104px) 0 clamp(40px,7vw,72px)}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;color:var(--accent-2);font-weight:700;
+           text-transform:uppercase;letter-spacing:.13em;font-size:.8rem;margin-bottom:22px}
+  .eyebrow::before{content:"";width:26px;height:2px;background:var(--accent-2)}
+  h1{font-family:var(--serif);font-weight:600;letter-spacing:-.4px;text-wrap:balance;
+     font-size:clamp(2.5rem,7vw,4.4rem);line-height:1.04;margin:0 0 22px}
+  h1 em{font-style:italic;color:var(--accent)}
+  .lede{font-size:clamp(1.12rem,2.4vw,1.4rem);color:var(--ink-2);max-width:34ch;margin:0 0 30px}
+  .cta{display:flex;flex-wrap:wrap;gap:14px}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:14px 22px;border-radius:14px;
+       font-weight:650;text-decoration:none;font-size:1.02rem;border:1px solid transparent;transition:transform .12s ease}
+  .btn:hover{transform:translateY(-2px)}
+  .btn.primary{background:var(--accent);color:#fff}
+  .btn.ghost{background:var(--surface);border-color:var(--line);color:var(--ink)}
+  .heroGrid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,5vw,56px);align-items:center}
+  @media (max-width:820px){.heroGrid{grid-template-columns:1fr}}
+
+  /* chat mock in hero */
+  .chat{background:var(--surface);border:1px solid var(--line);border-radius:26px;
+        box-shadow:var(--shadow);padding:22px;display:flex;flex-direction:column;gap:12px}
+  .chat .row{display:flex;gap:10px;max-width:88%}
+  .chat .row.me{align-self:flex-end;flex-direction:row-reverse}
+  .bubble{padding:13px 16px;border-radius:18px;font-size:1.02rem;line-height:1.45}
+  .row.them .bubble{background:var(--surface-2);border:1px solid var(--line);border-bottom-left-radius:6px}
+  .row.me .bubble{background:var(--accent);color:#fff;border-bottom-right-radius:6px}
+  .who{width:34px;height:34px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:1.05rem;
+       background:var(--warm-soft)}
+  .row.me .who{background:color-mix(in srgb,var(--accent) 22%,transparent)}
+  .chat .cap{color:var(--muted);font-size:.82rem;text-align:center;margin-top:4px}
+
+  /* generic section */
+  section{padding:clamp(46px,8vw,84px) 0}
+  .kicker{color:var(--accent-2);font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;margin:0 0 12px}
+  h2{font-family:var(--serif);font-weight:600;letter-spacing:-.3px;text-wrap:balance;
+     font-size:clamp(1.9rem,4.2vw,2.8rem);line-height:1.1;margin:0 0 14px}
+  .sub{color:var(--muted);max-width:60ch;font-size:1.08rem;margin:0 0 38px}
+
+  /* pillars */
+  .pillars{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  @media (max-width:720px){.pillars{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:26px 24px;
+        display:flex;flex-direction:column;gap:10px}
+  .card .ic{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;font-size:1.5rem;
+            background:var(--surface-2);border:1px solid var(--line);margin-bottom:4px}
+  .card h3{font-size:1.22rem;margin:0;font-weight:700}
+  .card p{margin:0;color:var(--muted)}
+  .card .tag{margin-top:auto;padding-top:12px;font-size:.82rem;font-weight:700;color:var(--accent-2);
+             text-transform:uppercase;letter-spacing:.06em}
+
+  /* comparison — the differentiator */
+  .compare{background:var(--surface-2);border:1px solid var(--line);border-radius:26px;overflow:hidden}
+  .compare .head{padding:22px 26px;border-bottom:1px solid var(--line)}
+  .compare .head b{font-size:1.15rem}
+  .compare .cols{display:grid;grid-template-columns:1fr 1fr}
+  @media (max-width:640px){.compare .cols{grid-template-columns:1fr}}
+  .col{padding:24px 26px}
+  .col+.col{border-left:1px solid var(--line)}
+  @media (max-width:640px){.col+.col{border-left:none;border-top:1px solid var(--line)}}
+  .col .lbl{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .col.warm .lbl{color:var(--warm)}
+  .col.warm .lbl b{color:var(--warm)}
+  .say{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;font-size:1.06rem;line-height:1.5}
+  .col.warm .say{border-color:color-mix(in srgb,var(--warm) 40%,transparent)}
+
+  /* flow */
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media (max-width:760px){.flow{grid-template-columns:1fr 1fr}}
+  .step{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px 20px;position:relative}
+  .step .n{font-family:var(--serif);font-size:1.5rem;color:var(--accent);font-weight:700}
+  .step h4{margin:8px 0 6px;font-size:1.08rem}
+  .step p{margin:0;color:var(--muted);font-size:.96rem}
+
+  /* privacy band */
+  .band{background:var(--accent);color:#fff;border-radius:28px;padding:clamp(30px,5vw,52px);
+        display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:center}
+  @media (max-width:720px){.band{grid-template-columns:1fr}}
+  .band h2{color:#fff;margin:0 0 12px}
+  .band p{margin:0;color:rgba(255,255,255,.9);font-size:1.06rem;max-width:44ch}
+  .band ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+  .band li{display:flex;gap:12px;align-items:flex-start;font-size:1.02rem}
+  .band li .c{flex:none;width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:.9rem}
+
+  /* docs */
+  .docs{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  @media (max-width:760px){.docs{grid-template-columns:1fr 1fr}}
+  @media (max-width:460px){.docs{grid-template-columns:1fr}}
+  .doc{display:flex;flex-direction:column;gap:8px;text-decoration:none;background:var(--surface);
+       border:1px solid var(--line);border-radius:var(--r);padding:20px;transition:border-color .12s ease,transform .12s ease}
+  .doc:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--accent) 55%,transparent)}
+  .doc .ic{font-size:1.4rem}
+  .doc b{font-size:1.02rem}
+  .doc span{color:var(--muted);font-size:.9rem}
+
+  footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-size:.92rem}
+  .footRow{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center}
+  .badge{display:inline-flex;gap:8px;align-items:center;background:var(--surface-2);border:1px solid var(--line);
+         padding:6px 12px;border-radius:999px;font-size:.82rem;font-weight:600;color:var(--ink-2)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <span class="logo"><span class="seed" aria-hidden="true">🌱</span> SilverBrain</span>
+    <nav class="nav">
+      <a href="#piliers">Piliers</a>
+      <a href="#comment">Comment</a>
+      <a href="#confiance">Confiance</a>
+      <button class="toggle" id="toggle" type="button" aria-label="Changer de thème">◐</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <div class="wrap hero">
+    <div class="heroGrid">
+      <div>
+        <span class="eyebrow">IA locale · pour celles et ceux que la technologie intimide</span>
+        <h1>Il n'y a <em>rien</em><br>à apprendre.</h1>
+        <p class="lede">On lui parle comme à une personne. Il comprend, il s'adapte, il accompagne — et rien ne quitte jamais la maison.</p>
+        <div class="cta">
+          <a class="btn primary" href="#comment">Voir comment ça marche</a>
+          <a class="btn ghost" href="ecran-accessible.html">L'écran accessible →</a>
+        </div>
+      </div>
+
+      <div class="chat" aria-label="Exemple de conversation">
+        <div class="row them"><span class="who" aria-hidden="true">🌱</span><div class="bubble">Bonjour Jeanne. Après le café, il y a votre comprimé pour la tension.</div></div>
+        <div class="row me"><span class="who" aria-hidden="true">🙂</span><div class="bubble">J'ai reçu une lettre, je n'y comprends rien…</div></div>
+        <div class="row them"><span class="who" aria-hidden="true">🌱</span><div class="bubble">Voulez-vous que je vous la lise ? … C'est la mairie. En un mot : bonne nouvelle.</div></div>
+        <p class="cap">Aucune commande, aucun menu. Juste une conversation.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PILLARS -->
+  <section id="piliers">
+    <div class="wrap">
+      <p class="kicker">Quatre piliers</p>
+      <h2>Pensé autour de la personne, pas de la machine.</h2>
+      <p class="sub">Chaque brique existe pour lever un obstacle réel — l'interface, jamais le besoin.</p>
+      <div class="pillars">
+        <div class="card">
+          <span class="ic" aria-hidden="true">🧠</span>
+          <h3>Intuitif</h3>
+          <p>Le langage naturel, rien d'autre. Il comprend l'intention, reformule au lieu de bloquer, confirme avant d'agir.</p>
+          <span class="tag">Aucune commande à retenir</span>
+        </div>
+        <div class="card">
+          <span class="ic" aria-hidden="true">🧭</span>
+          <h3>Il apprend à vous connaître</h3>
+          <p>Sans questionnaire, au fil des échanges, il repère ce qui vous intéresse pour vous proposer des lectures qui vous concernent vraiment.</p>
+          <span class="tag">Profil 100 % local</span>
+        </div>
+        <div class="card">
+          <span class="ic" aria-hidden="true">📅</span>
+          <h3>Il vous accompagne</h3>
+          <p>Rappels au bon moment, lecture de vos courriers, aide-mémoire, et un appel à vos proches quand vous le demandez.</p>
+          <span class="tag">Au quotidien</span>
+        </div>
+        <div class="card">
+          <span class="ic" aria-hidden="true">🗣️</span>
+          <h3>Il s'adapte à vous</h3>
+          <p>Mots simples, débit calme, répétition sans impatience. S'il vous sent hésiter, il ralentit et redit autrement.</p>
+          <span class="tag">Le cœur du projet</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON -->
+  <section>
+    <div class="wrap">
+      <p class="kicker">Ce qui change tout</p>
+      <h2>La même information, dite comme il faut.</h2>
+      <p class="sub">SilverBrain ajuste <em>comment</em> il parle, pas seulement ce qu'il dit. Un rendez-vous déplacé, deux personnes :</p>
+      <div class="compare">
+        <div class="head"><b>« Votre rendez-vous chez le podologue passe à jeudi 10 h. »</b></div>
+        <div class="cols">
+          <div class="col">
+            <div class="lbl">👤 Personne à l'aise</div>
+            <div class="say">« Votre rendez-vous podologue est déplacé à jeudi 10 h. Je mets à jour ? »</div>
+          </div>
+          <div class="col warm">
+            <div class="lbl">🌿 <b>Personne que la technologie intimide</b></div>
+            <div class="say">« J'ai une nouvelle pour votre rendez-vous. … Le podologue, ce sera jeudi. … À dix heures, le matin. Voulez-vous que je le note ? »</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FLOW -->
+  <section id="comment">
+    <div class="wrap">
+      <p class="kicker">Comment ça marche</p>
+      <h2>De la voix à la bonne réponse — tout en local.</h2>
+      <p class="sub">Le profil est le pivot : il décide <em>quoi</em> proposer et <em>comment</em> le dire.</p>
+      <div class="flow">
+        <div class="step"><div class="n">1</div><h4>On parle</h4><p>La voix est comprise sur l'appareil (VocalBrain). Elle ne part jamais ailleurs.</p></div>
+        <div class="step"><div class="n">2</div><h4>Il comprend</h4><p>Klody identifie l'intention et enrichit doucement votre profil, en langage naturel.</p></div>
+        <div class="step"><div class="n">3</div><h4>Il choisit</h4><p>Le profil oriente vers des thématiques (LibraryBrain) et règle le ton de la réponse.</p></div>
+        <div class="step"><div class="n">4</div><h4>Il répond</h4><p>Une phrase claire, adaptée à vous — et si vous hésitez, il se simplifie tout seul.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIVACY -->
+  <section id="confiance">
+    <div class="wrap">
+      <div class="band">
+        <div>
+          <h2>Ce qui se dit chez vous reste chez vous.</h2>
+          <p>Santé, famille, habitudes : les données les plus intimes. Le même confort qu'un assistant vocal, avec la discrétion d'un carnet papier.</p>
+        </div>
+        <ul>
+          <li><span class="c" aria-hidden="true">✓</span> 100 % local — aucune donnée dans le cloud</li>
+          <li><span class="c" aria-hidden="true">✓</span> Fonctionne hors-ligne</li>
+          <li><span class="c" aria-hidden="true">✓</span> Confirmation avant chaque action</li>
+          <li><span class="c" aria-hidden="true">✓</span> Réglé par un proche, jamais par contrainte</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOCS -->
+  <section>
+    <div class="wrap">
+      <p class="kicker">Aller plus loin</p>
+      <h2>La conception, en détail.</h2>
+      <p class="sub">SilverBrain réutilise VocalBrain, LibraryBrain et Klody via MCP — tout est documenté.</p>
+      <div class="docs">
+        <a class="doc" href="SILVERBRAIN.md"><span class="ic" aria-hidden="true">📖</span><b>Concept &amp; scénario</b><span>Les 4 piliers, une journée type, l'architecture</span></a>
+        <a class="doc" href="SILVERBRAIN-PROFIL.md"><span class="ic" aria-hidden="true">🧬</span><b>Modèle du profil</b><span>Traits, confiance, oubli, consentement</span></a>
+        <a class="doc" href="SILVERBRAIN-STYLE.md"><span class="ic" aria-hidden="true">🗣️</span><b>Contrat de style</b><span>Les 4 niveaux, les règles avant/après</span></a>
+        <a class="doc" href="SILVERBRAIN-MCP.md"><span class="ic" aria-hidden="true">🔌</span><b>Connecteurs MCP</b><span>Appels, messages, agenda — et leurs garde-fous</span></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap footRow">
+    <span>SilverBrain — un projet du portfolio <strong>klodynlov</strong> · IA privée, local-first.</span>
+    <span class="badge">🔒 100 % local · MCP · voix d'abord</span>
+  </div>
+</footer>
+
+<script>
+  // Theme toggle — stamps data-theme so it wins over the OS preference in both directions.
+  var root = document.documentElement;
+  var t = document.getElementById('toggle');
+  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  t.addEventListener('click', function(){
+    var current = root.getAttribute('data-theme') || (prefersDark ? 'dark' : 'light');
+    var next = current === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    t.setAttribute('aria-label', next === 'dark' ? 'Passer en thème clair' : 'Passer en thème sombre');
+  });
+</script>
+</body>
+</html>

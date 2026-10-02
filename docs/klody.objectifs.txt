@@ -1,0 +1,42 @@
+// Suivi Klody Code AI pour objectifs.py — jalons restants découpés en sous-tâches datées.
+//   python3 tools/objectifs.py docs/klody.objectifs.txt --html klody.html
+// Le socle est déjà là (699 tests, client+serveur MCP, routeur adaptatif, CI durcie) ;
+// ce plan couvre les jalons ENCORE OUVERTS, jusqu'à l'horizon 31/12/2026.
+projet: 🧠 Klody Code AI
+
+# 🏆 Jalon A — Best-of-N robuste sur les tâches « hard »
+horizon: 2026-09-15
+statut: en cours
+> Fiabiliser la génération multi-candidats et la sélection sur les tâches difficiles.
+- [ ] Jeu de tâches « hard » de référence + harness reproductible ! @2026-08-05
+- [ ] Génération N-candidats pilotée par le routeur (budget selon easy/medium/hard) @2026-08-15
+- [ ] Fonction de sélection du meilleur candidat (tests + critique automatique) @2026-08-25
+- [ ] Vérification adversariale : rejeter les candidats plausibles-mais-faux ! @2026-09-05
+- [ ] Mesure du gain Best-of-N vs 1-passe sur le jeu « hard » @2026-09-15
+
+# 📐 Jalon B — Étude de cas technique publiée
+horizon: 2026-08-20
+statut: en cours
+> Rendre lisibles les décisions d'ingénierie — pièce maîtresse pour le positionnement.
+- [ ] Trame : décisions d'ingénierie et trade-offs @2026-08-01
+- [ ] Section sécurité (sandbox multi-racines, anti-SSRF, commits signés) @2026-08-08
+- [ ] Section orchestration (routeur adaptatif, ReAct, Best-of-N) @2026-08-14
+- [ ] Relecture, publication et partage (LinkedIn) ! @2026-08-20
+
+# 📊 Jalon C — Benchmark public face à un agent cloud
+horizon: 2026-11-15
+statut: à venir
+> Prouver, chiffres à l'appui, qu'un agent 100 % local tient face au cloud.
+- [ ] Choisir l'agent cloud de référence + jeu de tâches comparables @2026-09-25
+- [ ] Protocole reproductible (mêmes tâches, mêmes critères, matériel décrit) @2026-10-05
+- [ ] Runs local (MLX) vs cloud + collecte des métriques ! @2026-10-20
+- [ ] Analyse coût / confidentialité / qualité @2026-11-05
+- [ ] Publication du benchmark (données + méthodologie ouvertes) @2026-11-15
+
+# 🚀 Jalon D — Cap release « consulting-ready »
+horizon: 2026-12-15
+statut: à venir
+> Rendre Klody installable et démontrable par un tiers — support direct du consulting.
+- [ ] Packaging installable + release versionnée @2026-11-28
+- [ ] Guide de démarrage 100 % local (MLX / Ollama) @2026-12-08
+- [ ] Revue de sécurité de release + durcissement final ! @2026-12-15

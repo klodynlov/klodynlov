@@ -1,0 +1,52 @@
+// Exemple de fichier d'ambitions pour objectifs.py
+// Copie-le (p. ex. « mes-objectifs.txt »), garde-le en local et adapte-le.
+//   python3 objectifs.py objectifs.exemple.txt --html road.html
+//
+// Format : « # » = ambition, « horizon: » = échéance, « > » = description,
+//          « - [ ] » / « - [x] » = jalons, « @2026-08 » = échéance de jalon,
+//          « ! » = jalon prioritaire.
+
+# 🧠 Faire de Klody Code AI une référence de l'IA locale
+horizon: 2026-12-31
+statut: en cours
+> Un agent de code 100 % local (MLX / Apple Silicon) qui rivalise avec un
+> agent cloud, avec une sécurité de niveau production.
+- [x] 699 tests qui passent
+- [x] Client ET serveur MCP
+- [x] Routeur adaptatif (easy/medium/hard × 6 types)
+- [x] CI durcie (bandit / gitleaks / pip-audit / CodeQL)
+- [ ] Best-of-N robuste sur les tâches « hard » ! @2026-09
+- [ ] Étude de cas technique publiée et partagée @2026-08
+- [ ] Benchmark public face à un agent cloud @2026-11
+
+# 🌱 Lancer SilverBrain (IA pour un public réfractaire à la technologie)
+horizon: 2026-10-31
+statut: en cours
+> Un assistant IA intuitif, voix d'abord, pour les personnes que la
+> technologie intimide. Rien à apprendre : on lui parle naturellement.
+- [x] Concept & scénario rédigés
+- [x] Modèle de profil conversationnel
+- [x] Contrat de style adaptatif
+- [x] Maquettes UI accessibles
+- [ ] Prototype voix bout-en-bout (VocalBrain + Klody) ! @2026-08
+- [ ] Connecteurs MCP « proches » (lien avec la famille) @2026-09
+- [ ] Test avec 3 utilisateurs seniors réels @2026-10
+
+# 🌍 Aboutir Dream × World (mondes IA persistants & cohérents)
+horizon: 2027-03-31
+statut: en cours
+> Générateur de mondes IA persistants, 100 % local. Un Canon Engine garde le
+> monde non-contradictoire dans la durée ; monde exposé en MCP.
+- [x] Canon Engine (retrieve → generate → vérif → Best-of-N)
+- [ ] Simulation temporelle multi-agents stable ! @2026-10
+- [ ] Monde exposé en serveur MCP jouable @2026-12
+- [ ] Démo publique d'un monde qui tient sur 100+ tours @2027-02
+
+# 💼 Développer une activité de consulting « IA locale »
+horizon: 2026-12-31
+statut: en cours
+> Aider les entreprises dont les données ne peuvent pas aller dans le cloud.
+- [x] Page « Pour les entreprises » publiée
+- [ ] Profil LinkedIn orienté « IA on-premise / privée » @2026-08
+- [ ] 3 études de cas / retours d'expérience publiés @2026-10
+- [ ] Premier client ou mission signé ! @2026-12
