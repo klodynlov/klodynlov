@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Petit Train des mots — maquette</title>
+<style>
+  :root{
+    --ground:#F4F1EA; --surface:#FFFFFF; --surface-2:#FAF7F1;
+    --ink:#1F1B16; --muted:#6A6258; --line:rgba(40,30,15,.12);
+    --loco:#C8472F; --lit:#F4C430; --lit-glow:rgba(244,196,48,.55); --off:#E4DFD6;
+    --caboose:#E08A2E; --caboose-off:#F3DEC4; --accent:#2F7D6B; --calm:#5B6FA8;
+    --sans:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --r:22px; --shadow:0 6px 24px rgba(40,30,15,.08);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#15130F; --surface:#1F1C17; --surface-2:#26221C;
+      --ink:#F1ECE3; --muted:#ADA396; --line:rgba(255,255,255,.12);
+      --loco:#E0674E; --lit:#F2CC4E; --lit-glow:rgba(242,204,78,.35); --off:#3A352D;
+      --caboose:#EDA257; --caboose-off:#3B3025; --accent:#5BC6AB; --calm:#93A5DC;
+      --shadow:0 8px 28px rgba(0,0,0,.45);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#15130F; --surface:#1F1C17; --surface-2:#26221C;
+    --ink:#F1ECE3; --muted:#ADA396; --line:rgba(255,255,255,.12);
+    --loco:#E0674E; --lit:#F2CC4E; --lit-glow:rgba(242,204,78,.35); --off:#3A352D;
+    --caboose:#EDA257; --caboose-off:#3B3025; --accent:#5BC6AB; --calm:#93A5DC;
+    --shadow:0 8px 28px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:var(--sans);background:var(--ground);color:var(--ink);
+       padding:clamp(16px,3vw,40px);-webkit-font-smoothing:antialiased}
+  header{max-width:1100px;margin:0 auto 24px}
+  h1{font-size:clamp(1.5rem,3vw,2.2rem);margin:0 0 6px}
+  .lede{color:var(--muted);margin:0;line-height:1.5;max-width:760px}
+  .grid{max-width:1100px;margin:0 auto;display:grid;gap:20px;
+        grid-template-columns:repeat(auto-fit,minmax(min(100%,500px),1fr))}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+        box-shadow:var(--shadow);padding:20px 20px 18px;display:flex;flex-direction:column;gap:14px}
+  .tag{align-self:flex-start;font-size:.78rem;font-weight:700;letter-spacing:.02em;
+       padding:4px 10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line)}
+  .said{color:var(--muted);font-size:.92rem;margin:0}
+  .said b{color:var(--ink)}
+  .stage{background:var(--surface-2);border-radius:16px;padding:22px 12px 14px;
+         display:flex;align-items:flex-end;justify-content:center;gap:8px;min-height:150px;
+         overflow-x:auto}
+  .loco{width:74px;height:70px;border-radius:14px 26px 10px 10px;background:var(--loco);
+        position:relative;flex:none}
+  .loco::before{content:"";position:absolute;width:18px;height:22px;background:var(--loco);
+        border-radius:4px;top:-18px;left:12px}
+  .loco::after{content:"";position:absolute;width:26px;height:22px;border-radius:6px;
+        background:rgba(255,255,255,.7);top:12px;right:10px}
+  .car,.caboose{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .box{min-width:82px;height:58px;border-radius:12px;display:grid;place-items:center;
+       font:700 1.5rem/1 var(--sans);background:var(--off);color:var(--muted);
+       transition:background .3s,box-shadow .3s}
+  .lit .box{background:var(--lit);color:#2A2108;box-shadow:0 0 18px var(--lit-glow)}
+  .wheels{display:flex;gap:22px}
+  .wheels i{width:16px;height:16px;border-radius:50%;background:var(--muted);display:block}
+  .caboose .box{min-width:66px;height:50px;font-size:1.25rem;background:var(--caboose-off);color:var(--muted)}
+  .caboose.hooked .box{background:var(--caboose);color:#2B1605}
+  .caboose.apart{margin-left:40px}
+  .caboose.pointed .box{outline:3px dashed var(--caboose);outline-offset:4px}
+  .steam{height:22px;font-size:1.3rem;line-height:1}
+  .mascot{display:flex;align-items:center;gap:12px}
+  .face{width:56px;height:56px;border-radius:50%;background:var(--accent);flex:none;
+        display:grid;place-items:center;color:#fff;font-size:1.6rem}
+  .bubble{background:var(--surface-2);border:1px solid var(--line);border-radius:16px;
+          padding:10px 14px;font-size:1.05rem;line-height:1.35}
+  .why{font-size:.85rem;color:var(--muted);margin:0;line-height:1.45}
+  .timeline{max-width:1100px;margin:24px auto 0}
+  .timeline ol{margin:0;padding-left:1.2rem;line-height:1.8;color:var(--muted)}
+  .timeline b{color:var(--ink)}
+  footer{max-width:1100px;margin:28px auto 0;color:var(--muted);font-size:.85rem;line-height:1.5}
+  @media (prefers-reduced-motion:no-preference){
+    .caboose.pointed .box{animation:pulse 1.4s ease-in-out infinite}
+    @keyframes pulse{50%{transform:scale(1.07)}}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🚂 Le Petit Train des mots — les états du train</h1>
+  <p class="lede">Maquette de discussion pour le panel (orthophonistes, parents, spécialistes du
+  développement). Un wagon par <strong>syllabe orale</strong>, le fourgon de queue pour la
+  <strong>consonne finale</strong>. Les lettres sont pour l'adulte : l'enfant lit les couleurs.
+  Règle d'or : on ne montre une partie manquante que si l'écoute en est <strong>sûre</strong>.</p>
+</header>
+
+<main class="grid">
+  <section class="card" aria-label="Mot complet">
+    <span class="tag">Complet</span>
+    <p class="said">Mot : <b>douche</b> · l'enfant dit « <b>douche</b> »</p>
+    <div class="stage" role="img" aria-label="Train : wagon dou allumé, fourgon ch accroché avec de la vapeur">
+      <div class="loco"></div>
+      <div class="car lit"><div class="box">dou</div><div class="wheels"><i></i><i></i></div></div>
+      <div class="caboose hooked"><div class="steam" aria-hidden="true">☁️</div><div class="box">ch</div><div class="wheels"><i></i><i></i></div></div>
+    </div>
+    <div class="mascot"><div class="face" aria-hidden="true">★</div>
+      <div class="bubble">Bravo ! Tout le train est parti !</div></div>
+    <p class="why">Friction haute fréquence entendue juste après la voyelle.</p>
+  </section>
+
+  <section class="card" aria-label="Consonne finale absente">
+    <span class="tag">Fourgon resté en gare</span>
+    <p class="said">Mot : <b>minouche</b> · l'enfant dit « <b>minou</b> »</p>
+    <div class="stage" role="img" aria-label="Train : wagons mi et nou allumés, fourgon ch resté en gare, la mascotte le montre">
+      <div class="loco"></div>
+      <div class="car lit"><div class="box">mi</div><div class="wheels"><i></i><i></i></div></div>
+      <div class="car lit"><div class="box">nou</div><div class="wheels"><i></i><i></i></div></div>
+      <div class="caboose apart pointed"><div class="steam"></div><div class="box">ch</div><div class="wheels"><i></i><i></i></div></div>
+    </div>
+    <div class="mascot"><div class="face" aria-hidden="true">👉</div>
+      <div class="bubble">Oh, le petit fourgon est resté en gare ! On l'accroche avec « chhh » ?</div></div>
+    <p class="why">Seulement sur <b>preuve d'absence</b> : bon signal, voix d'enfant, silence
+    haute fréquence après la voyelle. Après 3 essais : « Merci d'avoir bien essayé ! » et mot suivant.</p>
+  </section>
+
+  <section class="card" aria-label="Syllabe en moins">
+    <span class="tag">Syllabe en moins</span>
+    <p class="said">Mot : <b>minouche</b> · l'enfant dit « <b>mi</b> »</p>
+    <div class="stage" role="img" aria-label="Train : aucun wagon désigné, fourgon en attente">
+      <div class="loco"></div>
+      <div class="car"><div class="box">mi</div><div class="wheels"><i></i><i></i></div></div>
+      <div class="car"><div class="box">nou</div><div class="wheels"><i></i><i></i></div></div>
+      <div class="caboose apart"><div class="steam"></div><div class="box">ch</div><div class="wheels"><i></i><i></i></div></div>
+    </div>
+    <div class="mascot"><div class="face" aria-hidden="true">🔊</div>
+      <div class="bubble">Écoute bien le train : on le dit doucement, ensemble.</div></div>
+    <p class="why">On ne sait pas <b>quelle</b> syllabe manque : aucun wagon n'est désigné, la
+    mascotte remodèle le mot wagon par wagon.</p>
+  </section>
+
+  <section class="card" aria-label="Incertain">
+    <span class="tag">Incertain</span>
+    <p class="said">Bruit de fond, voix d'adulte, deux mots, micro saturé…</p>
+    <div class="stage" role="img" aria-label="Train neutre : rien de désigné, fourgon en attente">
+      <div class="loco"></div>
+      <div class="car"><div class="box">dou</div><div class="wheels"><i></i><i></i></div></div>
+      <div class="caboose apart"><div class="steam"></div><div class="box">ch</div><div class="wheels"><i></i><i></i></div></div>
+    </div>
+    <div class="mascot"><div class="face" aria-hidden="true">👂</div>
+      <div class="bubble">Je n'ai pas bien entendu. On le redit ensemble ?</div></div>
+    <p class="why">Jamais « ce n'est pas ça ». L'écoute préfère se taire plutôt que se tromper.</p>
+  </section>
+</main>
+
+<section class="timeline" aria-label="Déroulé en direct">
+  <h2>En direct, pendant que l'enfant parle (« minouche »)</h2>
+  <ol>
+    <li><b>0,28 s</b> — parole détectée : l'oreille de la mascotte s'allume</li>
+    <li><b>0,39 s</b> — 1ʳᵉ syllabe entendue : le wagon « mi » s'allume</li>
+    <li><b>0,72 s</b> — 2ᵉ syllabe : le wagon « nou » s'allume</li>
+    <li><b>0,77 s</b> — friction finale : le fourgon « ch » s'accroche</li>
+    <li><b>1,75 s</b> — fin d'énoncé (silence) : verdict final, la fête</li>
+  </ol>
+</section>
+
+<footer>
+  Chronologie tirée de la démonstration sur signaux synthétiques
+  (<code>python3 -m wordend.demo</code>). Mascotte, illustrations et voix : à concevoir avec le panel.
+  Détails : <code>docs/EVEIL.md</code> §4.
+</footer>
+</body>
+</html>
