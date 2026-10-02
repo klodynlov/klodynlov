@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 300" width="1600" height="300">
+<defs><radialGradient id="sun" cx="0.5" cy="0.45" r="0.55">
+<stop offset="0" stop-color="#FFE23A"/><stop offset="0.6" stop-color="#FF9E1B"/><stop offset="1" stop-color="#FF6A13"/>
+</radialGradient></defs>
+<rect width="1600" height="300" fill="#ED0F7C"/>
+<circle cx="1315" cy="150" r="128" fill="url(#sun)"/>
+<path d="M1380,285 C1402,177 1399,131 1428,30" fill="none" stroke="#8A5A2E" stroke-width="16" stroke-linecap="round"/>
+<path d="M1428,30 Q1375,15 1293,129 Q1390,46 1428,30 Z" fill="#2AA24E"/>
+<path d="M1428,30 Q1376,-20 1264,28 Q1369,13 1428,30 Z" fill="#2AA24E"/>
+<path d="M1428,30 Q1396,-44 1300,-52 Q1373,-18 1428,30 Z" fill="#2AA24E"/>
+<path d="M1428,30 Q1427,-52 1375,-99 Q1394,-41 1428,30 Z" fill="#2AA24E"/>
+<path d="M1428,30 Q1457,-44 1463,-101 Q1423,-51 1428,30 Z" fill="#2AA24E"/>
+<path d="M1428,30 Q1481,-19 1549,-54 Q1457,-44 1428,30 Z" fill="#2AA24E"/>
+<path d="M1428,30 Q1481,17 1576,37 Q1475,-17 1428,30 Z" fill="#2AA24E"/>
+<path d="M1428,30 Q1458,41 1538,112 Q1472,9 1428,30 Z" fill="#2AA24E"/>
+<circle cx="1418" cy="42" r="8" fill="#7A4A22"/><circle cx="1438" cy="43" r="8" fill="#7A4A22"/><circle cx="1428" cy="49" r="8" fill="#7A4A22"/>
+<path d="M1428,30 Q1382,31 1293,129" fill="none" stroke="#178038" stroke-width="2.9" stroke-linecap="round"/>
+<path d="M1428,30 Q1372,-3 1264,28" fill="none" stroke="#178038" stroke-width="2.9" stroke-linecap="round"/>
+<path d="M1428,30 Q1385,-31 1300,-52" fill="none" stroke="#178038" stroke-width="2.9" stroke-linecap="round"/>
+<path d="M1428,30 Q1410,-47 1375,-99" fill="none" stroke="#178038" stroke-width="2.9" stroke-linecap="round"/>
+<path d="M1428,30 Q1440,-47 1463,-101" fill="none" stroke="#178038" stroke-width="2.9" stroke-linecap="round"/>
+<path d="M1428,30 Q1469,-31 1549,-54" fill="none" stroke="#178038" stroke-width="2.9" stroke-linecap="round"/>
+<path d="M1428,30 Q1478,-0 1576,37" fill="none" stroke="#178038" stroke-width="2.9" stroke-linecap="round"/>
+<path d="M1428,30 Q1465,25 1538,112" fill="none" stroke="#178038" stroke-width="2.9" stroke-linecap="round"/>
+<path d="M1250,285 C1264,216 1194,184 1212,120" fill="none" stroke="#8A5A2E" stroke-width="10" stroke-linecap="round"/>
+<path d="M1212,120 Q1161,119 1077,207 Q1171,138 1212,120 Z" fill="#2AA24E"/>
+<path d="M1212,120 Q1158,84 1048,106 Q1154,105 1212,120 Z" fill="#2AA24E"/>
+<path d="M1212,120 Q1176,59 1084,26 Q1161,75 1212,120 Z" fill="#2AA24E"/>
+<path d="M1212,120 Q1205,48 1159,-21 Q1184,55 1212,120 Z" fill="#2AA24E"/>
+<path d="M1212,120 Q1235,53 1247,-23 Q1213,48 1212,120 Z" fill="#2AA24E"/>
+<path d="M1212,120 Q1261,74 1333,24 Q1245,59 1212,120 Z" fill="#2AA24E"/>
+<path d="M1212,120 Q1264,108 1360,115 Q1260,86 1212,120 Z" fill="#2AA24E"/>
+<path d="M1212,120 Q1245,133 1322,190 Q1254,113 1212,120 Z" fill="#2AA24E"/>
+<circle cx="1206" cy="127" r="5" fill="#7A4A22"/><circle cx="1218" cy="128" r="5" fill="#7A4A22"/><circle cx="1212" cy="132" r="5" fill="#7A4A22"/>
+<path d="M1212,120 Q1166,129 1077,207" fill="none" stroke="#178038" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M1212,120 Q1156,94 1048,106" fill="none" stroke="#178038" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M1212,120 Q1169,67 1084,26" fill="none" stroke="#178038" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M1212,120 Q1194,51 1159,-21" fill="none" stroke="#178038" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M1212,120 Q1224,50 1247,-23" fill="none" stroke="#178038" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M1212,120 Q1253,67 1333,24" fill="none" stroke="#178038" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M1212,120 Q1262,97 1360,115" fill="none" stroke="#178038" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M1212,120 Q1249,123 1322,190" fill="none" stroke="#178038" stroke-width="1.8" stroke-linecap="round"/>
+<text x="85" y="158" text-anchor="start" font-family="Kaushan Script" font-size="112" fill="rgba(90,0,45,0.35)" transform="translate(4,5)">Karib Truck</text><text x="85" y="158" text-anchor="start" font-family="Kaushan Script" font-size="112" fill="#FFFFFF">Karib Truck</text>
+<text x="100" y="224" text-anchor="start" font-family="Kaushan Script" font-size="44" fill="rgba(90,0,45,0.35)" transform="translate(4,5)">Saveurs Créoles</text><text x="100" y="224" text-anchor="start" font-family="Kaushan Script" font-size="44" fill="#FFFFFF">Saveurs Créoles</text>
+</svg>

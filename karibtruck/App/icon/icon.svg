@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+<defs><radialGradient id="sun" cx="0.5" cy="0.45" r="0.55"><stop offset="0" stop-color="#FFE23A"/><stop offset="0.6" stop-color="#FF9E1B"/><stop offset="1" stop-color="#FF6A13"/></radialGradient></defs>
+
+  <rect width="1024" height="1024" fill="#ED0F7C"/>
+  <circle cx="620" cy="452" r="250" fill="url(#sun)"/>
+  <path d="M760,742 C794,570 766,513 812,352" fill="none" stroke="#8A5A2E" stroke-width="25" stroke-linecap="round"/><line x1="763" y1="644" x2="783" y2="644" stroke="#71481F" stroke-width="3.4"/><line x1="773" y1="566" x2="794" y2="566" stroke="#71481F" stroke-width="3.4"/><line x1="783" y1="488" x2="804" y2="488" stroke="#71481F" stroke-width="3.4"/><line x1="792" y1="422" x2="813" y2="422" stroke="#71481F" stroke-width="3.4"/>
+<path d="M812,352 Q754,315 677,471 Q778,365 812,352 Z" fill="#2AA24E"/>
+<path d="M812,352 Q762,279 648,370 Q750,333 812,352 Z" fill="#2AA24E"/>
+<path d="M812,352 Q787,258 684,290 Q750,299 812,352 Z" fill="#2AA24E"/>
+<path d="M812,352 Q820,254 759,243 Q768,271 812,352 Z" fill="#2AA24E"/>
+<path d="M812,352 Q851,267 847,241 Q797,256 812,352 Z" fill="#2AA24E"/>
+<path d="M812,352 Q872,298 933,288 Q834,258 812,352 Z" fill="#2AA24E"/>
+<path d="M812,352 Q867,336 960,379 Q857,281 812,352 Z" fill="#2AA24E"/>
+<path d="M812,352 Q838,359 922,454 Q860,309 812,352 Z" fill="#2AA24E"/>
+<circle cx="796" cy="370" r="13" fill="#7A4A22"/><circle cx="828" cy="373" r="13" fill="#7A4A22"/><circle cx="812" cy="382" r="13" fill="#7A4A22"/>
+<path d="M812,352 Q766,340 677,471" fill="none" stroke="#178038" stroke-width="4.6" stroke-linecap="round"/>
+<path d="M812,352 Q756,306 648,370" fill="none" stroke="#178038" stroke-width="4.6" stroke-linecap="round"/>
+<path d="M812,352 Q769,278 684,290" fill="none" stroke="#178038" stroke-width="4.6" stroke-linecap="round"/>
+<path d="M812,352 Q794,263 759,243" fill="none" stroke="#178038" stroke-width="4.6" stroke-linecap="round"/>
+<path d="M812,352 Q824,262 847,241" fill="none" stroke="#178038" stroke-width="4.6" stroke-linecap="round"/>
+<path d="M812,352 Q853,278 933,288" fill="none" stroke="#178038" stroke-width="4.6" stroke-linecap="round"/>
+<path d="M812,352 Q862,309 960,379" fill="none" stroke="#178038" stroke-width="4.6" stroke-linecap="round"/>
+<path d="M812,352 Q849,334 922,454" fill="none" stroke="#178038" stroke-width="4.6" stroke-linecap="round"/>
+  <path d="M560,742 C581,637 484,568 512,470" fill="none" stroke="#8A5A2E" stroke-width="15" stroke-linecap="round"/><line x1="542" y1="674" x2="554" y2="674" stroke="#71481F" stroke-width="2.1"/><line x1="532" y1="620" x2="545" y2="620" stroke="#71481F" stroke-width="2.1"/><line x1="522" y1="565" x2="535" y2="565" stroke="#71481F" stroke-width="2.1"/><line x1="514" y1="519" x2="527" y2="519" stroke="#71481F" stroke-width="2.1"/>
+<path d="M512,470 Q459,456 377,568 Q474,486 512,470 Z" fill="#2AA24E"/>
+<path d="M512,470 Q460,421 348,467 Q453,454 512,470 Z" fill="#2AA24E"/>
+<path d="M512,470 Q480,397 384,387 Q457,422 512,470 Z" fill="#2AA24E"/>
+<path d="M512,470 Q510,389 459,341 Q478,399 512,470 Z" fill="#2AA24E"/>
+<path d="M512,470 Q540,397 547,338 Q507,390 512,470 Z" fill="#2AA24E"/>
+<path d="M512,470 Q565,421 633,385 Q541,397 512,470 Z" fill="#2AA24E"/>
+<path d="M512,470 Q565,457 660,476 Q559,424 512,470 Z" fill="#2AA24E"/>
+<path d="M512,470 Q542,481 622,551 Q556,450 512,470 Z" fill="#2AA24E"/>
+<circle cx="502" cy="481" r="8" fill="#7A4A22"/><circle cx="522" cy="483" r="8" fill="#7A4A22"/><circle cx="512" cy="488" r="8" fill="#7A4A22"/>
+<path d="M512,470 Q466,471 377,568" fill="none" stroke="#178038" stroke-width="2.8" stroke-linecap="round"/>
+<path d="M512,470 Q456,437 348,467" fill="none" stroke="#178038" stroke-width="2.8" stroke-linecap="round"/>
+<path d="M512,470 Q469,410 384,387" fill="none" stroke="#178038" stroke-width="2.8" stroke-linecap="round"/>
+<path d="M512,470 Q494,394 459,341" fill="none" stroke="#178038" stroke-width="2.8" stroke-linecap="round"/>
+<path d="M512,470 Q524,393 547,338" fill="none" stroke="#178038" stroke-width="2.8" stroke-linecap="round"/>
+<path d="M512,470 Q553,409 633,385" fill="none" stroke="#178038" stroke-width="2.8" stroke-linecap="round"/>
+<path d="M512,470 Q562,440 660,476" fill="none" stroke="#178038" stroke-width="2.8" stroke-linecap="round"/>
+<path d="M512,470 Q549,466 622,551" fill="none" stroke="#178038" stroke-width="2.8" stroke-linecap="round"/>
+  <path d="M558,688 Q628,618 698,688 Q628,674 558,688 Z" fill="#2AA7C6"/><circle cx="558" cy="688" r="10" fill="#2AA7C6"/><circle cx="581" cy="688" r="10" fill="#2AA7C6"/><circle cx="605" cy="688" r="10" fill="#2AA7C6"/><circle cx="628" cy="688" r="10" fill="#2AA7C6"/><circle cx="651" cy="688" r="10" fill="#2AA7C6"/><circle cx="675" cy="688" r="10" fill="#2AA7C6"/><circle cx="698" cy="688" r="10" fill="#2AA7C6"/><rect x="622" y="688" width="12" height="50" fill="#2288A6"/>
+  <g fill="none" stroke-linecap="round">
+    <path d="M300,742 q40,-26 80,0 t80,0 t80,0 t80,0 t80,0" stroke="#123FC4" stroke-width="20"/>
+    <path d="M320,782 q40,-26 80,0 t80,0 t80,0 t80,0 t80,0" stroke="#2E6BF0" stroke-width="18"/>
+  </g>
+
+<text x="150" y="452" text-anchor="start" font-family="Kaushan Script" font-size="210" fill="rgba(90,0,45,0.35)" transform="translate(6,7)">Karib</text><text x="150" y="452" text-anchor="start" font-family="Kaushan Script" font-size="210" fill="#FFFFFF">Karib</text>
+<text x="300" y="632" text-anchor="start" font-family="Kaushan Script" font-size="210" fill="rgba(90,0,45,0.35)" transform="translate(6,7)">Truck</text><text x="300" y="632" text-anchor="start" font-family="Kaushan Script" font-size="210" fill="#FFFFFF">Truck</text>
+
+</svg>
