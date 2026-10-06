@@ -24,10 +24,18 @@ Règles encodées (et testées) :
    § 7.3). Mot entier : 3 ; toutes les syllabes sans la fin : 2 ; détecteur pas sûr :
    2 aussi (asymétrie : l'incertitude ne coûte rien de plus qu'une fin manquée) ;
    syllabe en moins : 1 (l'essai compte) ; rien entendu : 0. On n'en perd jamais.
+8. Progression « quand il réussit » (conseil d'une orthophoniste, d'après la méthode de
+   Borel-Maisonny : les mots d'une syllabe d'abord, puis deux, et ainsi de suite ; décision
+   de l'utilisateur, 06/10/2026). L'enfant commence au niveau 1 (une syllabe). Quand il a dit
+   `UNLOCK_WORDS` mots DIFFÉRENTS du niveau en entier (verdict complet : le fourgon
+   s'accroche), ou tous s'il y en a moins, le niveau suivant s'ouvre à la séance SUIVANTE :
+   2 syllabes, puis groupes de consonnes, puis tous les mots mêlés. Le niveau ne redescend
+   jamais tout seul ; l'adulte le règle (et le compte repart de zéro). Rien n'est compté en
+   démo ni en « Essai par un adulte ». Aucun nombre n'est montré : ce n'est pas un score.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .detector import Verdict, VerdictKind
 
@@ -193,3 +201,109 @@ class SessionPolicy:
         if words_done >= self.words_per_session or session_s >= self.max_session_s:
             return "end_session"
         return "continue"
+
+
+# ---------------------------------------------------------------------------
+# 8. Les niveaux du petit train : une syllabe d'abord, puis on avance quand il réussit
+# ---------------------------------------------------------------------------
+
+LEVELS = (1, 2, 3, 4)                 # 1 syllabe · 2 syllabes · groupes de consonnes · tous mêlés
+MIXED_LEVEL = 4
+UNLOCK_WORDS = 6
+MIX_PATTERN = (1, 1, 2, 1, 3, 2)      # niveau 4 : deux faciles, un plus long…
+
+
+def clamp_level(n: int) -> int:
+    return min(LEVELS[-1], max(LEVELS[0], int(n)))
+
+
+def _level_of(word) -> int:
+    return max(1, int(getattr(word, "level", 1) or 1))
+
+
+def level_words(words, level: int) -> list:
+    """Les mots d'un niveau (niveau 4 : tous), dans l'ordre du lexique."""
+    if level >= MIXED_LEVEL:
+        return list(words)
+    return [w for w in words if _level_of(w) == level]
+
+
+def mixed(words) -> list:
+    """Tous les mots, niveaux entremêlés selon `MIX_PATTERN`, chaque mot une fois, sans hasard.
+
+    Le niveau voulu s'il reste des mots, sinon le plus proche qui en a encore (à égalité,
+    le plus facile)."""
+    queues: dict[int, list] = {}
+    for w in words:
+        queues.setdefault(_level_of(w), []).append(w)
+    out, step = [], 0
+    while any(queues.values()):
+        wanted = MIX_PATTERN[step % len(MIX_PATTERN)]
+        step += 1
+        level = min((lv for lv, q in queues.items() if q), key=lambda lv: (abs(lv - wanted), lv))
+        out.append(queues[level].pop(0))
+    return out
+
+
+def deck(words, level: int) -> list:
+    """Les mots d'une séance au niveau `level` : ceux du niveau, dans l'ordre du lexique ;
+    au niveau 4 (ou si le niveau n'a aucun mot), tous les mots mêlés."""
+    level = clamp_level(level)
+    own = level_words(words, level) if level < MIXED_LEVEL else []
+    return own or mixed(words)
+
+
+def unlock_target(words, level: int) -> int:
+    """Combien de mots différents dire en entier pour ouvrir le niveau suivant."""
+    return min(UNLOCK_WORDS, len(level_words(words, level)))
+
+
+def next_level(words, level: int) -> int:
+    """Le niveau qui suit `level` et qui a des mots (le niveau 4 en a toujours)."""
+    for lv in LEVELS:
+        if lv > level and (lv == MIXED_LEVEL or level_words(words, lv)):
+            return lv
+    return MIXED_LEVEL
+
+
+@dataclass
+class LevelProgress:
+    """Où en est l'enfant : son niveau, et les mots de ce niveau déjà dits en entier.
+
+    Le niveau ne change qu'en début de séance (`start_session`) ou par l'adulte
+    (`set_by_adult`) ; à chaque changement, le compte repart de zéro.
+    """
+
+    level: int = 1
+    said: set = field(default_factory=set)
+
+    def __post_init__(self) -> None:
+        self.level = clamp_level(self.level)
+        self.said = set(self.said)
+
+    def record(self, word, kind: VerdictKind, counted: bool = True) -> None:
+        """Un essai au petit train. Seul un verdict COMPLET d'un mot du niveau compte, et
+        jamais en démo ni en « Essai par un adulte » (`counted=False`)."""
+        if counted and kind is VerdictKind.COMPLETE and self.level < MIXED_LEVEL \
+                and _level_of(word) == self.level:
+            self.said.add(word.id)
+
+    def ready(self, words) -> bool:
+        """Le niveau suivant s'ouvrira à la prochaine séance."""
+        if self.level >= MIXED_LEVEL:
+            return False
+        own = {w.id for w in level_words(words, self.level)}
+        target = unlock_target(words, self.level)
+        return target > 0 and len(self.said & own) >= target
+
+    def start_session(self, words) -> int:
+        """Début de séance : ouvre le niveau suivant s'il est gagné. Rend le niveau à jouer."""
+        if self.ready(words):
+            self.level = next_level(words, self.level)
+            self.said = set()
+        return self.level
+
+    def set_by_adult(self, level: int) -> None:
+        """L'adulte choisit le niveau (espace des grands) : le compte repart de zéro."""
+        self.level = clamp_level(level)
+        self.said = set()

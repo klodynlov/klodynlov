@@ -5,9 +5,10 @@ import unittest
 
 from wordend.detector import LexicalEvidence, Verdict, VerdictKind, apply_lexical
 from wordend.lexicon import lexical_evidence, load_locale
-from wordend.policy import (DEFAULT_REPETITIONS, MAX_ATTEMPTS, MAX_STARS, MESSAGES, NEUTRAL_KEYS,
-                            REPETITIONS, RepetitionPlan, SessionPolicy, again_text, feedback_for,
-                            invite_text, stars_for)
+from wordend.policy import (DEFAULT_REPETITIONS, LEVELS, MAX_ATTEMPTS, MAX_STARS, MESSAGES, MIXED_LEVEL,
+                            NEUTRAL_KEYS, REPETITIONS, UNLOCK_WORDS, LevelProgress, RepetitionPlan,
+                            SessionPolicy, again_text, deck, feedback_for, invite_text, level_words,
+                            mixed, next_level, stars_for, unlock_target)
 
 K = VerdictKind
 
@@ -189,6 +190,140 @@ class TestSessionPolicy(unittest.TestCase):
         self.assertLessEqual(p.max_session_s, 10 * 60)
         self.assertLessEqual(p.daily_budget_s, 20 * 60)
 
+
+
+class TestLevels(unittest.TestCase):
+    """Progression « quand il réussit » : une syllabe d'abord (conseil d'une orthophoniste)."""
+
+    def setUp(self):
+        self.fr = load_locale("fr-FR").words
+        self.en = load_locale("en-US").words
+
+    def test_level_one_is_one_syllable_words_only(self):
+        for words in (self.fr, self.en):
+            d = deck(words, 1)
+            self.assertTrue(d)
+            self.assertTrue(all(w.level == 1 and len(w.wagons) == 1 for w in d))
+            self.assertEqual([w.id for w in d], [w.id for w in words if w.level == 1])   # ordre du lexique
+
+    def test_each_level_plays_only_its_words(self):
+        for lv in (1, 2, 3):
+            self.assertTrue(all(w.level == lv for w in deck(self.fr, lv)))
+        self.assertTrue(all(len(w.wagons) == 2 for w in deck(self.fr, 2)))
+
+    def test_level_four_mixes_every_word_once(self):
+        d = deck(self.fr, MIXED_LEVEL)
+        self.assertEqual(sorted(w.id for w in d), sorted(w.id for w in self.fr))
+        self.assertEqual([w.level for w in d[:6]], [1, 1, 2, 1, 3, 2])
+        self.assertEqual(d, mixed(self.fr))
+        self.assertEqual(d, deck(self.fr, MIXED_LEVEL))                                  # pas de hasard
+
+    def test_unlock_target(self):
+        self.assertEqual(unlock_target(self.fr, 1), UNLOCK_WORDS)
+        trois = level_words(self.fr, 1)[:3]                                              # moins de 6 : tous
+        self.assertEqual(unlock_target(trois, 1), 3)
+
+    def test_starts_at_one_syllable(self):
+        self.assertEqual(LevelProgress().level, 1)
+        self.assertEqual(LEVELS, (1, 2, 3, 4))
+
+    def test_six_different_words_open_the_next_level_next_session(self):
+        p = LevelProgress()
+        ones = level_words(self.fr, 1)
+        for w in ones[:UNLOCK_WORDS - 1]:
+            p.record(w, K.COMPLETE)
+            p.record(w, K.COMPLETE)                       # le même mot deux fois ne compte qu'une fois
+        self.assertFalse(p.ready(self.fr))
+        self.assertEqual(p.start_session(self.fr), 1)
+        p.record(ones[UNLOCK_WORDS - 1], K.COMPLETE)
+        self.assertTrue(p.ready(self.fr))
+        self.assertEqual(p.level, 1)                      # rien ne change pendant la séance
+        self.assertEqual(p.start_session(self.fr), 2)     # la séance suivante
+        self.assertEqual(p.said, set())                   # le compte repart de zéro
+
+    def test_only_a_complete_verdict_counts(self):
+        p = LevelProgress()
+        for kind in K:
+            if kind is not K.COMPLETE:
+                for w in level_words(self.fr, 1):
+                    p.record(w, kind)
+        self.assertEqual(p.said, set())
+
+    def test_demo_and_adult_trial_count_nothing(self):
+        p = LevelProgress()
+        for w in level_words(self.fr, 1):
+            p.record(w, K.COMPLETE, counted=False)
+        self.assertEqual(p.start_session(self.fr), 1)
+
+    def test_words_of_another_level_do_not_count(self):
+        p = LevelProgress()
+        for w in self.fr:
+            if w.level != 1:
+                p.record(w, K.COMPLETE)
+        self.assertFalse(p.ready(self.fr))
+
+    def test_whole_path_then_stays(self):
+        p = LevelProgress()
+        seen = [p.level]
+        for _ in range(10):
+            for w in level_words(self.en, p.level) if p.level < MIXED_LEVEL else self.en:
+                p.record(w, K.COMPLETE)
+            p.start_session(self.en)
+            seen.append(p.level)
+        self.assertEqual(seen[:4], [1, 2, 3, 4])
+        self.assertTrue(all(lv == MIXED_LEVEL for lv in seen[3:]))
+
+    def test_never_goes_down_by_itself(self):
+        p = LevelProgress(level=3)
+        for _ in range(5):                                # des séances ratées : on reste au niveau 3
+            for kind in K:
+                if kind is not K.COMPLETE:
+                    for w in self.fr:
+                        p.record(w, kind)
+            self.assertEqual(p.start_session(self.fr), 3)
+
+    def test_adult_sets_the_level_and_the_count_restarts(self):
+        p = LevelProgress()
+        for w in level_words(self.fr, 1):
+            p.record(w, K.COMPLETE)
+        p.set_by_adult(1)                                 # l'adulte veut qu'il reste au niveau 1
+        self.assertEqual(p.start_session(self.fr), 1)
+        p.set_by_adult(9)
+        self.assertEqual(p.level, MIXED_LEVEL)
+        p.set_by_adult(0)
+        self.assertEqual(p.level, 1)
+
+    def test_empty_levels_are_skipped(self):
+        only_ones = level_words(self.fr, 1)
+        self.assertEqual(next_level(only_ones, 1), MIXED_LEVEL)
+        self.assertEqual(next_level(self.fr, 1), 2)
+        self.assertEqual(deck(only_ones, 2), mixed(only_ones))   # niveau vide : tous les mots
+
+    def test_one_syllable_first_every_sound(self):
+        """Demande de l'utilisateur (06/10/2026) : « commencer avec des mots d'une syllabe, comme mur,
+        vert, ne plus se focaliser sur les ch ou ss », puis « pas que mur et vert : des mots comme jus,
+        peau ». Le niveau 1 commence par « jus », « peau », puis les autres mots finis par une voyelle
+        (syllabe directe d'abord, Borel-Maisonny), sons d'attaque variés ; puis les syllabes fermées,
+        où se mêlent les mots à fourgon (jugés sur leur fin « ch »/« s »)."""
+        d = deck(self.fr, 1)
+        self.assertEqual([w.text for w in d[:2]], ["jus", "peau"])
+        self.assertIn("mur", [w.text for w in d])
+        premiers = d[:12]
+        self.assertTrue(all(w.coda is None and not w.ipa[-1] in "bdfgklmnpstvzʁʃʒ" for w in premiers))
+        self.assertGreater(len({w.ipa[0] for w in premiers}), 8)        # pas toujours le même son
+        self.assertTrue(any(w.coda is None for w in d) and any(w.coda for w in d))
+        self.assertGreater(sum(w.coda is None for w in d), sum(w.coda is not None for w in d))
+
+    def test_a_caboose_only_for_final_ch_or_s(self):
+        """Le détecteur ne juge que « ch » et « s » en fin de mot : un mot qui finit autrement
+        (« mur », /ʁ/) n'a pas de fourgon, et chaque mot sans fourgon a son dessin."""
+        for words in (self.fr, self.en):
+            for w in words:
+                if w.coda is None:
+                    self.assertIsNone(w.caboose, w.id)
+                    self.assertTrue(w.drawing, w.id)
+                else:
+                    self.assertIn(w.coda, ("S", "s"), w.id)
 
 if __name__ == "__main__":
     unittest.main()

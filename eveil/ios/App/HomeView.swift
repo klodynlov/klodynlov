@@ -14,10 +14,11 @@ import WordEndCore
 struct HomeView: View {
     let parentAreaLocked: Bool
     @AppStorage("eveil.language") private var language = "fr-FR"
-    @AppStorage(WordDeck.maxLevelKey) private var maxLevel = 3
     @AppStorage(Stars.settingKey) private var starsOn = true
     @AppStorage(Stars.totalKey) private var starsTotal = 0
     @State private var destination: Destination?
+    /// La séance du petit train, calculée UNE fois en entrant (le niveau ne change pas en cours de séance).
+    @State private var trainSession: TrainSession?
     @State private var showGate = false
     @State private var showParentZone = false
     @Environment(\.modelContext) private var context
@@ -27,7 +28,26 @@ struct HomeView: View {
         var id: String { rawValue }
     }
 
+    struct TrainSession {
+        let lexicon: Lexicon
+        let level: Int
+        let deck: [TargetWord]
+    }
+
     private var locale: String { language == "en-US" ? "en-US" : "fr-FR" }
+
+    /// Entrer dans le petit train : le niveau gagné à la séance précédente s'ouvre maintenant
+    /// (`TrainLevelStore.startSession`), puis les mots de ce niveau.
+    private func openTrain() {
+        if let lexicon = LexiconLoader.load(locale) {
+            let level = TrainLevelStore.startSession(lexicon.words, locale: lexicon.locale)
+            trainSession = TrainSession(lexicon: lexicon, level: level,
+                                        deck: WordDeck.deck(lexicon.words, level: level))
+        } else {
+            trainSession = nil
+        }
+        destination = .train
+    }
     private var fr: Bool { locale.hasPrefix("fr") }
 
     var body: some View {
@@ -83,13 +103,15 @@ struct HomeView: View {
         .fullScreenCover(item: $destination) { dest in
             switch dest {
             case .train:
-                if let lexicon = LexiconLoader.load(locale),
-                   case let deck = WordDeck.ordered(lexicon.words, maxLevel: maxLevel), !deck.isEmpty {
-                    PracticeView(words: deck,
-                                 locale: lexicon.locale,
-                                 cabooseSounds: lexicon.cabooseSounds,
+                if let session = trainSession, !session.deck.isEmpty {
+                    let locale = session.lexicon.locale
+                    PracticeView(words: session.deck,
+                                 locale: locale,
+                                 cabooseSounds: session.lexicon.cabooseSounds,
                                  parentButtonHidden: parentAreaLocked,
-                                 onHome: { destination = nil })
+                                 onHome: { destination = nil },
+                                 cursorKey: WordDeck.cursorKey(level: session.level),
+                                 onWordSaid: { TrainLevelStore.recordSaid($0, locale: locale) })
                         .modelContext(context)
                 } else {
                     Text("Lexique introuvable dans le paquet de l'app.")
@@ -122,7 +144,7 @@ extension HomeView {
         switch game {
         case .train:
             GameCard(title: fr ? "Le petit train des mots" : "The little word train",
-                     color: EveilPalette.loco, width: width, height: height) { destination = .train } art: {
+                     color: EveilPalette.loco, width: width, height: height) { openTrain() } art: {
                 TrainView(wagons: ["mi", "nou"], lit: [true, true], cabooseLabel: "ch", caboose: .hooked, scale: 0.5)
             }
         case .sentences:

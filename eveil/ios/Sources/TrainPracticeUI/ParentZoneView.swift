@@ -3,7 +3,8 @@
 // On y règle : la langue (FR, EN, ou les deux en alternance pour les familles
 // bilingues), la voix du modèle (la meilleure voix féminine installée, ou une autre ;
 // syllabe par syllabe ou non) et le nombre de répétitions par mot (le décompte), le
-// micro (accès, test, essai par un adulte), les mots du train (jusqu'à quel niveau),
+// micro (accès, test, essai par un adulte), le niveau des mots du train (il avance seul quand
+// l'enfant réussit ; l'adulte peut le changer),
 // le coloriage (remplir d'un toucher, ou pinceau seul), le temps d'écran quotidien,
 // les mots de la famille. On
 // y trouve : comment jouer AVEC l'enfant, et quand demander l'avis d'un professionnel.
@@ -22,7 +23,8 @@ public struct ParentZoneView: View {
     @AppStorage("eveil.lexicalCheck") private var lexicalCheck = false  // expérimental, OFF
     @AppStorage("eveil.demoMode") private var demoMode = false          // présentation, sans micro
     @AppStorage(ListeningSettings.adultTrialKey) private var adultTrial = false
-    @AppStorage(WordDeck.maxLevelKey) private var maxLevel = 3
+    /// Le niveau du petit train (dans la langue affichée) : il avance seul, l'adulte peut le régler.
+    @State private var trainLevel = 1
     @AppStorage(SuiteSettings.tapToFillKey) private var tapToFill = SuiteSettings.tapToFillDefault
     @AppStorage(SuiteSettings.writtenWordsKey) private var writtenWords = SuiteSettings.writtenWordsDefault
     @AppStorage(SuiteSettings.capitalsKey) private var capitals = SuiteSettings.capitalsDefault
@@ -70,17 +72,22 @@ public struct ParentZoneView: View {
                             : "The train deliberately ignores deep adult voices, so your model is never taken for the child's answer. To try the game yourself, turn on \"Adult trial\", then turn it off before your child plays.")
                 }
                 Section {
-                    Picker(fr ? "Mots du train" : "Train words", selection: $maxLevel) {
-                        Text(fr ? "1 syllabe" : "1 syllable").tag(1)
-                        Text(fr ? "+ 2 syllabes" : "+ 2 syllables").tag(2)
-                        Text(fr ? "Tous" : "All").tag(3)
+                    Picker(fr ? "Les mots du moment" : "Current words", selection: Binding(
+                        get: { trainLevel },
+                        set: { level in
+                            trainLevel = level
+                            TrainLevelStore.setByAdult(level, locale: locale)
+                        })) {
+                        Text(fr ? "Une syllabe (douche, vache…)" : "One syllable (fish, bus…)").tag(1)
+                        Text(fr ? "Deux syllabes (minouche, limace…)" : "Two syllables (radish, tennis…)").tag(2)
+                        Text(fr ? "Groupes de consonnes (cloche, brosse…)" : "Consonant clusters (brush, splash)").tag(3)
+                        Text(fr ? "Tous les mots, mêlés" : "All the words, mixed").tag(4)
                     }
-                    .pickerStyle(.segmented)
                 } header: {
                     Text(fr ? "Mots du train" : "Train words")
                 } footer: {
-                    Text(fr ? "« Tous » ajoute les mots à groupe de consonnes (cloche, glace, brosse…). Les listes sont des propositions, à valider par des orthophonistes."
-                            : "\"All\" adds words with consonant clusters (splash, brush…). The lists are proposals, to be validated by speech-language pathologists.")
+                    Text(fr ? "Votre enfant commence par les mots d'une syllabe. Quand il en a dit plusieurs différents en entier (le fourgon s'accroche), les mots de deux syllabes arrivent à la séance suivante, puis les groupes de consonnes, puis tous les mots mêlés. Le jeu ne revient jamais en arrière tout seul : c'est vous qui choisissez ici, et le jeu repart de ce choix. Rien n'est compté en mode démo ni en essai par un adulte. Les listes sont des propositions, à valider par des orthophonistes."
+                            : "Your child starts with one-syllable words. Once several different ones are said in full (the caboose hooks on), two-syllable words come at the next session, then consonant clusters, then all the words mixed. The game never goes back by itself: you choose here, and the game starts again from your choice. Nothing is counted in demo mode or during an adult trial. The lists are proposals, to be validated by speech-language pathologists.")
                 }
                 Section {
                     Toggle(fr ? "Mots écrits sous les images" : "Written words under pictures", isOn: $writtenWords)
@@ -149,7 +156,10 @@ public struct ParentZoneView: View {
             }
             .navigationTitle(fr ? "Espace des grands" : "Grown-ups")
             .toolbar { Button(fr ? "Fermer" : "Close") { dismiss() } }
-            .onAppear { refreshVoices() }
+            .onAppear {
+                refreshVoices()
+                trainLevel = TrainLevelStore.load(locale: locale).level
+            }
             .onDisappear { voicePlayer.stop() }
         }
     }

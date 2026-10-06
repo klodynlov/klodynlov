@@ -33,6 +33,9 @@
 //     l'écoute (le micro ne doit jamais entendre le jeu), un ding par wagon allumé, en
 //     arpège, puis le « chhh » du fourgon accroché.
 // Fin de séance ritualisée (`SessionPolicy`) + une « mission » hors écran.
+// Niveaux (06/10/2026, conseil d'une orthophoniste) : la liste `words` est celle du niveau de
+// l'enfant (`WordDeck.deck`) ; chaque mot dit en entier est signalé par `onWordSaid` (sauf démo
+// et « Essai par un adulte »), et le niveau suivant s'ouvre à la séance suivante.
 //
 // Livres des sons (28/09/2026) : le même train. D'abord sans micro (`judge: .adult`,
 // docs/EVEIL.md § 4.7 : le détecteur ne juge que la fin des mots en « ch » ou « s », et dans un
@@ -93,6 +96,9 @@ public struct PracticeView: View {
     public let targets: [String: WordTarget]
     /// Livres des sons : le titre du livre (« Le livre du « ch » »), en haut.
     public let title: String?
+    /// Petit train : un mot vient d'être dit EN ENTIER (verdict complet, fourgon accroché) par
+    /// l'enfant — jamais en démo ni en « Essai par un adulte ». Sert à la progression des niveaux.
+    public let onWordSaid: ((TargetWord) -> Void)?
 
     @Environment(\.modelContext) private var context
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -138,7 +144,7 @@ public struct PracticeView: View {
                 policy: SessionPolicy = SessionPolicy(), parentButtonHidden: Bool = false,
                 onHome: (() -> Void)? = nil, judge: PracticeJudge = .listen,
                 targets: [String: WordTarget] = [:], title: String? = nil,
-                cursorKey: String = WordDeck.cursorKey) {
+                cursorKey: String = WordDeck.cursorKey, onWordSaid: ((TargetWord) -> Void)? = nil) {
         precondition(!words.isEmpty, "liste de mots vide")
         self.words = words
         self.locale = locale
@@ -150,6 +156,7 @@ public struct PracticeView: View {
         self.targets = targets
         self.title = title
         self.cursorKey = cursorKey
+        self.onWordSaid = onWordSaid
         // Le voyage reprend où la séance précédente l'a laissé (mot et monde).
         let defaults = UserDefaults.standard
         _index = State(initialValue: max(0, defaults.integer(forKey: cursorKey)) % words.count)
@@ -556,6 +563,8 @@ public struct PracticeView: View {
             attempt = 1                               // chaque répétition a ses essais
             // La démo n'est pas un enfant : rien n'entre dans le journal local de progression.
             if !demoMode { recordHook(current.id) }
+            // Progression des niveaux : l'enfant seulement (ni la démo, ni l'adulte qui essaie).
+            if !demoMode && !adultTrial { onWordSaid?(current) }
         } else if !fb.advance {
             attempt += 1                              // la relance vient de l'enfant (« À toi ! »)
         }
@@ -719,7 +728,7 @@ struct WordPicture: View {
 
     var body: some View {
         VStack(spacing: 10) {
-            PictoView(id: word.id, size: size * 0.9, pulse: pulse)
+            PictoView(id: word.drawing ?? word.id, size: size * 0.9, pulse: pulse)
                 .frame(width: size, height: size)
                 .background(
                     RoundedRectangle(cornerRadius: size * 0.14, style: .continuous).fill(.white)
