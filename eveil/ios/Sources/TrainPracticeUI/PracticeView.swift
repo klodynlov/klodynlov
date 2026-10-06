@@ -355,23 +355,28 @@ public struct PracticeView: View {
             let wide = w > h
             let card = min(wide ? 300 : 250, h * 0.26)
             let cat = min(wide ? 250 : 210, h * 0.24)
+            // Lou en grand (retour de l'utilisateur, 06/10/2026 : « il est trop petit ») : le portrait prend
+            // ~30 % de la hauteur ; la bulle se resserre pour que la rangée tienne (iPad 11" compris).
+            let lou = min(wide ? 330 : 380, h * (wide ? 0.33 : 0.30) * 260 / 300, w - card - 260)
+            let bubbleWidth = louShown ? max(170, min(wide ? 380 : 300, w - card - lou - (wide ? 150 : 100)))
+                                       : (wide ? 380 : 300)
             let trainBase = TrainView.baseWidth(wagons: word.wagons.count, hasCaboose: word.coda != nil)
             let trainScale = min(wide ? 1.45 : 1.5, (w - 60) / trainBase)   // paysage : le train ne mord pas sur la carte
             VStack(spacing: 0) {
                 Spacer(minLength: 90)
-                HStack(alignment: .center, spacing: wide ? 44 : 22) {
+                HStack(alignment: .center, spacing: wide ? 44 : (louShown ? 14 : 22)) {
                     WordPicture(word: word, size: card, pulse: picturePulse, onDark: world.isDark, onTap: tapPicture)
                     HStack(alignment: .center, spacing: 6) {
                         if louShown {
                             // Lou en grand, en portrait : sa bouche et sa main montrent chaque son.
-                            LouGestureView(performance: louPerformance, skin: louSkin, size: cat * 1.05)
+                            LouGestureView(performance: louPerformance, skin: louSkin, size: lou)
                         } else {
                             // Pendant le modèle, c'est le chat qui dit le mot.
                             MascotView(action: modelPlaying && feedback == nil ? MascotAction.modelWord : feedback?.mascot,
                                        isListening: listening, size: cat)
                         }
                         SpeechBubble(bubbleText)
-                            .frame(maxWidth: wide ? 380 : 300)
+                            .frame(maxWidth: bubbleWidth)
                     }
                     .allowsHitTesting(false)
                 }
