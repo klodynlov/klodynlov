@@ -412,6 +412,34 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     (cosmétique, dessin vivant) : restes gris de l'ancien contour d'un nuage qui dérive
     (`vivant-locomotive`), fond sous les ailes du papillon rebouché à l'orange du corps. App installée
     sur l'iPad ; mode papier à essayer avec une vraie imprimante.
+- 🗣️ **Conseils d'une orthophoniste (06/10/2026)** : (1) méthode **Borel-Maisonny** (un geste par son), avatar
+  qui montre le geste et la façon de dire ; (2) **une syllabe d'abord**, puis deux… **Décisions de l'utilisateur** :
+  avatar = **Lou** en grand, en portrait, bouche = comment dire, main à 5 doigts = le geste, **peau au choix de
+  l'adulte** ; progression « quand il réussit » ; **aucun geste dans l'app avant validation de l'orthophoniste**.
+  - ✅ Progression : référence `policy.py` règle 8 (`LevelProgress`, `deck`, `mixed` ; niveaux 1 syllabe · 2 syllabes ·
+    groupes · tous mêlés ; 6 mots DIFFÉRENTS du niveau en verdict complet, ou tous s'il y en a moins → niveau suivant
+    à la séance SUIVANTE ; jamais vers le bas seul ; l'adulte règle, le compte repart de zéro ; rien en démo ni en
+    essai adulte ; aucun nombre affiché) → Swift `WordDeck.deck/mixed`, `LevelProgress`, `TrainLevelStore` (une
+    progression par langue, UserDefaults), `PracticeView.onWordSaid`, `HomeView.openTrain` (séance calculée UNE
+    fois en entrant, curseur par niveau), `ParentZoneView` (sélecteur de niveau, remplace `eveil.maxLevel`).
+    **Puis décision de l'utilisateur** : « commencer avec des mots d'une syllabe, comme mur, vert, ne plus se
+    focaliser sur les ch ou ss » → pictos `mot.mur`, `mot.vert` (`pictos/mots_c.py`, aussi dans les livres m, v, r) ;
+    `livres/train.py` (`python3 -m livres.train [--check]`) écrit DANS `lexique/*.json` les mots dessinés des livres
+    SANS fourgon (`"source": "livres"`, champ `drawing`, id `fr.livre.<id>`), niveau calculé (1 syll sans groupe ·
+    2 syll · groupe de consonnes dans une syllabe · ≥ 3 syll = niveau 4 seulement), glissantes ≠ groupe ; puis « pas que mur et
+    vert, des mots comme jus, peau » → lot D (14 mots : peau, seau, riz, roue, lait, loup, main, pied, chou, bol,
+    pull, poule, toit, lion ; `pictos/mots_d.py`) ; ordre du niveau 1 = jus, peau, puis syllabes OUVERTES (sons
+    d'attaque variés, `varie`), puis fermées (2 nouveaux : 1 à fourgon) ; FR 62 mots, EN 54. Jugés sur les syllabes
+    (comme `bookWord`). `TargetWord.drawing` (Python + Swift), `WordPicture` montre `drawing ?? id`.
+  - ✅ Livres des sons : pages triées par place, puis **nombre de syllabes**, puis alphabet (`nb_syllabes`), régénéré.
+  - ✅ Relevé Borel-Maisonny → `docs/EVEIL-BOREL-MAISONNY.md` (reformulé, livre + page imprimée) et
+    `eveil/outils/gestes/gestes.py` (31 sons relevés + « ui » à trouver ; bouches de Lou : citées ou « proposition »).
+    Source principale : *Langage oral et écrit I* (atlas p. 60-90, leçons p. 22-41). ⚠️ LibraryBrain `/ask`
+    (`eveil/librarybrain/borel.py`) n'a PAS routé ces livres : `_routing_cache` de `klody_memory/retriever.py`
+    mémoïsé depuis le démarrage (04/10) < indexation (05/10) → texte relu directement en base (lecture seule) ;
+    redémarrage du serveur = décision utilisateur (WIP non commité dans `~/library-brain`). 2 articles = scans
+    sans texte (OCR à faire).
+  - Planche des gestes et bouches de Lou : `eveil/outils/gestes/planche.py` → `docs/ui/eveil-app/11-gestes-lou.*`.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur, photo enregistrée ou convertie en
   fichier interdits) → 0 violation, 8 tests ;
@@ -476,7 +504,11 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : **veille concurrence** mergée (PR #18) — fiche
+_Dernière mise à jour mémoire : **Suite Éveil — conseils d'une orthophoniste** (06/10/2026) : petit train
+par niveaux « quand il réussit » (une syllabe d'abord ; Python 97 + Swift 192 tests verts, app compilée, ordre
+vérifié au simulateur : douche → bouche → niche), livres des sons triés par nombre de syllabes, relevé des gestes
+de Borel-Maisonny (`docs/EVEIL-BOREL-MAISONNY.md`) et planche des gestes et bouches de Lou à montrer à
+l'orthophoniste (aucun geste dans l'app avant sa validation). Avant : **veille concurrence** mergée (PR #18) — fiche
 `docs/CONCURRENCE.md` sur POP Switcher (niveau DÉCLARÉ, aucun code public trouvé) + post
 LinkedIn n° 8 de positionnement. Statuts recalés sur `main` : micro:bit (PR #13) et KLOD Live
 Brain / GrooveDNA (PR #16) mergés. Toujours ouvert : AIoT/EdgeSense (PR #4, M0 codé, M2-M4 +

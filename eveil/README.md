@@ -76,7 +76,15 @@ iPadOS 27) l'après-midi. Ses retours ont fait le second tour :
   - **Tour de parole strict** : tout se tait pendant que le train dit le mot et pendant l'écoute ;
     les bestioles ralentissent et, touchées, frétillent sans bruit.
   - **Plus de mots** : 28 en français, 17 en anglais (propositions à valider, cf.
-    [`lexique/`](lexique/)), tous niveaux mêlés ; chaque séance reprend où l'autre s'est arrêtée.
+    [`lexique/`](lexique/)) ; chaque séance reprend où l'autre s'est arrêtée.
+  - **Une syllabe d'abord** (06/10/2026, conseil d'une orthophoniste) : l'enfant commence par les
+    mots d'une syllabe, **de tous les sons** (jus, peau, dé, fée, lait… d'abord : syllabes ouvertes ; puis mur, sac, lune, vert… ; les mots
+    dessinés des livres entrent dans le train sans fourgon, jugés sur leurs syllabes :
+    `python3 -m livres.train` les écrit dans les lexiques ; seuls « ch » et « s » ont un fourgon) ; quand il en a dit 6 différents en entier (ou tous s'il y en a moins), les
+    mots de deux syllabes arrivent à la séance suivante, puis les groupes de consonnes, puis tous
+    les mots mêlés. Jamais de retour en arrière tout seul ; l'adulte règle le niveau dans l'espace
+    des grands ; rien n'est compté en démo ni en essai par un adulte ; aucun nombre affiché
+    (`reference/wordend/policy.py`, règle 8 → `WordDeck`, `LevelProgress`, `TrainLevelStore`).
 - **Un micro « plus réceptif »** : le détecteur écarte EXPRÈS les voix graves d'adulte (hauteur
   médiane < 165 Hz ⇒ « incertain »), pour ne pas prendre le modèle d'un parent pour la réponse de
   l'enfant — un adulte qui essaie n'est donc jamais entendu. L'espace des grands propose
