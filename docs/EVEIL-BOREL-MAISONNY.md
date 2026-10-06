@@ -1,7 +1,9 @@
 # Suite Éveil — la méthode de Borel-Maisonny : gestes, bouches de Lou, progression
 
-> Document de travail du 06/10/2026, **à montrer à l'orthophoniste**. **Aucun geste n'entre dans l'app avant
-> sa validation.** Planche dessinée : `docs/ui/eveil-app/11-gestes-lou.png` (et `.pdf` à imprimer).
+> **Gestes validés par l'orthophoniste le 06/10/2026, tels que dessinés sur la planche**
+> (`docs/ui/eveil-app/11-gestes-lou.png`, `.pdf` à imprimer). Décision de l'utilisateur : Lou les montre,
+> **animés**, dans les livres des sons et dans le petit train (français seulement) ; la planche reste
+> consultable dans l'espace des grands (« La planche des gestes »).
 
 ## D'où ça vient
 
@@ -137,7 +139,12 @@ pour ce son ; c'est une proposition tirée de la phonétique courante du frança
 |---|---|---|---|---|---|---|---|
 | **ui** /ɥ/ | nuage | à trouver | à trouver | à trouver | à trouver |  | bouche à moitié ouverte, lèvres détendues *(proposition)* |
 
-## Points à trancher avec l'orthophoniste
+## Points tranchés (validation du 06/10/2026 : « tels quels »)
+
+Réponse : la planche est validée **telle quelle** — gn = geste de l'atlas ; Lou fait les gestes face à l'enfant,
+sans les inverser ; d avec l'autre main dans le dos ; un seul geste pour o/ɔ et eu/œ ; les bouches « proposition »
+sont acceptées ; « ui » reste sans geste (Lou montre seulement sa bouche) ; Lou est **animé**. Les questions
+d'origine :
 
 1. **Les gestes qui dessinent la LETTRE** (m, n, t, d, b, p, i, u, o, œ, s, z, v, ch) sont faits pour apprendre à
    **lire** (5-10 ans). L'app vise 3 ans et plus, à l'oral. Les garde-t-on tels quels, ou seulement ceux qui

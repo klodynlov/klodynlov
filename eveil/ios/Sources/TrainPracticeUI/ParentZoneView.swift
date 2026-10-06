@@ -5,7 +5,7 @@
 // syllabe par syllabe ou non) et le nombre de répétitions par mot (le décompte), le
 // micro (accès, test, essai par un adulte), le niveau des mots du train (il avance seul quand
 // l'enfant réussit ; l'adulte peut le changer),
-// le coloriage (remplir d'un toucher, ou pinceau seul), le temps d'écran quotidien,
+// le coloriage (remplir d'un toucher, ou pinceau seul), la planche des gestes de Lou, le temps d'écran quotidien,
 // les mots de la famille. On
 // y trouve : comment jouer AVEC l'enfant, et quand demander l'avis d'un professionnel.
 // On n'y trouve PAS de score de langage : l'app est un jeu d'éveil, pas un bilan.
@@ -33,6 +33,8 @@ public struct ParentZoneView: View {
     @AppStorage(Repetitions.settingKey) private var repetitions = Repetitions.defaultCount
     @AppStorage(Stars.settingKey) private var starsOn = true
     @AppStorage(Stars.totalKey) private var starsTotal = 0
+    @AppStorage(SuiteSettings.louGesturesKey) private var louGestures = SuiteSettings.louGesturesDefault
+    @AppStorage(SuiteSettings.louSkinKey) private var louSkinId = SuiteSettings.louSkinDefault
     @State private var voices: [VoiceOption] = []
     @State private var canAskPersonalVoice = false
     @State private var voicePlayer = ModelVoicePlayer()
@@ -78,7 +80,7 @@ public struct ParentZoneView: View {
                             trainLevel = level
                             TrainLevelStore.setByAdult(level, locale: locale)
                         })) {
-                        Text(fr ? "Une syllabe (douche, vache…)" : "One syllable (fish, bus…)").tag(1)
+                        Text(fr ? "Une syllabe (jus, peau, mur…)" : "One syllable (cow, key, moon…)").tag(1)
                         Text(fr ? "Deux syllabes (minouche, limace…)" : "Two syllables (radish, tennis…)").tag(2)
                         Text(fr ? "Groupes de consonnes (cloche, brosse…)" : "Consonant clusters (brush, splash)").tag(3)
                         Text(fr ? "Tous les mots, mêlés" : "All the words, mixed").tag(4)
@@ -86,8 +88,43 @@ public struct ParentZoneView: View {
                 } header: {
                     Text(fr ? "Mots du train" : "Train words")
                 } footer: {
-                    Text(fr ? "Votre enfant commence par les mots d'une syllabe. Quand il en a dit plusieurs différents en entier (le fourgon s'accroche), les mots de deux syllabes arrivent à la séance suivante, puis les groupes de consonnes, puis tous les mots mêlés. Le jeu ne revient jamais en arrière tout seul : c'est vous qui choisissez ici, et le jeu repart de ce choix. Rien n'est compté en mode démo ni en essai par un adulte. Les listes sont des propositions, à valider par des orthophonistes."
-                            : "Your child starts with one-syllable words. Once several different ones are said in full (the caboose hooks on), two-syllable words come at the next session, then consonant clusters, then all the words mixed. The game never goes back by itself: you choose here, and the game starts again from your choice. Nothing is counted in demo mode or during an adult trial. The lists are proposals, to be validated by speech-language pathologists.")
+                    Text(fr ? "Votre enfant commence par les mots d'une syllabe. Quand il en a dit plusieurs différents en entier, les mots de deux syllabes arrivent à la séance suivante, puis les groupes de consonnes, puis tous les mots mêlés. Le jeu ne revient jamais en arrière tout seul : c'est vous qui choisissez ici, et le jeu repart de ce choix. Rien n'est compté en mode démo ni en essai par un adulte. Les listes sont des propositions, à valider par des orthophonistes."
+                            : "Your child starts with one-syllable words. Once several different ones are said in full, two-syllable words come at the next session, then consonant clusters, then all the words mixed. The game never goes back by itself: you choose here, and the game starts again from your choice. Nothing is counted in demo mode or during an adult trial. The lists are proposals, to be validated by speech-language pathologists.")
+                }
+                Section {
+                    Toggle(fr ? "Lou montre les gestes" : "Lou shows the gestures", isOn: $louGestures)
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text(fr ? "Couleur de peau de Lou" : "Lou's skin color")
+                        HStack(spacing: 12) {
+                            ForEach(LouSkin.allCases) { skin in
+                                Button {
+                                    louSkinId = skin.id
+                                } label: {
+                                    LouGestureView(performance: nil, skin: skin, size: 64)
+                                        .frame(width: 64, height: 74)
+                                        .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
+                                        .overlay(RoundedRectangle(cornerRadius: 12)
+                                            .stroke(skin.id == louSkinId ? EveilPalette.go : Color.secondary.opacity(0.25),
+                                                    lineWidth: skin.id == louSkinId ? 4 : 1))
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel(skin.name(locale: locale))
+                                .accessibilityAddTraits(skin.id == louSkinId ? .isSelected : [])
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+                    .disabled(!louGestures)
+                    NavigationLink {
+                        GesturesSheetView(locale: locale)
+                    } label: {
+                        Label(fr ? "La planche des gestes" : "The gesture sheet", systemImage: "hand.raised.fill")
+                    }
+                } header: {
+                    Text(fr ? "Méthode Borel-Maisonny" : "Borel-Maisonny method")
+                } footer: {
+                    Text(fr ? "Un geste par son, montré par Lou (validés par une orthophoniste) : dans le petit train et les livres des sons, Lou prend la place du chat ; pendant le mot modèle, sa bouche montre comment dire chaque son et sa main fait le geste. Faites les gestes avec votre enfant. C'est vous qui choisissez la couleur de peau de Lou. En français seulement."
+                            : "One gesture per sound, shown by Lou (validated by a speech-language pathologist): in the word train and the sound books, Lou takes the cat's place; during the model word, the mouth shows how to say each sound and the hand makes the gesture. You choose Lou's skin color. French only (the method is for French).")
                 }
                 Section {
                     Toggle(fr ? "Mots écrits sous les images" : "Written words under pictures", isOn: $writtenWords)

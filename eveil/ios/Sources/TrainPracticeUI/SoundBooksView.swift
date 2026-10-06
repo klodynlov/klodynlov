@@ -92,7 +92,8 @@ public struct SoundBooksView: View {
                              targets: Dictionary(book.words.map {
                                  ($0.drawing, WordTarget(wagon: $0.targetWagon, letters: $0.letters))
                              }, uniquingKeysWith: { first, _ in first }),
-                             title: SoundBooks.title(book), cursorKey: "eveil.book.\(book.id)")
+                             title: SoundBooks.title(book), cursorKey: "eveil.book.\(book.id)",
+                             bookGesture: LouSounds.byIPA[book.sound])
                     .modelContext(context)
             }
         }

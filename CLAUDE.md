@@ -440,6 +440,17 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     redémarrage du serveur = décision utilisateur (WIP non commité dans `~/library-brain`). 2 articles = scans
     sans texte (OCR à faire).
   - Planche des gestes et bouches de Lou : `eveil/outils/gestes/planche.py` → `docs/ui/eveil-app/11-gestes-lou.*`.
+  - ✅ **Gestes VALIDÉS par l'orthophoniste (06/10/2026, « tels quels »)** → décision utilisateur : Lou les montre,
+    **animés**, dans le petit train ET les livres (français seulement). `outils/gestes/animation.py` (chronologies,
+    repos → geste → repos) + `generer.py` (`--check`) → Swift `EveilDesign/LouGesture*.swift` (API `LouSkin`,
+    `LouGestures`, `LouPerformance`, `LouGestureView` ; statique généré, main/bras calculés image par image,
+    TimelineView ; parité Python 0,05 px) ; `sons_mots.py` ↔ `TrainPracticeUI/LouSounds.swift` (gestes par
+    syllabe : w+a = oi, w+ɛ̃ = oin, j = ill, ɥ = ui sans geste). `PracticeView` : Lou remplace le chat, chaque
+    wagon = syllabe dite + gestes (le suivant attend), wagon/fourgon touchés = leurs gestes, livre = geste du son
+    à l'ouverture (`bookGesture`). Espace des grands : « Lou montre les gestes » (`SuiteSettings.louGesturesKey`,
+    ON), peau au choix de l'adulte (`louSkinKey`, 5 peaux), « La planche des gestes » (PDF en ressource du
+    paquet, identique à `docs/…/11-gestes-lou.pdf`, test). Planche animée `docs/ui/eveil-app/12-gestes-lou-anime.png`.
+    Tests : Python tous verts, Swift 208 + 30, 0 avertissement ; installé sur l'iPad le 06/10 à 20:23.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur, photo enregistrée ou convertie en
   fichier interdits) → 0 violation, 8 tests ;

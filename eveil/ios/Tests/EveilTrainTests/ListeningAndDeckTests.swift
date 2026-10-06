@@ -223,3 +223,19 @@ final class ListeningAndDeckTests: XCTestCase {
         XCTAssertEqual(WordScene.sound(of: .fly), .buzz)       // la mouche fait « bzzz »
     }
 }
+
+#if canImport(PDFKit)
+import PDFKit
+
+/// La page « Gestes de Lou » de l'espace des grands (06/10/2026) : la planche est livrée avec l'app.
+final class GesturesSheetTests: XCTestCase {
+    func testTheGestureSheetShipsWithTheApp() throws {
+        let url = try XCTUnwrap(GesturesSheet.url, "gestes-lou.pdf absent des ressources")
+        let document = try XCTUnwrap(PDFDocument(url: url))
+        XCTAssertGreaterThanOrEqual(document.pageCount, 6)
+        let first = document.page(at: 0)?.string ?? ""
+        XCTAssertTrue(first.contains("Maisonny"), first.prefix(200).description)
+        XCTAssertTrue(first.contains("validés"), "la mention de la validation")
+    }
+}
+#endif

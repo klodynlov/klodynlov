@@ -24,5 +24,14 @@ public enum SuiteSettings {
     public static let writtenWordsDefault = true
     public static let capitalsKey = "eveil.capitals"
     public static let capitalsDefault = false
+    /// Les gestes de Lou (méthode Borel-Maisonny, validés par une orthophoniste le 06/10/2026) :
+    /// Lou montre le geste et la bouche de chaque son, dans le petit train et les livres des sons
+    /// (français seulement). Activé par défaut ; l'adulte peut les couper.
+    public static let louGesturesKey = "eveil.lou.gestures"
+    public static let louGesturesDefault = true
+    /// La couleur de peau de Lou : c'est l'adulte qui la choisit (jamais imposée). Identifiant d'une
+    /// `LouSkin` ; par défaut la peau de Lou du train des phrases.
+    public static let louSkinKey = "eveil.lou.skin"
+    public static let louSkinDefault = "lou"
 }
 #endif

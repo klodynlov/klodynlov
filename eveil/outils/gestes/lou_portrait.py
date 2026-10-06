@@ -1,6 +1,6 @@
 """Lou en grand, en portrait (buste de face) : la bouche qui dit le son, la main qui fait le geste.
 
-Document de travail pour une orthophoniste (planche `planche.py`) : RIEN de ceci n'est dans l'app.
+Planche des gestes (`planche.py`), validée par une orthophoniste le 06/10/2026 ; l'app les anime en Swift.
 
 Repère du portrait : 260 × 300 (y vers le bas). Tête de centre `C`, rayon `R` ; épaules en bas.
 Le style est celui de Lou (`pictos/figure.py`) : formes pleines et arrondies, cheveux bouclés

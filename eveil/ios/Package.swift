@@ -45,7 +45,10 @@ let package = Package(
         .target(
             name: "TrainPracticeUI",
             dependencies: [.product(name: "WordEndCore", package: "WordEndCore"), "WordEndAudio", "EveilDesign",
-                           "EveilSounds", "PhraseCore"]
+                           "EveilSounds", "PhraseCore"],
+            // La planche des gestes de Lou (Borel-Maisonny), page « Gestes (à valider) » de l'espace des
+            // grands, 06/10/2026 : générée par `python3 -m gestes.planche` (eveil/outils).
+            resources: [.copy("Resources/gestes-lou.pdf")]
         ),
         // Mode interactif (28/09/2026) : la voix nomme les couleurs, chaque couleur a sa note.
         .target(name: "ColoringUI", dependencies: ["EveilDesign", "EveilSounds", "WordEndAudio"]),

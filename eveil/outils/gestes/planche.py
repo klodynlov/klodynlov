@@ -30,9 +30,10 @@ from .lou_portrait import C, FLECHE, PEAU, PEAUX, VIBRE, Main, Toile, main, tete
 RACINE = Path(__file__).resolve().parents[3]
 SORTIE = RACINE / "docs" / "ui" / "eveil-app"
 NOM = "11-gestes-lou"
+APP_PDF = Path(__file__).resolve().parents[2] / "ios" / "Sources" / "TrainPracticeUI" / "Resources" / "gestes-lou.pdf"
 DATE = "06/10/2026"
 TITRE = "Les gestes de Lou — méthode phonétique et gestuelle de Borel-Maisonny"
-MENTION = "Document de travail — gestes à valider par une orthophoniste ; aucun n'est dans l'app."
+MENTION = "Gestes validés par une orthophoniste le 06/10/2026 : Lou les montre dans le jeu (livres des sons, petit train)."
 
 PNG_COLONNES = 5
 PNG_LARGEUR = 1780
@@ -46,7 +47,7 @@ def court(source: str) -> str:
 def ligne_bouche(g: Geste) -> str:
     desc = BOUCHES[g.bouche]
     if g.bouche_source == PROPOSITION:
-        return f"{desc} <span class='prop'>proposition, à valider</span>"
+        return f"{desc} <span class='prop'>proposition, validée</span>"
     return f"{html.escape(desc)} <span class='cite'>({html.escape(court(g.bouche_source))})</span>"
 
 
@@ -134,7 +135,7 @@ def legende_bouches(largeur: int = 140) -> str:
                      f"{html.escape(desc)}</figcaption></figure>")
     return ("<div class='bloc'><h2>Les 10 bouches de Lou (vues de face)</h2>"
             "<p class='aide'>Quand le livre décrit la bouche, la carte cite la page ; sinon la bouche est une "
-            "<span class='prop'>proposition, à valider</span> tirée de la phonétique courante du français.</p>"
+            "<span class='prop'>proposition, validée</span> tirée de la phonétique courante du français.</p>"
             "<div class='bouches'>" + "".join(cases) + "</div></div>")
 
 
@@ -305,6 +306,11 @@ def ecrire(dossier: Path = SORTIE, avec_rendu: bool = True) -> list[Path]:
             return out
         out.append(rendu.png(page_png, dossier / f"{NOM}.png", PNG_LARGEUR + 40, hauteur_png()))
         out.append(rendu.pdf(page_pdf, dossier / f"{NOM}.pdf"))
+        if dossier == SORTIE:
+            # La même planche dans l'app, page « Gestes de Lou » de l'espace des grands
+            # (demande de l'utilisateur, 06/10/2026 : la montrer à l'orthophoniste sur l'iPad).
+            APP_PDF.write_bytes(out[-1].read_bytes())
+            out.append(APP_PDF)
     return out
 
 

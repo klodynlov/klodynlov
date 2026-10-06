@@ -45,6 +45,13 @@
 // syllabes, décompte, étoiles), et l'adulte garde « Il l'a dit ! », seul juge du son travaillé.
 // Le wagon du son est marqué et ses lettres colorées.
 //
+// Gestes de Lou (06/10/2026, méthode Borel-Maisonny validée par une orthophoniste ; décision de
+// l'utilisateur : livres des sons ET petit train, animés) : en français, Lou en portrait prend la place
+// du chat. Pendant le mot modèle, chaque wagon s'allume, la voix dit sa syllabe et Lou fait le geste
+// (et la bouche) de chacun de ses sons (`LouSounds`) ; le wagon suivant attend la fin des gestes.
+// Toucher un wagon rejoue ses gestes, le fourgon celui de sa consonne. Dans un livre, Lou montre
+// d'abord le geste du son du livre. Réglables dans l'espace des grands (gestes, couleur de peau).
+//
 // Mode démo (espace parent, ou argument de lancement `-eveil.demoMode 1`) : pas de
 // micro ; une barre de présentation fait « parler » le train avec une pseudo-parole
 // synthétique (`DemoScenario`) qui passe par le vrai détecteur.
@@ -99,6 +106,8 @@ public struct PracticeView: View {
     /// Petit train : un mot vient d'être dit EN ENTIER (verdict complet, fourgon accroché) par
     /// l'enfant — jamais en démo ni en « Essai par un adulte ». Sert à la progression des niveaux.
     public let onWordSaid: ((TargetWord) -> Void)?
+    /// Livres des sons : le geste du son du livre (« ch »), que Lou montre en ouvrant le livre.
+    public let bookGesture: String?
 
     @Environment(\.modelContext) private var context
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -112,6 +121,10 @@ public struct PracticeView: View {
     @AppStorage(Repetitions.settingKey) private var repetitions = Repetitions.defaultCount
     @AppStorage(Stars.settingKey) private var starsOn = true
     @AppStorage(Stars.totalKey) private var starsTotal = 0
+    @AppStorage(SuiteSettings.louGesturesKey) private var louGestures = SuiteSettings.louGesturesDefault
+    @AppStorage(SuiteSettings.louSkinKey) private var louSkinId = SuiteSettings.louSkinDefault
+    /// Ce que Lou montre en ce moment (nil : au repos).
+    @State private var louPerformance: LouPerformance?
     @State private var listener = ListeningController(stream: ListeningSettings.streamingConfig())
     @State private var voice = ModelVoicePlayer()
     @State private var index = 0
@@ -144,7 +157,8 @@ public struct PracticeView: View {
                 policy: SessionPolicy = SessionPolicy(), parentButtonHidden: Bool = false,
                 onHome: (() -> Void)? = nil, judge: PracticeJudge = .listen,
                 targets: [String: WordTarget] = [:], title: String? = nil,
-                cursorKey: String = WordDeck.cursorKey, onWordSaid: ((TargetWord) -> Void)? = nil) {
+                cursorKey: String = WordDeck.cursorKey, onWordSaid: ((TargetWord) -> Void)? = nil,
+                bookGesture: String? = nil) {
         precondition(!words.isEmpty, "liste de mots vide")
         self.words = words
         self.locale = locale
@@ -157,6 +171,7 @@ public struct PracticeView: View {
         self.title = title
         self.cursorKey = cursorKey
         self.onWordSaid = onWordSaid
+        self.bookGesture = bookGesture
         // Le voyage reprend où la séance précédente l'a laissé (mot et monde).
         let defaults = UserDefaults.standard
         _index = State(initialValue: max(0, defaults.integer(forKey: cursorKey)) % words.count)
@@ -173,6 +188,35 @@ public struct PracticeView: View {
     private var adultCanJudge: Bool {
         judge.adultJudges && !modelPlaying && !traveling && feedback?.message != .again && feedback?.advance != true
     }
+    /// Les gestes de chaque wagon du mot (vide : Lou ne montre rien, ex. en anglais).
+    private var wordGestures: [[String]] { LouSounds.keys(for: word, locale: locale) }
+    /// Lou fait les gestes (français, réglage de l'adulte) : il prend la place du chat.
+    private var louShown: Bool { louGestures && fr && !wordGestures.isEmpty }
+    private var louSkin: LouSkin { LouSkin.with(id: louSkinId) ?? .lou }
+
+    /// Les gestes d'un wagon touché : sans la consonne du fourgon (elle a le sien).
+    private func gestures(ofWagon k: Int) -> [String] {
+        guard wordGestures.indices.contains(k) else { return [] }
+        let keys = wordGestures[k]
+        return word.coda != nil && k == wordGestures.count - 1 ? Array(keys.dropLast()) : keys
+    }
+
+    /// Lou montre `keys` maintenant ; rend la durée des gestes (0 s'il ne montre rien).
+    @discardableResult
+    private func louShows(_ keys: [String]) -> Double {
+        guard louShown, !keys.isEmpty else { return 0 }
+        let performance = LouPerformance(keys: keys, start: Date())
+        louPerformance = performance
+        return performance.duration
+    }
+
+    /// Attendre la fin des gestes en cours (pour que le wagon suivant ne les coupe pas).
+    private func waitForLou() async {
+        guard let performance = louPerformance else { return }
+        let left = performance.duration - Date().timeIntervalSince(performance.start)
+        if left > 0 { try? await Task.sleep(nanoseconds: UInt64(left * 1_000_000_000)) }
+    }
+
     /// Tour de parole : aucun bruitage pendant le mot modèle ni pendant l'écoute.
     private var soundsAllowed: Bool { !listening && !modelPlaying }
 
@@ -220,6 +264,7 @@ public struct PracticeView: View {
             started = true
             plan = RepetitionPlan(target: repetitions)
             try? await Task.sleep(nanoseconds: 1_500_000_000)      // le train entre en gare
+            await showBookGesture()
             await present(word)
         }
         .onChange(of: listener.phase) { _, phase in
@@ -317,9 +362,14 @@ public struct PracticeView: View {
                 HStack(alignment: .center, spacing: wide ? 44 : 22) {
                     WordPicture(word: word, size: card, pulse: picturePulse, onDark: world.isDark, onTap: tapPicture)
                     HStack(alignment: .center, spacing: 6) {
-                        // Pendant le modèle, c'est le chat qui dit le mot.
-                        MascotView(action: modelPlaying && feedback == nil ? MascotAction.modelWord : feedback?.mascot,
-                                   isListening: listening, size: cat)
+                        if louShown {
+                            // Lou en grand, en portrait : sa bouche et sa main montrent chaque son.
+                            LouGestureView(performance: louPerformance, skin: louSkin, size: cat * 1.05)
+                        } else {
+                            // Pendant le modèle, c'est le chat qui dit le mot.
+                            MascotView(action: modelPlaying && feedback == nil ? MascotAction.modelWord : feedback?.mascot,
+                                       isListening: listening, size: cat)
+                        }
                         SpeechBubble(bubbleText)
                             .frame(maxWidth: wide ? 380 : 300)
                     }
@@ -483,7 +533,26 @@ public struct PracticeView: View {
         voice.voiceIdentifier = voiceId
         // TODO(contenu) : remplacer par les enregistrements validés (voix humaine FR/EN).
         let wholeIPA = w.ipa.map { $0.replacingOccurrences(of: ".", with: "") }
-        if syllableModel {
+        if syllableModel && louShown {
+            // Avec Lou : chaque wagon s'allume, la voix dit sa syllabe et Lou fait ses gestes ; le wagon
+            // suivant attend la fin des gestes.
+            let segments = w.voiceSegments
+            let gestures = wordGestures
+            modelHooked = false
+            modelLit = 0
+            for (k, segment) in segments.enumerated() {
+                guard !Task.isCancelled else { break }
+                modelLit = k + 1
+                louShows(gestures.indices.contains(k) ? gestures[k] : [])
+                await voice.speak(segment.text, locale: locale, ipa: segment.ipa, pace: .syllable)
+                await waitForLou()
+            }
+            if w.coda != nil { modelHooked = true }
+            try? await Task.sleep(nanoseconds: 350_000_000)
+            if segments.count > 1 && !Task.isCancelled {
+                await voice.speak(w.text, locale: locale, ipa: wholeIPA)
+            }
+        } else if syllableModel {
             // « mi · nou(ch) » : chaque wagon s'allume avec sa syllabe, le fourgon sur la fin.
             let segments = w.voiceSegments
             modelHooked = false
@@ -496,7 +565,9 @@ public struct PracticeView: View {
                 await voice.speak(w.text, locale: locale, ipa: wholeIPA)
             }
         } else {
+            louShows(wordGestures.flatMap { $0 })
             await voice.speak(w.text, locale: locale, ipa: wholeIPA)
+            await waitForLou()
         }
         modelLit = nil                                 // le train s'éteint : à l'enfant de l'allumer
         modelHooked = false
@@ -508,6 +579,21 @@ public struct PracticeView: View {
             listener.config = ListeningSettings.detectorConfig(adultTrial: adultTrial)
             listener.listen(for: w)                    // l'écoute démarre AVANT de rendre les sons
         }
+        modelPlaying = false
+    }
+
+    /// Livres des sons : en ouvrant le livre, Lou montre le geste de son son, et la voix le dit.
+    private func showBookGesture() async {
+        guard let bookGesture, louGestures, fr, LouGestures.has(bookGesture), step == .continue else { return }
+        let performance = LouPerformance(keys: [bookGesture], start: Date())
+        louPerformance = performance
+        modelPlaying = true
+        SoundBoard.shared.isSuspended = true
+        if let ipa = LouSounds.ipa(ofGesture: bookGesture) {
+            voice.voiceIdentifier = voiceId
+            await voice.speak(bookGesture, locale: locale, ipa: ipa, pace: .syllable)
+        }
+        await waitForLou()
         modelPlaying = false
     }
 
@@ -658,6 +744,7 @@ public struct PracticeView: View {
         let current = word.id
         touchedCaboose = false
         touchedWagon = k
+        louShows(gestures(ofWagon: k))
         Task {
             voice.voiceIdentifier = voiceId
             await voice.speak(segment.text, locale: locale, ipa: segment.ipa, pace: .syllable)
@@ -672,6 +759,7 @@ public struct PracticeView: View {
         let current = word.id
         touchedWagon = nil
         touchedCaboose = true
+        if word.coda != nil, let last = wordGestures.last?.last { louShows([last]) }
         if let hook = WordScene.hookSound(coda: word.coda) { SoundBoard.shared.play(hook) }
         Task {
             voice.voiceIdentifier = voiceId

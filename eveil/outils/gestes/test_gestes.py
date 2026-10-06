@@ -148,6 +148,12 @@ class TestPlanche(unittest.TestCase):
         rangs = [h.index(f"<span class='son'>{g.son}</span>") for g in VOYELLES + CONSONNES]
         self.assertEqual(rangs, sorted(rangs))
 
+    def test_l_app_montre_la_meme_planche(self):
+        """La page « Gestes de Lou » de l'espace des grands montre exactement le PDF du dépôt."""
+        from gestes.planche import APP_PDF, NOM, SORTIE
+        self.assertEqual(APP_PDF.read_bytes(), (SORTIE / f"{NOM}.pdf").read_bytes(),
+                         "relancer : python3 -m gestes.planche")
+
     def test_sans_navigateur_on_ecrit_les_pages_html(self):
         with tempfile.TemporaryDirectory() as d:
             sorties = planche.ecrire(Path(d), avec_rendu=False)

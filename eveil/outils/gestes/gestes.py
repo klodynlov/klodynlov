@@ -5,8 +5,11 @@ avatar qui fait aussi voir comment dire le son. Décision de l'utilisateur : l'a
 (l'enfant du train des phrases), en grand, en portrait ; sa bouche montre comment dire le son,
 sa main à cinq doigts fait le geste ; l'adulte choisit la couleur de peau.
 
-**Aucun geste n'entre dans l'app avant la validation de l'orthophoniste** : ce module ne sert
-qu'à la planche (`planche.py`) qu'on lui montre.
+**Validés par l'orthophoniste le 06/10/2026, tels que dessinés sur la planche** (choix ouverts
+compris : gn = geste de l'atlas, Lou fait les gestes face à l'enfant sans les inverser, d avec
+l'autre main dans le dos, un seul geste pour o/ɔ et eu/œ, bouches « proposition » acceptées, « ui »
+reste sans geste). Décision de l'utilisateur : Lou les montre, ANIMÉS, dans les livres des sons et
+dans le petit train.
 
 Règles de rédaction (les livres sont sous droits, le dépôt est public) :
 - tout est REFORMULÉ dans nos mots ; on ne cite que le livre, la page et la figure ;
@@ -30,8 +33,8 @@ from dataclasses import dataclass
 LOE1 = "Borel-Maisonny, Langage oral et écrit I (1985)"
 TLDM = "Borel-Maisonny, Les troubles du langage dans la déficience mentale"
 A_TROUVER = "à trouver"
-RELEVE = "relevé, à valider"
-PROPOSITION = "proposition (phonétique courante), à valider"
+RELEVE = "relevé, validé (06/10/2026)"
+PROPOSITION = "proposition (phonétique courante), validée (06/10/2026)"
 
 # Les formes de bouche que l'on dessine (vues de face).
 BOUCHES = {
