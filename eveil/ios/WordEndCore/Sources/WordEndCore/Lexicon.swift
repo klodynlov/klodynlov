@@ -30,6 +30,9 @@ public struct TargetWord: Codable, Equatable, Sendable, Identifiable, TargetShap
     public var contrast: Contrast?
     public var notes: String?
     public var custom: Bool?
+    /// Le dessin à montrer quand ce n'est pas celui de l'identifiant : les mots des livres entrés dans
+    /// le petit train sans fourgon (06/10/2026, `python3 -m livres.train`), ex. « mot.mur ».
+    public var drawing: String?
 }
 
 /// Ce que la voix modèle dit pour UN wagon : le texte (repli) et sa prononciation (API).

@@ -42,6 +42,7 @@ class TargetWord:
     contrast: Contrast | None = None
     custom: bool = False
     notes: str = ""
+    drawing: str = ""           # le dessin à montrer, s'il n'est pas celui de l'identifiant (mots des livres)
 
 
 @dataclass(frozen=True)
@@ -72,7 +73,7 @@ def _word(d: dict, locale: str) -> TargetWord:
         caboose=d.get("caboose"), nuclei=int(d["nuclei"]), coda=d.get("coda"),
         ipa=d.get("ipa", ""), level=int(d.get("level", 1)),
         contrast=Contrast(c["text"], c["ipa"], bool(c["picturable"])) if c else None,
-        notes=d.get("notes", ""))
+        notes=d.get("notes", ""), drawing=d.get("drawing") or "")
 
 
 def load(path: str | Path) -> Lexicon:

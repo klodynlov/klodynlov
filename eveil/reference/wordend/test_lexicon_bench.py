@@ -23,8 +23,10 @@ class TestLexicons(unittest.TestCase):
                 self.assertIn("PROPOS", lex.status.upper())       # proposition à valider
 
     def test_lists_are_designed_not_translated(self):
-        fr = {w.text for w in load_locale("fr-FR").words}
-        en = {w.text for w in load_locale("en-US").words}
+        # Les listes à fourgon, écrites à la main. Les mots des livres (avec leur dessin) sont les
+        # mêmes objets dans les deux langues : « orange », « table » s'écrivent pareil, c'est voulu.
+        fr = {w.text for w in load_locale("fr-FR").words if not w.drawing}
+        en = {w.text for w in load_locale("en-US").words if not w.drawing}
         self.assertEqual(fr & en, set())
 
     def test_levels_progress(self):
@@ -61,7 +63,8 @@ class TestLexicons(unittest.TestCase):
                 self.assertEqual(len(wagons), len(w.wagons), w.id)
                 self.assertTrue(all(s.ipa for s in wagons), w.id)
                 # Les wagons + le fourgon redonnent exactement le mot.
-                self.assertEqual("".join(s.ipa for s in wagons) + caboose_segment(w).ipa,
+                fourgon = caboose_segment(w)
+                self.assertEqual("".join(s.ipa for s in wagons) + (fourgon.ipa if fourgon else ""),
                                  "".join(ipa_syllables(w.ipa)), w.id)
 
     def test_voice_without_ipa_reads_the_wagons(self):

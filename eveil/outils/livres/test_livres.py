@@ -9,7 +9,7 @@ import unittest
 from phrases.grammaire import morceau, phrase
 from phrases.lexique import PAR_ID, PREP_EN, PREP_FR, VERBE_PAR_ID, VERBES
 
-from .livres import MIN_MOTS, PLACES, SONS_EN, SONS_FR, _plier, lettres_du_son, livres
+from .livres import MIN_MOTS, PLACES, SONS_EN, SONS_FR, _plier, lettres_du_son, livres, nb_syllabes
 from .mots import NOUVEAUX, TOUS
 from .phrases import CHOIX, PAR_NIVEAU, SYLLABES, a_le_son, phrases_du_livre
 from .sons import lettres_dans_syllabe, ou_est, phonemes
@@ -87,6 +87,10 @@ class TestLivres(unittest.TestCase):
                 self.assertEqual(len(ids), len(set(ids)), f"{loc} {b.son.etiquette} : mot en double")
                 places = [PLACES.index(pg.position) for pg in b.pages]
                 self.assertEqual(places, sorted(places), f"{loc} {b.son.etiquette} : début, milieu, fin")
+                # Dans une même place : les mots les plus courts d'abord, puis l'ordre alphabétique.
+                cles = [(PLACES.index(pg.position), nb_syllabes(pg.mot, fr), _plier(pg.mot.fr if fr else pg.mot.en))
+                        for pg in b.pages]
+                self.assertEqual(cles, sorted(cles), f"{loc} {b.son.etiquette} : courts d'abord")
                 for pg in b.pages:
                     wagons = pg.mot.fr_wagons if fr else pg.mot.en_wagons
                     self.assertIn(pg.wagon, range(len(wagons)), pg.mot.id)

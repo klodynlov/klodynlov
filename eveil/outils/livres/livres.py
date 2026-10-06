@@ -4,7 +4,7 @@ Demande de l'utilisateur (28/09/2026) : « au niveau d'OrthoPicto, voire plus »
 propose un livre par son (les plus difficiles : ch, j, g, r, k, b, f… 21 sons) et des
 conseils. Ici, chaque livre est CALCULÉ à partir des mots dessinés : tous ceux qui
 contiennent le son, au début, au milieu, à la fin — le wagon du son s'allume, ses lettres
-se colorent. Les idées de jeu sont des PROPOSITIONS, à valider par des orthophonistes
+se colorent. Dans chaque place, les mots les plus courts d'abord (une syllabe, puis deux…). Les idées de jeu sont des PROPOSITIONS, à valider par des orthophonistes
 (panel, docs/EVEIL.md § 8) : des images sonores et des jeux, jamais une rééducation.
 """
 from __future__ import annotations
@@ -139,6 +139,11 @@ def lettres_du_son(son: Son, wagon: str) -> str:
     return ""
 
 
+def nb_syllabes(mot: Mot, fr: bool) -> int:
+    """Le nombre de syllabes orales du mot (ses wagons) dans la langue du livre."""
+    return len(mot.fr_wagons if fr else mot.en_wagons)
+
+
 def livres(locale: str, mots: tuple = TOUS) -> list[Livre]:
     """Les livres d'une langue : un par son qui a au moins `MIN_MOTS` mots (parmi `mots`)."""
     fr = locale.startswith("fr")
@@ -155,7 +160,10 @@ def livres(locale: str, mots: tuple = TOUS) -> list[Livre]:
             wagon = wagons[ici.syllabe]
             lettres = wagon[place[0]:place[0] + place[1]] if place else lettres_du_son(son, wagon)
             pages.append(Page(m, ici.syllabe, ici.position, lettres))
-        pages.sort(key=lambda pg: (PLACES.index(pg.position), _plier(pg.mot.fr if fr else pg.mot.en)))
+        # Par place du son, puis les mots les plus courts d'abord (conseil d'une orthophoniste,
+        # 06/10/2026 : une syllabe, puis deux, et ainsi de suite), puis par ordre alphabétique.
+        pages.sort(key=lambda pg: (PLACES.index(pg.position), nb_syllabes(pg.mot, fr),
+                                   _plier(pg.mot.fr if fr else pg.mot.en)))
         if len(pages) >= MIN_MOTS:
             out.append(Livre(son, tuple(pages)))
     return out

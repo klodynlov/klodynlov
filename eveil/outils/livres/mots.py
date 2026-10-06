@@ -31,6 +31,26 @@ def _m(id_, genre, fr, fr_api, fr_wagons, en, en_api, en_wagons, dessin=None):
 
 # Les nouveaux mots, choisis pour que chaque son ait son livre (familiers à 3-5 ans, dessinables).
 NOUVEAUX = (
+    # Lot C (06/10/2026, demande de l'utilisateur : « commencer avec des mots d'une syllabe, comme
+    # mur, vert »).
+    _m("mur", "m", "mur", "myʁ", "mur", "wall", "wɔl", "wall"),
+    _m("vert", "m", "vert", "vɛʁ", "vert", "green", "ɡɹin", "green"),
+    # Lot D (06/10/2026, demande de l'utilisateur : « des mots avec 1 syllabe comme jus, peau, etc. ») :
+    # syllabes simples, sans groupe de consonnes, familières à 3 ans (« pot » écarté : même son que « peau »).
+    _m("peau", "f", "peau", "po", "peau", "peel", "pil", "peel"),
+    _m("seau", "m", "seau", "so", "seau", "bucket", "ˈbʌ.kɪt", "bu-cket"),
+    _m("riz", "m", "riz", "ʁi", "riz", "rice", "ɹaɪs", "rice"),
+    _m("roue", "f", "roue", "ʁu", "roue", "wheel", "wil", "wheel"),
+    _m("lait", "m", "lait", "lɛ", "lait", "milk", "mɪlk", "milk"),
+    _m("loup", "m", "loup", "lu", "loup", "wolf", "wʊlf", "wolf"),
+    _m("main", "f", "main", "mɛ̃", "main", "hand", "hænd", "hand"),
+    _m("pied", "m", "pied", "pje", "pied", "foot", "fʊt", "foot"),
+    _m("chou", "m", "chou", "ʃu", "chou", "cabbage", "ˈkæ.bɪdʒ", "cab-bage"),
+    _m("bol", "m", "bol", "bɔl", "bol", "bowl", "boʊl", "bowl"),
+    _m("pull", "m", "pull", "pyl", "pull", "sweater", "ˈswɛ.tɚ", "swea-ter"),
+    _m("poule", "f", "poule", "pul", "poule", "hen", "hɛn", "hen"),
+    _m("toit", "m", "toit", "twa", "toit", "roof", "ɹuf", "roof"),
+    _m("lion", "m", "lion", "ljɔ̃", "lion", "lion", "ˈlaɪ.ən", "li-on"),
     _m("fleur", "f", "fleur", "flœʁ", "fleur", "flower", "ˈflaʊ.ɚ", "flow-er"),
     _m("feu", "m", "feu", "fø", "feu", "fire", "faɪɚ", "fire"),
     _m("fee", "f", "fée", "fe", "fée", "fairy", "ˈfɛɹ.i", "fair-y"),

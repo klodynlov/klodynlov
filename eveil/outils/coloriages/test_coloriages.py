@@ -19,7 +19,9 @@ EVEIL = Path(__file__).resolve().parents[2]
 
 def _mots(locale: str) -> list[str]:
     data = json.loads((EVEIL / "lexique" / f"{locale}.json").read_text(encoding="utf-8"))
-    return [w["id"] for w in (data["words"] if isinstance(data, dict) else data)]
+    # Les mots à fourgon (écrits à la main) ; les mots des livres (`"source": "livres"`, 06/10/2026)
+    # viennent des pictos et n'ont pas tous leur page à colorier.
+    return [w["id"] for w in (data["words"] if isinstance(data, dict) else data) if w.get("source") != "livres"]
 
 
 class TestCatalogue(unittest.TestCase):

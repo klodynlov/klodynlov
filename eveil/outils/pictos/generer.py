@@ -9,7 +9,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from . import lieux, mots_a, mots_b, verbes
+from . import lieux, mots_a, mots_b, mots_c, mots_d, verbes
 from .peinture import Picto, problemes
 from .scene import problemes_scene
 
@@ -20,7 +20,8 @@ PREPOSITIONS_SWIFT = {"dans": "dans", "sur": "sur", "sous": "sous", "devant": "d
 
 
 def tous() -> list[Picto]:
-    return list(verbes.PICTOS) + list(lieux.PICTOS) + list(mots_a.PICTOS) + list(mots_b.PICTOS)
+    return (list(verbes.PICTOS) + list(lieux.PICTOS) + list(mots_a.PICTOS) + list(mots_b.PICTOS)
+            + list(mots_c.PICTOS) + list(mots_d.PICTOS))
 
 
 def verifier(pictos: list[Picto]) -> list[str]:

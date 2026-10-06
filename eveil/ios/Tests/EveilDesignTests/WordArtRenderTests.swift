@@ -37,7 +37,9 @@ final class WordArtRenderTests: XCTestCase {
             let data = try Data(contentsOf: lexique.appendingPathComponent(file))
             let root = try XCTUnwrap(try JSONSerialization.jsonObject(with: data) as? [String: Any])
             let words = try XCTUnwrap(root["words"] as? [[String: Any]], "pas de « words » dans \(file)")
-            ids += words.compactMap { $0["id"] as? String }
+            // Les mots à fourgon ont leur dessin vivant (`WordArt`) ; les mots des livres entrés dans le
+            // train sans fourgon (`"source": "livres"`, 06/10/2026) montrent leur picto (`drawing`).
+            ids += words.filter { ($0["source"] as? String) != "livres" }.compactMap { $0["id"] as? String }
         }
         return ids
     }
@@ -50,6 +52,23 @@ final class WordArtRenderTests: XCTestCase {
         }
         XCTAssertEqual(Set(WordArtSubject.allCases.map(\.rawValue)), Set(ids),
                        "un dessin sans mot, ou un mot sans dessin")
+    }
+
+    func testEveryBookWordOfTheTrainHasItsPicto() throws {
+        let lexique = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().appendingPathComponent("lexique")
+        var checked = 0
+        for file in ["fr-FR.json", "en-US.json"] {
+            let data = try Data(contentsOf: lexique.appendingPathComponent(file))
+            let root = try XCTUnwrap(try JSONSerialization.jsonObject(with: data) as? [String: Any])
+            for word in try XCTUnwrap(root["words"] as? [[String: Any]]) where (word["source"] as? String) == "livres" {
+                let drawing = try XCTUnwrap(word["drawing"] as? String, "\(word["id"] ?? "?") sans dessin")
+                XCTAssertTrue(PictoLibrary.isDrawn(drawing), "\(drawing) introuvable")
+                checked += 1
+            }
+        }
+        XCTAssertGreaterThan(checked, 100)
     }
 
     func testUnknownWordKeepsTheSystemPictogram() {
