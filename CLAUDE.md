@@ -177,14 +177,38 @@ fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCO
 - Reste : dérouler le protocole de test de la fiche sur le Mac (trafic sortant,
   hors ligne, RAM, The One sur petit modèle, MCP).
 
+### 🧰 Atelier matériel — six fiches de projet sur le matériel en main
+**Statut : PR ouverte (brouillon), documentation seule, rien de codé.**
+`docs/ATELIER-MATERIEL.md` + entrée README.
+- Inventaire **vérifié** (2 sources min.) : Arduino UNO Q (QRB2210 Linux + STM32U585
+  Zephyr, RPC Bridge), Bela Gem Multi (carte fille PocketBeagle 2, 10 in/10 out,
+  **8 CV ±5 V**, ~1 ms déclaré), OpenMV N6 (STM32N6, NPU 600 GOPS INT8, global shutter
+  120 fps), MPC Live III (**8 CV/Gate, 2 MIDI DIN**, USB-C 24 audio/32 MIDI, stems),
+  Verselab MV-1 (DIN, USB-B, XLR), AIRA Compact P-6 (granulaire, séquenceur hors
+  grille + micro-timing) et J-6 (accords Juno-60).
+- 🔑 Connectique AIRA Compact : MIDI TRS **type A** (Roland) ; SYNC = impulsion
+  analogique, jack **mono**, `S.cLK` réglable **1…24** impulsions/temps ;
+  **tension INCONNUE** (à mesurer avant une entrée 3,3 V). Seul le MPC a du DIN natif.
+- Les cartes = les 4 niveaux d'`ARCHITECTURE.md` : Mac (cerveau) ↔ UNO Q (plan de
+  contrôle) ↔ Bela (réflexe) ↔ instruments ; N6 = œil (événements seulement).
+- Fiches : **1** GrooveDNA sur Bela (processeur de groove MPC↔CV, produit enfin
+  `BENCHMARKS.md`, critère §38) · **2** TinyGuard réel (N6 perçoit, UNO Q journalise
+  SHA-256 + MCP) · **3** EdgeSense M1/M2 sur UNO Q (teste le **risque n°1** : Bridge
+  pousse MCU→Linux→Mac) · **4** corps→MIDI (N6→J-6/MPC, ~33 ms : modulation OK, notes
+  non) · **5** Bela effets voix Verselab (~1 ms à mesurer) · **6** banc SYNC comme
+  référence de mesure (P-6 = meilleur instrument de test de GrooveDNA : hors grille natif).
+- Ordre : 6 → 1 (référence avant mesure), 2 en parallèle, puis 3-4-5. Aucun achat
+  sauf PocketBeagle 2 si absente. ⛔ Pas d'IA avant la chaîne §38 chiffrée.
+- Hypothèse : « Ventuno Q » dicté par l'utilisateur = Arduino UNO Q.
+
 ### Autres projets (mentionnés au README, hors de ce dépôt)
 Klody Code AI (agent de code local, projet phare) · klody-ui · LibraryBrain (RAG local) ·
 VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : **veille concurrence** mergée (PR #18) — fiche
-`docs/CONCURRENCE.md` sur POP Switcher (niveau DÉCLARÉ, aucun code public trouvé) + post
-LinkedIn n° 8 de positionnement. Statuts recalés sur `main` : micro:bit (PR #13) et KLOD Live
-Brain / GrooveDNA (PR #16) mergés. Toujours ouvert : AIoT/EdgeSense (PR #4, M0 codé, M2-M4 +
-TinyGuard en conception) ; reprise matérielle Teensy sur le Mac._
+_Dernière mise à jour mémoire : **atelier matériel** (PR ouverte, brouillon) — inventaire
+vérifié du matériel en main + six fiches de projet dans `docs/ATELIER-MATERIEL.md`,
+priorité fiche 6 → 1 (banc SYNC puis GrooveDNA sur Bela). Avant : veille concurrence
+mergée (PR #18). Toujours ouvert : AIoT/EdgeSense (PR #4, M0 codé, M2-M4 + TinyGuard en
+conception) ; reprise matérielle Teensy sur le Mac._
