@@ -70,35 +70,31 @@ public struct LouPerformance: Equatable, Sendable {
         self.start = start
     }
 
-    /// Somme des durées (s).
+    /// Durée réelle de la suite (s), du repos au repos. Depuis le 17/11/2026 les sons s'enchaînent sans
+    /// repasser par le repos : c'est MOINS que la somme des durées de chaque son (0,5 s de moins par
+    /// enchaînement : `LouGestures.duration(of:)` compte l'arrivée et le départ de chacun).
     public var duration: Double {
-        keys.reduce(0) { $0 + LouGestures.duration(of: $1) }
+        LouChain(keys).duration
     }
 
-    /// Le son en cours (nil : pas encore commencé, ou fini).
+    /// Le son en cours (nil : pas encore commencé, ou fini). Entre deux sons, on passe au suivant au
+    /// milieu de la transition.
     public func key(at date: Date) -> String? {
-        locate(date)?.key
+        LouChain(keys).index(at: date.timeIntervalSince(start)).map { keys[$0] }
     }
 
-    /// Le son en cours, son rang et le temps écoulé dans ce son.
-    func locate(_ date: Date) -> (index: Int, key: String, local: Double)? {
+    /// L'image de Lou à `date` ; `reduceMotion` : la pose du son en cours, tenue. `chain` : la suite déjà
+    /// enchaînée (la vue la calcule une fois, pas à chaque image).
+    func frame(at date: Date, reduceMotion: Bool, chain: LouChain? = nil) -> LouFrame {
+        let chain = chain ?? LouChain(keys)
         let t = date.timeIntervalSince(start)
-        guard t >= 0 else { return nil }
-        var begin = 0.0
-        for (i, key) in keys.enumerated() {
-            let end = begin + LouGestures.duration(of: key)
-            if t < end - 1e-9 { return (i, key, max(0, t - begin)) }   // 1e-9 : arrondis des dates
-            begin = end
+        guard let i = chain.index(at: t) else { return .rest }
+        if reduceMotion {
+            let chronology = LouChronology.of(keys[i])
+            return chronology.frame(at: chronology.posed)
         }
-        return nil
-    }
-
-    /// L'image de Lou à `date` ; `reduceMotion` : la pose du son en cours, tenue.
-    func frame(at date: Date, reduceMotion: Bool) -> LouFrame {
-        guard let (_, key, local) = locate(date) else { return .rest }
-        let chronology = LouChronology.of(key)
-        var frame = chronology.frame(at: reduceMotion ? chronology.posed : local)
-        frame.pulse = reduceMotion ? nil : date.timeIntervalSince(start)
+        var frame = chain.chronology.frame(at: t)
+        frame.pulse = t
         return frame
     }
 }
@@ -126,15 +122,17 @@ public struct LouGestureView: View {
 
     @ViewBuilder private var content: some View {
         let colors = LouColors(hex: skin.hex)
-        if let performance, performance.duration > 0, finished != LouRunID(performance) {
+        if let performance, finished != LouRunID(performance), case let chain = LouChain(performance.keys),
+           chain.duration > 0 {
             // L'horloge d'affichage (comme le petit train) ; animations réduites : la pose de chaque son,
-            // quelques images par seconde suffisent.
+            // quelques images par seconde suffisent. La suite est enchaînée une fois, pas à chaque image.
             TimelineView(.animation(minimumInterval: reduceMotion ? 0.2 : 1.0 / 60)) { timeline in
-                LouCanvas(frame: performance.frame(at: timeline.date, reduceMotion: reduceMotion), colors: colors)
+                LouCanvas(frame: performance.frame(at: timeline.date, reduceMotion: reduceMotion, chain: chain),
+                          colors: colors)
             }
             .task(id: LouRunID(performance)) {
                 // À la fin de la suite, l'horloge s'arrête : Lou reste au repos sans redessiner.
-                let left = performance.start.addingTimeInterval(performance.duration).timeIntervalSinceNow
+                let left = performance.start.addingTimeInterval(chain.duration).timeIntervalSinceNow
                 if left > 0 { try? await Task.sleep(nanoseconds: UInt64((left + 0.05) * 1_000_000_000)) }
                 if !Task.isCancelled { finished = LouRunID(performance) }
             }

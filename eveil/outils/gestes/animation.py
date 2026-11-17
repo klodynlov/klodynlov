@@ -12,9 +12,11 @@ Rien n'est inventé au-delà de la scène validée :
   se déplace du vecteur de la flèche, vers la pose dessinée (« j », « k », « g », « l », « b »,
   « m » qui appuie) ou depuis elle (« f », « ill », « ou ») ; « gn » va et vient sur le nez ;
 - les vignettes = les temps successifs (formes de main) ;
-- les gestes sans mouvement : la main ARRIVE depuis le repos (0,35 s), tient la pose, puis repart.
+- les gestes sans mouvement : la main ARRIVE depuis le repos (0,4 s), tient la pose, puis repart.
 Chaque chronologie commence et finit AU REPOS (bras invisible sous le cadre, comme sur la
-planche ; bouche « neutre », souriante), pour enchaîner plusieurs sons. Pas de flèche ni de texte.
+planche ; bouche « neutre », souriante). Pas de flèche ni de texte. Une SUITE de sons (`enchainer`,
+17/11/2026) ne passe plus par le repos entre deux sons : la dernière pose de l'un glisse vers la
+première du suivant ; repos seulement au début et à la fin de la suite.
 
 Choix de dessin (à revoir avec l'orthophoniste, aucun ne change une pose validée) :
 - au repos, la main est descendue sous le cadre (le coude avec elle) ; elle monte sans tourner, et
@@ -32,7 +34,7 @@ Choix de dessin (à revoir avec l'orthophoniste, aucun ne change une pose valid�
   dessinée.
 
 Interpolation (la même en Swift) : entre deux clés, `x` = part du temps écoulé, adoucie par
-`lisse(x)` = x²(3 − 2x) si la clé d'arrivée est `douce`, sinon linéaire. Coude, poignet, direction
+`adoucir(x)` = 6x⁵ − 15x⁴ + 10x³ si la clé d'arrivée est `douce`, sinon linéaire. Coude, poignet, direction
 de la main (déroulée d'une clé à l'autre), présence (fondu), tête levée, table : interpolés. Le coude
 de chaque clé est celui de la scène (déplacé avec la main) : pas d'IK image par image (elle faisait
 sauter le coude de 180 px quand la main frôlait l'épaule), ni d'angles interpolés (le bras de « é »,
@@ -55,8 +57,12 @@ from .dessins import SCENES, Bras, vibre
 from .gestes import TOUS, Geste
 from .lou_portrait import BASE, EPAULE_D, EPAULE_G, FORMES, REP, Main
 
-ARRIVEE = 0.35          # du repos à la première pose (s)
-DEPART = 0.35           # de la dernière pose au repos (s)
+ARRIVEE = 0.4           # du repos à la première pose (s) — 0,35 avant le 17/11/2026
+DEPART = 0.4            # de la dernière pose au repos (s)
+TRANSITION = 0.3        # dans une suite : de la dernière pose d'un son à la première du suivant (s), au moins
+TRANSITION_MAX = 0.5    # … au plus ; entre les deux, la main la plus loin parcourt `VITESSE_TRANSITION`
+VITESSE_TRANSITION = 700.0   # px/s en moyenne (pic ×1,875 avec `adoucir`)
+FONDU = 0.12            # la bouche (et la gorge qui vibre) passe d'une clé à l'autre en fondu (s)
 TENUE = 0.9             # geste immobile : la pose tenue (s)
 BOUCHE_SEULE = 1.0      # un son sans geste (« ui ») : la bouche seule (s)
 REPOS_BOUCHE = "neutre"
@@ -91,8 +97,6 @@ def _rp(p) -> tuple[float, float]:
 class BrasFixe:
     """Ce qui ne change pas pendant un geste, pour un bras."""
     cote: str               # « d » (épaule à droite de l'image) ou « g »
-    pouce: int
-    taille: float
     derriere: bool = False  # bras caché derrière le buste (« d »)
 
     @property
@@ -106,6 +110,8 @@ class PoseCle:
     direction: float
     forme: str
     coude: tuple            # le coude de la clé (celui de la scène, déplacé avec la main)
+    pouce: int = -1
+    taille: float = 40.0
     presence: float = 1.0   # 0 = au repos (invisible), 1 = là
 
 
@@ -118,6 +124,8 @@ class Articulation:
     direction: float
     forme: str
     presence: float
+    pouce: float = -1.0     # côté du pouce (interpolé d'un son à l'autre : la main tourne)
+    taille: float = 40.0
 
 
 @dataclass(frozen=True)
@@ -145,8 +153,10 @@ class Chronologie:
 # Géométrie
 # ---------------------------------------------------------------------------
 
-def lisse(x: float) -> float:
-    return x * x * (3 - 2 * x)
+def adoucir(x: float) -> float:
+    """« smootherstep » 6x⁵ − 15x⁴ + 10x³ : vitesse ET accélération nulles aux deux bouts (17/11/2026 ;
+    avant : x²(3 − 2x), dont l'accélération démarre d'un coup)."""
+    return x * x * x * (x * (6 * x - 15) + 10)
 
 
 def _lerp(a: float, b: float, t: float) -> float:
@@ -209,10 +219,12 @@ class EtatBras:
     forme_b: str
     melange: float          # 0 = forme_a, 1 = forme_b
     presence: float
+    pouce: float = -1.0
+    taille: float = 40.0
 
     def main(self, forme: str | None = None) -> Main:
         f = forme or (self.forme_a if self.melange < 0.5 else self.forme_b)
-        return Main(self.poignet, self.direction, f, self.fixe.pouce, self.fixe.taille)
+        return Main(self.poignet, self.direction, f, self.pouce, self.taille)
 
     def bout(self, doigt: str = "index") -> tuple[float, float]:
         """Le bout d'un doigt à l'écran (formes mêlées : les bouts sont interpolés)."""
@@ -227,6 +239,9 @@ class Etat:
     vibre: bool
     leve: float
     table: float
+    bouche_avant: str = REPOS_BOUCHE   # la bouche d'avant, pendant le fondu
+    fondu: float = 1.0                 # part de la bouche `bouche` (1 = fondu fini)
+    vibration: float = 0.0             # « la gorge vibre », en fondu (0 … 1)
 
 
 def etat(ch: Chronologie, t: float) -> Etat:
@@ -240,7 +255,7 @@ def etat(ch: Chronologie, t: float) -> Etat:
     k1 = cles[i + 1] if i + 1 < len(cles) else k0
     span = k1.t - k0.t
     x = 1.0 if span <= 0 else (t - k0.t) / span
-    e = lisse(x) if k1.douce else x
+    e = adoucir(x) if k1.douce else x
     bras = []
     for f, p0, p1 in zip(ch.bras, k0.poses, k1.poses):
         # Coude et poignet interpolés à l'écran (le coude de chaque clé est donné) : ni coude qui
@@ -253,8 +268,28 @@ def etat(ch: Chronologie, t: float) -> Etat:
         else:
             fa, fb, m = p0.forme, p1.forme, e
         bras.append(EtatBras(f, poignet, coude, _lerp(p0.direction, p1.direction, e), fa, fb, m,
-                             _lerp(p0.presence, p1.presence, e)))
-    return Etat(tuple(bras), k0.bouche, k0.vibre, _lerp(k0.leve, k1.leve, e), _lerp(k0.table, k1.table, e))
+                             _lerp(p0.presence, p1.presence, e), _lerp(p0.pouce, p1.pouce, e),
+                             _lerp(p0.taille, p1.taille, e)))
+    # La bouche et la gorge qui vibre : en fondu depuis la clé où elles ont changé.
+    jb = _changement(cles, i, "bouche")
+    avant, fondu = k0.bouche, 1.0
+    if jb > 0 and t - cles[jb].t < FONDU:
+        avant, fondu = cles[jb - 1].bouche, (t - cles[jb].t) / FONDU
+    jv = _changement(cles, i, "vibre")
+    vib = 1.0 if k0.vibre else 0.0
+    if jv > 0 and t - cles[jv].t < FONDU:
+        w = (t - cles[jv].t) / FONDU
+        vib = w if k0.vibre else 1.0 - w
+    return Etat(tuple(bras), k0.bouche, k0.vibre, _lerp(k0.leve, k1.leve, e), _lerp(k0.table, k1.table, e),
+                avant, fondu, vib)
+
+
+def _changement(cles, i: int, champ: str) -> int:
+    """L'indice de la dernière clé (≤ i) où `champ` a changé (0 s'il n'a jamais changé)."""
+    j = i
+    while j > 0 and getattr(cles[j], champ) == getattr(cles[j - 1], champ):
+        j -= 1
+    return j
 
 
 # ---------------------------------------------------------------------------
@@ -278,8 +313,8 @@ def _fixe(b: Bras) -> tuple[BrasFixe, PoseCle]:
     m = b.main
     epaule = EPAULE_D if b.epaule == "d" else EPAULE_G
     coude = b.coude or coude_ik(epaule, m.poignet, 64.0, 60.0, b.plie)
-    f = BrasFixe(b.epaule, m.pouce, _r(m.taille, 3))
-    return f, PoseCle(_rp(m.poignet), _r(m.direction, 3), m.forme, _rp(coude))
+    f = BrasFixe(b.epaule)
+    return f, PoseCle(_rp(m.poignet), _r(m.direction, 3), m.forme, _rp(coude), m.pouce, _r(m.taille, 3))
 
 
 def _derriere() -> tuple[BrasFixe, PoseCle]:
@@ -293,7 +328,7 @@ def repos(f: BrasFixe, p: PoseCle) -> PoseCle:
     """Le bras au repos qui correspond à la pose `p` : la même main descendue sous le cadre (le coude
     avec elle), invisible ; en arrivant, elle monte sans tourner."""
     dy = REPOS_Y - p.poignet[1]
-    return PoseCle(_rp((p.poignet[0], REPOS_Y)), p.direction, p.forme, _rp((p.coude[0], p.coude[1] + dy)), 0.0)
+    return replace(p, poignet=_rp((p.poignet[0], REPOS_Y)), coude=_rp((p.coude[0], p.coude[1] + dy)), presence=0.0)
 
 
 class _Fil:
@@ -316,7 +351,8 @@ class _Fil:
         out = []
         for k, p in enumerate(poses):
             d = p.direction if avant is None else _pres_de(p.direction, avant[k].direction)
-            out.append(Articulation(_rp(p.coude), _rp(p.poignet), _r(d, 3), p.forme, _r(p.presence)))
+            out.append(Articulation(_rp(p.coude), _rp(p.poignet), _r(d, 3), p.forme, _r(p.presence),
+                                    float(p.pouce), p.taille))
         return tuple(out)
 
     def cle(self, dt: float, poses, douce: bool = True, **etat) -> _Fil:
@@ -353,7 +389,7 @@ class _Fil:
 
 
 def _main(f: BrasFixe, p: PoseCle) -> Main:
-    return Main(p.poignet, p.direction, p.forme, f.pouce, f.taille)
+    return Main(p.poignet, p.direction, p.forme, p.pouce, p.taille)
 
 
 def _decale(f: BrasFixe, p: PoseCle, dx: float, dy: float) -> PoseCle:
@@ -395,11 +431,11 @@ def _au_long(dense, cum, s: float) -> tuple[float, float]:
     return _lerpp(dense[j], dense[j + 1], 0.0 if seg <= 0 else (s - cum[j]) / seg)
 
 
-def _inverse_lisse(y: float) -> float:
+def _inverse_adoucir(y: float) -> float:
     lo, hi = 0.0, 1.0
     for _ in range(60):
         mid = (lo + hi) / 2
-        if lisse(mid) < y:
+        if adoucir(mid) < y:
             lo = mid
         else:
             hi = mid
@@ -416,13 +452,13 @@ def suivre(pts, duree: float, par_seconde: float = 30.0) -> list[tuple[float, tu
     temps = {round(duree * i / n, 4) for i in range(1, n + 1)}
     if len(pts) > 2:
         for k in range(1, len(pts) - 1):
-            temps.add(round(duree * _inverse_lisse(cum[24 * k] / L), 4))
+            temps.add(round(duree * _inverse_adoucir(cum[24 * k] / L), 4))
     out = []
     for tau in sorted(temps):
-        out.append((tau, _au_long(dense, cum, L * lisse(tau / duree))))
+        out.append((tau, _au_long(dense, cum, L * adoucir(tau / duree))))
     # Les points de la flèche : exacts (et pas seulement à l'arrondi du temps près).
     for k in range(1, len(pts) - 1):
-        tk = round(duree * _inverse_lisse(cum[24 * k] / L), 4)
+        tk = round(duree * _inverse_adoucir(cum[24 * k] / L), 4)
         out = [(tau, tuple(pts[k]) if tau == tk else p) for tau, p in out]
     out[-1] = (out[-1][0], tuple(pts[-1]))
     return out
@@ -523,7 +559,7 @@ def _ou(fil: _Fil, sc, F, P) -> None:
     cum = _longueurs(dense)
     avant = 0.0
     for tau in instants:
-        q = _au_long(dense, cum, cum[-1] * lisse(tau / total))
+        q = _au_long(dense, cum, cum[-1] * adoucir(tau / total))
         if tau == total:
             q = pts[-1]
         dans_bascule = any(b0 < tau < b1 for b0, b1, _ in bascules)
@@ -631,6 +667,125 @@ def toutes() -> dict[str, Chronologie]:
 def sans_geste() -> dict[str, Chronologie]:
     """Les sons relevés sans geste (« ui ») : la bouche seule."""
     return {g.son: chronologie(g.son) for g in TOUS if g.son not in SCENES}
+
+
+# ---------------------------------------------------------------------------
+# Une suite de sons (17/11/2026) : enchaînés sans repasser par le repos
+# ---------------------------------------------------------------------------
+#
+# Retour de l'utilisateur (vidéo du simulateur) : entre deux sons d'une même syllabe (« jus » =
+# j, u), la main redescendait sous le cadre puis remontait. Dans une suite, la dernière pose d'un son
+# (avant son retour au repos) glisse directement (`TRANSITION`, adouci) vers la première pose du son
+# suivant ; repos seulement au début et à la fin de la suite. Un bras qui ne sert pas à un son (les
+# deux mains de « v », le bras gauche de « é », le bras dans le dos de « d », aucun pour « ui ») y
+# descend sous le cadre en fondu, et remonte pour le son qui s'en sert. La bouche du son suivant
+# arrive avec le début de la transition (en fondu). La même chose en Swift : `LouChronology.chain`.
+
+def neutre(son: str) -> Chronologie:
+    """Une étiquette inconnue : Lou au repos pendant 1 s (comme `LouChronology.neutral`)."""
+    cles = tuple(Cle(t, (), REPOS_BOUCHE, False, douce=False) for t in (0.0, 0.2, 0.8, BOUCHE_SEULE))
+    return Chronologie(son, BOUCHE_SEULE, (), cles, 0.5, geste=False)
+
+
+def repos_de(a: Articulation) -> Articulation:
+    """Le bras d'une clé descendu sous le cadre avec son coude (comme `repos`), invisible."""
+    dy = REPOS_Y - a.poignet[1]
+    return replace(a, poignet=(a.poignet[0], REPOS_Y), coude=(a.coude[0], a.coude[1] + dy), presence=0.0)
+
+
+@dataclass(frozen=True)
+class Suite:
+    chronologie: Chronologie   # toute la suite, du repos au repos
+    debuts: tuple              # où commence chaque son (le 1er à 0 ; puis au milieu de sa transition)
+
+    @property
+    def duree(self) -> float:
+        return self.chronologie.duree
+
+    def son(self, t: float) -> int | None:
+        """Le rang du son en cours (None avant le début ou à la fin)."""
+        if t < 0 or t >= self.duree - 1e-9 or not self.debuts:
+            return None
+        return max(i for i, d in enumerate(self.debuts) if d <= t)
+
+
+def enchainer(sons) -> Suite:
+    """La suite de sons, enchaînés. Un seul son : sa chronologie telle quelle."""
+    chs = [chronologie(s) or neutre(s) for s in sons]
+    if not chs:
+        return Suite(Chronologie("", 0.0, (), (), 0.0, geste=False), ())
+    if len(chs) == 1:
+        return Suite(chs[0], (0.0,))
+    places: list[BrasFixe] = []                   # les bras de la suite (côté, dans le dos)
+    for ch in chs:
+        for f in ch.bras:
+            if f not in places:
+                places.append(f)
+    rangs = [(0, 0)]                              # (son, clé) ; « clé » = indice dans le son
+    for i, ch in enumerate(chs):
+        for k in range(1, len(ch.cles) - 1):
+            rangs.append((i, k))
+    rangs.append((len(chs) - 1, len(chs[-1].cles) - 1))
+
+    def art(i: int, f: BrasFixe, k: int):
+        return chs[i].cles[k].poses[chs[i].bras.index(f)] if f in chs[i].bras else None
+
+    def avant(i: int, f: BrasFixe):
+        for p in range(i - 1, -1, -1):
+            if f in chs[p].bras:
+                return art(p, f, len(chs[p].cles) - 2)
+        return None
+
+    def apres(i: int, f: BrasFixe):
+        for n in range(i + 1, len(chs)):
+            if f in chs[n].bras:
+                return art(n, f, 1)
+        return None
+
+    derniere_dir: dict = {}
+    lignes = []                                   # (son, clé, poses)
+    for i, k in rangs:
+        derniere_du_son = k == len(chs[i].cles) - 2
+        poses = []
+        for f in places:
+            a = art(i, f, k)
+            if a is None:                         # ce bras ne sert pas à ce son : sous le cadre
+                prec, suiv = avant(i, f), apres(i, f)
+                a = repos_de(suiv if prec is None or (derniere_du_son and suiv is not None) else prec)
+            if f in derniere_dir:
+                a = replace(a, direction=_pres_de(a.direction, derniere_dir[f]))
+            derniere_dir[f] = a.direction
+            poses.append(a)
+        lignes.append((i, k, tuple(poses)))
+    # Chaque son est décalé : sa première pose arrive une transition après la dernière du précédent ;
+    # la transition dure `TRANSITION`, plus si une main va loin (un bras qui arrive du repos).
+    transitions = []
+    for r in range(1, len(lignes)):
+        (i0, _, p0), (i1, k1, p1) = lignes[r - 1], lignes[r]
+        if i1 > i0:
+            loin = max((math.dist(a.poignet, b.poignet) for a, b in zip(p0, p1)), default=0.0)
+            transitions.append(min(TRANSITION_MAX, max(TRANSITION, loin / VITESSE_TRANSITION)))
+    decal = [0.0]
+    for i in range(1, len(chs)):
+        decal.append(decal[i - 1] + chs[i - 1].cles[-2].t + transitions[i - 1] - chs[i].cles[1].t)
+    cles = []
+    for r, (i, k, poses) in enumerate(lignes):
+        cle = chs[i].cles[k]
+        t = 0.0 if r == 0 else decal[i] + cle.t
+        derniere_du_son = k == len(chs[i].cles) - 2
+        bouche, vib, douce = cle.bouche, cle.vibre, cle.douce
+        if derniere_du_son and i + 1 < len(chs):  # la bouche du son suivant arrive avec la transition
+            bouche, vib = chs[i + 1].cles[1].bouche, chs[i + 1].cles[1].vibre
+        if k == 1 and i > 0:
+            douce = True                          # la transition est adoucie
+        cles.append(Cle(t, poses, bouche, vib, cle.leve, cle.table, douce))
+    debuts = [0.0]
+    for i in range(1, len(chs)):
+        debut = decal[i - 1] + chs[i - 1].cles[-2].t
+        debuts.append(debut + transitions[i - 1] / 2)
+    duree = decal[-1] + chs[-1].duree
+    return Suite(Chronologie("+".join(sons), duree, tuple(places), tuple(cles), chs[0].t_pose,
+                             geste=any(ch.geste for ch in chs)), tuple(debuts))
 
 
 def main(argv: list[str]) -> int:

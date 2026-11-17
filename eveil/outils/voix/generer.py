@@ -70,7 +70,43 @@ REECRIRE = {
 
 # Validés À L'OREILLE par l'utilisateur (page `rendu/rejets.html`) : le détecteur hésitait, l'écoute tranche.
 # Clé → (texte rendu, prise).
-VALIDES_A_L_OREILLE: dict[str, tuple[str, int]] = {}
+# Écoute du 17/11/2026 : 34 validés sur 37 (non : la syllabe « lit », le mot « loup », la syllabe « rro » de carrosse).
+VALIDES_A_L_OREILLE: dict[str, tuple[str, int]] = {
+    "fr-FR|syllable|roue|ʁu": ("roue", 0),
+    "fr-FR|word|lit|li": ("lit", 0),
+    "fr-FR|syllable|bague|baɡ": ("bague", 0),
+    "fr-FR|syllable|douch|duʃ": ("douch", 0),
+    "fr-FR|syllable|dou|du": ("dou", 0),
+    "fr-FR|word|vague|vaɡ": ("vague", 0),
+    "fr-FR|syllable|vague|vaɡ": ("vague", 0),
+    "fr-FR|syllable|rose|ʁoz": ("rose", 0),
+    "fr-FR|syllable|vase|vaz": ("vase", 0),
+    "fr-FR|syllable|verre|vɛʁ": ("verre", 0),
+    "fr-FR|syllable|vert|vɛʁ": ("vert", 0),
+    "fr-FR|syllable|deau|do": ("deau", 0),
+    "fr-FR|syllable|vé|ve": ("vé", 0),
+    "fr-FR|syllable|dis|di": ("dis", 0),
+    "fr-FR|syllable|lise|liz": ("lise", 0),
+    "fr-FR|syllable|gui|ɡi": ("gui", 0),
+    "fr-FR|syllable|rrosse|ʁɔs": ("rrosse", 0),
+    "fr-FR|word|dragon|dʁaɡɔ̃": ("dragon", 0),
+    "fr-FR|syllable|dra|dʁa": ("dra", 0),
+    "fr-FR|word|arbre|aʁbʁ": ("arbre", 0),
+    "fr-FR|syllable|arbre|aʁbʁ": ("arbre", 0),
+    "fr-FR|word|crocodile|kʁɔkɔdil": ("crocodile", 0),
+    "fr-FR|syllable|dile|dil": ("dile", 0),
+    "fr-FR|word|table|tabl": ("table", 0),
+    "fr-FR|syllable|table|tabl": ("table", 0),
+    "fr-FR|syllable|gre|ɡʁə": ("gre", 0),
+    "fr-FR|word|brosse|bʁɔs": ("brosse", 0),
+    "fr-FR|syllable|brosse|bʁɔs": ("brosse", 0),
+    "fr-FR|syllable|bro|bʁɔ": ("bro", 0),
+    "fr-FR|syllable|di|di": ("di", 0),
+    "fr-FR|word|Lou|lu": ("Lou", 0),
+    "en-US|word|wash|wɑʃ": ("wash", 0),
+    "en-US|syllable|cket|kɪt": ("cket", 0),
+    "en-US|syllable|splash|splæʃ": ("splash", 0),
+}
 
 PHRASES = {
     "fr-FR": [("Encore !", "word"),
@@ -182,8 +218,11 @@ def rendre(enonces: list[Enonce]) -> int:
     style = load_voice_style([str(MODELE / "voice_styles" / f"{STYLE}.json")])
     rate = tts.sample_rate
     SORTIE.mkdir(parents=True, exist_ok=True)
+    ancien = {}
+    if (SORTIE / "manifest.json").exists():
+        ancien = json.loads((SORTIE / "manifest.json").read_text(encoding="utf-8")).get("empreintes", {})
     manifeste = {"voix": f"Supertonic 3, style {STYLE}", "revision": REVISION, "licence": "OpenRAIL-M",
-                 "clips": {}}
+                 "clips": {}, "empreintes": {}}
     rejets, retouches = [], []
     with tempfile.TemporaryDirectory() as tmp:
         for i, e in enumerate(enonces):
@@ -221,11 +260,17 @@ def rendre(enonces: list[Enonce]) -> int:
             w, texte, prise = garde
             if texte != e.text or prise:
                 retouches.append({"cle": e.cle, "texte": texte, "prise": prise})
-            brut = Path(tmp) / "x.wav"
-            sf.write(str(brut), w, rate, subtype="PCM_16")
-            subprocess.run(["afconvert", "-f", "m4af", "-d", "aac", "-b", "64000", str(brut),
-                            str(SORTIE / e.fichier)], check=True, capture_output=True)
+            # L'encodeur AAC ne rend pas les mêmes octets deux fois : on ne réencode que si le SON a changé
+            # (empreinte du PCM), pour ne pas réécrire 600 fichiers identiques à chaque rendu.
+            pcm = (np.clip(w, -1, 1) * 32767).astype("<i2").tobytes()
+            empreinte = hashlib.sha1(pcm).hexdigest()[:16]
+            if ancien.get(e.cle) != empreinte or not (SORTIE / e.fichier).exists():
+                brut = Path(tmp) / "x.wav"
+                sf.write(str(brut), w, rate, subtype="PCM_16")
+                subprocess.run(["afconvert", "-f", "m4af", "-d", "aac", "-b", "64000", str(brut),
+                                str(SORTIE / e.fichier)], check=True, capture_output=True)
             manifeste["clips"][e.cle] = e.fichier
+            manifeste["empreintes"][e.cle] = empreinte
             if i % 50 == 0:
                 print(f"{i}/{len(enonces)}", flush=True)
     # Les fichiers d'un ancien rendu qui ne servent plus.

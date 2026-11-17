@@ -460,7 +460,14 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     `ModelVoicePlayer` lit le fichier sinon voix de l'iPad ; **une seule voix par mot** (`VoiceClips.covers`,
     `voice.clipsAllowed`) ; phrases et sons seuls = voix de l'iPad. Espace des grands : « Voix du train :
     Supertonic (F5) » + mention voix de synthèse (licence : restriction e ; § 5 à reprendre dans les CGU).
-    37 énoncés sans fichier à écouter : `outils/voix/rendu/rejets.html` (gitignoré).
+    Écoute de l'utilisateur (17/11) : 34/37 cas douteux validés (`VALIDES_A_L_OREILLE`) → **632/635** ;
+    3 refusés (syllabe « lit », « loup », syllabe « rro ») = voix de l'iPad. Empreinte PCM par clip dans le
+    manifeste : un rendu ne réencode que les sons changés (l'AAC ne rend pas les mêmes octets).
+  - ✅ **Lou plus grand et plus fluide (17/11, demande utilisateur)** : portrait iPad, bulle AU-DESSUS de Lou,
+    Lou ≈ 36 % de la hauteur (paysage 42 %) ; animation : sons d'une performance ENCHAÎNÉS sans repasser par
+    le repos (`enchainer` Python ↔ `LouChain` Swift, transition 0,3-0,5 s), bouche et vibration en fondu
+    0,12 s, adoucissement 6x⁵−15x⁴+10x³, arrivée/départ 0,4 s ; `LouPerformance.duration` = durée chaînée
+    réelle. Planches `docs/ui/eveil-app/13-gestes-lou-*.png`. Tests Swift 213, Python verts.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur, photo enregistrée ou convertie en
   fichier interdits) → 0 violation, 8 tests ;

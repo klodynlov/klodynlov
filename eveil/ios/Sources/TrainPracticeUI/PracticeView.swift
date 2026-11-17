@@ -353,19 +353,30 @@ public struct PracticeView: View {
         GeometryReader { geo in
             let w = geo.size.width, h = geo.size.height
             let wide = w > h
-            let card = min(wide ? 300 : 250, h * 0.26)
+            let card = louShown && !wide ? min(210, h * 0.2) : min(wide ? 300 : 250, h * 0.26)
             let cat = min(wide ? 250 : 210, h * 0.24)
-            // Lou en grand (retour de l'utilisateur, 06/10/2026 : « il est trop petit ») : le portrait prend
-            // ~30 % de la hauteur ; la bulle se resserre pour que la rangée tienne (iPad 11" compris).
-            let lou = min(wide ? 330 : 380, h * (wide ? 0.33 : 0.30) * 260 / 300, w - card - 260)
-            let bubbleWidth = louShown ? max(170, min(wide ? 380 : 300, w - card - lou - (wide ? 150 : 100)))
+            // Lou en grand (retours de l'utilisateur : « il est trop petit » 06/10, « agrandis-le » 17/11) :
+            // en portrait, la bulle passe AU-DESSUS de Lou (elle lui prenait la largeur) et Lou prend ~36 % de
+            // la hauteur ; en paysage, ~42 % de la hauteur, la bulle à côté.
+            let lou = wide ? min(h * 0.42 * 260 / 300, w - card - 420)
+                           : min(h * 0.36 * 260 / 300, w - card - 70)
+            let bubbleWidth = louShown ? (wide ? max(200, min(360, w - card - lou - 120)) : lou + 30)
                                        : (wide ? 380 : 300)
             let trainBase = TrainView.baseWidth(wagons: word.wagons.count, hasCaboose: word.coda != nil)
             let trainScale = min(wide ? 1.45 : 1.5, (w - 60) / trainBase)   // paysage : le train ne mord pas sur la carte
             VStack(spacing: 0) {
-                Spacer(minLength: 90)
+                Spacer(minLength: louShown && !wide ? 80 : 90)
                 HStack(alignment: .center, spacing: wide ? 44 : (louShown ? 14 : 22)) {
                     WordPicture(word: word, size: card, pulse: picturePulse, onDark: world.isDark, onTap: tapPicture)
+                    if louShown && !wide {
+                        // Portrait : la bulle au-dessus, Lou en grand dessous (sa main ne passe pas sous la bulle).
+                        VStack(alignment: .trailing, spacing: 6) {
+                            SpeechBubble(bubbleText)
+                                .frame(maxWidth: bubbleWidth, alignment: .trailing)
+                            LouGestureView(performance: louPerformance, skin: louSkin, size: lou)
+                        }
+                        .allowsHitTesting(false)
+                    } else {
                     HStack(alignment: .center, spacing: 6) {
                         if louShown {
                             // Lou en grand, en portrait : sa bouche et sa main montrent chaque son.
@@ -379,6 +390,7 @@ public struct PracticeView: View {
                             .frame(maxWidth: bubbleWidth)
                     }
                     .allowsHitTesting(false)
+                    }
                 }
                 .opacity(departing ? 0 : 1)
                 .animation(.easeInOut(duration: 0.4), value: departing)

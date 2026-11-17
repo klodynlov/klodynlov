@@ -246,10 +246,11 @@ def _swift_chrono(nom: str, ch) -> list[str]:
          f'gesture: {"true" if ch.geste else "false"})']
     for f in ch.bras:
         cote = ".right" if f.cote == "d" else ".left"
-        L.append(f"        c.arm({cote}, thumb: {f.pouce}, size: {_n(f.taille)}, behind: {'true' if f.derriere else 'false'})")
+        L.append(f"        c.arm({cote}, behind: {'true' if f.derriere else 'false'})")
     for k in ch.cles:
         joints = "".join(f", J({_n(a.coude[0])}, {_n(a.coude[1])}, {_n(a.poignet[0])}, {_n(a.poignet[1])}, "
-                         f"{_n(a.direction)}, \"{a.forme}\", {_n(a.presence)})" for a in k.poses)
+                         f"{_n(a.direction)}, \"{a.forme}\", {_n(a.presence)}, {_n(a.pouce)}, {_n(a.taille)})"
+                         for a in k.poses)
         L.append(f'        c.key({_n(k.t)}, "{k.bouche}", {"true" if k.vibre else "false"}, {_n(k.leve)}, '
                  f'{_n(k.table)}, {"true" if k.douce else "false"}{joints})')
     L += ["        return c", "    }", ""]
@@ -262,8 +263,9 @@ def source_data() -> str:
     L = [ENTETE.format(nom="LouGestureData.swift"), "//",
          "// Les chronologies des gestes animés de Lou (`eveil/outils/gestes/animation.py`) : une par son,",
          "// du repos au repos. Clé : instant (s), bouche, gorge qui vibre, tête levée, table, segment adouci,",
-         "// puis un bras par `J(coude x, y, poignet x, y, direction de la main, forme, présence)` (direction en",
-         "// degrés, déroulée d'une clé à l'autre).",
+         "// puis un bras par `J(coude x, y, poignet x, y, direction de la main, forme, présence, côté du pouce,",
+         "// taille de la main)` (direction en degrés, déroulée d'une clé à l'autre). Une suite de sons est",
+         "// enchaînée en Swift (`LouChronology.chain`, comme `animation.enchainer`).",
          "", "#if canImport(SwiftUI)", "import SwiftUI", "", "extension LouChronology {",
          "    /// Les sons qui ont un geste, dans l'ordre de la planche.",
          f"    static let gestureKeys: [String] = [{', '.join(chr(34) + s + chr(34) for s in gestes)}]",
@@ -287,42 +289,66 @@ def source_data() -> str:
 # ---------------------------------------------------------------------------
 
 SONS_PARITE = ("a", "ou", "é", "s", "z", "oi", "oin", "f", "v", "p", "b", "d", "m", "gn", "ill", "ui")
+# Des suites de sons (`animation.enchainer`) : deux sons d'une syllabe, deux mains → une, sans geste au
+# milieu, bras qui changent de côté, une étiquette inconnue.
+SUITES_PARITE = (("j", "u"), ("v", "oi"), ("ch", "ui", "ou"), ("a", "é", "d", "s"), ("p", "xyz", "l"))
 
 
-def instants(ch) -> list[float]:
+def instants(ch, debuts=()) -> list[float]:
     ts = [ARRIVEE * 0.5, ARRIVEE, ch.t_pose, (ch.t_pose + ch.duree) / 2, ch.duree - 0.1]
     ts += [ch.cles[len(ch.cles) // 2].t + 0.013]
+    for d in debuts[1:]:                       # autour des transitions, et pendant le fondu des bouches
+        ts += [d - animation.TRANSITION / 2 + 0.04, d, d + animation.TRANSITION / 2 + 0.05]
     return sorted({round(t, 4) for t in ts if 0 <= t <= ch.duree})
 
 
 def source_vecteurs() -> str:
     L = [ENTETE.format(nom="LouGestureVectors.swift"), "//",
-         "// Vecteurs de parité Python → Swift des gestes animés de Lou (`animation.etat`) : à quelques",
-         "// instants, pour chaque bras, poignet, coude, direction de la main, bout de l'index, présence ;",
-         "// et la bouche, la gorge qui vibre, la tête levée, la table.", "",
+         "// Vecteurs de parité Python → Swift des gestes animés de Lou (`animation.etat`, `animation.enchainer`) :",
+         "// à quelques instants d'un son ou d'une suite de sons, pour chaque bras, poignet, coude, direction de",
+         "// la main, bout de l'index, présence, côté du pouce ; et la bouche (avec son fondu), la gorge qui",
+         "// vibre, la tête levée, la table. Plus les durées (d'un son, d'une suite) et les débuts des sons.", "",
          "import CoreGraphics", "", "struct LouVectorArm {", "    let wrist: CGPoint", "    let elbow: CGPoint",
-         "    let direction: Double", "    let indexTip: CGPoint", "    let presence: Double", "}", "",
-         "struct LouVector {", "    let key: String", "    let t: Double", "    let mouth: String",
-         "    let vibrate: Bool", "    let lift: Double", "    let table: Double", "    let arms: [LouVectorArm]", "}",
+         "    let direction: Double", "    let indexTip: CGPoint", "    let presence: Double", "    let thumb: Double",
+         "}", "",
+         "struct LouVector {", "    let keys: [String]", "    let t: Double", "    let mouth: String",
+         "    let previousMouth: String", "    let mouthMix: Double", "    let vibrate: Bool",
+         "    let vibration: Double", "    let lift: Double", "    let table: Double", "    let arms: [LouVectorArm]",
+         "}", "",
+         "struct LouChainVector {", "    let keys: [String]", "    let duration: Double", "    let starts: [Double]", "}",
          "", "enum LouGestureVectors {",
-         "    static var all: [LouVector] { " + " + ".join(f"v{i:02d}()" for i in range(len(SONS_PARITE))) + " }",
+         "    static var all: [LouVector] { "
+         + " + ".join(f"v{i:02d}()" for i in range(len(SONS_PARITE) + len(SUITES_PARITE))) + " }",
          "    static let durations: [String: Double] = ["]
     for son, ch in {**animation.toutes(), **animation.sans_geste()}.items():
         L.append(f'        "{son}": {_n(ch.duree)},')
+    L += ["    ]", "    static let chains: [LouChainVector] = ["]
+    for sons in SUITES_PARITE:
+        su = animation.enchainer(sons)
+        L.append(f"        LouChainVector(keys: {_liste(sons)}, duration: {_n(su.duree)}, "
+                 f"starts: [{', '.join(_n(d) for d in su.debuts)}]),")
     L += ["    ]", ""]
-    for i, son in enumerate(SONS_PARITE):
-        ch = chronologie(son)
-        L += [f"    private static func v{i:02d}() -> [LouVector] {{   // {son}", "        ["]
-        for t in instants(ch):
+    cas = [((son,), chronologie(son), ()) for son in SONS_PARITE]
+    cas += [(sons, animation.enchainer(sons).chronologie, animation.enchainer(sons).debuts) for sons in SUITES_PARITE]
+    for i, (sons, ch, debuts) in enumerate(cas):
+        L += [f"    private static func v{i:02d}() -> [LouVector] {{   // {' + '.join(sons)}", "        ["]
+        for t in instants(ch, debuts):
             e = etat(ch, t)
             bras = ", ".join(
                 f"LouVectorArm(wrist: {_point(b.poignet)}, elbow: {_point(b.coude)}, direction: {_n(b.direction)}, "
-                f"indexTip: {_point(b.bout('index'))}, presence: {_n(b.presence)})" for b in e.bras)
-            L.append(f'            LouVector(key: "{son}", t: {_n(t)}, mouth: "{e.bouche}", vibrate: '
-                     f'{"true" if e.vibre else "false"}, lift: {_n(e.leve)}, table: {_n(e.table)}, arms: [{bras}]),')
+                f"indexTip: {_point(b.bout('index'))}, presence: {_n(b.presence)}, thumb: {_n(b.pouce)})"
+                for b in e.bras)
+            L.append(f'            LouVector(keys: {_liste(sons)}, t: {_n(t)}, mouth: "{e.bouche}", '
+                     f'previousMouth: "{e.bouche_avant}", mouthMix: {_n(e.fondu)}, '
+                     f'vibrate: {"true" if e.vibre else "false"}, vibration: {_n(e.vibration)}, '
+                     f'lift: {_n(e.leve)}, table: {_n(e.table)}, arms: [{bras}]),')
         L += ["        ]", "    }", ""]
     L[-1:] = ["}", ""]
     return "\n".join(L)
+
+
+def _liste(sons) -> str:
+    return "[" + ", ".join(f'"{s}"' for s in sons) + "]"
 
 
 def sorties() -> dict[Path, str]:

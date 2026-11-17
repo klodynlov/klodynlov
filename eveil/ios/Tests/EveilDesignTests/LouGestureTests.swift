@@ -41,12 +41,15 @@ final class LouGestureTests: XCTestCase {
 
     func testParityWithPython() {
         let vectors = LouGestureVectors.all
-        XCTAssertGreaterThan(vectors.count, 60)
+        XCTAssertGreaterThan(vectors.count, 120)
         for v in vectors {
-            let f = LouChronology.of(v.key).frame(at: v.t)
-            let where_ = "\(v.key) à \(v.t) s"
+            let f = LouChain(v.keys).chronology.frame(at: v.t)
+            let where_ = "\(v.keys.joined(separator: "+")) à \(v.t) s"
             XCTAssertEqual(f.mouth, v.mouth, where_)
+            XCTAssertEqual(f.previousMouth, v.previousMouth, where_)
+            XCTAssertEqual(f.mouthMix, v.mouthMix, accuracy: 1e-4, where_)
             XCTAssertEqual(f.vibrate, v.vibrate, where_)
+            XCTAssertEqual(f.vibration, v.vibration, accuracy: 1e-4, where_)
             XCTAssertEqual(f.lift, v.lift, accuracy: 1e-4, where_)
             XCTAssertEqual(f.table, v.table, accuracy: 1e-4, where_)
             XCTAssertEqual(f.arms.count, v.arms.count, where_)
@@ -56,7 +59,14 @@ final class LouGestureTests: XCTestCase {
                 assertClose(arm.tip(.index), expected.indexTip, "\(where_) : bout de l'index")
                 XCTAssertEqual(arm.direction, expected.direction, accuracy: 1e-3, "\(where_) : direction")
                 XCTAssertEqual(arm.presence, expected.presence, accuracy: 1e-4, "\(where_) : présence")
+                XCTAssertEqual(arm.thumb, expected.thumb, accuracy: 1e-4, "\(where_) : pouce")
             }
+        }
+        for c in LouGestureVectors.chains {
+            let chain = LouChain(c.keys)
+            XCTAssertEqual(chain.duration, c.duration, accuracy: 1e-4, c.keys.joined(separator: "+"))
+            XCTAssertEqual(chain.starts.count, c.starts.count)
+            for (a, b) in zip(chain.starts, c.starts) { XCTAssertEqual(a, b, accuracy: 1e-4) }   // vecteurs arrondis à 1e-4
         }
     }
 
@@ -128,23 +138,67 @@ final class LouGestureTests: XCTestCase {
     func testPerformanceChainsTheSounds() {
         let start = Date(timeIntervalSinceReferenceDate: 1000)
         let p = LouPerformance(keys: ["ch", "ui", "ou"], start: start)
-        let dch = LouGestures.duration(of: "ch"), dui = LouGestures.duration(of: "ui")
-        XCTAssertEqual(p.duration, dch + dui + LouGestures.duration(of: "ou"), accuracy: 1e-9)
+        let chain = LouChain(p.keys)
+        // Enchaînés : entre deux gestes, 0,5 s de moins que les sons l'un après l'autre (départ + arrivée
+        // 0,8 s remplacés par une transition de 0,3 s) ; « ui » (bouche seule) n'a que 0,2 s de chaque côté.
+        XCTAssertEqual(p.duration, chain.duration, accuracy: 1e-12)
+        XCTAssertEqual(p.duration, ["ch", "ui", "ou"].reduce(0) { $0 + LouGestures.duration(of: $1) } - 2 * 0.3,
+                       accuracy: 1e-9)
+        XCTAssertEqual(LouPerformance(keys: ["ch", "ou"], start: start).duration,
+                       LouGestures.duration(of: "ch") + LouGestures.duration(of: "ou") - 0.5, accuracy: 1e-9)
         XCTAssertNil(p.key(at: start.addingTimeInterval(-0.01)))
         XCTAssertEqual(p.key(at: start), "ch")
-        XCTAssertEqual(p.key(at: start.addingTimeInterval(dch - 0.001)), "ch")
-        XCTAssertEqual(p.key(at: start.addingTimeInterval(dch + 0.001)), "ui")
-        XCTAssertEqual(p.key(at: start.addingTimeInterval(dch + dui + 0.5)), "ou")
+        XCTAssertEqual(p.key(at: start.addingTimeInterval(chain.starts[1] - 0.001)), "ch")
+        XCTAssertEqual(p.key(at: start.addingTimeInterval(chain.starts[1] + 0.001)), "ui")
+        XCTAssertEqual(p.key(at: start.addingTimeInterval(chain.starts[2] + 0.2)), "ou")
         XCTAssertNil(p.key(at: start.addingTimeInterval(p.duration)))
-        // « ui » : la bouche seule.
-        let ui = p.frame(at: start.addingTimeInterval(dch + 0.5), reduceMotion: false)
-        XCTAssertTrue(ui.arms.isEmpty)
+        // « ui » : la bouche seule, la main est descendue sous le cadre.
+        let ui = p.frame(at: start.addingTimeInterval((chain.starts[1] + chain.starts[2]) / 2), reduceMotion: false)
+        XCTAssertEqual(ui.arms.count, 1)
+        XCTAssertEqual(ui.arms[0].presence, 0, accuracy: 1e-9)
         XCTAssertEqual(ui.mouth, "mi_ouverte")
         // Fini : au repos.
         let after = p.frame(at: start.addingTimeInterval(p.duration + 1), reduceMotion: false)
         XCTAssertTrue(after.arms.isEmpty)
         XCTAssertEqual(after.mouth, "neutre")
         XCTAssertEqual(LouPerformance(keys: [], start: start).duration, 0)
+        // Un seul son : sa chronologie telle quelle.
+        XCTAssertEqual(LouPerformance(keys: ["s"], start: start).duration, LouGestures.duration(of: "s"))
+    }
+
+    /// Deux sons d'une même syllabe (« jus » : j, u) : la main ne redescend pas entre les deux, et ne
+    /// saute jamais ; la bouche passe de l'une à l'autre en fondu.
+    func testTwoSoundsFlowWithoutGoingBackToRest() {
+        for keys in [["j", "u"], ["s", "z"], ["oi", "t"], ["v", "oi"], ["a", "é", "d", "s"]] {
+            let chain = LouChain(keys)
+            let c = chain.chronology
+            var previous: LouFrame?
+            var t = 0.0
+            while t <= c.duration {
+                let f = c.frame(at: t)
+                XCTAssertTrue((0...1).contains(f.mouthMix), "\(keys) à \(t) s")
+                if let previous {
+                    for (a, b) in zip(f.arms, previous.arms) where a.presence > 0.3 {
+                        let step = hypot(Double(a.wrist.x - b.wrist.x), Double(a.wrist.y - b.wrist.y))
+                        XCTAssertLessThan(step, 45, "\(keys) à \(t) s : la main saute de \(step) px")
+                    }
+                }
+                previous = f
+                t += 1.0 / 60
+            }
+        }
+        // « jus » : le bras droit reste là d'un bout à l'autre (entre l'arrivée et le départ).
+        let ju = LouChain(["j", "u"]).chronology
+        var t = 0.45
+        while t < ju.duration - 0.45 {
+            XCTAssertEqual(ju.frame(at: t).arms[0].presence, 1, accuracy: 1e-9, "à \(t) s")
+            t += 0.01
+        }
+        // « vwa » : les deux mains de « v », puis seulement la droite de « oi » — la gauche s'en va en fondu.
+        let voi = LouChain(["v", "oi"])
+        let end = voi.chronology.frame(at: voi.duration - 0.5)
+        XCTAssertEqual(end.arms.count, 2)
+        XCTAssertEqual(end.arms.filter { $0.presence > 0.99 }.count, 1)
     }
 
     func testReducedMotionHoldsThePose() {
@@ -157,6 +211,12 @@ final class LouGestureTests: XCTestCase {
             XCTAssertEqual(f.arms[0].wrist, posed.arms[0].wrist, "à \(t) s")
             XCTAssertNil(f.pulse, "pas de battement quand les animations sont réduites")
         }
+        // Une suite : la pose de chaque son, l'un après l'autre.
+        let q = LouPerformance(keys: ["j", "u"], start: start)
+        let chain = LouChain(q.keys)
+        let u = LouChronology.of("u")
+        let f = q.frame(at: start.addingTimeInterval(chain.starts[1] + 0.1), reduceMotion: true)
+        XCTAssertEqual(f.arms[0].wrist, u.frame(at: u.posed).arms[0].wrist)
     }
 
     // MARK: Peaux
@@ -279,6 +339,53 @@ final class LouGestureTests: XCTestCase {
         XCTAssertNotNil(RenderSupport.render(LouGestureView(performance: LouPerformance(keys: ["a"], start: Date()),
                                                             skin: skin, size: 130),
                                              size: CGSize(width: 130, height: 150), name: "lou-vue"))
+    }
+
+    /// Une suite de sons à 10 images/s (relire la fluidité) : `lou-suite-<sons>.png`.
+    @MainActor
+    func testRenderPerformancesAtTenFramesPerSecond() throws {
+        let width: CGFloat = 96
+        for keys in [["j", "u"], ["v", "oi"], ["ch", "ui", "ou"]] {
+            let start = Date(timeIntervalSinceReferenceDate: 0)
+            let p = LouPerformance(keys: keys, start: start)
+            let ts = stride(from: 0.0, through: p.duration + 0.001, by: 0.1).map { $0 }
+            let perRow = 10
+            let rows = (ts.count + perRow - 1) / perRow
+            let sheet = VStack(alignment: .leading, spacing: 3) {
+                ForEach(0..<rows, id: \.self) { r in
+                    HStack(spacing: 3) {
+                        ForEach(Array(ts[(r * perRow)..<min(ts.count, (r + 1) * perRow)].enumerated()), id: \.offset) { _, t in
+                            VStack(spacing: 1) {
+                                Self.canvas(p.frame(at: start.addingTimeInterval(t), reduceMotion: false), .lou, width: width)
+                                Text(String(format: "%@ %.1f", p.key(at: start.addingTimeInterval(t)) ?? "fin", t))
+                                    .font(.system(size: 10)).foregroundStyle(.black)
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(6).background(Color(white: 0.92))
+            let size = CGSize(width: CGFloat(perRow) * (width + 3) + 12,
+                              height: CGFloat(rows) * (width * 300 / 260 + 18) + 12)
+            XCTAssertNotNil(RenderSupport.render(sheet, size: size, name: "lou-suite-\(keys.joined(separator: "-"))",
+                                                 scale: 1))
+        }
+        // De près, à 30 images/s : le passage de « j » à « u » (la main tourne, la bouche en fondu).
+        let chain = LouChain(["j", "u"])
+        let middle = chain.starts[1]
+        let ts = stride(from: middle - 0.3, through: middle + 0.3, by: 1.0 / 30).map { $0 }
+        let close = HStack(spacing: 3) {
+            ForEach(Array(ts.enumerated()), id: \.offset) { _, t in
+                VStack(spacing: 1) {
+                    Self.canvas(chain.chronology.frame(at: t), .lou, width: 150)
+                    Text(String(format: "%.3f", t)).font(.system(size: 10)).foregroundStyle(.black)
+                }
+            }
+        }
+        .padding(6).background(Color(white: 0.92))
+        XCTAssertNotNil(RenderSupport.render(close, size: CGSize(width: CGFloat(ts.count) * 153 + 12,
+                                                                 height: 150 * 300 / 260 + 30),
+                                             name: "lou-transition-j-u", scale: 1))
     }
 
     /// La vue publique, pendant une suite commencée il y a 0,8 s : le bras et la main sont peints

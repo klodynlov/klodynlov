@@ -8,7 +8,8 @@ import math
 import unittest
 
 from . import animation, generer
-from .animation import ARRIVEE, DEPART, REPOS_BOUCHE, chronologie, etat, toutes, trace
+from .animation import (ARRIVEE, DEPART, FONDU, REPOS_BOUCHE, TRANSITION, adoucir, chronologie, enchainer,
+                        etat, toutes, trace)
 from .dessins import SCENES, vibre
 from .gestes import TOUS
 from .lou_portrait import FORMES, PEAUX
@@ -77,7 +78,7 @@ class TestChronologies(unittest.TestCase):
                 self.assertEqual(e.bouche, PAR_SON[son].bouche)
                 self.assertEqual(e.vibre, vibre(PAR_SON[son]))
 
-    def test_la_main_arrive_en_0_35_s(self):
+    def test_la_main_arrive_depuis_le_repos(self):
         for son, ch in toutes().items():
             with self.subTest(son=son):
                 self.assertEqual(ch.cles[1].t, ARRIVEE)
@@ -149,6 +150,96 @@ class TestChronologies(unittest.TestCase):
         self.assertIsNone(chronologie("xyz"))
 
 
+class TestSuites(unittest.TestCase):
+    """Une suite de sons (17/11/2026) : enchaînés sans repasser par le repos."""
+
+    SUITES = (("j", "u"), ("v", "oi"), ("ch", "ui", "ou"), ("a", "é", "d", "s"), ("s", "z"), ("p", "xyz", "l"))
+
+    def test_un_seul_son_est_sa_chronologie(self):
+        for son in ("a", "s", "ui"):
+            self.assertEqual(enchainer([son]).chronologie, chronologie(son))
+        self.assertEqual(enchainer([]).duree, 0.0)
+
+    def test_duree_exacte(self):
+        """Entre deux gestes : départ + arrivée remplacés par une transition."""
+        for a, b in (("j", "u"), ("v", "oi"), ("s", "z")):
+            self.assertAlmostEqual(enchainer([a, b]).duree,
+                                   chronologie(a).duree + chronologie(b).duree - DEPART - ARRIVEE + TRANSITION, places=9)
+        for sons in self.SUITES:
+            su = enchainer(sons)
+            self.assertEqual(su.duree, su.chronologie.cles[-1].t)
+            self.assertEqual(len(su.debuts), len(sons))
+
+    def test_debut_et_fin_au_repos(self):
+        for sons in self.SUITES:
+            ch = enchainer(sons).chronologie
+            with self.subTest(sons=sons):
+                for t in (0.0, ch.duree):
+                    e = etat(ch, t)
+                    self.assertEqual((e.bouche, e.vibre, e.leve, e.table), (REPOS_BOUCHE, False, 0.0, 0.0))
+                    self.assertTrue(all(b.presence == 0.0 for b in e.bras))
+
+    def test_la_main_ne_redescend_pas_entre_deux_sons(self):
+        ch = enchainer(["j", "u"]).chronologie
+        t = ARRIVEE + 0.01
+        while t < ch.duree - DEPART:
+            self.assertEqual(etat(ch, t).bras[0].presence, 1.0, f"à {t:.2f} s")
+            t += 0.01
+
+    def test_un_bras_qui_ne_sert_plus_part_en_fondu(self):
+        su = enchainer(["v", "oi"])
+        cotes = [f.cote for f in su.chronologie.bras]
+        fin = etat(su.chronologie, su.duree - DEPART - 0.05)
+        gauche = fin.bras[cotes.index("g")]
+        self.assertEqual(gauche.presence, 0.0)
+        self.assertGreater(gauche.poignet[1], 300)
+
+    def test_rien_ne_saute_ni_ne_tourne(self):
+        for sons in self.SUITES:
+            ch = enchainer(sons).chronologie
+            with self.subTest(sons=sons):
+                avant = None
+                for t in _pas(ch):
+                    e = etat(ch, t)
+                    self.assertTrue(0.0 <= e.fondu <= 1.0)
+                    if avant is not None:
+                        for a, b in zip(e.bras, avant.bras):
+                            if a.presence > 0.3:
+                                self.assertLess(math.dist(a.poignet, b.poignet), 15, f"à {t:.3f} s")
+                                self.assertLess(abs(a.direction - b.direction), 12, f"à {t:.3f} s : la main tourne")
+                    avant = e
+
+    def test_bouche_en_fondu(self):
+        ch = enchainer(["j", "u"]).chronologie
+        changements = [k for a, k in zip(ch.cles, ch.cles[1:]) if a.bouche != k.bouche]
+        self.assertTrue(changements)
+        for k in changements:
+            debut = etat(ch, k.t)
+            self.assertEqual(debut.fondu, 0.0)
+            milieu = etat(ch, k.t + FONDU / 2)
+            self.assertAlmostEqual(milieu.fondu, 0.5, places=6)
+            self.assertNotEqual(milieu.bouche_avant, milieu.bouche)
+            self.assertEqual(etat(ch, k.t + FONDU + 0.001).fondu, 1.0)
+
+    def test_adoucir(self):
+        self.assertEqual((adoucir(0.0), adoucir(1.0)), (0.0, 1.0))
+        self.assertAlmostEqual(adoucir(0.5), 0.5)
+        h = 1e-6     # vitesse nulle aux bouts
+        self.assertLess(adoucir(h) / h, 1e-6)
+        self.assertLess((1 - adoucir(1 - h)) / h, 1e-6)
+
+    def test_pas_d_arret_au_milieu_d_un_trace(self):
+        """« s », « z » : le bout de l'index ne s'arrête pas entre deux clés du tracé."""
+        for son in ("s", "z"):
+            ch = chronologie(son)
+            debut, fin = ch.cles[1].t, ch.t_pose
+            n = 200
+            pts = [etat(ch, debut + (fin - debut) * i / n).bras[0].bout() for i in range(n + 1)]
+            vit = [math.dist(a, b) for a, b in zip(pts, pts[1:])]
+            milieu = vit[n // 4: -n // 4]          # (aux bouts, le tracé démarre et finit en douceur)
+            self.assertGreater(min(milieu), 0.3 * max(milieu), son)
+
+
 class TestGenere(unittest.TestCase):
     def test_fichiers_swift_a_jour(self):
         for chemin, source in generer.sorties().items():
@@ -161,7 +252,7 @@ class TestGenere(unittest.TestCase):
         for chemin, source in generer.sorties().items():
             longueur, plus_long = 0, 0
             for ligne in source.splitlines():
-                if "static func" in ligne:
+                if "static " in ligne or ligne.startswith(("struct ", "enum ", "extension ")):
                     longueur = 0
                 longueur += 1
                 plus_long = max(plus_long, longueur)
@@ -179,7 +270,9 @@ class TestGenere(unittest.TestCase):
     def test_vecteurs_de_parite(self):
         vec = generer.source_vecteurs()
         for son in generer.SONS_PARITE:
-            self.assertIn(f'key: "{son}"', vec)
+            self.assertIn(f'keys: ["{son}"]', vec)
+        for sons in generer.SUITES_PARITE:
+            self.assertIn("keys: [" + ", ".join(f'"{s}"' for s in sons) + "]", vec)
 
 
 if __name__ == "__main__":

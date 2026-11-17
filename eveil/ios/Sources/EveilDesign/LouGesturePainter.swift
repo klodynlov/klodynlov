@@ -241,18 +241,29 @@ enum LouPainter {
         }
         LouArt.bust.paint(context, colors: colors)
         LouArt.head.paint(context, colors: colors, lift: frame.lift)
-        (LouArt.mouths[frame.mouth] ?? LouArt.mouths["neutre"]!)
-            .paint(context, colors: colors, extraLift: LouArt.mouthLift * CGFloat(frame.lift))
+        // La bouche : en fondu de l'ancienne à la nouvelle (chacune en calque entier).
+        let mouthLift = LouArt.mouthLift * CGFloat(frame.lift)
+        func mouth(_ key: String) -> LouShape { LouArt.mouths[key] ?? LouArt.mouths["neutre"]! }
+        if frame.mouthMix < 0.999 && frame.previousMouth != frame.mouth {
+            layer(context, opacity: 1 - frame.mouthMix) { g in
+                mouth(frame.previousMouth).paint(g, colors: colors, extraLift: mouthLift)
+            }
+            layer(context, opacity: frame.mouthMix) { g in
+                mouth(frame.mouth).paint(g, colors: colors, extraLift: mouthLift)
+            }
+        } else {
+            mouth(frame.mouth).paint(context, colors: colors, extraLift: mouthLift)
+        }
         if frame.table > 0.001 {
             layer(context, opacity: frame.table) { g in LouArt.table.paint(g, colors: colors) }
         }
-        if frame.vibrate {
-            // Trois arcs de chaque côté du cou ; ils battent de l'intérieur vers l'extérieur.
-            let t = frame.pulse
+        if frame.vibration > 0.001 {
+            // Trois arcs de chaque côté du cou ; ils battent de l'intérieur vers l'extérieur (en fondu).
+            let t = frame.pulse, level = frame.vibration
             LouArt.vibration.paint(context, colors: colors) { i in
-                guard let t else { return 1 }
+                guard let t else { return level }
                 let ring = Double(i / 2)
-                return 0.35 + 0.65 * (0.5 + 0.5 * sin(2 * .pi * 4 * t - ring * 1.2))
+                return level * (0.35 + 0.65 * (0.5 + 0.5 * sin(2 * .pi * 4 * t - ring * 1.2)))
             }
         }
         for arm in frame.arms where !arm.setup.behind && arm.presence > 0.001 {
@@ -310,7 +321,7 @@ enum LouPainter {
         let formA = LouHandModel.form(arm.formA), formB = LouHandModel.form(arm.formB)
         let morphing = arm.formA != arm.formB && arm.mix > 0 && arm.mix < 1
         let current = arm.mix < 0.5 ? formA : formB
-        let s = Double(arm.setup.size)
+        let s = arm.size
         let lw = CGFloat(max(1, s * 0.04))
         let skin = LouColors.color(colors.skin)
         let shade = LouColors.color(colors.shade)
