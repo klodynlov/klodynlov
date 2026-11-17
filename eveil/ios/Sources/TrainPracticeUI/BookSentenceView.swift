@@ -184,6 +184,36 @@ public struct BookSentenceView: View {
         }
     }
 
+    nonisolated static func listenText(locale: String) -> String { locale.hasPrefix("fr") ? "Écoute !" : "Listen!" }
+    nonisolated static func yourTurnText(locale: String) -> String { locale.hasPrefix("fr") ? "À toi !" : "Your turn!" }
+
+    /// Tout ce que la voix des phrases des livres peut dire dans cette langue (voix préparée, 17/11/2026 :
+    /// `eveil/outils/voix/generer.py` lit l'inventaire écrit par `VoiceInventoryTests`) : « Écoute ! »,
+    /// « À toi ! », chaque phrase entière, chaque wagon, chaque question (avec les wagons déjà accrochés)
+    /// et « Ça, c'est … » pour chaque picto proposé qui n'est pas le bon.
+    nonisolated static func voiceLines(locale: String) -> [String] {
+        var out = [listenText(locale: locale), yourTurnText(locale: locale)]
+        for book in SoundBooks.books(locale: locale) {
+            for sentence in book.sentences {
+                out.append(sentence.text)
+                let roles = PhraseLevels.roles(level: sentence.level)
+                for (k, card) in sentence.cards.enumerated() {
+                    out.append(PhraseGrammar.chunk(card, locale: locale))
+                    if roles.indices.contains(k) {
+                        out.append(PhrasePrompts.question(for: roles[k], cards: Array(sentence.cards.prefix(k)),
+                                                          locale: locale))
+                    }
+                    let offered = sentence.choices.indices.contains(k) ? sentence.choices[k] : []
+                    for other in offered where other != card {
+                        out.append(EarGames.thatIs(PhraseGrammar.chunk(other, locale: locale), locale: locale))
+                    }
+                }
+            }
+        }
+        var seen = Set<String>()
+        return out.filter { seen.insert($0).inserted }
+    }
+
     // MARK: Le bas de l'écran : écouter, les trois pictos, ou « Encore ! »
 
     @ViewBuilder
@@ -204,7 +234,7 @@ public struct BookSentenceView: View {
                         // Réentendre la phrase modèle, sans défaire ce qui est accroché.
                         Button {
                             voice.stop()
-                            Task { await say(sentence.text) }
+                            Task { await sayWhole(sentence) }
                         } label: {
                             Image(systemName: "speaker.wave.2.fill")
                                 .font(.system(size: 24, weight: .bold))
@@ -270,7 +300,7 @@ public struct BookSentenceView: View {
     private func readModel() async {
         guard let sentence, step == .look, !speaking else { return }
         speaking = true
-        await say(fr ? "Écoute !" : "Listen!")
+        await say(Self.listenText(locale: locale))
         for (k, card) in sentence.cards.enumerated() {
             litSlot = k
             await say(PhraseGrammar.chunk(card, locale: locale))
@@ -282,7 +312,7 @@ public struct BookSentenceView: View {
         // À toi : le train se vide, on reconstruit la phrase wagon par wagon.
         slots = Array(repeating: nil, count: sentence.cards.count)
         step = .build
-        await say(fr ? "À toi !" : "Your turn!")
+        await say(Self.yourTurnText(locale: locale))
         await ask()
     }
 
@@ -355,7 +385,7 @@ public struct BookSentenceView: View {
                 if playStart == start { SoundBoard.shared.play(effect) }
             }
         }
-        await say(sentence.text)
+        await sayWhole(sentence)
         let left = SentenceStage.duration(of: scene) - Date().timeIntervalSince(start)
         if left > 0 { try? await Task.sleep(nanoseconds: UInt64(left * 1_000_000_000)) }
         speaking = false
@@ -405,6 +435,16 @@ public struct BookSentenceView: View {
         voice.voiceIdentifier = voiceId
         await voice.speak(text, locale: locale, pace: .sentence)
         if blocking { speaking = wasSpeaking }
+    }
+
+    /// La phrase du livre : son fichier entier ; à défaut, ses wagons enchaînés (`speak(parts:)`, une seule voix).
+    private func sayWhole(_ sentence: SoundBookSentence) async {
+        let wasSpeaking = speaking
+        speaking = true
+        voice.voiceIdentifier = voiceId
+        await voice.speak(parts: PhraseGrammar.sentenceParts(sentence.cards, locale: locale), locale: locale,
+                          whole: sentence.text)
+        speaking = wasSpeaking
     }
 }
 #endif

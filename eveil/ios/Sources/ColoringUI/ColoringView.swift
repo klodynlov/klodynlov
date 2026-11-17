@@ -446,7 +446,7 @@ public struct ColoringView: View {
     // MARK: Consignes
 
     /// Les consignes de la page ouverte ; la première se dit après `delay` secondes.
-    private func startInstructions(after delay: Double, intro: String = "") {
+    private func startInstructions(after delay: Double, intro: Bool = false) {
         instructionTask?.cancel()
         markAt = nil
         swatchHint = nil
@@ -454,16 +454,17 @@ public struct ColoringView: View {
         step = 0
         instructions = interactive ? ColoringInstructions.list(for: studio.page.parts, palette: Self.palette) : []
         skipDone()
-        var text = intro
+        // Deux morceaux préparés (« Je t'aide à colorier ! » puis la consigne), dits d'une seule voix.
+        var parts = intro ? [ColoringVoice.intro(locale: locale)] : []
         if let current {
-            text += ColoringInstructions.text(current, palette: Self.palette, locale: locale)
-        } else if !intro.isEmpty {
-            text += fr ? "Choisis une couleur." : "Pick a color."
+            parts.append(ColoringInstructions.text(current, palette: Self.palette, locale: locale))
+        } else if intro {
+            parts.append(ColoringVoice.pickColor(locale: locale))
         }
-        guard !text.isEmpty else { return }
+        guard !parts.isEmpty else { return }
         instructionTask = Task { @MainActor in
             try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-            if !Task.isCancelled { say(text) }
+            if !Task.isCancelled { say(parts: parts) }
         }
     }
 
@@ -484,13 +485,12 @@ public struct ColoringView: View {
             step += 1
             skipDone()
             let next = self.current.map { ColoringInstructions.text($0, palette: Self.palette, locale: locale) }
-            say(fr ? "Bravo !" : "Well done!")
+            say(ColoringVoice.bravo(locale: locale))
             instructionTask?.cancel()
             instructionTask = Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 1_400_000_000)
                 guard !Task.isCancelled else { return }
-                say(next ?? (fr ? "Tu as fait toutes les consignes ! Continue comme tu veux."
-                                : "You did them all! Keep coloring as you like."))
+                say(next ?? ColoringVoice.allDone(locale: locale))
             }
             return
         }
@@ -558,7 +558,7 @@ public struct ColoringView: View {
         if interactive {
             SoundBoard.shared.preload([.ding], variants: Array(0...14))
             SoundBoard.shared.preload([.whooshSoft, .fanfare, .sparkle])
-            startInstructions(after: 0, intro: fr ? "Je t'aide à colorier ! " : "I'll help you color! ")
+            startInstructions(after: 0, intro: true)
         } else {
             instructionTask?.cancel()
             instructions = []
@@ -572,9 +572,14 @@ public struct ColoringView: View {
     /// La voix du jeu (celle choisie dans l'espace des grands), sans file d'attente :
     /// une nouvelle phrase coupe la précédente.
     private func say(_ text: String) {
+        say(parts: [text])
+    }
+
+    /// Plusieurs phrases préparées à la suite, d'une seule voix (`ModelVoicePlayer.speak(parts:)`).
+    private func say(parts: [String]) {
         voice.stop()
         voice.voiceIdentifier = voiceId
-        Task { await voice.speak(text, locale: locale, pace: .sentence) }
+        Task { await voice.speak(parts: parts, locale: locale) }
     }
 
     /// « J'ai fini ! » : le dessin danse, les confettis tombent, fanfare et bravo ; puis ses parties
@@ -585,7 +590,7 @@ public struct ColoringView: View {
         living = nil
         livingAt = nil
         SoundBoard.shared.play(.fanfare)
-        say(text ?? (fr ? "Bravo ! Quel beau dessin !" : "Well done! What a beautiful picture!"))
+        say(text ?? ColoringVoice.masterpiece(locale: locale))
         Task { @MainActor in
             if !reduceMotion, let drawing = await studio.livingDrawing(), masterpieceAt == start {
                 living = drawing
@@ -662,7 +667,7 @@ public struct ColoringView: View {
         instructions = []
         markAt = nil
         swatchHint = nil
-        finishMasterpiece(saying: fr ? "Bravo ! Ton dessin prend vie !" : "Well done! Your picture comes alive!")
+        finishMasterpiece(saying: ColoringVoice.comesAlive(locale: locale))
     }
 
     private func openPicker() {

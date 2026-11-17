@@ -58,7 +58,8 @@ let package = Package(
         // Le mode démo montre ce qu'il annonce, pour chaque mot (macOS : `swift test` ici).
         .testTarget(
             name: "EveilTrainTests",
-            dependencies: ["TrainPracticeUI", "EveilSounds", "EveilDesign", "WordEndAudio", "PhraseCore",
+            // ColoringUI : l'inventaire de la voix préparée couvre aussi l'atelier (VoiceInventoryTests).
+            dependencies: ["TrainPracticeUI", "EveilSounds", "EveilDesign", "WordEndAudio", "PhraseCore", "ColoringUI",
                            .product(name: "WordEndCore", package: "WordEndCore")]
         ),
         // Chaque bruitage se calcule, reste fini, audible et sans saturation.

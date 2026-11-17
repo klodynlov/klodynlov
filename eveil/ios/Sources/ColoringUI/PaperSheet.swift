@@ -228,10 +228,10 @@ struct PaperSheet: View {
     /// La photo du scanner : lue par l'atelier (qui ferme la carte et fait la fête), ou l'on réessaie.
     private func readPhoto(_ photo: PaperPhoto) async {
         state = .reading
-        say(fr ? "Je regarde ton dessin…" : "Let me look at your picture…")
+        say(ColoringVoice.paperLooking(locale: locale))
         if await read(photo) { return }
         state = .unreadable
-        say(fr ? "Je n'ai pas bien vu la page. On réessaie ?" : "I couldn't see the page well. Shall we try again?")
+        say(ColoringVoice.paperMissed(locale: locale))
     }
 }
 

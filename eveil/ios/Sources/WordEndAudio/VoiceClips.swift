@@ -7,6 +7,10 @@
 // modèle dans l'app, rien sur le réseau. Voix de synthèse (Supertonic 3, Supertone, poids OpenRAIL-M) :
 // l'espace des grands le dit (restriction d'usage « contenu généré par machine »).
 //
+// Depuis le 17/11/2026 (demande de l'utilisateur), aussi tout ce que disent les autres activités (débit
+// « phrase », sans API) : consignes du coloriage, jeux d'écoute, train des phrases (questions et wagons), phrases
+// des livres. Leur inventaire est exporté par l'app (`VoiceInventoryTests`) et lu par le générateur.
+//
 // La clé est celle du générateur : « langue|débit|texte|API » (NFC, API sans points de syllabe).
 
 import Foundation

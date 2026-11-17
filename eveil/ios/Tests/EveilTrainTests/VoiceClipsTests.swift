@@ -66,8 +66,8 @@ final class VoiceClipsTests: XCTestCase {
             var texts = MessageKey.allCases.map { $0.defaultText(locale: locale) }
             texts += Repetitions.range.map { Repetitions.inviteText(count: $0, locale: locale) }
             texts += Repetitions.range.map { Repetitions.againText(remaining: $0, locale: locale) }
-            texts += locale.hasPrefix("fr") ? ["Écoute bien le train…", "Tchou-tchou ! En route !"]
-                                            : ["Listen to the train…", "Choo-choo! All aboard!"]
+            texts += locale.hasPrefix("fr") ? ["Écoute bien le train…", "Bravo !"]
+                                            : ["Listen to the train…", "Well done!"]
             for text in texts {
                 XCTAssertNotNil(VoiceClips.url(locale: locale, pace: "sentence", text: text, ipa: nil), "\(locale) « \(text) »")
             }

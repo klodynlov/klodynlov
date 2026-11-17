@@ -240,7 +240,7 @@ public struct EarGamesView: View {
         voice.voiceIdentifier = voiceId
         switch game {
         case .loto:
-            await voice.speak(fr ? "Qui fait ce bruit ?" : "What makes this sound?", locale: locale, pace: .sentence)
+            await voice.speak(EarGames.lotoQuestion(locale: locale), locale: locale, pace: .sentence)
             if let item = EarGames.lotoItem(current.choices[current.answer]) {
                 SoundBoard.shared.play(item.sound)
                 try? await Task.sleep(nanoseconds: 1_200_000_000)

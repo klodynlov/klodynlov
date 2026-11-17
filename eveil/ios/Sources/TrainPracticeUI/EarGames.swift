@@ -93,6 +93,11 @@ enum EarGames {
 
     // MARK: Les phrases de la voix
 
+    /// Le loto : la voix pose la question, puis le bruit joue.
+    static func lotoQuestion(locale: String) -> String {
+        locale.hasPrefix("fr") ? "Qui fait ce bruit ?" : "What makes this sound?"
+    }
+
     static func findQuestion(_ noun: PhraseNoun, locale: String) -> String {
         let np = PhraseGrammar.nounPhrase(noun, locale: locale)
         return locale.hasPrefix("fr") ? "Où est \(np) ?" : "Where is \(np)?"
@@ -105,5 +110,22 @@ enum EarGames {
     /// Ce qu'on dit quand l'enfant touche une AUTRE image : on la nomme, sans jamais dire « non ».
     static func thatIs(_ name: String, locale: String) -> String {
         locale.hasPrefix("fr") ? "Ça, c'est \(name)." : "That's \(name)."
+    }
+
+    /// Tout ce que la voix des jeux d'écoute peut dire dans cette langue (voix préparée, 17/11/2026 :
+    /// `eveil/outils/voix/generer.py` lit l'inventaire écrit par `VoiceInventoryTests`). Pour chaque image
+    /// du loto et chaque nom de « Où est… ? » : « Oui ! C'est … ! » et « Ça, c'est …. » ; la question de
+    /// chaque manche de « Où est… ? » ; celle du loto.
+    static func voiceLines(locale: String) -> [String] {
+        var out = [lotoQuestion(locale: locale)]
+        let names = lotoItems.map { $0.name(locale: locale) }
+            + findNouns.map { PhraseGrammar.nounPhrase($0, locale: locale) }
+        for name in names {
+            out.append(yes(name, locale: locale))
+            out.append(thatIs(name, locale: locale))
+        }
+        out += findNouns.map { findQuestion($0, locale: locale) }
+        var seen = Set<String>()
+        return out.filter { seen.insert($0).inserted }
     }
 }

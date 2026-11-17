@@ -2,8 +2,10 @@
 //
 // 17/11/2026 (décision de l'utilisateur) : la voix du jeu est préparée à l'avance avec Supertonic 3,
 // style F5 (`VoiceClips`, fichiers livrés avec l'app, rien sur le réseau) ; ce qui n'a pas de fichier
-// (phrases, sons seuls, mots de la famille) garde la synthèse système ci-dessous. L'adulte peut revenir
-// à la voix de l'iPad (espace des grands).
+// (sons seuls, mots de la famille) garde la synthèse système ci-dessous. L'adulte peut revenir à la voix
+// de l'iPad (espace des grands). Depuis le 17/11/2026 (demande de l'utilisateur), les autres activités ont
+// aussi la voix préparée (consignes du coloriage, jeux d'écoute, train des phrases, livres) ; la phrase
+// libre du train des phrases se compose de ses wagons (`speak(parts:)`, `ClipJoiner`).
 //
 // Choix produit : des voix humaines enregistrées (FR et EN natifs, validées par
 // des orthophonistes), dont une version « lente » qui allonge la fin
@@ -89,9 +91,78 @@ public final class ModelVoicePlayer: NSObject, AVAudioPlayerDelegate, AVSpeechSy
         try? await Task.sleep(nanoseconds: 150_000_000)
     }
 
+    /// Ce que `speak(parts:)` va faire entendre.
+    public enum PartsPlan: Equatable, Sendable {
+        /// La phrase entière a son fichier (une phrase d'un livre, une consigne).
+        case clip(URL)
+        /// Chaque morceau a son fichier : on les enchaîne (`ClipJoiner`).
+        case joined([URL])
+        /// Il manque un fichier (ou l'adulte a choisi la voix de l'iPad) : toute la phrase par la voix de l'iPad.
+        case system(String)
+    }
+
+    /// Une seule voix par phrase : la phrase entière préparée, sinon tous ses morceaux préparés, sinon tout
+    /// par la voix de l'iPad — jamais deux voix dans la même phrase.
+    nonisolated public static func plan(parts: [String], locale: String, whole: String? = nil,
+                                        prepared: Bool = VoiceClips.enabled) -> PartsPlan {
+        let text = whole ?? parts.joined(separator: " ")
+        guard prepared, !parts.isEmpty else { return .system(text) }
+        let pace = Pace.sentence.key
+        if let url = VoiceClips.url(locale: locale, pace: pace, text: text, ipa: nil) { return .clip(url) }
+        let urls = parts.compactMap { VoiceClips.url(locale: locale, pace: pace, text: $0, ipa: nil) }
+        return urls.count == parts.count ? .joined(urls) : .system(text)
+    }
+
+    /// Plusieurs morceaux dits comme une seule phrase (débit « phrase ») : la phrase libre du train des
+    /// phrases (ses wagons), « Je t'aide à colorier ! » + la consigne. `whole` : la phrase telle qu'on
+    /// l'écrit (« Le chat mange la pêche. »), qu'on cherche d'abord entière et que dit la voix de l'iPad.
+    public func speak(parts: [String], locale: String, whole: String? = nil) async {
+        switch Self.plan(parts: parts, locale: locale, whole: whole, prepared: VoiceClips.enabled && clipsAllowed) {
+        case let .clip(url):
+            await playClip(url)
+        case let .joined(urls):
+            if let data = Self.joinedWAV(urls) {
+                await playClip(data: data)
+            } else {
+                await say(makeUtterance(whole ?? parts.joined(separator: " "), ipa: nil, locale: locale, pace: .sentence))
+            }
+        case let .system(text):
+            await say(makeUtterance(text, ipa: nil, locale: locale, pace: .sentence))
+        }
+        try? await Task.sleep(nanoseconds: 150_000_000)
+    }
+
+    /// Les fichiers décodés, enchaînés par `ClipJoiner`, en WAV en mémoire ; nil si l'un ne se lit pas.
+    private static func joinedWAV(_ urls: [URL]) -> Data? {
+        var clips: [[Float]] = []
+        var rate = 0.0
+        for url in urls {
+            guard let file = try? AVAudioFile(forReading: url),
+                  let buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat,
+                                                frameCapacity: AVAudioFrameCount(file.length)),
+                  (try? file.read(into: buffer)) != nil,
+                  let channel = buffer.floatChannelData?[0] else { return nil }
+            if rate == 0 { rate = file.processingFormat.sampleRate }
+            guard file.processingFormat.sampleRate == rate else { return nil }
+            clips.append(Array(UnsafeBufferPointer(start: channel, count: Int(buffer.frameLength))))
+        }
+        guard rate > 0 else { return nil }
+        return ClipJoiner.wav(ClipJoiner.join(clips, rate: rate), rate: Int(rate))
+    }
+
     /// Joue un fichier de voix préparée et attend la fin (sans marge : `speak` l'ajoute).
     private func playClip(_ url: URL) async {
         guard let p = try? AVAudioPlayer(contentsOf: url) else { return }
+        await play(p)
+    }
+
+    /// Joue une phrase composée (WAV en mémoire) et attend la fin.
+    private func playClip(data: Data) async {
+        guard let p = try? AVAudioPlayer(data: data) else { return }
+        await play(p)
+    }
+
+    private func play(_ p: AVAudioPlayer) async {
         p.delegate = self
         player = p
         await withCheckedContinuation { (c: CheckedContinuation<Void, Never>) in

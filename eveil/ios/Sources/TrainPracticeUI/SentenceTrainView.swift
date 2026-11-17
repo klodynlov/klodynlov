@@ -338,7 +338,9 @@ public struct SentenceTrainView: View {
         playStart = start
         SoundBoard.shared.play(.whistle)
         scheduleSounds(for: scene, start: start)
-        await say(PhraseGrammar.sentence(cards, locale: locale))
+        // D'une traite : la phrase composée des fichiers de ses wagons (une seule voix, `speak(parts:)`).
+        await say(parts: PhraseGrammar.sentenceParts(cards, locale: locale),
+                  whole: PhraseGrammar.sentence(cards, locale: locale))
         let left = SentenceStage.duration(of: scene) - Date().timeIntervalSince(start)
         if left > 0 { try? await Task.sleep(nanoseconds: UInt64(left * 1_000_000_000)) }
         speaking = false
@@ -390,6 +392,15 @@ public struct SentenceTrainView: View {
         voice.voiceIdentifier = voiceId
         await voice.speak(text, locale: locale, pace: .sentence)
         if blocking { speaking = wasSpeaking }
+    }
+
+    /// La phrase entière, morceau après morceau sans trou (`ModelVoicePlayer.speak(parts:)`).
+    private func say(parts: [String], whole: String) async {
+        let wasSpeaking = speaking
+        speaking = true
+        voice.voiceIdentifier = voiceId
+        await voice.speak(parts: parts, locale: locale, whole: whole)
+        speaking = wasSpeaking
     }
 
     private func scheduleSounds(for scene: SentenceScene, start: Date) {

@@ -480,6 +480,24 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     mouton, phoque, dauphin, crocodile, lapin qui grignote, araignée) + sons existants réutilisés ;
     `WordScenes.forWord` cherche par `drawing` puis `id`. 68 bruitages. **Cris validés à l'oreille par
     l'utilisateur (17/11, « c'est bon »)**, rugissements et hennissement compris. Tests Swift 231, 0 avertissement.
+  - ✅ **Petit train des mots : bulle épurée (17/11, retour iPad utilisateur)** : « Écoute bien le train… » dit UNE fois
+    au début, puis seulement le mot ; après un essai raté, la bulle affiche « À toi » (pas « Je n'ai pas bien entendu »),
+    clignote et se touche pour relancer le modèle ; réussite = « Bravo ! » seul (plus « Le petit train est parti… ») ;
+    départ = sifflet seul (plus « Tchou-tchou ! En route ! » parlé). `PracticeView.spokenAfter`, `PracticeBubbleTests`.
+  - ✅ **Voix F5 pour toutes les activités (17/11, demande utilisateur)** : coloriage (consignes, couleurs, bravos),
+    jeux d'écoute, train des phrases (questions + wagons), phrases des livres. **Inventaire exporté par Swift**
+    (`ColoringVoice.lines`, `EarGames.voiceLines`, `PhrasePrompts.voiceLines`, `PhraseGrammar.voiceChunks`,
+    `BookSentenceView.voiceLines` ; table `VoiceInventory` dans `VoiceInventoryTests`) → `outils/voix/inventaire_activites.json`
+    (`EVEIL_VOICE_INVENTORY=… swift test --filter VoiceInventoryTests/testExportTheInventory`), lu par `generer.py` ;
+    contrôle **Whisper** large-v3-turbo (WER normalisé ≤ 0,2, homophones, 4 prises × lectures `DIRE_PHRASES`/`AUTRES_LECTURES` :
+    « … où ? », « ri », « Lou ! ») ; wagon refusé seul → réécouté derrière 3 porteurs. 2 873 clips (AAC 32 kbit/s 24 kHz,
+    bourrage `free` retiré : `sans_bourrage`) ≈ 19,6 Mo ; dossier voix 26 Mo. 88 phrases sans fichier =
+    `exceptions_activites.json` (voix de l'iPad), page d'écoute `page_activites.py`. **Phrase libre** (10 410/langue)
+    composée des wagons (`ModelVoicePlayer.speak(parts:)`, `ClipJoiner` ≡ `composer.py`, ≈ 100 ms entre wagons ; jamais
+    deux voix) : 100 % FR, 99,1 % EN composables ; mesure 48 phrases : composée 46/48 retrouvées par Whisper mais 35 %
+    plus lente qu'entière (prosodie « wagon par wagon ») ; option « sujet+verbe d'un bloc » 41/48, +10 % seulement →
+    non retenue. ⚠️ À écouter par l'utilisateur (A/B à l'aveugle). ⚠️ Texte existant « Ça, c'est dort. » / « That's
+    sleeps. » (mauvais picto verbe dans un livre) : agrammatical, décision produit.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur, photo enregistrée ou convertie en
   fichier interdits) → 0 violation, 8 tests ;

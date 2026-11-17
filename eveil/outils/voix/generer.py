@@ -21,6 +21,14 @@ traite peut sortir « syllabe en moins » : accepté si sa consonne finale s'ent
 différente), puis les réécritures de `REECRIRE` ; si rien ne passe, pas de fichier (voix de l'iPad) et
 le mot va dans `rendu/rejets.json`, à écouter. Les syllabes : une syllabe entendue (pas zéro, pas deux).
 
+Les AUTRES activités (demande de l'utilisateur, 17/11/2026 : « le moteur de voix du petit train pour toutes
+les autres activités ») : atelier de coloriage, jeux d'écoute, train des phrases, phrases des livres des sons.
+Leur inventaire n'est PAS recopié ici : l'app l'exporte (`VoiceInventoryTests`, Swift) dans
+`inventaire_activites.json`, lu par `activites()`. Débit « phrase ». Le train des phrases libre (≈ 10 400 phrases
+par langue) n'est pas rendu entier : ses wagons (morceaux) le sont, et l'app enchaîne leurs fichiers
+(`ClipJoiner`, miroir `composer.py`). Contrôle des phrases : Whisper (`mlx_whisper`, large-v3-turbo, WER
+normalisé, plusieurs prises) ; ce qui reste mauvais n'a pas de fichier et va à l'écoute (`page_activites.py`).
+
 Clé d'un fichier (identique côté Swift, `VoiceClips.key`) : « langue|débit|texte|API » (NFC).
 
 Moteur : Supertonic 3 (Supertone), ONNX, révision HF `aafc6e3`, poids OpenRAIL-M ; environnement et
@@ -33,6 +41,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -117,11 +126,153 @@ PHRASES = {
 # La bulle, dite à voix haute (demande de l'utilisateur, 17/11/2026 : « ce que Lou dit dans la bulle,
 # énonce-le : l'enfant peut avoir des difficultés à lire »). Mêmes textes que `PracticeView.bubbleText`
 # (messages de `policy.py`, invitation et décompte pour 1 à 5 répétitions).
-BULLE_EN_PLUS = {"fr-FR": ["Écoute bien le train…", "Tchou-tchou ! En route !"],
-                 "en-US": ["Listen to the train…", "Choo-choo! All aboard!"]}
+# Le petit train : « Écoute bien le train… » (une fois par séance), « Bravo ! » quand le mot est réussi
+# (décision utilisateur 17/11 : court, le sifflet du train suffit au départ).
+BULLE_EN_PLUS = {"fr-FR": ["Écoute bien le train…", "Bravo !"],
+                 "en-US": ["Listen to the train…", "Well done!"]}
 
 # Ce qu'on fait LIRE à Supertonic quand le texte affiché le ferait trébucher (la clé reste le texte affiché).
 DIRE = {"fr-FR": {"« chhh »": "chhhhhh"}, "en-US": {'"shhh"': "shhhhhh"}}
+
+# ── Les autres activités (17/11/2026) ───────────────────────────────────────
+# Écrit par l'app (`eveil/ios/Tests/EveilTrainTests/VoiceInventoryTests.swift`) : activité → textes, par langue.
+INVENTAIRE_ACTIVITES = ICI / "inventaire_activites.json"
+ASR = ICI / "rendu" / "asr_activites.json"
+# Les phrases des activités SANS fichier, et pourquoi (versionné ; lu par `VoiceInventoryTests` : la seule liste
+# d'exceptions admise). Clé : « langue|texte ».
+EXCEPTIONS = ICI / "exceptions_activites.json"
+WHISPER = "mlx-community/whisper-large-v3-turbo"
+# Une phrase est gardée si Whisper la retrouve : WER normalisé (casse, accents, ponctuation) ≤ SEUIL_WER ; une
+# phrase courte (moins de 5 mots) doit donc être retrouvée exactement. Sinon d'autres prises ; puis à l'écoute.
+SEUIL_WER = 0.2
+# Débit AAC : les mots et syllabes restent à 64 kbit/s (la fin du mot s'y joue) ; les phrases des activités
+# (≈ 3 000 fichiers) passent à 32 kbit/s, en 24 kHz, pour tenir la taille de l'app (voir README).
+DEBIT_AAC = {"word": ("aac", 64000), "syllable": ("aac", 64000), "sentence": ("aac@24000", 32000)}
+
+
+# Ce que Supertonic LIT pour une phrase des activités (la clé reste le texte de l'app). Mesuré le 17/11/2026 sur
+# 15 questions (Whisper, 1 prise) : « Le chat dort où ? » tel quel ne passe qu'une fois sur 15 (le « où » final se
+# colle au verbe : « d'orot », « volo ») ; « Le chat dort… où ? » 7/15, « Le chat dort, où ? » 4/15. Le petit
+# suspense est d'ailleurs une façon naturelle de questionner un enfant de 3 ans. « os » se lit « o » : « osse ».
+# « rit » se lit « ré » ou « rite » (12 prises, 3 sujets : 0 phrase retrouvée) ; « ri » : 9 sur 12.
+DIRE_PHRASES = {"fr-FR": [(r"\bl'os\b", "l'osse"), (r"\brit\b", "ri"), (r" où \?$", "… où ?")], "en-US": []}
+# D'autres façons de le lire, essayées (avec leurs prises) si la première ne passe pas Whisper. « Lou » seul se lit
+# « l'eau » ; « Lou ! » passe derrière 3 verbes sur 3 (une prise sur 3).
+AUTRES_LECTURES = {"fr-FR": [(r"… où \?$", ", où ?"), (r" quoi \?$", "… quoi ?"), (r"^Lou$", "Lou !")], "en-US": []}
+# Ce que Whisper ne peut pas distinguer à l'oreille (même son ; un mot seul n'a pas de contexte) : rendu identique
+# des deux côtés avant le WER (motifs sur le texte normalisé). Relevé sur le rendu du 17/11/2026 : « dort » entendu
+# « d'or », « boit » → « bois », « vole » → « vol », « Colorie » → « Coloris », « sent » → « sans », « l'oie » → « loi »…
+HOMOPHONES = {
+    "fr-FR": [(r"\bloup\b", "lou"), (r"\bd or\b", "dort"), (r"\bbois\b", "boit"), (r"\bvol\b", "vole"),
+              (r"\bcoloris\b", "colorie"), (r"\bsans\b", "sent"), (r"\bverre\b", "vert"), (r"\blois?\b", "l oie"),
+              (r"\bdense\b", "danse"), (r"\b(riz|ri)\b", "rit"), (r"\b(sang|cent)\b", "sent")],
+    # « That's sleeps » (le picto touché n'est pas le bon) : le s de « that's » se fond dans le mot suivant.
+    "en-US": [(r"\bgray\b", "grey"), (r"\bdoghouse\b", "dog house"), (r"\bdough\b", "doe"), (r"\bmousse\b", "moose"),
+              (r"\b(lew|lu)\b", "lou"), (r"\bthat s\b", "that")],
+}
+
+
+def lectures_phrase(locale: str, texte: str) -> list[str]:
+    """Les textes à faire lire à Supertonic pour une phrase, dans l'ordre d'essai."""
+    t = a_dire(locale, texte)
+    for motif, dit in DIRE_PHRASES.get(locale, []):
+        t = re.sub(motif, dit, t)
+    out = [t]
+    for motif, dit in AUTRES_LECTURES.get(locale, []):
+        v = re.sub(motif, dit, t)
+        if v not in out:
+            out.append(v)
+    return out
+
+
+def sans_bourrage(chemin: Path) -> int:
+    """Retire l'atome `free` qu'afconvert laisse entre `moov` et `mdat` (≈ 3 Ko de remplissage par fichier : le tiers
+    d'une phrase à 32 kbit/s) ; les décalages de `stco`/`co64` reculent d'autant. Le son ne change pas (mêmes paquets
+    AAC, même `elst`). Rend le nombre d'octets gagnés (0 si rien à faire)."""
+    import struct
+    d = bytearray(chemin.read_bytes())
+    atomes, i = [], 0
+    while i + 8 <= len(d):
+        n, t = struct.unpack(">I4s", d[i:i + 8])
+        if n < 8 or i + n > len(d):
+            return 0                                          # format inattendu : on ne touche à rien
+        atomes.append((t, i, n))
+        i += n
+    noms = [t for t, _, _ in atomes]
+    if i != len(d) or b"free" not in noms or b"mdat" not in noms or b"moov" not in noms:
+        return 0
+    _, f0, fn = atomes[noms.index(b"free")]
+    if f0 > atomes[noms.index(b"mdat")][1]:
+        return 0
+
+    def corriger(debut: int, fin: int) -> None:
+        j = debut
+        while j + 8 <= fin:
+            n, t = struct.unpack(">I4s", d[j:j + 8])
+            if n < 8:
+                return
+            if t in (b"trak", b"mdia", b"minf", b"stbl"):
+                corriger(j + 8, j + n)
+            elif t in (b"stco", b"co64"):
+                k = struct.unpack(">I", d[j + 12:j + 16])[0]
+                taille, fmt = (4, ">I") if t == b"stco" else (8, ">Q")
+                for e in range(k):
+                    p = j + 16 + e * taille
+                    v = struct.unpack(fmt, d[p:p + taille])[0]
+                    if v > f0:
+                        d[p:p + taille] = struct.pack(fmt, v - fn)
+            j += n
+
+    _, m0, mn = atomes[noms.index(b"moov")]
+    corriger(m0 + 8, m0 + mn)
+    del d[f0:f0 + fn]
+    chemin.write_bytes(bytes(d))
+    return fn
+
+
+def activites(locale: str) -> list[tuple[str, str]]:
+    """(texte, activité) de toutes les activités hors petit train, dans l'ordre du fichier (activités triées)."""
+    if not INVENTAIRE_ACTIVITES.exists():
+        return []
+    d = json.loads(INVENTAIRE_ACTIVITES.read_text(encoding="utf-8"))
+    out: list[tuple[str, str]] = []
+    for activite in sorted(d.get(locale, {})):
+        out += [(t, activite) for t in d[locale][activite]]
+    return out
+
+
+def mots_wer(texte: str, locale: str = "") -> list[str]:
+    """Normalisation pour le WER : minuscules, sans accents ni ponctuation, apostrophes et traits d'union = espace,
+    homophones confondus (« loup » = « Lou »)."""
+    s = unicodedata.normalize("NFKD", texte.lower().replace("’", "'"))
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    s = re.sub(r"[^\w' -]", " ", s).replace("-", " ").replace("'", " ")
+    s = " ".join(s.split())
+    for motif, meme in HOMOPHONES.get(locale, []):
+        s = re.sub(motif, meme, s)
+    return s.split()
+
+
+def wer(reference: str, hypothese: str, locale: str = "") -> float:
+    r, h = mots_wer(reference, locale), mots_wer(hypothese, locale)
+    if not r:
+        return 0.0 if not h else 1.0
+    d = list(range(len(h) + 1))
+    for i in range(1, len(r) + 1):
+        p, d[0] = d[0], i
+        for j in range(1, len(h) + 1):
+            p, d[j] = d[j], min(d[j] + 1, d[j - 1] + 1, p + (r[i - 1] != h[j - 1]))
+    return d[-1] / len(r)
+
+
+def ecouter(w, rate: int, locale: str) -> str:
+    """Ce que Whisper entend (large-v3-turbo, MLX, hors ligne : le modèle est dans le cache)."""
+    import mlx_whisper
+    import numpy as np
+    import soxr
+    audio = soxr.resample(np.asarray(w, dtype=np.float32), rate, 16000).astype(np.float32)
+    return mlx_whisper.transcribe(audio, path_or_hf_repo=WHISPER, language=LANGUE[locale],
+                                  condition_on_previous_text=False)["text"].strip()
 
 
 def bulles(locale: str) -> list[str]:
@@ -190,6 +341,8 @@ def inventaire() -> list[Enonce]:
             ajoute(Enonce(locale, pace, texte, ""))
         for texte in bulles(locale):
             ajoute(Enonce(locale, "sentence", texte, ""))
+        for texte, _ in activites(locale):
+            ajoute(Enonce(locale, "sentence", texte, ""))
     return out
 
 
@@ -232,6 +385,86 @@ def _verdict(w, rate: int, e: Enonce) -> str:
     return v.kind.value
 
 
+# Un wagon seul (« rit », « saute », « Lou ») n'a aucun contexte : Whisper l'entend mal (« ré », « sout », « l'eau »)
+# même quand il est bien dit. Un wagon que Whisper refuse seul est donc réécouté LÀ OÙ L'APP LE JOUE : enchaîné
+# (`composer`, comme `ClipJoiner`) après un sujet préparé (« le chat rit »), ou, pour un sujet, avant un verbe
+# préparé (« Lou dort »). Gardé si Whisper retrouve alors la phrase exactement.
+# Trois porteurs de chaque côté : un « rit » mal dit passait derrière « le chat » mais pas derrière « le poisson ».
+PORTEURS = {"fr-FR": (("le chat", "le poisson", "la biche"), ("dort", "mange", "danse")),
+            "en-US": (("the cat", "the fish", "the deer"), ("sleeps", "eats", "dances"))}
+
+
+def _sujets(locale: str) -> set[str]:
+    """Les wagons « qui ? », lus dans les questions « Que fait le chat ? » de l'inventaire (pas de recopie)."""
+    debut, fin = ("Que fait ", " ?") if locale.startswith("fr") else ("What does ", " do?")
+    return {t[len(debut):-len(fin)] for t, a in activites(locale)
+            if a == "phrases_questions" and t.startswith(debut) and t.endswith(fin)}
+
+
+def _en_contexte(w, rate: int, e: Enonce) -> tuple[float, str] | None:
+    """Le wagon `w` réécouté dans des phrases (un porteur préparé avant, ou après pour un sujet) : (pire WER, ce
+    que Whisper entend), ou None s'il manque un porteur préparé."""
+    import numpy as np
+    import soxr
+    from voix import composer
+    avants, apres = PORTEURS[e.locale]
+    sujet = e.text in _sujets(e.locale)
+    clips = json.loads((SORTIE / "manifest.json").read_text(encoding="utf-8"))["clips"]
+    pire, entendu = 0.0, []
+    for porteur in (apres if sujet else avants):
+        f = clips.get(Enonce(e.locale, "sentence", porteur, "").cle)
+        if not f or porteur == e.text:
+            return None
+        x, r = composer.lire(SORTIE / f)
+        x = list(map(float, soxr.resample(np.asarray(x, dtype=np.float32), r, rate)))
+        morceaux = [list(map(float, w)), x] if sujet else [x, list(map(float, w))]
+        phrase = f"{e.text} {porteur}" if sujet else f"{porteur} {e.text}"
+        hyp = ecouter(composer.composer(morceaux, rate), rate, e.locale)
+        pire = max(pire, wer(phrase, hyp, e.locale))
+        entendu.append(hyp)
+        if pire > 0:
+            break
+    return pire, " / ".join(entendu)
+
+
+def _prises_phrase(tts, style, rate: int, e: Enonce, essais: list[str], asr: dict):
+    """Une phrase : des prises (graines différentes) jusqu'à ce que Whisper la retrouve mot pour mot ; sinon
+    la meilleure si son WER ≤ SEUIL_WER ; sinon rien (voix de l'iPad, à l'écoute). Supertonic puis Whisper,
+    l'un après l'autre (jamais deux calculs lourds en même temps)."""
+    import numpy as np
+    meilleure, dernier = None, None
+    for texte in essais:
+        for prise in range(PRISES):
+            np.random.seed(_graine(e.cle + "|" + texte, prise))
+            wav, dur = tts(texte, LANGUE[e.locale], style, PAS, VITESSE[e.pace])
+            w = _rogner(wav[0, : int(rate * dur[0].item())], rate)
+            hyp = ecouter(w, rate, e.locale)
+            score = wer(e.text, hyp, e.locale)
+            dernier = (texte, prise, f"wer {score:.2f} : {hyp}")
+            if meilleure is None or score < meilleure[0]:
+                meilleure = (score, w, texte, prise, hyp)
+            if score == 0:
+                break
+        if meilleure and meilleure[0] == 0:
+            break
+    score, w, texte, prise, hyp = meilleure
+    asr[e.cle] = {"wer": round(score, 3), "entendu": hyp, "prise": prise, "texte": texte}
+    if score > SEUIL_WER and e.text in {t for t, a in activites(e.locale) if a == "phrases_morceaux"}:
+        # Un wagon refusé seul : réécouté dans sa phrase, prise après prise.
+        for texte in essais:
+            for prise in range(PRISES):
+                np.random.seed(_graine(e.cle + "|" + texte, prise))
+                wav, dur = tts(texte, LANGUE[e.locale], style, PAS, VITESSE[e.pace])
+                w = _rogner(wav[0, : int(rate * dur[0].item())], rate)
+                ctx = _en_contexte(w, rate, e)
+                if ctx and ctx[0] == 0:
+                    asr[e.cle] = {"wer": round(score, 3), "entendu": hyp, "prise": prise, "texte": texte,
+                                  "en_contexte": ctx[1]}
+                    return (w, texte, prise), True, (texte, prise, f"en contexte : {ctx[1]}")
+                dernier = (texte, prise, f"wer {score:.2f} : {hyp} ; en contexte : {ctx[1] if ctx else '—'}")
+    return (w, texte, prise), score <= SEUIL_WER, dernier
+
+
 def rendre(enonces: list[Enonce]) -> int:
     import numpy as np
     sys.path.insert(0, str(CODE_PY))
@@ -242,14 +475,15 @@ def rendre(enonces: list[Enonce]) -> int:
     style = load_voice_style([str(MODELE / "voice_styles" / f"{STYLE}.json")])
     rate = tts.sample_rate
     SORTIE.mkdir(parents=True, exist_ok=True)
-    ancien, deja = {}, {}
+    ancien, deja, m_ancien = {}, {}, {}
     if (SORTIE / "manifest.json").exists():
-        m0 = json.loads((SORTIE / "manifest.json").read_text(encoding="utf-8"))
-        ancien, deja = m0.get("empreintes", {}), m0.get("clips", {})
+        m_ancien = json.loads((SORTIE / "manifest.json").read_text(encoding="utf-8"))
+        ancien, deja = m_ancien.get("empreintes", {}), m_ancien.get("clips", {})
     tout = "--tout" in sys.argv
     manifeste = {"voix": f"Supertonic 3, style {STYLE}", "revision": REVISION, "licence": "OpenRAIL-M",
                  "clips": {}, "empreintes": {}}
     rejets, retouches = [], []
+    asr = json.loads(ASR.read_text(encoding="utf-8")) if ASR.exists() else {}
     with tempfile.TemporaryDirectory() as tmp:
         for i, e in enumerate(enonces):
             # Déjà rendu (même clé, fichier présent) : on garde tel quel ; `--tout` pour tout refaire.
@@ -264,6 +498,12 @@ def rendre(enonces: list[Enonce]) -> int:
                 np.random.seed(_graine(e.cle + "|" + texte, prise))
                 wav, dur = tts(texte, LANGUE[e.locale], style, PAS, VITESSE[e.pace])
                 garde = (_rogner(wav[0, : int(rate * dur[0].item())], rate), texte, prise)
+                essais = []
+            meilleure_phrase = None
+            if e.pace == "sentence" and essais:
+                essais = lectures_phrase(e.locale, e.text)
+                meilleure_phrase, bonne, dernier = _prises_phrase(tts, style, rate, e, essais, asr)
+                garde = meilleure_phrase if bonne else None
                 essais = []
             for texte in essais:
                 for prise in range(PRISES):
@@ -280,11 +520,16 @@ def rendre(enonces: list[Enonce]) -> int:
             if not garde:
                 rejets.append({"cle": e.cle, "dernier": dernier})
                 # La première prise du texte d'origine, pour l'écoute (`rendu/rejets.html`).
-                np.random.seed(_graine(e.cle + "|" + e.text, 0))
-                wav, dur = tts(e.text, LANGUE[e.locale], style, PAS, VITESSE[e.pace])
+                # (Une phrase : sa meilleure prise selon Whisper.)
+                if meilleure_phrase is not None:
+                    w_ecoute = meilleure_phrase[0]
+                else:
+                    np.random.seed(_graine(e.cle + "|" + e.text, 0))
+                    wav, dur = tts(e.text, LANGUE[e.locale], style, PAS, VITESSE[e.pace])
+                    w_ecoute = _rogner(wav[0, : int(rate * dur[0].item())], rate)
                 REJETS.parent.joinpath("rejets").mkdir(parents=True, exist_ok=True)
                 brut = Path(tmp) / "r.wav"
-                sf.write(str(brut), _rogner(wav[0, : int(rate * dur[0].item())], rate), rate, subtype="PCM_16")
+                sf.write(str(brut), w_ecoute, rate, subtype="PCM_16")
                 subprocess.run(["afconvert", "-f", "m4af", "-d", "aac", "-b", "64000", str(brut),
                                 str(REJETS.parent / "rejets" / e.fichier)], check=True, capture_output=True)
                 continue
@@ -298,12 +543,23 @@ def rendre(enonces: list[Enonce]) -> int:
             if ancien.get(e.cle) != empreinte or not (SORTIE / e.fichier).exists():
                 brut = Path(tmp) / "x.wav"
                 sf.write(str(brut), w, rate, subtype="PCM_16")
-                subprocess.run(["afconvert", "-f", "m4af", "-d", "aac", "-b", "64000", str(brut),
+                codec, debit = DEBIT_AAC[e.pace]
+                subprocess.run(["afconvert", "-f", "m4af", "-d", codec, "-b", str(debit), str(brut),
                                 str(SORTIE / e.fichier)], check=True, capture_output=True)
+                if e.pace == "sentence":
+                    sans_bourrage(SORTIE / e.fichier)
             manifeste["clips"][e.cle] = e.fichier
             manifeste["empreintes"][e.cle] = empreinte
             if i % 50 == 0:
                 print(f"{i}/{len(enonces)}", flush=True)
+            if len(manifeste["clips"]) % 200 == 0:
+                # Point d'étape (un long rendu de phrases peut être interrompu) : l'ancien manifeste, complété.
+                etape = {**manifeste, "clips": {**deja, **manifeste["clips"]},
+                         "empreintes": {**ancien, **manifeste["empreintes"]}}
+                (SORTIE / "manifest.json").write_text(json.dumps(etape, ensure_ascii=False, indent=0, sort_keys=True),
+                                                      encoding="utf-8")
+                ASR.parent.mkdir(parents=True, exist_ok=True)
+                ASR.write_text(json.dumps(asr, ensure_ascii=False, indent=1, sort_keys=True), encoding="utf-8")
     # Les fichiers d'un ancien rendu qui ne servent plus.
     gardes = set(manifeste["clips"].values())
     for f in SORTIE.glob("*.m4a"):
@@ -314,9 +570,26 @@ def rendre(enonces: list[Enonce]) -> int:
     REJETS.parent.mkdir(parents=True, exist_ok=True)
     REJETS.write_text(json.dumps({"rejets": rejets, "retouches": retouches}, ensure_ascii=False, indent=1),
                       encoding="utf-8")
+    ASR.write_text(json.dumps(asr, ensure_ascii=False, indent=1, sort_keys=True), encoding="utf-8")
+    ecrire_exceptions(rejets, asr)
     print(f"✓ {len(manifeste['clips'])} fichiers ; {len(rejets)} sans fichier (voix de l'iPad) ; "
           f"{len(retouches)} retouchés (autre prise ou réécriture)")
     return 0
+
+
+def ecrire_exceptions(rejets: list[dict], asr: dict) -> None:
+    """Les phrases des activités restées sans fichier, avec ce que Whisper a entendu (justification)."""
+    des_activites = {Enonce(loc, "sentence", t, "").cle for loc in LOCALES for t, _ in activites(loc)}
+    out = {}
+    for x in rejets:
+        if x["cle"] not in des_activites:
+            continue
+        loc, _, texte, _ = x["cle"].split("|", 3)
+        a = asr.get(x["cle"], {})
+        out[f"{loc}|{texte}"] = (f"Whisper entend « {a.get('entendu', '?')} » (WER {a.get('wer', '?')}) après "
+                                 f"{len(lectures_phrase(loc, texte))} lecture(s) × {PRISES} prises : voix de l'iPad, "
+                                 f"à écouter (page_activites.py)")
+    EXCEPTIONS.write_text(json.dumps(out, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def verifier() -> int:

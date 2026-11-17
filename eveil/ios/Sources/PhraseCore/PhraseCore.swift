@@ -122,6 +122,36 @@ public enum PhraseGrammar {
         return np
     }
 
+    /// Toutes les cartes d'un wagon à ce niveau, après les cartes `before` (le « quoi ? » et le « où ? »
+    /// dépendent du verbe), dans l'ordre du plateau.
+    public static func allCards(_ role: PhraseRole, level: Int, after before: [PhraseCard]) -> [PhraseCard] {
+        let verb = before.last { $0.role == .verbe }?.key ?? ""
+        return PhraseLevels.tray(role, level: level, verb: verb, size: Int.max)
+    }
+
+    /// Le texte de tous les wagons possibles dans cette langue (chacun a son fichier de voix préparée : la
+    /// phrase libre se dit en les enchaînant, `ModelVoicePlayer.speak(parts:)`).
+    public static func voiceChunks(locale: String) -> [String] {
+        var out: [String] = []
+        for level in PhraseLevels.levels {
+            let roles = PhraseLevels.roles(level: level)
+            let subjects = allCards(.qui, level: level, after: [])
+            let verbs = allCards(.verbe, level: level, after: [])
+            out += subjects.map { chunk($0, locale: locale) } + verbs.map { chunk($0, locale: locale) }
+            for role in roles.dropFirst(2) {
+                for v in verbs { out += allCards(role, level: level, after: [v]).map { chunk($0, locale: locale) } }
+            }
+        }
+        var seen = Set<String>()
+        return out.filter { seen.insert($0).inserted }
+    }
+
+    /// Les morceaux de la phrase, tels que la voix les enchaîne : le texte de chaque wagon (même clé que
+    /// quand le wagon se dit seul).
+    public static func sentenceParts(_ cards: [PhraseCard], locale: String) -> [String] {
+        cards.map { chunk($0, locale: locale) }
+    }
+
     /// La phrase entière : majuscule au début, point à la fin.
     public static func sentence(_ cards: [PhraseCard], locale: String) -> String {
         let text = cards.map { chunk($0, locale: locale) }.joined(separator: " ")
@@ -215,6 +245,27 @@ public enum PhrasePrompts {
         case .ou:
             return start.isEmpty ? (fr ? "Où ?" : "Where?") : (fr ? "\(start) où ?" : "\(start) where?")
         }
+    }
+
+    /// Toutes les questions que la voix du train des phrases peut poser dans cette langue, niveau par
+    /// niveau, avec tout ce qui peut déjà être accroché devant (« Qui ? », « Que fait le chat ? », « Le chat
+    /// mange quoi ? », « Le chat dort où ? »). Voix préparée (17/11/2026) : `eveil/outils/voix/generer.py`
+    /// lit l'inventaire écrit par les tests de l'app, sans recopier ces règles.
+    public static func voiceLines(locale: String) -> [String] {
+        var out: [String] = []
+        for level in PhraseLevels.levels {
+            let roles = PhraseLevels.roles(level: level)
+            var prefixes: [[PhraseCard]] = [[]]
+            for (k, role) in roles.enumerated() {
+                out += prefixes.map { question(for: role, cards: $0, locale: locale) }
+                guard k + 1 < roles.count else { break }
+                prefixes = prefixes.flatMap { p in
+                    PhraseGrammar.allCards(role, level: level, after: p).map { p + [$0] }
+                }
+            }
+        }
+        var seen = Set<String>()
+        return out.filter { seen.insert($0).inserted }
     }
 
     /// L'étiquette d'un wagon vide.
