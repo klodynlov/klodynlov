@@ -114,6 +114,28 @@ PHRASES = {
     "en-US": [("Again!", "word"), ("Hello! I am the voice of the little train. Fi… fish!", "sentence")],
 }
 
+# La bulle, dite à voix haute (demande de l'utilisateur, 17/11/2026 : « ce que Lou dit dans la bulle,
+# énonce-le : l'enfant peut avoir des difficultés à lire »). Mêmes textes que `PracticeView.bubbleText`
+# (messages de `policy.py`, invitation et décompte pour 1 à 5 répétitions).
+BULLE_EN_PLUS = {"fr-FR": ["Écoute bien le train…", "Tchou-tchou ! En route !"],
+                 "en-US": ["Listen to the train…", "Choo-choo! All aboard!"]}
+
+# Ce qu'on fait LIRE à Supertonic quand le texte affiché le ferait trébucher (la clé reste le texte affiché).
+DIRE = {"fr-FR": {"« chhh »": "chhhhhh"}, "en-US": {'"shhh"': "shhhhhh"}}
+
+
+def bulles(locale: str) -> list[str]:
+    from wordend.policy import MESSAGES, REPETITIONS, again_text, invite_text
+    out = list(MESSAGES[locale].values()) + BULLE_EN_PLUS[locale]
+    out += [invite_text(n, locale) for n in REPETITIONS] + [again_text(n, locale) for n in REPETITIONS]
+    return list(dict.fromkeys(out))
+
+
+def a_dire(locale: str, texte: str) -> str:
+    for affiche, dit in DIRE.get(locale, {}).items():
+        texte = texte.replace(affiche, dit)
+    return texte
+
 
 @dataclass(frozen=True)
 class Enonce:
@@ -166,6 +188,8 @@ def inventaire() -> list[Enonce]:
                 ajoute(Enonce(locale, "syllable", s.text, s.ipa or "", 1, None))
         for texte, pace in PHRASES[locale]:
             ajoute(Enonce(locale, pace, texte, ""))
+        for texte in bulles(locale):
+            ajoute(Enonce(locale, "sentence", texte, ""))
     return out
 
 
@@ -218,15 +242,22 @@ def rendre(enonces: list[Enonce]) -> int:
     style = load_voice_style([str(MODELE / "voice_styles" / f"{STYLE}.json")])
     rate = tts.sample_rate
     SORTIE.mkdir(parents=True, exist_ok=True)
-    ancien = {}
+    ancien, deja = {}, {}
     if (SORTIE / "manifest.json").exists():
-        ancien = json.loads((SORTIE / "manifest.json").read_text(encoding="utf-8")).get("empreintes", {})
+        m0 = json.loads((SORTIE / "manifest.json").read_text(encoding="utf-8"))
+        ancien, deja = m0.get("empreintes", {}), m0.get("clips", {})
+    tout = "--tout" in sys.argv
     manifeste = {"voix": f"Supertonic 3, style {STYLE}", "revision": REVISION, "licence": "OpenRAIL-M",
                  "clips": {}, "empreintes": {}}
     rejets, retouches = [], []
     with tempfile.TemporaryDirectory() as tmp:
         for i, e in enumerate(enonces):
-            essais = [e.text] + (REECRIRE.get(e.locale, {}).get(e.text, []) if e.pace == "word" else [])
+            # Déjà rendu (même clé, fichier présent) : on garde tel quel ; `--tout` pour tout refaire.
+            if not tout and e.cle in deja and e.cle in ancien and (SORTIE / deja[e.cle]).exists():
+                manifeste["clips"][e.cle] = deja[e.cle]
+                manifeste["empreintes"][e.cle] = ancien[e.cle]
+                continue
+            essais = [a_dire(e.locale, e.text)] + (REECRIRE.get(e.locale, {}).get(e.text, []) if e.pace == "word" else [])
             garde, dernier = None, None
             if e.cle in VALIDES_A_L_OREILLE:
                 texte, prise = VALIDES_A_L_OREILLE[e.cle]

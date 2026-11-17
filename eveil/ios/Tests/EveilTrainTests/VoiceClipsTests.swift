@@ -59,4 +59,24 @@ final class VoiceClipsTests: XCTestCase {
         let family = try customWord(text: "Minouche", wagons: ["Mi", "nou"], coda: "S", locale: "fr-FR")
         XCTAssertFalse(VoiceClips.covers(family, locale: "fr-FR"))          // mots de la famille : voix de l'iPad
     }
+
+    /// La bulle dite à voix haute (17/11/2026) : chaque texte que la bulle du train peut afficher a sa voix F5.
+    func testEveryBubbleTextHasItsPreparedVoice() {
+        for locale in ["fr-FR", "en-US"] {
+            var texts = MessageKey.allCases.map { $0.defaultText(locale: locale) }
+            texts += Repetitions.range.map { Repetitions.inviteText(count: $0, locale: locale) }
+            texts += Repetitions.range.map { Repetitions.againText(remaining: $0, locale: locale) }
+            texts += locale.hasPrefix("fr") ? ["Écoute bien le train…", "Tchou-tchou ! En route !"]
+                                            : ["Listen to the train…", "Choo-choo! All aboard!"]
+            for text in texts {
+                XCTAssertNotNil(VoiceClips.url(locale: locale, pace: "sentence", text: text, ipa: nil), "\(locale) « \(text) »")
+            }
+        }
+    }
+
+    func testTheBubblePulseBreathes() {
+        XCTAssertEqual(AttentionPulse.level(at: 0), 0, accuracy: 1e-9)
+        XCTAssertEqual(AttentionPulse.level(at: 0.45), 1, accuracy: 1e-9)
+        XCTAssertEqual(AttentionPulse.level(at: 0.9), 0, accuracy: 1e-9)
+    }
 }

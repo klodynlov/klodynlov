@@ -211,9 +211,162 @@ final class SoundRecipeTests: XCTestCase {
         XCTAssertTrue((100...160).contains(f), "\(f) Hz")
     }
 
+    // MARK: - Les animaux des livres (17/11/2026)
+
+    /// Pics d'une enveloppe (pas `step`) entre `from` et `to` s : maxima locaux qui dominent leurs
+    /// voisins d'au moins `rise` (relatif au maximum de la tranche) — trilles, roulements, chevrotements.
+    private func peaks(_ x: [Float], _ from: Double, _ to: Double, step: Double, rise: Double = 0.08) -> Int {
+        let e = AudioAnalysis.envelope(slice(x, from, to), step: step)
+        let top = e.max() ?? 0
+        guard top > 0, e.count > 4 else { return 0 }
+        var count = 0, low = e[0]
+        var climbing = false
+        for i in 1..<e.count {
+            if e[i] > e[i - 1] {
+                climbing = true
+            } else if climbing, e[i] < e[i - 1] {
+                if e[i - 1] - low > rise * top { count += 1 }
+                climbing = false
+                low = e[i]
+            }
+            low = min(low, e[i])
+        }
+        return count
+    }
+
+    /// Râpe d'un passage tenu : écart moyen de l'enveloppe (10 ms) à la moyenne de ses deux voisines,
+    /// rapporté à son niveau — les à-coups rapides comptent, la forme lente du cri ne compte pas.
+    private func roughness(_ x: [Float], _ from: Double, _ to: Double) -> Double {
+        let e = AudioAnalysis.envelope(slice(x, from, to), step: 0.01).dropLast()
+        let mean = e.reduce(0, +) / Double(e.count)
+        let jumps = (1..<(e.count - 1)).map { abs(e[$0] - (e[$0 - 1] + e[$0 + 1]) / 2) }
+        return jumps.reduce(0, +) / Double(jumps.count) / max(mean, 1e-12)
+    }
+
+    func testLionRoarIsALongLowRaspyCall() {
+        let x = render(.roar)
+        XCTAssertGreaterThan(Double(x.count) / SoundSynth.sampleRate, 1.2, "un rugissement se tient")
+        for t in [0.45, 0.8] {
+            let f = pitch(x, at: t, 100, 250)
+            XCTAssertTrue((110...180).contains(f), "rugissement à \(f) Hz (t = \(t) s)")
+        }
+        XCTAssertGreaterThan(AudioAnalysis.bandFraction(x, 100, 1_500), 0.6)
+        let raspy = roughness(x, 0.3, 0.9), smooth = roughness(render(.moo), 0.3, 0.9)
+        XCTAssertGreaterThan(raspy, 4 * smooth, "râpe : \(raspy) vs meuh \(smooth)")
+        XCTAssertGreaterThan(raspy, 0.15)
+    }
+
+    func testDinosaurIsBiggerThanTheLionAndDragonBreathesFire() {
+        let lion = render(.roar), dino = render(.dinoRoar), dragon = render(.dragonRoar)
+        XCTAssertLessThan(AudioAnalysis.centroid(dino), AudioAnalysis.centroid(lion), "dinosaure plus grave")
+        XCTAssertGreaterThan(dino.count, lion.count, "et plus long")
+        XCTAssertGreaterThan(AudioAnalysis.bandFraction(slice(dino, 0, 0.12), 40, 200), 0.5, "« boum » d'abord")
+        // Le dragon : la voix (grave), puis le souffle (bruit large, plus aigu).
+        let voice = slice(dragon, 0.1, 0.5), fire = slice(dragon, 1.0, 1.5)
+        XCTAssertTrue((120...230).contains(pitch(dragon, at: 0.35, 100, 300)))
+        XCTAssertGreaterThan(AudioAnalysis.centroid(fire), AudioAnalysis.centroid(voice) + 800)
+        XCTAssertGreaterThan(AudioAnalysis.bandFraction(fire, 1_000, 6_000), 0.5, "souffle de feu")
+    }
+
+    func testWolfHowlRisesHoldsAndFalls() {
+        let x = render(.howl)
+        XCTAssertEqual(AudioAnalysis.bursts(x), 1, "un seul « aouuu »")
+        let (start, top, end) = (pitch(x, at: 0.05, 250, 900), pitch(x, at: 0.6, 250, 900), pitch(x, at: 1.7, 250, 900))
+        XCTAssertTrue((480...650).contains(top), "\(top) Hz")
+        XCTAssertLessThan(start, top * 0.75, "monte : \(start) → \(top)")
+        XCTAssertLessThan(end, top * 0.85, "redescend : \(top) → \(end)")
+        XCTAssertGreaterThan(Double(x.count) / SoundSynth.sampleRate, 1.5)
+    }
+
+    func testHenGoesCotCotCotCodet() {
+        let x = render(.cluck)
+        XCTAssertEqual(AudioAnalysis.bursts(x), 5, "cot · cot · cot · co · dêêt")
+        let cot = pitch(x, at: 0.03, 300, 600), det = pitch(x, at: 0.75, 400, 900)
+        XCTAssertGreaterThan(det, cot * 1.3, "« dêêt » plus haut : \(cot) → \(det)")
+    }
+
+    func testRoosterCrowsFourSyllablesUpThenDown() {
+        let x = render(.crow)
+        XCTAssertEqual(AudioAnalysis.bursts(x), 4, "co · co · ri · cooo")
+        let heard = [0.07, 0.22, 0.37, 0.62].map { pitch(x, at: $0, 400, 1_100) }
+        XCTAssertEqual(heard, heard.sorted(), "ça monte : \(heard)")
+        XCTAssertGreaterThan(heard[3], heard[0] * 1.4)
+        XCTAssertLessThan(pitch(x, at: 1.17, 400, 1_100), heard[3] * 0.85, "puis la dernière retombe")
+    }
+
+    func testDuckQuacksTwiceNasalAndBelowTheGoose() {
+        let x = render(.quack), goose = render(.honk)
+        XCTAssertEqual(AudioAnalysis.bursts(x), 2, "coin-coin")
+        let f = pitch(x, at: 0.05, 150, 400)
+        XCTAssertTrue((200...300).contains(f), "\(f) Hz")
+        XCTAssertLessThan(f, pitch(goose, at: 0.05, 150, 600), "voix plus grave que l'oie")
+        XCTAssertGreaterThan(AudioAnalysis.bandFraction(x, 800, 2_000), 0.4, "formants nasaux hauts")
+    }
+
+    func testHorseNeighsDownInATrill() {
+        let x = render(.neigh)
+        let high = pitch(x, at: 0.17, 300, 1_400), low = pitch(x, at: 1.0, 300, 1_400)
+        XCTAssertGreaterThan(high, 1.6 * low, "le hennissement descend : \(high) → \(low)")
+        XCTAssertGreaterThan(high, 800)
+        let trill = peaks(x, 0.35, 1.1, step: 0.01)
+        XCTAssertTrue((5...10).contains(trill), "trille ≈ 11/s : \(trill) battements")
+    }
+
+    func testFrogCroaksTwiceRolled() {
+        let x = render(.croak)
+        XCTAssertEqual(AudioAnalysis.bursts(x), 2, "coâ-coâ")
+        XCTAssertTrue((120...190).contains(pitch(x, at: 0.1, 100, 300)))
+        XCTAssertGreaterThanOrEqual(peaks(x, 0.04, 0.26, step: 0.004), 4, "coassement roulé")
+    }
+
+    func testSheepBleatQuavers() {
+        let x = render(.baa)
+        XCTAssertEqual(AudioAnalysis.bursts(x), 1, "un seul « bêêê »")
+        let f = pitch(x, at: 0.5, 200, 450)
+        XCTAssertTrue((270...400).contains(f), "\(f) Hz")
+        XCTAssertTrue((3...7).contains(peaks(x, 0.15, 0.85, step: 0.01)), "chevrotement ≈ 7/s")
+    }
+
+    func testSealBarksThreeTimes() {
+        let x = render(.sealBark)
+        XCTAssertEqual(AudioAnalysis.bursts(x), 3, "ar-ar-ar")
+        XCTAssertTrue((250...450).contains(pitch(x, at: 0.05, 200, 500)))
+    }
+
+    func testDolphinClicksThenWhistlesUp() {
+        let x = render(.dolphin)
+        XCTAssertGreaterThanOrEqual(AudioAnalysis.bursts(slice(x, 0, 0.38)), 8, "rafale de clics")
+        let (low, high) = (pitch(x, at: 0.47, 1_000, 5_000), pitch(x, at: 0.62, 1_000, 5_000))
+        XCTAssertGreaterThan(high, low * 1.3, "sifflet qui monte : \(low) → \(high)")
+        XCTAssertTrue((1_500...4_000).contains(AudioAnalysis.dominantFrequency(x, from: 500, to: 8_000)))
+    }
+
+    func testCrocodileSnapsItsJawsTwice() {
+        let x = render(.jawSnap)
+        XCTAssertEqual(AudioAnalysis.bursts(x), 2, "clac · clac")
+        // Attaque sèche : de moins de 10 % à plus de la moitié du maximum en 3 ms.
+        let fine = AudioAnalysis.envelope(x, step: 0.001)
+        let top = fine.max() ?? 0
+        let onset = fine.firstIndex { $0 > 0.5 * top } ?? 0
+        XCTAssertLessThan(fine[max(onset - 3, 0)], 0.1 * top, "« clac ! » : attaque sèche")
+    }
+
+    func testRabbitNibblesAndSpiderClimbs() {
+        let nibble = render(.nibble)
+        XCTAssertTrue((6...12).contains(AudioAnalysis.bursts(nibble)), "trois bouchées croquantes")
+        XCTAssertGreaterThan(AudioAnalysis.centroid(nibble), 1_200)
+        let spider = render(.tiptoe)
+        XCTAssertEqual(AudioAnalysis.bursts(spider), 8, "huit petits pas")
+        let first = AudioAnalysis.dominantFrequency(slice(spider, 0, 0.1), from: 300, to: 2_000)
+        let last = AudioAnalysis.dominantFrequency(slice(spider, 0.77, 0.95), from: 300, to: 2_000)
+        XCTAssertEqual(first, 523.25, accuracy: 25)
+        XCTAssertGreaterThan(last, 2 * first, "elle grimpe")
+    }
+
     /// Les sons graves gardent un « corps » que les haut-parleurs d'un iPad reproduisent.
     func testLowSoundsKeepABodyAbove160Hz() {
-        for effect in [SoundEffect.plop, .slime, .splat, .blub, .moo, .bell, .bellow, .footsteps, .crunch] {
+        for effect in [SoundEffect.plop, .slime, .splat, .blub, .moo, .bell, .bellow, .footsteps, .crunch,
+                       .roar, .dinoRoar, .dragonRoar, .croak] {
             let audible = AudioAnalysis.bandFraction(render(effect), 160, 5_000)
             XCTAssertGreaterThan(audible, effect == .footsteps ? 0.2 : 0.4, "\(effect) : \(audible)")
         }

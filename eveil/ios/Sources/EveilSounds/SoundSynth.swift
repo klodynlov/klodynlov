@@ -101,6 +101,21 @@ public enum SoundSynth {
         case .doorbell: return Recipes.doorbell(&c)
         case .fanfare: return Recipes.fanfare(&c)
         case .splash: return Recipes.splash(&c)
+        case .roar: return Recipes.roar(&c)
+        case .dinoRoar: return Recipes.dinoRoar(&c)
+        case .dragonRoar: return Recipes.dragonRoar(&c)
+        case .howl: return Recipes.howl(&c)
+        case .cluck: return Recipes.cluck(&c)
+        case .crow: return Recipes.crow(&c)
+        case .quack: return Recipes.quack(&c)
+        case .neigh: return Recipes.neigh(&c)
+        case .croak: return Recipes.croak(&c)
+        case .baa: return Recipes.baa(&c)
+        case .sealBark: return Recipes.sealBark(&c)
+        case .dolphin: return Recipes.dolphin(&c)
+        case .jawSnap: return Recipes.jawSnap(&c)
+        case .nibble: return Recipes.nibble(&c)
+        case .tiptoe: return Recipes.tiptoe(&c)
         }
     }
 

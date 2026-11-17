@@ -52,6 +52,11 @@
 // Toucher un wagon rejoue ses gestes, le fourgon celui de sa consonne. Dans un livre, Lou montre
 // d'abord le geste du son du livre. Réglables dans l'espace des grands (gestes, couleur de peau).
 //
+// La bulle (17/11/2026, demandes de l'utilisateur) : ce qu'elle affiche, la voix le dit aussi (l'enfant
+// ne lit pas encore) — avant le mot modèle, avant d'ouvrir le micro, après chaque essai (micro fermé),
+// au départ du train ; jamais pendant l'écoute. Quand c'est à l'enfant de toucher « À toi ! », la bulle
+// palpite (`AttentionPulse`) pour attirer son attention.
+//
 // Mode démo (espace parent, ou argument de lancement `-eveil.demoMode 1`) : pas de
 // micro ; une barre de présentation fait « parler » le train avec une pseudo-parole
 // synthétique (`DemoScenario`) qui passe par le vrai détecteur.
@@ -123,6 +128,7 @@ public struct PracticeView: View {
     @AppStorage(Stars.totalKey) private var starsTotal = 0
     @AppStorage(SuiteSettings.louGesturesKey) private var louGestures = SuiteSettings.louGesturesDefault
     @AppStorage(SuiteSettings.louSkinKey) private var louSkinId = SuiteSettings.louSkinDefault
+    @AppStorage(SuiteSettings.speakBubbleKey) private var speakBubble = SuiteSettings.speakBubbleDefault
     /// Ce que Lou montre en ce moment (nil : au repos).
     @State private var louPerformance: LouPerformance?
     @State private var listener = ListeningController(stream: ListeningSettings.streamingConfig())
@@ -371,7 +377,7 @@ public struct PracticeView: View {
                     if louShown && !wide {
                         // Portrait : la bulle au-dessus, Lou en grand dessous (sa main ne passe pas sous la bulle).
                         VStack(alignment: .trailing, spacing: 6) {
-                            SpeechBubble(bubbleText)
+                            SpeechBubble(bubbleText).modifier(AttentionPulse(active: waitingForChild))
                                 .frame(maxWidth: bubbleWidth, alignment: .trailing)
                             LouGestureView(performance: louPerformance, skin: louSkin, size: lou)
                         }
@@ -386,7 +392,7 @@ public struct PracticeView: View {
                             MascotView(action: modelPlaying && feedback == nil ? MascotAction.modelWord : feedback?.mascot,
                                        isListening: listening, size: cat)
                         }
-                        SpeechBubble(bubbleText)
+                        SpeechBubble(bubbleText).modifier(AttentionPulse(active: waitingForChild))
                             .frame(maxWidth: bubbleWidth)
                     }
                     .allowsHitTesting(false)
@@ -549,6 +555,8 @@ public struct PracticeView: View {
         modelPlaying = true
         voice.voiceIdentifier = voiceId
         voice.clipsAllowed = VoiceClips.covers(w, locale: locale)     // une seule voix par mot
+        modelLit = 0                                   // la bulle : « Écoute bien le train… »
+        await sayBubble(fr ? "Écoute bien le train…" : "Listen to the train…")
         // TODO(contenu) : remplacer par les enregistrements validés (voix humaine FR/EN).
         let wholeIPA = w.ipa.map { $0.replacingOccurrences(of: ".", with: "") }
         if syllableModel && louShown {
@@ -593,11 +601,32 @@ public struct PracticeView: View {
             modelPlaying = false
             return
         }
-        if judge.listens && !demoMode && !traveling && step == .continue {
+        // La bulle invite l'enfant (« À toi ! Dis-le 3 fois… ») : dite AVANT d'ouvrir le micro.
+        await sayBubble(Repetitions.inviteText(count: plan.remaining, locale: locale))
+        if judge.listens && !demoMode && !traveling && step == .continue && !Task.isCancelled {
             listener.config = ListeningSettings.detectorConfig(adultTrial: adultTrial)
             listener.listen(for: w)                    // l'écoute démarre AVANT de rendre les sons
         }
         modelPlaying = false
+    }
+
+    /// Dit à voix haute un texte de la bulle (voix préparée F5 si elle l'a, sinon celle de l'iPad).
+    /// Jamais pendant l'écoute : les appelants le font micro fermé.
+    private func sayBubble(_ text: String) async {
+        guard speakBubble, !listening, step == .continue else { return }
+        let wordClips = voice.clipsAllowed
+        voice.clipsAllowed = true              // une phrase n'est pas un morceau du mot
+        voice.voiceIdentifier = voiceId
+        await voice.speak(text, locale: locale, pace: .sentence)
+        voice.clipsAllowed = wordClips
+    }
+
+    /// C'est à l'enfant de toucher « À toi ! » (après un essai à refaire, micro fermé) : la bulle palpite.
+    private var waitingForChild: Bool {
+        guard judge.listens, step == .continue, !listening, !modelPlaying, !traveling, let fb = feedback else {
+            return false
+        }
+        return !fb.advance && fb.message != .again
     }
 
     /// Livres des sons : en ouvrant le livre, Lou montre le geste de son son, et la voix le dit.
@@ -628,18 +657,26 @@ public struct PracticeView: View {
     private func listenAgainForCountdown(_ w: TargetWord) async {
         guard step == .continue, !traveling, w.id == word.id else { return }
         if !judge.listens {
-            // Pas de micro : on relance juste le décompte (« Encore ! »), l'adulte juge.
+            // Pas de micro : on relance juste le décompte (la bulle : « Bravo ! Encore 2 fois ! »), l'adulte juge.
+            let text = Repetitions.againText(remaining: plan.remaining, locale: locale)
+            if speakBubble { await sayBubble(text) } else {
+                voice.voiceIdentifier = voiceId
+                await voice.speak(fr ? "Encore !" : "Again!", locale: locale)
+            }
             feedback = nil
-            voice.voiceIdentifier = voiceId
-            await voice.speak(fr ? "Encore !" : "Again!", locale: locale)
             return
         }
-        feedback = nil
         listener.reset()
         SoundBoard.shared.isSuspended = true
         modelPlaying = true
         voice.voiceIdentifier = voiceId
-        await voice.speak(fr ? "Encore !" : "Again!", locale: locale)
+        // La bulle (« Bravo ! Encore 2 fois ! ») dite à voix haute, sinon le court « Encore ! ».
+        if speakBubble {
+            await sayBubble(Repetitions.againText(remaining: plan.remaining, locale: locale))
+        } else {
+            await voice.speak(fr ? "Encore !" : "Again!", locale: locale)
+        }
+        feedback = nil
         guard !Task.isCancelled, !traveling, step == .continue, w.id == word.id else {
             modelPlaying = false
             return
@@ -686,6 +723,12 @@ public struct PracticeView: View {
                 try? await Task.sleep(nanoseconds: validated > 0 ? 80_000_000 : 250_000_000)
                 SoundBoard.shared.play(hook)          // « chhh » : le fourgon s'accroche
             }
+            // La bulle dite à voix haute, micro fermé (le décompte « Encore 2 fois » le fait lui-même).
+            if fb.message != .again, let message = feedback?.message, feedback == fb {
+                modelPlaying = true
+                await sayBubble(message.defaultText(locale: locale))
+                modelPlaying = false
+            }
             if fb.mascot == .modelWord {
                 modelPlaying = true
                 voice.voiceIdentifier = voiceId
@@ -715,6 +758,7 @@ public struct PracticeView: View {
         listener.reset()
         SoundBoard.shared.isSuspended = false
         SoundBoard.shared.play(.whistle)
+        Task { await sayBubble(fr ? "Tchou-tchou ! En route !" : "Choo-choo! All aboard!") }
         withAnimation(.easeInOut(duration: 0.3)) { departing = true }
         try? await Task.sleep(nanoseconds: reduceMotion ? 300_000_000 : 1_150_000_000)
         wordsDone += 1

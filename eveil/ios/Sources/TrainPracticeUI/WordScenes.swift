@@ -20,8 +20,11 @@ struct WordScene: Equatable {
     let critter: CritterKind        // ce qui vole derrière
     let count: Int
 
+    /// Cherché par le DESSIN du mot, puis par son identifiant : les mots des livres entrés dans le
+    /// petit train (`fr.livre.lion`, dessin `mot.lion`) font le même bruit que dans les livres, où
+    /// l'identifiant EST le dessin. Sans entrée : le carillon et des étoiles.
     static func forWord(_ word: TargetWord) -> WordScene {
-        table[word.id] ?? WordScene(sound: .chime, critter: .star, count: 3)
+        word.drawing.flatMap { table[$0] } ?? table[word.id] ?? WordScene(sound: .chime, critter: .star, count: 3)
     }
 
     /// Le son qu'on entend quand on attrape une bestiole.
@@ -101,5 +104,28 @@ struct WordScene: Equatable {
         "en.house": WordScene(sound: .doorbell, critter: .bird, count: 3),
         "en.circus": WordScene(sound: .fanfare, critter: .star, count: 5),
         "en.splash": WordScene(sound: .splash, critter: .drop, count: 6),
+        // Les animaux des livres des sons, par dessin (17/11/2026 : « quand on appuie sur l'image,
+        // fais entendre le son — ex. rugissement pour le lion »). Les animaux déjà dessinés pour le
+        // petit train (chat, chien, oiseau, souris, poisson, oie, élan, vache, biche, autruche,
+        // limace, mouche) ont leur entrée plus haut. Un animal muet fait un bruit doux de ce qu'il
+        // fait (le lapin grignote, l'araignée grimpe, la girafe mâche ses feuilles), jamais un cri inventé.
+        "mot.lion": WordScene(sound: .roar, critter: .butterfly, count: 3),
+        "mot.dinosaure": WordScene(sound: .dinoRoar, critter: .leaf, count: 5),
+        "mot.dragon": WordScene(sound: .dragonRoar, critter: .spark, count: 5),
+        "mot.loup": WordScene(sound: .howl, critter: .star, count: 4),
+        "mot.poule": WordScene(sound: .cluck, critter: .feather, count: 4),
+        "mot.coq": WordScene(sound: .crow, critter: .feather, count: 4),
+        "mot.canard": WordScene(sound: .quack, critter: .drop, count: 5),
+        "mot.cheval": WordScene(sound: .neigh, critter: .butterfly, count: 3),
+        "mot.zebre": WordScene(sound: .neigh, critter: .butterfly, count: 3),
+        "mot.grenouille": WordScene(sound: .croak, critter: .fly, count: 4),        // son dîner vole autour
+        "mot.mouton": WordScene(sound: .baa, critter: .butterfly, count: 3),
+        "mot.phoque": WordScene(sound: .sealBark, critter: .bubble, count: 5),
+        "mot.dauphin": WordScene(sound: .dolphin, critter: .bubble, count: 6),
+        "mot.crocodile": WordScene(sound: .jawSnap, critter: .drop, count: 5),
+        "mot.papillon": WordScene(sound: .flutter, critter: .butterfly, count: 5),
+        "mot.lapin": WordScene(sound: .nibble, critter: .leaf, count: 4),
+        "mot.araignee": WordScene(sound: .tiptoe, critter: .fly, count: 3),
+        "mot.girafe": WordScene(sound: .rustle, critter: .leaf, count: 5),
     ]
 }

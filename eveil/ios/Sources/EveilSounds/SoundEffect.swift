@@ -69,4 +69,21 @@ public enum SoundEffect: String, CaseIterable, Sendable {
     case doorbell       // house : sonnette « ding-dong »
     case fanfare        // circus : petite fanfare
     case splash         // splash : « plouf »
+
+    // Les animaux des livres des sons (17/11/2026 : toucher l'animal = son cri)
+    case roar           // lion : « rrroaaar »
+    case dinoRoar       // dinosaure : « boum » puis un rugissement plus grave
+    case dragonRoar     // dragon : rugissement puis souffle de feu
+    case howl           // loup : « aouuuu »
+    case cluck          // poule : « cot cot cot codêêt »
+    case crow           // coq : « cocorico »
+    case quack          // canard : « coin-coin »
+    case neigh          // cheval, zèbre : hennissement en trille
+    case croak          // grenouille : « coâ-coâ »
+    case baa            // mouton : « bêêê »
+    case sealBark       // phoque : « ar-ar-ar »
+    case dolphin        // dauphin : clics et sifflets
+    case jawSnap        // crocodile : « clac ! »
+    case nibble         // lapin : il grignote
+    case tiptoe         // araignée : petits pas qui grimpent
 }

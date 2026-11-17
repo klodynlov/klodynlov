@@ -219,7 +219,7 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     suivant** (8 mondes, ordre fixe, `EveilDesign/World*`) ; ligne du voyage (6 gares/séance) ;
   - 45 mots (28 FR + 17 EN, propositions), tous niveaux mêlés (`WordDeck`, curseur mémorisé) ;
     un **dessin vivant par mot** (`WordArt*`, action au toucher) + **bestioles** qui volent derrière
-    (`CritterLayer` ; on les attrape, elles font leur bruit) ; **53 bruitages calculés** (`EveilSounds`,
+    (`CritterLayer` ; on les attrape, elles font leur bruit) ; **53 bruitages calculés** (68 au 17/11) (`EveilSounds`,
     aucun fichier son, sonie égalisée) ; **tout se tait pendant le mot modèle et l'écoute** ;
   - coloriage : **15 pages au trait, chaque zone fermée par des traits = une zone** (carte des zones
     1024² : remplir + pinceau-pochoir par zone, traits nets par-dessus, choix des dessins) ;
@@ -468,6 +468,18 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     le repos (`enchainer` Python ↔ `LouChain` Swift, transition 0,3-0,5 s), bouche et vibration en fondu
     0,12 s, adoucissement 6x⁵−15x⁴+10x³, arrivée/départ 0,4 s ; `LouPerformance.duration` = durée chaînée
     réelle. Planches `docs/ui/eveil-app/13-gestes-lou-*.png`. Tests Swift 213, Python verts.
+  - ✅ **Bulle lue à voix haute + bulle qui clignote + cris des animaux (17/11, demandes utilisateur)** :
+    « l'enfant peut avoir des difficultés à lire » → `PracticeView.sayBubble` dit le texte de la bulle (intro
+    « Écoute bien le train… », invitation, verdict, « Encore ! », départ), **jamais micro ouvert**, voix Supertonic
+    préparée (bulles ajoutées à `outils/voix/generer.py` : `bulles(locale)`, `DIRE` pour « chhh » ; 666 fichiers /
+    669 énoncés) ; réglage « Lire la bulle à voix haute » (`SuiteSettings.speakBubbleKey`, ON). Quand c'est à
+    l'enfant d'appuyer sur « À toi ! » (verdict qui n'avance pas, hors « Encore ») → `AttentionPulse` (halo
+    jaune qui respire 0,9 s, TimelineView ; « Réduire les animations » → contour fixe). Vérifié au simulateur
+    (vidéo). Livres des sons : toucher un animal = son cri — 15 recettes calculées (`EveilSounds/Recipes+Animals.swift` :
+    rugissement lion/dino/dragon, hurlement loup, poule, coq, canard, hennissement cheval/zèbre, grenouille,
+    mouton, phoque, dauphin, crocodile, lapin qui grignote, araignée) + sons existants réutilisés ;
+    `WordScenes.forWord` cherche par `drawing` puis `id`. 68 bruitages. Doutes à l'oreille : rugissements (peur à
+    3 ans ?), hennissement, dauphin/araignée/girafe conventionnels. Tests Swift 231, 0 avertissement.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur, photo enregistrée ou convertie en
   fichier interdits) → 0 violation, 8 tests ;

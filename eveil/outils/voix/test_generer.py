@@ -24,6 +24,14 @@ class TestVoix(unittest.TestCase):
         self.assertIn("fr-FR|syllable|nou|nu", cles)                 # le wagon touché, sans la fin
         self.assertIn("fr-FR|word|jus|ʒy", cles)                     # un mot des livres entré dans le train
         self.assertFalse(any(e.text in ("ch", "s", "sse") for e in inv))   # pas de son seul
+        # La bulle dite à voix haute (17/11/2026) : messages, invitation et décompte de 1 à 5.
+        self.assertIn("fr-FR|sentence|À toi ! Dis-le 3 fois au petit train.|", cles)
+        self.assertIn("fr-FR|sentence|Bravo ! Encore 2 fois !|", cles)
+        self.assertIn("fr-FR|sentence|Écoute bien le train…|", cles)
+        self.assertIn("en-US|sentence|Choo-choo! All aboard!|", cles)
+
+    def test_dire_sans_changer_la_cle(self):
+        self.assertEqual(generer.a_dire("fr-FR", "On l'accroche avec « chhh » ?"), "On l'accroche avec chhhhhh ?")
 
     def test_manifeste_a_jour(self):
         self.assertEqual(generer.verifier(), 0)

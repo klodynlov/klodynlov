@@ -33,5 +33,10 @@ public enum SuiteSettings {
     /// `LouSkin` ; par défaut la peau de Lou du train des phrases.
     public static let louSkinKey = "eveil.lou.skin"
     public static let louSkinDefault = "lou"
+    /// La bulle dite à voix haute (demande de l'utilisateur, 17/11/2026 : « l'enfant peut avoir des
+    /// difficultés à lire ») : ce que Lou (ou le chat) dit dans la bulle, la voix le dit aussi, jamais
+    /// pendant que le micro écoute. Activé par défaut.
+    public static let speakBubbleKey = "eveil.bubble.spoken"
+    public static let speakBubbleDefault = true
 }
 #endif
