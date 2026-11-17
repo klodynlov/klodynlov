@@ -478,8 +478,8 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     (vidéo). Livres des sons : toucher un animal = son cri — 15 recettes calculées (`EveilSounds/Recipes+Animals.swift` :
     rugissement lion/dino/dragon, hurlement loup, poule, coq, canard, hennissement cheval/zèbre, grenouille,
     mouton, phoque, dauphin, crocodile, lapin qui grignote, araignée) + sons existants réutilisés ;
-    `WordScenes.forWord` cherche par `drawing` puis `id`. 68 bruitages. Doutes à l'oreille : rugissements (peur à
-    3 ans ?), hennissement, dauphin/araignée/girafe conventionnels. Tests Swift 231, 0 avertissement.
+    `WordScenes.forWord` cherche par `drawing` puis `id`. 68 bruitages. **Cris validés à l'oreille par
+    l'utilisateur (17/11, « c'est bon »)**, rugissements et hennissement compris. Tests Swift 231, 0 avertissement.
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur, photo enregistrée ou convertie en
   fichier interdits) → 0 violation, 8 tests ;
