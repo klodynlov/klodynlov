@@ -536,6 +536,7 @@ public struct PracticeView: View {
         SoundBoard.shared.preload([.ding], variants: Self.syllableNotes)
         modelPlaying = true
         voice.voiceIdentifier = voiceId
+        voice.clipsAllowed = VoiceClips.covers(w, locale: locale)     // une seule voix par mot
         // TODO(contenu) : remplacer par les enregistrements validés (voix humaine FR/EN).
         let wholeIPA = w.ipa.map { $0.replacingOccurrences(of: ".", with: "") }
         if syllableModel && louShown {

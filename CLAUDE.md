@@ -451,6 +451,16 @@ modules : aucun import croisé ; même discipline (référence stdlib testée, s
     ON), peau au choix de l'adulte (`louSkinKey`, 5 peaux), « La planche des gestes » (PDF en ressource du
     paquet, identique à `docs/…/11-gestes-lou.pdf`, test). Planche animée `docs/ui/eveil-app/12-gestes-lou-anime.png`.
     Tests : Python tous verts, Swift 208 + 30, 0 avertissement ; installé sur l'iPad le 06/10 à 20:23.
+  - ✅ **Voix Supertonic 3, style F5, préparée à l'avance (17/11/2026, décisions utilisateur)** : essai F1–F5
+    (`outils/voix/supertonic_essai.py`, détecteur + Whisper), duel F3/F5 (mesures F5 devant, aveugle 10-6) →
+    `outils/voix/generer.py` (environnement + poids de Klody Pocket `~/KlodyPocket/build/voice-eval/`, rév.
+    `aafc6e3`, OpenRAIL-M) rend mots/syllabes/« Encore ! » FR+EN, contrôle détecteur (garde adulte levée,
+    plusieurs prises, réécritures `REECRIRE`, `VALIDES_A_L_OREILLE`), → `WordEndAudio/Resources/voix/`
+    (598/635 énoncés, 6,6 Mo, m4a + `manifest.json`). Swift `VoiceClips` (clé « langue|débit|texte|API »),
+    `ModelVoicePlayer` lit le fichier sinon voix de l'iPad ; **une seule voix par mot** (`VoiceClips.covers`,
+    `voice.clipsAllowed`) ; phrases et sons seuls = voix de l'iPad. Espace des grands : « Voix du train :
+    Supertonic (F5) » + mention voix de synthèse (licence : restriction e ; § 5 à reprendre dans les CGU).
+    37 énoncés sans fichier à écouter : `outils/voix/rendu/rejets.html` (gitignoré).
 - 🛡️ `eveil/outils/verifier_confidentialite.py` — « rien ne quitte l'iPad » vérifié statiquement
   (réseau, SDK tiers, CloudKit, enregistrement audio, ASR serveur, photo enregistrée ou convertie en
   fichier interdits) → 0 violation, 8 tests ;

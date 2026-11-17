@@ -1,5 +1,10 @@
 // ModelVoicePlayer.swift — faire entendre le mot MODÈLE avant d'écouter l'enfant.
 //
+// 17/11/2026 (décision de l'utilisateur) : la voix du jeu est préparée à l'avance avec Supertonic 3,
+// style F5 (`VoiceClips`, fichiers livrés avec l'app, rien sur le réseau) ; ce qui n'a pas de fichier
+// (phrases, sons seuls, mots de la famille) garde la synthèse système ci-dessous. L'adulte peut revenir
+// à la voix de l'iPad (espace des grands).
+//
 // Choix produit : des voix humaines enregistrées (FR et EN natifs, validées par
 // des orthophonistes), dont une version « lente » qui allonge la fin
 // (« dou… chhh »). La synthèse vocale système n'est qu'un repli : elle peut
@@ -26,10 +31,22 @@ public final class ModelVoicePlayer: NSObject, AVAudioPlayerDelegate, AVSpeechSy
         case word
         case syllable
         case sentence
+
+        /// Le débit dans la clé des fichiers de voix préparée (`VoiceClips.key`).
+        public var key: String {
+            switch self {
+            case .word: return "word"
+            case .syllable: return "syllable"
+            case .sentence: return "sentence"
+            }
+        }
     }
 
     /// Voix choisie par l'adulte (`VoiceCatalog.settingKey`) ; nil ou "" : choix automatique.
     public var voiceIdentifier: String?
+    /// Une seule voix par mot : faux si un morceau du mot en cours n'a pas de fichier préparé
+    /// (`VoiceClips.covers`) — tout le mot passe alors par la voix de l'iPad.
+    public var clipsAllowed = true
 
     private var player: AVAudioPlayer?
     private let synthesizer = AVSpeechSynthesizer()
@@ -58,12 +75,29 @@ public final class ModelVoicePlayer: NSObject, AVAudioPlayerDelegate, AVSpeechSy
         try? await Task.sleep(nanoseconds: 150_000_000)   // marge avant d'ouvrir le micro
     }
 
-    /// Repli : synthèse vocale système (voir la réserve en tête de fichier).
-    /// `ipa` impose la prononciation (API du lexique, sans points de syllabe).
+    /// La voix préparée (Supertonic 3, F5) si l'énoncé a son fichier et que l'adulte la garde ; sinon la
+    /// synthèse vocale système (voir la réserve en tête de fichier), dont `ipa` impose la prononciation
+    /// (API du lexique, sans points de syllabe).
     public func speak(_ text: String, locale: String, ipa: String? = nil, pace: Pace = .word) async {
-        let utterance = makeUtterance(text, ipa: ipa, locale: locale, pace: pace)
-        await say(utterance)
+        if VoiceClips.enabled, clipsAllowed,
+           let url = VoiceClips.url(locale: locale, pace: pace.key, text: text, ipa: ipa) {
+            await playClip(url)
+            if pace == .syllable { try? await Task.sleep(nanoseconds: 160_000_000) }   // comme `postUtteranceDelay`
+        } else {
+            await say(makeUtterance(text, ipa: ipa, locale: locale, pace: pace))
+        }
         try? await Task.sleep(nanoseconds: 150_000_000)
+    }
+
+    /// Joue un fichier de voix préparée et attend la fin (sans marge : `speak` l'ajoute).
+    private func playClip(_ url: URL) async {
+        guard let p = try? AVAudioPlayer(contentsOf: url) else { return }
+        p.delegate = self
+        player = p
+        await withCheckedContinuation { (c: CheckedContinuation<Void, Never>) in
+            store(c)
+            if !p.play() { resume() }
+        }
     }
 
     /// Le mot syllabe par syllabe : `onSegment(k)` juste avant que la voix dise le
@@ -74,7 +108,13 @@ public final class ModelVoicePlayer: NSObject, AVAudioPlayerDelegate, AVSpeechSy
         for (k, segment) in segments.enumerated() {
             guard !Task.isCancelled else { return }
             onSegment(k)
-            await say(makeUtterance(segment.text, ipa: segment.ipa, locale: locale, pace: .syllable))
+            if VoiceClips.enabled, clipsAllowed,
+               let url = VoiceClips.url(locale: locale, pace: Pace.syllable.key, text: segment.text, ipa: segment.ipa) {
+                await playClip(url)
+                try? await Task.sleep(nanoseconds: 160_000_000)
+            } else {
+                await say(makeUtterance(segment.text, ipa: segment.ipa, locale: locale, pace: .syllable))
+            }
         }
         try? await Task.sleep(nanoseconds: 150_000_000)
     }

@@ -37,7 +37,10 @@ let package = Package(
     targets: [
         .target(
             name: "WordEndAudio",
-            dependencies: [.product(name: "WordEndCore", package: "WordEndCore")]
+            dependencies: [.product(name: "WordEndCore", package: "WordEndCore")],
+            // La voix du jeu préparée à l'avance avec Supertonic 3, style F5 (décision de l'utilisateur,
+            // 17/11/2026) : `python3 eveil/outils/voix/generer.py` écrit les fichiers et le manifeste.
+            resources: [.copy("Resources/voix")]
         ),
         .target(name: "EveilDesign"),
         .target(name: "EveilSounds"),
