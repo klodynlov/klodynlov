@@ -632,7 +632,21 @@ fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCO
   - Agents (phase 5) : FABLE a analysé les 3 mécanismes (3/4 points clés vérifiés : mlx-lm
     0.31.3, `ArraysCache` non tronquable, chiffres README/CHANGELOG ; seuils anti-boucle Klody
     non revérifiés) ; tests MCP faits par la session principale.
-  - Reste : jalon C (jeu complet, gel du protocole, campagnes, cloud), MCP en TUI, phase 6 (pitch). INCONNU : build de
+  - **Phase 6 « pitch » faite le 23/11** → variante **A « l'humain garde la main »** choisie par
+    l'utilisateur : README du profil (section Klody) ; README de Klody (PR klodynlov/klody-code-ai#336,
+    worktree `~/Projets/worktrees/klody-pitch`) ; post LinkedIn n° 9 en **brouillon non publié**
+    (`docs/LINKEDIN-POSTS.md`, 1 275 car.). Preuve centrale : script du dépôt 0/5 si refus vs 10/10
+    sans demande ; limite dite : `conftest.py` 10/10 chez Klody aussi.
+  - Corrigé en phase 6 (relevé par FABLE, vérifié) : « 0/40 chez chacun » → 0/20 ; « approbation
+    avant toute exécution » → « chaque écriture et chaque commande demandée » (l'auto-check pytest y
+    échappe) ; « 0 requête tierce » attribué à Klody = mesure du **site**, pas de l'agent → non mesuré.
+    **En attente de l'utilisateur** (non touché) : « journal d'audit » (fiche), « 0 requête tierce »
+    (fiche POP Switcher), section Sécurité du README Klody (« sandbox exécution, venv jetable isolé »).
+  - Agents (phase 6) : FABLE a rédigé 3 variantes + post + check-list ; ses 6 alertes vérifiées (3
+    erreurs à moi corrigées). Liens de preuve : `docs/bench/localcode/` nomme localcode (fiche déjà
+    publique depuis PR #21) → la règle « ne pas nommer » vaut pour pitch et post, pas pour la fiche.
+  - Reste : jalon C (jeu complet, gel du protocole, campagnes, cloud), jalon D, MCP en TUI, publier le
+    post (décision utilisateur), merger la pile de PR #22→#27 puis #336 (lien de preuve actif après #23). INCONNU : build de
     `llama-server`, Mac 16 Go, sélecteur de modèle muet, injection web réelle (V3′ non
     concluante), localcode en TUI interactif.
   - Agents (phase 2) : EXPLORATEUR (Sonnet) a cartographié les garde-fous de Klody (4/4
@@ -653,7 +667,7 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : **localcode phase 5** (23/11) — idées classées (budget de contexte mesuré > suivi de progrès > copy drafting bloqué sur MLX) ; MCP : serveurs conformes, mais localcode non interactif ne les expose pas (0/6). Avant : **localcode phase 4** (23/11) — jalon D réécrit (une commande + modèle selon la RAM) d'après une installation de tiers mesurée (≈ 1 min machine, mais 10 étapes, 6 lignes .env, gateway privé). Avant : **localcode phase 3** (23/11) — jalon C réécrit (local vs local vs cloud, publication visée le 11/12), runner autonome au format localcode, oracles 32/32, lot 1 36/36 ; Klody route le code vers `coder` 4 bits. Avant : **localcode phase 2** (23/11) — test d'injection localcode vs Klody, 106 essais : `conftest.py` piégé exécuté chez les deux (pas de sandbox OS), script du dépôt bloqué seulement par l'approbation de Klody ; harnais dans `docs/bench/localcode/injection/`. Avant : **localcode phase 1** (23/11) — fiche passée de LU à VÉRIFIÉ sur installation, réseau, hors ligne, vitesse et build reproductible ; banc rejouable dans `docs/bench/localcode/`. Avant : **fiche localcode** mergée (PR #21) dans la veille concurrence (agent de code local open source, concurrent direct de Klody). Avant : **Suite Éveil — conseils d'une orthophoniste** (06/10/2026) : petit train
+_Dernière mise à jour mémoire : **localcode phase 6** (23/11) — pitch « agent de code local gouverné » (variante A) appliqué au README du profil et à celui de Klody (#336) ; post LinkedIn n° 9 en brouillon. Les 6 phases du plan localcode sont faites (PR #22-#27 empilées, brouillons). Avant : **localcode phase 5** (23/11) — idées classées (budget de contexte mesuré > suivi de progrès > copy drafting bloqué sur MLX) ; MCP : serveurs conformes, mais localcode non interactif ne les expose pas (0/6). Avant : **localcode phase 4** (23/11) — jalon D réécrit (une commande + modèle selon la RAM) d'après une installation de tiers mesurée (≈ 1 min machine, mais 10 étapes, 6 lignes .env, gateway privé). Avant : **localcode phase 3** (23/11) — jalon C réécrit (local vs local vs cloud, publication visée le 11/12), runner autonome au format localcode, oracles 32/32, lot 1 36/36 ; Klody route le code vers `coder` 4 bits. Avant : **localcode phase 2** (23/11) — test d'injection localcode vs Klody, 106 essais : `conftest.py` piégé exécuté chez les deux (pas de sandbox OS), script du dépôt bloqué seulement par l'approbation de Klody ; harnais dans `docs/bench/localcode/injection/`. Avant : **localcode phase 1** (23/11) — fiche passée de LU à VÉRIFIÉ sur installation, réseau, hors ligne, vitesse et build reproductible ; banc rejouable dans `docs/bench/localcode/`. Avant : **fiche localcode** mergée (PR #21) dans la veille concurrence (agent de code local open source, concurrent direct de Klody). Avant : **Suite Éveil — conseils d'une orthophoniste** (06/10/2026) : petit train
 par niveaux « quand il réussit » (une syllabe d'abord ; Python 97 + Swift 192 tests verts, app compilée, ordre
 vérifié au simulateur : douche → bouche → niche), livres des sons triés par nombre de syllabes, relevé des gestes
 de Borel-Maisonny (`docs/EVEIL-BOREL-MAISONNY.md`) et planche des gestes et bouches de Lou à montrer à

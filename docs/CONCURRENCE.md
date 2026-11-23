@@ -317,8 +317,8 @@ non reconstruit).
 | **Moteur d'inférence** | llama.cpp patché + drafting spéculatif et *copy drafting* actifs par défaut : **147 tok/s sur du code** (VÉRIFIÉ) | MLX + [ram-aware-scheduler](https://github.com/klodynlov/ram-aware-scheduler) : **102 tok/s**, même modèle (VÉRIFIÉ) | **localcode** de +30 à +45 % sur du code grâce au drafting ; **moteur seul, MLX +15 %** ; prose : égalité (Klody +5 %) |
 | **Choix de modèles** | 12 familles, 169 quantifications, téléchargement reprenable | Modèles MLX | **localcode** |
 | **Boucle d'agent** | OpenCode (communauté large), plan, détection de blocage, sans sous-agents (LU) | ReAct maison, 69 outils, routeur adaptatif, Best-of-N en cours | Égalité : base éprouvée (localcode) vs orchestration sur mesure (moi) |
-| **Approbations** | Shell, web et MCP **sans approbation** dans le projet : script du dépôt exécuté 10/10 sans demande (VÉRIFIÉ) | **Approbation humaine avant toute écriture ou exécution** : script exécuté 0/5 quand l'humain refuse (VÉRIFIÉ) | **Moi**, et c'est décisif pour une équipe |
-| **Isolation / réseau** | Pas de sandbox OS ; `webfetch` vers toute URL, loopback compris (LU + VÉRIFIÉ) | Sandbox de **fichiers** multi-racines, anti-SSRF, 0 requête tierce mesurée ; **pas de sandbox OS non plus** : un `conftest.py` piégé s'exécute 10/10 une fois pytest approuvé (VÉRIFIÉ) | **Moi** sur le réseau et les fichiers ; **égalité** sur l'exécution de code |
+| **Approbations** | Shell, web et MCP **sans approbation** dans le projet : script du dépôt exécuté 10/10 sans demande (VÉRIFIÉ) | **Approbation humaine avant chaque écriture et chaque commande demandée** (l'auto-vérification pytest y échappe) : script exécuté 0/5 quand l'humain refuse (VÉRIFIÉ) | **Moi**, et c'est décisif pour une équipe |
+| **Isolation / réseau** | Pas de sandbox OS ; `webfetch` vers toute URL, loopback compris (LU + VÉRIFIÉ) | Sandbox de **fichiers** multi-racines, anti-SSRF (jamais sollicité dans le test : INCONNU) ; requêtes tierces de l'agent **non mesurées** (le « 0 » du README porte sur le site) ; **pas de sandbox OS non plus** : un `conftest.py` piégé s'exécute 10/10 une fois pytest approuvé (VÉRIFIÉ) | **Moi** sur le réseau et les fichiers ; **égalité** sur l'exécution de code |
 | **RAG / mémoire** | Mémoire de tâche, pas de RAG documentaire (LU) | Library Brain : réponses sourcées, refus sans preuve | **Moi** |
 | **MCP** | Client (ajout de serveurs locaux ou distants, OAuth) | Client **et** serveur, plus le matériel ([micro:bit](MICROBIT-BLUETOOTH.md), EdgeSense) | **Moi** côté serveur et matériel ; égalité côté client |
 | **Ouverture / auditabilité** | Apache 2.0, toute la chaîne publique ; binaire de l'agent **reconstruit à l'identique** depuis le source (VÉRIFIÉ) | MIT, 2 829 tests publics | **Égalité**. L'argument « je suis auditable, eux non » ne tient plus ici |
@@ -383,7 +383,7 @@ spécialisation code.
       locale vers `127.0.0.1:8000`. Relevé `lsof`, pas de pare-feu applicatif. Reste :
       DuckDuckGo et `webfetch` (phase 2).
 - [x] **Injection de prompt** (23/11, 106 essais, localcode et Klody) : instructions écrites
-      jamais suivies (0/40) ; `conftest.py` piégé exécuté chez les deux (20/20) ; script du
+      jamais suivies (0/20 chez chacun) ; `conftest.py` piégé exécuté chez les deux (20/20) ; script du
       dépôt exécuté sans demande par localcode (10/10), bloqué par l'approbation chez Klody
       quand l'humain refuse (0/5). Reste INCONNU : injection web réelle, localcode en mode
       interactif.
