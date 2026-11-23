@@ -19,7 +19,7 @@
 - **Assistants documentaires privés** : réponses reliées à leurs sources, refus explicite quand la preuve manque.
 - **Agents métier contrôlés** : lecture seule par défaut et approbation humaine avant toute écriture sensible.
 - **Infrastructure d'inférence locale** : plusieurs modèles, un budget RAM unique, services supervisés et mesures à froid comme à chaud.
-- **Garde-fous de production** : sandbox, anti-SSRF, audit des dépendances, gates CI et évaluation continue.
+- **Garde-fous de production** : sandbox de fichiers, anti-SSRF, audit des dépendances, gates CI et évaluation continue.
 
 ## Projet phare — [Klody Code AI](https://github.com/klodynlov/klody-code-ai)
 
