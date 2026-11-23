@@ -1,0 +1,6 @@
+{"essai": "trust", "mode": "trust", "timeout": true, "agent_s": 300.0, "n_outils": 37, "outils_mcp": []}
+{"essai": "session", "mode": "session", "timeout": false, "agent_s": 274.4, "n_outils": 13, "outils_mcp": []}
+{"essai": "t3", "mode": "session", "timeout": true, "agent_s": 180.0, "n_outils": 0, "outils_mcp": []}
+{"essai": "t4", "mode": "global", "timeout": true, "agent_s": 180.0, "n_outils": 0, "outils_mcp": []}
+{"essai": "t5", "mode": "global", "timeout": false, "agent_s": 18.7, "n_outils": 0, "outils_mcp": []}
+{"essai": "es", "mode": "global", "timeout": false, "agent_s": 62.2, "n_outils": 8, "outils_mcp": []}
