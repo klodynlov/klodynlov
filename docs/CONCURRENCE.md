@@ -372,7 +372,8 @@ spécialisation code.
    pilotée par le budget de contexte mesuré.
 5. **Interopérabilité plutôt que concurrence** côté MCP : mes serveurs (micro:bit,
    EdgeSense) devraient se brancher sur localcode avec `localcode mcp add`. C'est une
-   démo de plus pour eux, pas un risque.
+   démo de plus pour eux, pas un risque. *(23/11 : serveurs conformes, mais localcode ne les
+   expose pas en mode non interactif ; à refaire en TUI, voir « Interopérabilité MCP ».)*
 
 ### À vérifier (protocole de test sur mon Mac)
 
@@ -395,6 +396,38 @@ spécialisation code.
 - [x] **Build reproductible** (23/11) : `localcode-ui` reconstruit à l'identique depuis
       `FORK_COMMIT`. Reste INCONNU : `llama-server`.
 - [ ] **Licences des modèles** : affichées dans le picker avant téléchargement ?
+
+### Idées à étudier pour Klody (analyse du code, 23/11/2026)
+
+Analyse de trois mécanismes de localcode (sous-agent analyste, vérifiée dans le code). Les idées
+sont libres ; **pas de reprise de code** : réimplémentation en Python et crédits (localcode
+Apache 2.0, llama.cpp MIT), sans `NOTICE` à embarquer.
+
+| Rang | Idée | Comment ça marche chez localcode | Pour Klody | Effort (DÉDUIT) | Niveau |
+|---|---|---|---|---|---|
+| 1 | **Budget de contexte mesuré** | le superviseur lit le journal de llama-server et fixe le budget à la profondeur où une relecture tient en 60 s et où le décodage garde ≥ 50 % de sa vitesse ; compaction rare, par gros blocs | Klody a une fenêtre glissante statique (65 536 − réserves) qui supprime en tête et **invalide son cache de préfixe** (11,2 s contre 0,55 s, mesuré par Klody) : c'est le gain le plus sûr | 10-14 h (+10-15 h pour un résumé LLM) | FAISABLE |
+| 2 | **Suivi de progrès par tour** (détection de blocage) | plugin TS : un tour progresse s'il produit une nouvelle édition, un premier check vert ou moins d'échecs ; rappel à 6 tours sans progrès, arrêt doux à 14 ; même échec de check suivi par signature | Klody n'a que des compteurs d'appels **identiques** (anti-boucle, anti-scan, `MAX_ITERATIONS` 25) : il ne voit pas une boucle « lire, modifier, tester » qui n'avance pas | 8-12 h | FAISABLE |
+| 3 | **Copy drafting** (`ngram-mod`) | code de llama.cpp en amont, que localcode se contente d'activer : table de n-grammes sur le prompt, brouillons de 48 à 64 tokens vérifiés par le modèle, sortie identique | **Bloqué aujourd'hui** : dans mlx-lm 0.31.3, le décodage spéculatif refuse le cache non tronquable des couches linéaires de Qwen 3.5/3.6 (`ArraysCache`, VÉRIFIÉ). Il faudrait un instantané/restauration de cet état, plus la désactivation avec `json_schema_logits` | 25-40 h, essai préalable de 3-4 h | PROUVÉ sur llama.cpp, INCONNU sur MLX |
+
+Gains annoncés par localcode, vérifiés dans ses sources :
+- « ×3,5 à ×4 sur réécriture » (README) et ×3,5-4,2 sur des réécritures de fichier, avec une
+  **médiane de +14 %** sur 12 tâches agent (CHANGELOG 0.5.38), sans protocole publié ;
+- nos mesures de phase 1 (×1,1 à ×1,66) combinent DFlash et ngram-mod sans les isoler.
+
+### Interopérabilité MCP (VÉRIFIÉ, 23/11/2026)
+
+Détails : [`bench/localcode/mcp/`](bench/localcode/mcp/README.md).
+- **Nos serveurs sont conformes** : micro:bit simulé (14 outils, 0,26 s) et EdgeSense (3 outils,
+  0,25 s) répondent à un client MCP standard.
+- **localcode ne les expose pas au modèle en mode non interactif** : 0 cas sur 6 configurations,
+  et 2 de ces configurations bloquent la session. `localcode mcp add` écrit une config que son
+  propre `mcp list` ne voit pas. L'agent contourne alors par le shell : il importe le simulateur
+  ou parle JSON-RPC à la main. Cause **INCONNU**.
+- **Non testé** : le TUI interactif (`/mcps`). La vraie carte micro:bit n'a pas été tentée,
+  faute de permission Bluetooth pour un processus lancé en ligne de commande.
+- Lecture : la « démo de plus pour eux » de la décision 5 n'est pas acquise en l'état.
+  L'interopérabilité se prouve aujourd'hui avec un client MCP standard, et reste à refaire en
+  mode interactif.
 
 ### Sources
 

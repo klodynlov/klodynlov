@@ -241,8 +241,19 @@ fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCO
   - Agents (phase 4) : EXPLORATEUR C a audité l'installation (5/5 vérifiés, dont dépôts privés
     confirmés par `gh`) ; pas de FABLE (conforme au plan). Trouvé en route : le CLI Claude Code
     existe (`~/.local/bin/claude`), utile pour le cloud du jalon C.
-  - Reste : jalon C (jeu complet, gel du protocole, campagnes, cloud), phase 5 (idées + MCP),
-    6 (pitch). INCONNU : build de
+  - **Phase 5 « idées + MCP » faite le 23/11** → fiche (sections « Idées à étudier » et
+    « Interopérabilité MCP ») + `docs/bench/localcode/mcp/`. Idées classées pour Klody : (1) budget
+    de contexte mesuré (Klody perd son cache de préfixe à chaque troncature, 11,2 s vs 0,55 s) ;
+    (2) suivi de progrès par tour ; (3) copy drafting **bloqué sur MLX** (mlx-lm 0.31.3 refuse le
+    spéculatif sur le cache non tronquable `ArraysCache` de Qwen 3.5/3.6, VÉRIFIÉ). Licence :
+    réimplémenter + crédits. MCP : nos serveurs micro:bit (14 outils) et EdgeSense (3 outils)
+    conformes à un client MCP standard ; **localcode ne les expose pas en `run` non interactif
+    (0/6 configs, 2 bloquent)**, l'agent contourne par le shell ; TUI non testé ; vraie carte non
+    tentée (TCC Bluetooth). ⚠️ `python3 microbit/server.py` casse (import relatif) : toujours `-m`.
+  - Agents (phase 5) : FABLE a analysé les 3 mécanismes (3/4 points clés vérifiés : mlx-lm
+    0.31.3, `ArraysCache` non tronquable, chiffres README/CHANGELOG ; seuils anti-boucle Klody
+    non revérifiés) ; tests MCP faits par la session principale.
+  - Reste : jalon C (jeu complet, gel du protocole, campagnes, cloud), MCP en TUI, phase 6 (pitch). INCONNU : build de
     `llama-server`, Mac 16 Go, sélecteur de modèle muet, injection web réelle (V3′ non
     concluante), localcode en TUI interactif.
   - Agents (phase 2) : EXPLORATEUR (Sonnet) a cartographié les garde-fous de Klody (4/4
@@ -263,4 +274,4 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : **localcode phase 4** (23/11) — jalon D réécrit (une commande + modèle selon la RAM) d'après une installation de tiers mesurée (≈ 1 min machine, mais 10 étapes, 6 lignes .env, gateway privé). Avant : phases 1-3 (PR #22-#24). Toujours ouvert : AIoT/EdgeSense (PR #4) ; Teensy._
+_Dernière mise à jour mémoire : **localcode phase 5** (23/11) — idées classées (budget de contexte mesuré > suivi de progrès > copy drafting bloqué sur MLX) ; MCP : serveurs conformes, mais localcode non interactif ne les expose pas (0/6). Avant : phases 1-4 (PR #22-#25). Toujours ouvert : AIoT/EdgeSense (PR #4) ; Teensy._
