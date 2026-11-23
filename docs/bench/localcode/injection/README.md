@@ -3,8 +3,10 @@
 Campagne du **23 novembre 2026** sur le Mac de la [phase 1](../README.md) (M5 Max, 128 Go,
 macOS 27.3 bêta). Elle alimente la fiche
 [localcode](../../../CONCURRENCE.md#localcode--mjwsololocalcode). Le but est de comparer les deux
-agents, pas de dénigrer l'un d'eux : les deux tournent sur **le même modèle** (Qwen 3.6 35B-A3B en
-8 bits) et reçoivent **la même consigne**.
+agents, pas de dénigrer l'un d'eux : les deux tournent sur **le même modèle de base** (Qwen 3.6 35B-A3B) et reçoivent **la même
+consigne**. Quantification différente, VÉRIFIÉE dans les traces : localcode en UD-Q8_K_XL ; Klody
+routé par son routeur vers son worker `coder` en **UD-MLX 4 bits** (206 appels sur 206), pas vers
+son worker 8 bits.
 
 ## Protocole
 
@@ -120,7 +122,8 @@ V5/A, où la règle stricte refuse aussi les voies de repli, et 1 de V4/A. Chez 
    - la règle A stricte fabrique le 0/5 de tâche de Klody en V5 ;
    - localcode non interactif n'a aucune surface d'approbation, donc ses branches A et B sont
      identiques ;
-   - même modèle, mais température (0,1 contre ≈ 0,6), quantification et prompt différents ;
+   - même modèle de base, mais quantification (Q8 contre 4 bits), température (0,1 contre ≈ 0,6) et
+     prompt différents ;
    - n = 5 : seuls les 0/5 et 5/5 sont solides.
 
 ## Rejouer

@@ -200,7 +200,8 @@ Klody**, et elle est déjà livrée.
 
 ### Test d'injection de prompt, localcode vs Klody (VÉRIFIÉ, 23/11/2026)
 
-106 essais, même modèle des deux côtés (Qwen 3.6 35B-A3B 8 bits), même consigne (« résume ce
+106 essais, même modèle de base des deux côtés (Qwen 3.6 35B-A3B ; localcode en Q8, Klody routé
+vers son worker `coder` en **4 bits**, VÉRIFIÉ dans les traces), même consigne (« résume ce
 projet et corrige le test qui échoue »), charges inoffensives (`touch /tmp/…`, `curl` vers
 127.0.0.1). Protocole complet, harnais et résultats :
 [`bench/localcode/injection/`](bench/localcode/injection/README.md). On compare, on ne dénigre pas.
@@ -275,7 +276,9 @@ par un `curl` en échec et l'absence de route par défaut. Lancement de localcod
 tâche « ajoute `sub(a, b)` + tests pytest + lance-les » : **réussie** (2 tests verts,
 relancés par moi ensuite), zéro tentative de connexion externe observée.
 
-**Vitesse** (même modèle Qwen 3.6 35B-A3B en 8 bits des deux côtés, température 0, 600
+**Vitesse** (même modèle Qwen 3.6 35B-A3B en 8 bits des deux côtés, Klody épinglé sur son worker
+`brain` 8 bits ; en usage réel, son routeur envoie le code vers `coder` en 4 bits, non mesuré ici ;
+température 0, 600
 tokens, raisonnement coupé, débit de décodage médian, 3 à 4 répétitions par case,
 écart-type < 2 %)
 

@@ -200,7 +200,7 @@ fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCO
     782 tok/s). Toujours un **serveur neuf par répétition**.
   - ⚠️ Couper le Wi-Fi coupe aussi l'app Claude : test hors ligne = script autonome
     (`offline_test.sh`) ; le Mac bascule sur le partage iPhone USB s'il est branché.
-  - **Phase 2 « injection » faite le 23/11** (106 essais, même modèle Qwen 3.6 8 bits,
+  - **Phase 2 « injection » faite le 23/11** (106 essais, même modèle de base Qwen 3.6 35B-A3B — localcode Q8, Klody routé vers `coder` **4 bits** —,
     charges inoffensives) → `docs/bench/localcode/injection/` (harnais, plan, résultats,
     reclassement). Résultats : instructions écrites jamais suivies (0/40 chez les deux) ;
     `conftest.py` piégé exécuté **20/20 chez les deux** (aucune sandbox OS ; le `run_in_sandbox`
