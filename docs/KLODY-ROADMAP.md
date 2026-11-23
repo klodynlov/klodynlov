@@ -20,7 +20,7 @@ passer d'un projet abouti à un projet **démontrable et prouvé**.
 |---|---|---|
 | A · Best-of-N robuste (tâches « hard ») | → 15/09 | Gain mesuré de Best-of-N vs 1-passe sur un jeu « hard » |
 | B · Étude de cas technique publiée | → 20/08 | Document public expliquant les décisions d'ingénierie |
-| C · Benchmark public vs agent cloud | → 15/11 | Méthodo + chiffres local (MLX) vs cloud, ouverts |
+| C · Benchmark public local vs local vs cloud | → 11/12 (glissé du 15/11) | Méthodo + chiffres Klody vs localcode vs cloud, sur les mêmes tâches, ouverts |
 | D · Cap release « consulting-ready » | → 15/12 | Un tiers installe et démontre Klody en local |
 
 ---
@@ -56,19 +56,54 @@ positionnement « ingénieur IA locale ». *Peut avancer en parallèle du jalon 
 
 ---
 
-## 📊 Jalon C — Benchmark public face à un agent cloud *(→ 15 novembre)*
+## 📊 Jalon C — Benchmark public local vs local vs cloud *(→ 11 décembre, glissé du 15/11)*
 
 **But.** Prouver, chiffres à l'appui, qu'un agent **100 % local** tient face à un
-agent cloud. *Dépend du jalon A (Best-of-N stabilisé) pour être crédible.*
+agent cloud, **et** se situer face à l'agent local open source de référence,
+[localcode](CONCURRENCE.md#localcode--mjwsololocalcode) : même machine, mêmes tâches,
+même harnais.
 
-- [ ] **Choix de la référence** — agent cloud comparé + jeu de tâches comparables. *@25/09*
-- [ ] **Protocole reproductible** — mêmes tâches, mêmes critères, matériel décrit, seeds fixés. *@05/10*
-- [ ] **Exécution des runs** — local (MLX) vs cloud, collecte des métriques (réussite, latence, coût). ⭐ *@20/10*
-- [ ] **Analyse** — coût / confidentialité / qualité, honnête sur les limites. *@05/11*
-- [ ] **Publication** — données et méthodologie **ouvertes**, reproductibles par un tiers. *@15/11*
+**Décisions du 23/11** (plan conçu avec un sous-agent méthodologue, vérifié dans le code) :
+- **Harnais** : un petit runner autonome au **format de tâches de localcode** (`workspace/` +
+  grader caché `tests/test.sh` + contrat `.eval/`), qui pilote les trois agents. Pas
+  d'adaptateur Inspect AI pour Klody à ce stade : son solver officiel refuse tout autre
+  agent (`evals/localcode_evals/agent.py:438`) ; une **calibration unique** contre le
+  harnais Inspect d'origine, côté localcode, prouvera que le runner rend les mêmes verdicts.
+- **Jeu de 44 tâches en trois tiers, publié par tier** : 17 de localcode (8 régression,
+  9 tracking ; on exclut celles qui mesurent son runtime ou ses outils propres), 15 de
+  Klody (3 par catégorie medium, hard, expert, discovery, real_repo, tirées avec une graine
+  publiée), **12 neutres** écrites avant tout essai (6 en français, 6 en anglais). Le chiffre
+  de tête est celui du tier neutre ; l'écart entre tiers mesure le biais d'auteur.
+- **Conditions** : C1 « produit tel que livré » (Klody en routage automatique, donc **4 bits**
+  sur le code ; localcode par défaut, Q8 + drafting) = chiffre principal ; C2 « parité 8 bits »
+  (Klody épinglé sur son worker `brain`) ; C3 (localcode en 4 bits) reportée au jalon D.
+- **Métriques** : réussite k/n, pass@1, pass^5 ; temps mur ; tokens lus dans l'usage serveur
+  (fin de l'estimation len/4 du banc Klody) ; débit utile ; RAM de pointe en
+  `phys_footprint` ; approbations et refus ; coût cloud en $ par tâche réussie.
+- **Biais contrôlés** : 5 essais par tâche, unité statistique = la tâche (IC par bootstrap) ;
+  blocs par agent en ABBA, repos 120 s, GPU au repos ; même budget de temps (900 s) ;
+  Klody via son **WebSocket avec approbations** (chemin de l'UI), politique d'approbation
+  figée avant les essais ; état jetable, aucun MCP, réseau coupé pour les agents locaux.
+
+- [x] **Choix de la référence** — localcode (local) + Claude Code (cloud, à confirmer). *23/11*
+- [x] **Plomberie prouvée** — runner autonome : contrat `.eval/` reproduit, 32/32 oracles
+      conformes (workspace intact = échec, solution = succès). *23/11*
+- [x] **Premier lot** — 6 tâches × 2 essais × 3 conditions (localcode, Klody auto, Klody `brain`) :
+      36/36, plomberie validée ([détails](bench/localcode/jalon-c/README.md)). *23/11*
+- [ ] **Calibration Inspect** côté localcode (venv séparé, installation à valider). *@26/11*
+- [ ] **Jeu complet** — export des 15 tâches Klody, 12 tâches neutres, usage serveur et
+      `phys_footprint` côté Klody. *@29/11*
+- [ ] **Gel du protocole** publié avant tout essai compté. *@30/11*
+- [ ] **Campagne locale** C1 (44 × 5 × 2 agents) puis C2 (44 × 3, Klody). ⭐ *@05/12*
+- [ ] **Cloud** — Claude Code sur les 44 tâches × 3 (CLI, permissions et budget à valider). *@07/12*
+- [ ] **Analyse + publication** — données, méthodo et runner **ouverts**. *@11/12*
 
 **Terminé quand** : quelqu'un peut **rejouer** le benchmark depuis la méthodo
 publiée et retrouver l'ordre de grandeur des résultats annoncés.
+
+**Déjà mesuré (phases 1-2, 23/11)** : vitesse de décodage localcode 147 tok/s (code, drafting)
+contre Klody 102 tok/s (worker `brain` 8 bits) ; test d'injection comparé (106 essais).
+Voir la [fiche localcode](CONCURRENCE.md#localcode--mjwsololocalcode).
 
 ---
 
