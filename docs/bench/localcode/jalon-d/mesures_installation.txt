@@ -1,0 +1,31 @@
+# Installation de tiers mesurée — Klody mode autonome (23/11/2026, M5 Max 128 Go)
+
+## pip install -r requirements.txt --no-cache-dir
+real 30.99
+user 17.23
+sys 5.43
+rc=0
+
+## pip install mlx-lm --no-cache-dir
+real 2.22
+user 0.80
+sys 0.23
+rc=0
+
+## .env : lignes modifiées par rapport à .env.example
+< MLX_BASE_URL=http://localhost:8090/v1
+< MLX_MODEL=brain
+< MLX_CODE_MODEL=coder
+> MLX_BASE_URL=http://127.0.0.1:8180/v1
+> MLX_MODEL=unsloth/Qwen3.6-35B-A3B-MLX-8bit
+> MLX_CODE_MODEL=
+< VL_MODEL=vision
+> VL_MODEL=
+< PROJECT_ROOT=/Users/ton-nom/mon-projet
+> PROJECT_ROOT=/private/tmp/klody-fresh-projet
+< LIBRARYBRAIN_DIR=/Users/ton-nom/library-brain
+> LIBRARYBRAIN_DIR=
+> MLX_PORT=8180
+
+## Première réponse à froid (mlx_lm.server :8180)
+{"ttft_s": 1.496, "decode_tps": 90.45, "total_s": 2.821, "completion_tokens": 120, "think_tag_in_output": false}

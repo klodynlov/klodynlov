@@ -40,7 +40,11 @@ statut: en cours
 # 🚀 Jalon D — Cap release « consulting-ready »
 horizon: 2026-12-15
 statut: à venir
-> Rendre Klody installable et démontrable par un tiers — support direct du consulting.
-- [ ] Packaging installable + release versionnée @2026-11-28
-- [ ] Guide de démarrage 100 % local (MLX / Ollama) @2026-12-08
-- [ ] Revue de sécurité de release + durcissement final ! @2026-12-15
+> Barre relevée par localcode : une commande + modèle choisi selon la RAM ; installation mesurée le 23/11 (10 étapes, 6 lignes .env, dépôts privés).
+- [ ] Commande unique `klody` + assistant de premier lancement (.env généré) @2026-12-05
+- [ ] ram-aware-scheduler v0.2 : lecture RAM + fit() sur empreintes mesurées @2026-12-08
+- [ ] Catalogue de modèles par palier de RAM (16/32/64/128 Go) @2026-12-08
+- [ ] CI macOS « installation de zéro » qui exécute une vraie tâche ! @2026-12-10
+- [ ] Guide de démarrage 100 % local (uv tool install → 1re tâche) @2026-12-12
+- [ ] Revue de sécurité de release (dont confinement d'exécution) ! @2026-12-15
+
