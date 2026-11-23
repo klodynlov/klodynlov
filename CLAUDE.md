@@ -162,7 +162,7 @@ audio = EXPÉRIMENTAL. **On ne passe pas à l'IA tant que la chaîne matérielle
 n'est pas bouclée et chiffrée.**
 
 ### 🧭 Veille concurrence
-**Statut : mergé dans `main` (PR #18, fiche localcode : PR #21).** `docs/CONCURRENCE.md` — une
+**Statut : mergé dans `main` (PR #18, fiche localcode : PR #21, plan localcode en 6 phases : PR #22→#27).** `docs/CONCURRENCE.md` — une
 fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCONNU**.
 - **POP Switcher** (popswitcher.com) : app Mac gratuite, IA locale multimodale
   (llama.cpp, stable-diffusion.cpp, ComfyUI), orchestrateur *The One*, RAG, Skills.
@@ -176,7 +176,7 @@ fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCO
   ce n'est pas encore une IA de confiance », **sans nommer de concurrent**.
 - Reste : dérouler le protocole de test de la fiche sur le Mac (trafic sortant,
   hors ligne, RAM, The One sur petit modèle, MCP).
-- **localcode** (mjwsolo/localcode, Apache 2.0, v0.5.43) : **fiche mergée (PR #21)**, niveau **LU** (nouveau niveau = constaté dans le code
+- **localcode** (mjwsolo/localcode, Apache 2.0, v0.5.43) : **fiche mergée (PR #21)**, puis **VÉRIFIÉE en 6 phases (PR #22→#27, mergées le 23/11)**, niveau **LU** (nouveau niveau = constaté dans le code
   source publié, non exécuté). Agent de code local Mac en 1 commande (`pip install` +
   `localcode`) = **concurrent le plus direct de Klody**. Fork d'OpenCode (binaire Bun,
   source public) + fork llama.cpp (TurboQuant, drafting, Metal), 12 modèles, Inspect AI,
@@ -255,7 +255,7 @@ fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCO
     non revérifiés) ; tests MCP faits par la session principale.
   - **Phase 6 « pitch » faite le 23/11** → variante **A « l'humain garde la main »** choisie par
     l'utilisateur : README du profil (section Klody) ; README de Klody (PR klodynlov/klody-code-ai#336,
-    worktree `~/Projets/worktrees/klody-pitch`) ; post LinkedIn n° 9 en **brouillon non publié**
+    mergée `deea2ca` ; worktree temporaire supprimé) ; post LinkedIn n° 9 en **brouillon non publié**
     (`docs/LINKEDIN-POSTS.md`, 1 275 car.). Preuve centrale : script du dépôt 0/5 si refus vs 10/10
     sans demande ; limite dite : `conftest.py` 10/10 chez Klody aussi.
   - Corrigé en phase 6 (relevé par FABLE, vérifié) : « 0/40 chez chacun » → 0/20 ; « approbation
@@ -267,7 +267,9 @@ fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCO
     erreurs à moi corrigées). Liens de preuve : `docs/bench/localcode/` nomme localcode (fiche déjà
     publique depuis PR #21) → la règle « ne pas nommer » vaut pour pitch et post, pas pour la fiche.
   - Reste : jalon C (jeu complet, gel du protocole, campagnes, cloud), jalon D, MCP en TUI, publier le
-    post (décision utilisateur), merger la pile de PR #22→#27 puis #336 (lien de preuve actif après #23). INCONNU : build de
+    post (décision utilisateur). ✅ Pile **#22→#27 mergée** le 23/11 (rebases successifs, contenu vérifié
+    identique ; `main` = `f59fc2f`), klody-code-ai#336 mergée (`deea2ca`), branches `claude/localcode-phase*`
+    supprimées. INCONNU : build de
     `llama-server`, Mac 16 Go, sélecteur de modèle muet, injection web réelle (V3′ non
     concluante), localcode en TUI interactif.
   - Agents (phase 2) : EXPLORATEUR (Sonnet) a cartographié les garde-fous de Klody (4/4
@@ -288,4 +290,4 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : **localcode phase 6** (23/11) — pitch « agent de code local gouverné » (variante A) appliqué au README du profil et à celui de Klody (#336) ; post LinkedIn n° 9 en brouillon. Les 6 phases du plan localcode sont faites (PR #22-#27 empilées, brouillons). Toujours ouvert : AIoT/EdgeSense (PR #4) ; Teensy._
+_Dernière mise à jour mémoire : **plan localcode terminé et mergé** (23/11) — 6 phases dans `main` (PR #22→#27, `f59fc2f`), pitch « agent de code local gouverné » aussi dans le README de Klody (klody-code-ai#336, `deea2ca`) ; post LinkedIn n° 9 en brouillon. Ouvert : jalons C et D de Klody, formules trop fortes à trancher, MCP en TUI. Toujours ouvert ailleurs : AIoT/EdgeSense (PR #4) ; Teensy._
