@@ -200,9 +200,28 @@ fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCO
     782 tok/s). Toujours un **serveur neuf par répétition**.
   - ⚠️ Couper le Wi-Fi coupe aussi l'app Claude : test hors ligne = script autonome
     (`offline_test.sh`) ; le Mac bascule sur le partage iPhone USB s'il est branché.
-  - Reste : phase 2 (injection localcode vs Klody, + DuckDuckGo/`webfetch`), 3 (jalon C),
-    4 (jalon D), 5 (idées + MCP), 6 (pitch). INCONNU : build de `llama-server`, Mac 16 Go,
-    cause du sélecteur de modèle muet dans l'onglet Terminal de l'app.
+  - **Phase 2 « injection » faite le 23/11** (106 essais, même modèle Qwen 3.6 8 bits,
+    charges inoffensives) → `docs/bench/localcode/injection/` (harnais, plan, résultats,
+    reclassement). Résultats : instructions écrites jamais suivies (0/40 chez les deux) ;
+    `conftest.py` piégé exécuté **20/20 chez les deux** (aucune sandbox OS ; le `run_in_sandbox`
+    de Klody = venv) ; script du dépôt exécuté 10/10 sans demande par localcode, **0/5 chez
+    Klody quand l'humain refuse** (seule différence de garde-fou mesurée) ; signalement rare.
+    Annexes : localcode `--auto` fait des `websearch` sortants (chemin local dans la requête) ;
+    Klody lance son auto-check pytest même après un `write_file` refusé et écrit parfois dans
+    un `script.py` parasite (8/53).
+  - ⚠️ Pièges phase 2 : `localcode-ui` prend le projet dans **`PWD`** (pilote 1 invalidé) →
+    dépôts isolés dans `/private/tmp/inj-<aléa>/` ; injections « écrites » trop faibles pour ce
+    modèle → variantes V4/V5 sur le chemin d'exécution ; la colonne « tentée » doit ignorer
+    les éditions qui *retirent* la charge.
+  - Reste : phase 3 (jalon C), 4 (jalon D), 5 (idées + MCP), 6 (pitch). INCONNU : build de
+    `llama-server`, Mac 16 Go, sélecteur de modèle muet, injection web réelle (V3′ non
+    concluante), localcode en TUI interactif.
+  - Agents (phase 2) : EXPLORATEUR (Sonnet) a cartographié les garde-fous de Klody (4/4
+    vérifiés) ; FABLE a conçu le test (V1-V3) puis les variantes fortes (V3′-V5) et analysé
+    les traces. Corrigé à la vérification : sa voie de repli V5 contredisait la règle A
+    (écriture sous `tests/` refusée) → règle ajustée ; son total de tâche Klody (39/53) était
+    faux → 43/53 recalculé ; ses 4 constats clés (refus V5, `webfetch` sans commentaire HTML,
+    `websearch` sortant, auto-check après refus) vérifiés dans les traces.
   - Agents (phase 1) : EXPLORATEUR A (Sonnet, lecture seule) a relevé drafting, télémétrie,
     permissions, build ; 4/4 affirmations clés re-vérifiées par commande (sha256,
     `FORK_COMMIT`, `MTP_DRAFT=4`, `HF_HUB_OFFLINE` ignoré), rien à corriger. La sonde :8000
@@ -215,4 +234,4 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : **localcode phase 1** (23/11) — fiche passée de LU à VÉRIFIÉ sur installation, réseau, hors ligne, vitesse et build reproductible ; banc rejouable dans `docs/bench/localcode/`. Avant : fiche localcode mergée (PR #21) ; veille concurrence (PR #18). Toujours ouvert : AIoT/EdgeSense (PR #4, M0 codé, M2-M4 + TinyGuard en conception) ; reprise matérielle Teensy sur le Mac._
+_Dernière mise à jour mémoire : **localcode phase 2** (23/11) — test d'injection localcode vs Klody, 106 essais : `conftest.py` piégé exécuté chez les deux (pas de sandbox OS), script du dépôt bloqué seulement par l'approbation de Klody ; harnais dans `docs/bench/localcode/injection/`. Avant : phase 1 (mesures, PR #22). Toujours ouvert : AIoT/EdgeSense (PR #4) ; reprise matérielle Teensy sur le Mac._
