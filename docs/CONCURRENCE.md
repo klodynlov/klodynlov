@@ -49,7 +49,7 @@ documents) **sans Terminal** ni abonnement, pour un utilisateur seul sur sa mach
 | **Inférence** | llama.cpp & co. | MLX + [ram-aware-scheduler](https://github.com/klodynlov/ram-aware-scheduler) (plusieurs modèles, un budget RAM) | Égalité : étendue (POP) vs optimisation Apple Silicon (moi) |
 | **MCP / monde physique** | Rien d'annoncé | MCP client + serveur, [micro:bit BLE](MICROBIT-BLUETOOTH.md), EdgeSense, Teensy | **Moi**, seul sur ce terrain |
 | **Code source / auditabilité** | Aucun dépôt public trouvé (**INCONNU**) : probablement propriétaire, distribué en binaire | Klody sous licence MIT, 2 829 tests publics | **Moi** : un client peut auditer mon code |
-| **Sécurité / preuves** | « Pas de cloud par défaut » + recherche web | Sandbox, anti-SSRF, CI sécurité, 0 requête tierce mesurée, discipline PROUVÉ/FAISABLE | **Moi** |
+| **Sécurité / preuves** | « Pas de cloud par défaut » + recherche web | Sandbox **de fichiers**, anti-SSRF, CI sécurité, 0 requête tierce mesurée **sur mon site** (pas sur l'agent), discipline PROUVÉ/FAISABLE | **Moi** |
 | **Public non technique** | Cœur de sa promesse | SilverBrain (seniors), pas encore de prototype | **POP** aujourd'hui |
 
 ### Lecture
@@ -76,8 +76,8 @@ clients peu.
 - **Auditabilité** : aucun code publié chez lui à ma connaissance ; le mien est
   ouvert et testé. Pour des données sensibles, pouvoir lire le code est un argument.
 - **« Zéro cloud » nuancé chez lui** : une recherche web fait sortir des requêtes ;
-  mon « 0 requête tierce » est mesuré. (Activation par défaut ou à la demande :
-  **INCONNU**.)
+  mon « 0 requête tierce » est mesuré, mais **sur mon site** ; pour l'agent Klody, le trafic
+  sortant reste à mesurer. (Activation par défaut ou à la demande chez lui : **INCONNU**.)
 
 ### Décisions
 
@@ -347,7 +347,8 @@ spécialisation code.
 **Où je mène**
 - **La gouvernance.** Il a fait un choix de produit assumé : un développeur seul, sur son
   propre dépôt, sans friction. C'est l'inverse de ce qu'exige une équipe avec des données
-  sensibles. Approbation avant écriture, sandbox, anti-SSRF, journal d'audit : mon offre
+  sensibles. Approbation avant écriture, sandbox de fichiers, anti-SSRF, traces des appels
+  d'outils (journal dédié aux approbations et refus : à construire) : mon offre
   B2B se joue exactement là, et sa propre politique de sécurité le reconnaît. **Mesuré** :
   un script piégé du dépôt passe chez lui sans demande, et chez moi seulement si l'humain
   l'approuve. **Limite honnête** : sans sandbox au niveau du système, mon approbation ne
@@ -360,7 +361,9 @@ spécialisation code.
 ### Décisions
 
 1. **Repositionner le pitch de Klody** : non plus « agent de code local », mais « **agent
-   de code local gouverné** : approbations, sandbox, audit, réponses sourcées ». localcode
+   de code local gouverné** : approbations, sandbox, audit, réponses sourcées ». *(23/11 :
+   « sandbox » = sandbox de fichiers, pas de confinement d'exécution ; « audit » = traces des appels
+   d'outils, pas encore de journal d'audit dédié.)* localcode
    devient le contraste : « parfait pour un dev seul sur son dépôt ; vos dépôts d'équipe
    exigent des garde-fous. » Sans le dénigrer : il valide la catégorie.
 2. **Le prendre comme référence dans le [jalon C](KLODY-ROADMAP.md)** : comparer local vs
