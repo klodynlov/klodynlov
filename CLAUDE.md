@@ -607,8 +607,21 @@ fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCO
     addendum quantification. Corrigé à la vérification : son plan supposait Klody en 8 bits
     (faux : `coder` 4 bits, trouvé dans les traces) ; ses 3 constats de lecture (diff.txt,
     python3, usage serveur Klody) vérifiés.
-  - Reste : jalon C (jeu complet, gel du protocole, campagnes, cloud), phase 4 (jalon D),
-    5 (idées + MCP), 6 (pitch). INCONNU : build de
+  - **Phase 4 « jalon D » faite le 23/11** → jalon D réécrit dans `docs/KLODY-ROADMAP.md`
+    (cible : une commande + modèle selon la RAM) + `docs/bench/localcode/jalon-d/`. Installation
+    de tiers mesurée en mode autonome (dossier vierge, pip sans cache) : clone 1,2 s, pip 31 s
+    (147 paquets, venv 1,6 Go), mlx-lm 2,2 s, serveur prêt 2,3 s, 1re réponse 1,5 s, 3/3 tâches
+    réelles réussies → ≈ 1 min machine + 36 Go de modèle. Le frein est le parcours : 10 étapes,
+    6 lignes `.env`, `.env.example` pointé sur le gateway, **`klody-core` et `library-brain`
+    privés**, modèle figé 36 Go, CI Linux seulement. Proposition (non implémentée) : `uv tool
+    install klody` + assistant de 1er lancement, ram-aware-scheduler v0.2 (remonter `ram.py` /
+    `sysmem.py` du gateway + `fit()` sur empreintes mesurées), catalogue par palier de RAM, CI
+    macOS « installation de zéro ».
+  - Agents (phase 4) : EXPLORATEUR C a audité l'installation (5/5 vérifiés, dont dépôts privés
+    confirmés par `gh`) ; pas de FABLE (conforme au plan). Trouvé en route : le CLI Claude Code
+    existe (`~/.local/bin/claude`), utile pour le cloud du jalon C.
+  - Reste : jalon C (jeu complet, gel du protocole, campagnes, cloud), phase 5 (idées + MCP),
+    6 (pitch). INCONNU : build de
     `llama-server`, Mac 16 Go, sélecteur de modèle muet, injection web réelle (V3′ non
     concluante), localcode en TUI interactif.
   - Agents (phase 2) : EXPLORATEUR (Sonnet) a cartographié les garde-fous de Klody (4/4
@@ -629,7 +642,7 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : **localcode phase 3** (23/11) — jalon C réécrit (local vs local vs cloud, publication visée le 11/12), runner autonome au format localcode, oracles 32/32, lot 1 36/36 ; Klody route le code vers `coder` 4 bits. Avant : **localcode phase 2** (23/11) — test d'injection localcode vs Klody, 106 essais : `conftest.py` piégé exécuté chez les deux (pas de sandbox OS), script du dépôt bloqué seulement par l'approbation de Klody ; harnais dans `docs/bench/localcode/injection/`. Avant : **localcode phase 1** (23/11) — fiche passée de LU à VÉRIFIÉ sur installation, réseau, hors ligne, vitesse et build reproductible ; banc rejouable dans `docs/bench/localcode/`. Avant : **fiche localcode** mergée (PR #21) dans la veille concurrence (agent de code local open source, concurrent direct de Klody). Avant : **Suite Éveil — conseils d'une orthophoniste** (06/10/2026) : petit train
+_Dernière mise à jour mémoire : **localcode phase 4** (23/11) — jalon D réécrit (une commande + modèle selon la RAM) d'après une installation de tiers mesurée (≈ 1 min machine, mais 10 étapes, 6 lignes .env, gateway privé). Avant : **localcode phase 3** (23/11) — jalon C réécrit (local vs local vs cloud, publication visée le 11/12), runner autonome au format localcode, oracles 32/32, lot 1 36/36 ; Klody route le code vers `coder` 4 bits. Avant : **localcode phase 2** (23/11) — test d'injection localcode vs Klody, 106 essais : `conftest.py` piégé exécuté chez les deux (pas de sandbox OS), script du dépôt bloqué seulement par l'approbation de Klody ; harnais dans `docs/bench/localcode/injection/`. Avant : **localcode phase 1** (23/11) — fiche passée de LU à VÉRIFIÉ sur installation, réseau, hors ligne, vitesse et build reproductible ; banc rejouable dans `docs/bench/localcode/`. Avant : **fiche localcode** mergée (PR #21) dans la veille concurrence (agent de code local open source, concurrent direct de Klody). Avant : **Suite Éveil — conseils d'une orthophoniste** (06/10/2026) : petit train
 par niveaux « quand il réussit » (une syllabe d'abord ; Python 97 + Swift 192 tests verts, app compilée, ordre
 vérifié au simulateur : douche → bouche → niche), livres des sons triés par nombre de syllabes, relevé des gestes
 de Borel-Maisonny (`docs/EVEIL-BOREL-MAISONNY.md`) et planche des gestes et bouches de Lou à montrer à

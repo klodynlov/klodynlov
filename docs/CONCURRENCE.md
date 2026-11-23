@@ -313,7 +313,7 @@ non reconstruit).
 
 | Brique | localcode | Klody Code AI | Avantage |
 |---|---|---|---|
-| **Installation** | `pip install` + 1 commande, modèle choisi selon la RAM : **≈ 6 min 30 s jusqu'à la 1re réponse**, téléchargement compris (VÉRIFIÉ) | « Consulting-ready » prévu le 15/12 ([jalon D](KLODY-ROADMAP.md)) | **localcode**, nettement |
+| **Installation** | `pip install` + 1 commande, modèle choisi selon la RAM : **≈ 6 min 30 s jusqu'à la 1re réponse**, téléchargement compris (VÉRIFIÉ) | Mode autonome : ≈ 1 min de machine + 36 Go de modèle, mais **10 étapes manuelles, 6 lignes de `.env`, modèle figé**, gateway privé (VÉRIFIÉ 23/11) ; « 1 commande » visée au [jalon D](KLODY-ROADMAP.md) | **localcode**, nettement |
 | **Moteur d'inférence** | llama.cpp patché + drafting spéculatif et *copy drafting* actifs par défaut : **147 tok/s sur du code** (VÉRIFIÉ) | MLX + [ram-aware-scheduler](https://github.com/klodynlov/ram-aware-scheduler) : **102 tok/s**, même modèle (VÉRIFIÉ) | **localcode** de +30 à +45 % sur du code grâce au drafting ; **moteur seul, MLX +15 %** ; prose : égalité (Klody +5 %) |
 | **Choix de modèles** | 12 familles, 169 quantifications, téléchargement reprenable | Modèles MLX | **localcode** |
 | **Boucle d'agent** | OpenCode (communauté large), plan, détection de blocage, sans sous-agents (LU) | ReAct maison, 69 outils, routeur adaptatif, Best-of-N en cours | Égalité : base éprouvée (localcode) vs orchestration sur mesure (moi) |
@@ -376,7 +376,7 @@ spécialisation code.
 
 ### À vérifier (protocole de test sur mon Mac)
 
-- [x] **Installation réelle** (23/11, Mac 128 Go) : 2,3 s d'installation, ≈ 6 min 30 s
+- [x] **Installation réelle** (23/11, Mac 128 Go ; Klody mesuré en face dans le même parcours, voir jalon D) : 2,3 s d'installation, ≈ 6 min 30 s
       jusqu'à la première réponse. Reste : un Mac 16 Go (choix de modèle différent).
 - [x] **Trafic sortant** (23/11) : seul Hugging Face, pendant le téléchargement ; sonde
       locale vers `127.0.0.1:8000`. Relevé `lsof`, pas de pare-feu applicatif. Reste :
