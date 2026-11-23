@@ -173,7 +173,8 @@ Klody**, et elle est déjà livrée.
 
 **Le point faible**, confirmé par sa propre doc
 ([Network Boundary](https://mjwsolo.github.io/localcode/concepts/network-boundary/)) :
-> « The web tools, MCP tools and shell commands all run **without a permission prompt** »
+> « Les outils web, les outils MCP et les commandes shell s'exécutent tous **sans demande
+> d'autorisation** » (traduit de l'anglais).
 - Les commandes shell dans le projet, `webfetch` (vers n'importe quelle URL), la recherche
   DuckDuckGo et les outils MCP s'exécutent **sans approbation**.
 - Il n'y a **aucun sandbox OS** : ni `sandbox-exec` ni Seatbelt dans le code. La seule
