@@ -228,8 +228,21 @@ fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCO
     addendum quantification. Corrigé à la vérification : son plan supposait Klody en 8 bits
     (faux : `coder` 4 bits, trouvé dans les traces) ; ses 3 constats de lecture (diff.txt,
     python3, usage serveur Klody) vérifiés.
-  - Reste : jalon C (jeu complet, gel du protocole, campagnes, cloud), phase 4 (jalon D),
-    5 (idées + MCP), 6 (pitch). INCONNU : build de
+  - **Phase 4 « jalon D » faite le 23/11** → jalon D réécrit dans `docs/KLODY-ROADMAP.md`
+    (cible : une commande + modèle selon la RAM) + `docs/bench/localcode/jalon-d/`. Installation
+    de tiers mesurée en mode autonome (dossier vierge, pip sans cache) : clone 1,2 s, pip 31 s
+    (147 paquets, venv 1,6 Go), mlx-lm 2,2 s, serveur prêt 2,3 s, 1re réponse 1,5 s, 3/3 tâches
+    réelles réussies → ≈ 1 min machine + 36 Go de modèle. Le frein est le parcours : 10 étapes,
+    6 lignes `.env`, `.env.example` pointé sur le gateway, **`klody-core` et `library-brain`
+    privés**, modèle figé 36 Go, CI Linux seulement. Proposition (non implémentée) : `uv tool
+    install klody` + assistant de 1er lancement, ram-aware-scheduler v0.2 (remonter `ram.py` /
+    `sysmem.py` du gateway + `fit()` sur empreintes mesurées), catalogue par palier de RAM, CI
+    macOS « installation de zéro ».
+  - Agents (phase 4) : EXPLORATEUR C a audité l'installation (5/5 vérifiés, dont dépôts privés
+    confirmés par `gh`) ; pas de FABLE (conforme au plan). Trouvé en route : le CLI Claude Code
+    existe (`~/.local/bin/claude`), utile pour le cloud du jalon C.
+  - Reste : jalon C (jeu complet, gel du protocole, campagnes, cloud), phase 5 (idées + MCP),
+    6 (pitch). INCONNU : build de
     `llama-server`, Mac 16 Go, sélecteur de modèle muet, injection web réelle (V3′ non
     concluante), localcode en TUI interactif.
   - Agents (phase 2) : EXPLORATEUR (Sonnet) a cartographié les garde-fous de Klody (4/4
@@ -250,4 +263,4 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : **localcode phase 3** (23/11) — jalon C réécrit (local vs local vs cloud, publication visée le 11/12), runner autonome au format localcode, oracles 32/32, lot 1 36/36 ; Klody route le code vers `coder` 4 bits. Avant : phases 1-2 (PR #22, #23). Toujours ouvert : AIoT/EdgeSense (PR #4) ; Teensy._
+_Dernière mise à jour mémoire : **localcode phase 4** (23/11) — jalon D réécrit (une commande + modèle selon la RAM) d'après une installation de tiers mesurée (≈ 1 min machine, mais 10 étapes, 6 lignes .env, gateway privé). Avant : phases 1-3 (PR #22-#24). Toujours ouvert : AIoT/EdgeSense (PR #4) ; Teensy._
