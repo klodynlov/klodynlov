@@ -1,0 +1,15 @@
+Resolving dependencies
+Resolved, downloaded and extracted [20]
+bun test v1.4.2 (744846f84)
+
+ 5 pass
+ 0 fail
+ 93 expect() calls
+Ran 5 tests across 3 files. [799.00ms]
+built /tmp/localcode-ui-build/opencode/packages/cli/dist/cli-darwin-arm64/bin/localcode
+sha256 39340944a298b41300a770d71e3ac0286d4103d84ac1a9be091aa453b7d28453 (fork 4cc1f15c23f12a3cc569c19859e7b9d1b80f53fa)
+bundled binary matches
+real 14.33
+user 8.47
+sys 35.91
+exit=0

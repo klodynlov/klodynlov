@@ -565,6 +565,28 @@ fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCO
   **gouverné** » ; localcode comme référence du jalon C ; barre du jalon D = 1 commande ;
   interop MCP (micro:bit/EdgeSense via `localcode mcp add`). Protocole de test Mac à
   dérouler (dont test d'injection de prompt comparé à Klody).
+  - **Phase 1 « installer et mesurer » faite le 23/11** (M5 Max 128 Go, macOS 27.3 bêta) →
+    fiche passée en **VÉRIFIÉ** sur 5 points ; protocole + scripts + données brutes dans
+    `docs/bench/localcode/`. Résultats : install 2,3 s, ≈ 6 min 30 s jusqu'à la 1re réponse
+    (modèle auto = Qwen 3.6 35B-A3B UD-Q8_K_XL) ; trafic externe = Hugging Face seul, pendant
+    le téléchargement (+ sonde locale `127.0.0.1:8000` = vLLM d'OpenCode, tombe sur l'API
+    KlodyAI) ; hors ligne OK ; drafting ×1,10-×1,66 (« ×2 » partiellement réfuté),
+    localcode +45 % vs Klody MLX sur du code, MLX +15 % sans drafting ; `localcode-ui`
+    reconstruit **octet pour octet** depuis `FORK_COMMIT`. Shell lancé **sans approbation**
+    (VÉRIFIÉ sur consigne normale).
+  - ⚠️ Piège de banc : le *copy drafting* (`ngram-mod`) recopie les sorties déjà générées
+    → à température 0, rejouer un prompt sur le même serveur gonfle la vitesse (jusqu'à
+    782 tok/s). Toujours un **serveur neuf par répétition**.
+  - ⚠️ Couper le Wi-Fi coupe aussi l'app Claude : test hors ligne = script autonome
+    (`offline_test.sh`) ; le Mac bascule sur le partage iPhone USB s'il est branché.
+  - Reste : phase 2 (injection localcode vs Klody, + DuckDuckGo/`webfetch`), 3 (jalon C),
+    4 (jalon D), 5 (idées + MCP), 6 (pitch). INCONNU : build de `llama-server`, Mac 16 Go,
+    cause du sélecteur de modèle muet dans l'onglet Terminal de l'app.
+  - Agents (phase 1) : EXPLORATEUR A (Sonnet, lecture seule) a relevé drafting, télémétrie,
+    permissions, build ; 4/4 affirmations clés re-vérifiées par commande (sha256,
+    `FORK_COMMIT`, `MTP_DRAFT=4`, `HF_HUB_OFFLINE` ignoré), rien à corriger. La sonde :8000
+    n'était pas dans son rapport : trouvée par le relevé réseau puis dans le binaire.
+    Exécution, mesures et doc : session principale (Opus).
 
 ### Autres projets (mentionnés au README, hors de ce dépôt)
 Klody Code AI (agent de code local, projet phare) · klody-ui · LibraryBrain (RAG local) ·
@@ -572,7 +594,7 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : **fiche localcode** mergée (PR #21) dans la veille concurrence (agent de code local open source, concurrent direct de Klody). Avant : **Suite Éveil — conseils d'une orthophoniste** (06/10/2026) : petit train
+_Dernière mise à jour mémoire : **localcode phase 1** (23/11) — fiche passée de LU à VÉRIFIÉ sur installation, réseau, hors ligne, vitesse et build reproductible ; banc rejouable dans `docs/bench/localcode/`. Avant : **fiche localcode** mergée (PR #21) dans la veille concurrence (agent de code local open source, concurrent direct de Klody). Avant : **Suite Éveil — conseils d'une orthophoniste** (06/10/2026) : petit train
 par niveaux « quand il réussit » (une syllabe d'abord ; Python 97 + Swift 192 tests verts, app compilée, ordre
 vérifié au simulateur : douche → bouche → niche), livres des sons triés par nombre de syllabes, relevé des gestes
 de Borel-Maisonny (`docs/EVEIL-BOREL-MAISONNY.md`) et planche des gestes et bouches de Lou à montrer à
