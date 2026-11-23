@@ -541,7 +541,7 @@ App 2 : mode papier **à essayer** avec une vraie imprimante et de vrais crayons
 nom, iPadOS 17 vs 26, mode par défaut avant validation (écoute auto vs juge adulte).
 
 ### 🧭 Veille concurrence
-**Statut : mergé dans `main` (PR #18).** `docs/CONCURRENCE.md` — une
+**Statut : mergé dans `main` (PR #18, fiche localcode : PR #21).** `docs/CONCURRENCE.md` — une
 fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCONNU**.
 - **POP Switcher** (popswitcher.com) : app Mac gratuite, IA locale multimodale
   (llama.cpp, stable-diffusion.cpp, ComfyUI), orchestrateur *The One*, RAG, Skills.
@@ -555,6 +555,16 @@ fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCO
   ce n'est pas encore une IA de confiance », **sans nommer de concurrent**.
 - Reste : dérouler le protocole de test de la fiche sur le Mac (trafic sortant,
   hors ligne, RAM, The One sur petit modèle, MCP).
+- **localcode** (mjwsolo/localcode, Apache 2.0, v0.5.43) : **fiche mergée (PR #21)**, niveau **LU** (nouveau niveau = constaté dans le code
+  source publié, non exécuté). Agent de code local Mac en 1 commande (`pip install` +
+  `localcode`) = **concurrent le plus direct de Klody**. Fork d'OpenCode (binaire Bun,
+  source public) + fork llama.cpp (TurboQuant, drafting, Metal), 12 modèles, Inspect AI,
+  très actif (163 versions). Sécurité : fournisseur local seul, cloud OpenCode coupé,
+  config projet non fiable par défaut, MAIS **shell/web/MCP sans approbation, aucun
+  sandbox OS** (doc + code). Décisions : pitch Klody → « agent de code local
+  **gouverné** » ; localcode comme référence du jalon C ; barre du jalon D = 1 commande ;
+  interop MCP (micro:bit/EdgeSense via `localcode mcp add`). Protocole de test Mac à
+  dérouler (dont test d'injection de prompt comparé à Klody).
 
 ### Autres projets (mentionnés au README, hors de ce dépôt)
 Klody Code AI (agent de code local, projet phare) · klody-ui · LibraryBrain (RAG local) ·
@@ -562,7 +572,7 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : **Suite Éveil — conseils d'une orthophoniste** (06/10/2026) : petit train
+_Dernière mise à jour mémoire : **fiche localcode** mergée (PR #21) dans la veille concurrence (agent de code local open source, concurrent direct de Klody). Avant : **Suite Éveil — conseils d'une orthophoniste** (06/10/2026) : petit train
 par niveaux « quand il réussit » (une syllabe d'abord ; Python 97 + Swift 192 tests verts, app compilée, ordre
 vérifié au simulateur : douche → bouche → niche), livres des sons triés par nombre de syllabes, relevé des gestes
 de Borel-Maisonny (`docs/EVEIL-BOREL-MAISONNY.md`) et planche des gestes et bouches de Lou à montrer à
