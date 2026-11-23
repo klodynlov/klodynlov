@@ -155,7 +155,7 @@ Klody**, et elle est déjà livrée.
   par d'autres apps.
 - **12 modèles, 169 quantifications** (Gemma 4, Qwen 3.6/3.8, DeepSeek V4 Flash…),
   téléchargés depuis Hugging Face. Minimum 16 Go de mémoire unifiée.
-- **Qualité** : 81 fichiers de tests (635 fonctions `test_`), 33 tâches d'évaluation sur
+- **Qualité** : 81 fichiers de tests (635 fonctions `test_`), 31 tâches d'évaluation (+ 1 contrôle) sur
   **Inspect AI** (UK AISI) plus Harness-Bench. Le projet annonce que chaque release est
   testée en live sur chaque modèle (**DÉCLARÉ**). 163 versions publiées depuis avril 2026 :
   **développement très actif**, mais toujours étiqueté alpha.
@@ -390,7 +390,7 @@ spécialisation code.
 - [x] **Vitesse** (23/11) : drafting ×1,10 à ×1,66 selon le contenu (« ×2 »
       partiellement réfuté) ; localcode +45 % sur du code face à Klody MLX ; MLX +15 %
       sans drafting.
-- [ ] **Qualité** : ses 33 tâches d'éval avec le modèle recommandé, puis les mêmes avec
+- [ ] **Qualité** : ses tâches d'éval (31 + 1 contrôle, **oracles 32/32 conformes, VÉRIFIÉ 23/11**) avec le modèle recommandé, puis les mêmes avec
       Klody.
 - [x] **Build reproductible** (23/11) : `localcode-ui` reconstruit à l'identique depuis
       `FORK_COMMIT`. Reste INCONNU : `llama-server`.

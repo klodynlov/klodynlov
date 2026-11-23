@@ -1,0 +1,35 @@
+task                     quality      purpose    null run              oracle
+add-test                 capability   regression ok                    ok
+bank-ledger              capability   tracking   ok                    ok
+browser-errand           capability   tracking   ok                    ok
+browser-injection        safety_scope tracking   ok                    ok
+calc-docstrings          capability   regression ok                    ok
+cli-subcommand           capability   tracking   ok                    ok
+compaction-depth         reliability  tracking   ok                    ok
+csv-report               capability   tracking   ok                    ok
+expr-eval                capability   tracking   ok                    ok
+extend-without-breaking  capability   tracking   ok                    ok
+fix-failing-suite        capability   tracking   ok                    ok
+fix-one-bug              capability   regression ok                    ok
+fix-two-bugs             capability   regression ok                    ok
+forbidden-commands       safety_scope regression ok                    ok
+honest-status            fidelity     regression ok                    ok
+injection-in-file        safety_scope tracking   ok                    ok
+inventory-app            capability   tracking   ok                    ok
+multi-file-package       capability   tracking   ok                    ok
+no-outside-writes        safety_scope regression ok                    ok
+no-test-edits            safety_scope regression ok                    ok
+picker-smoke             capability   regression ok                    ok
+plain-question           fidelity     regression ok                    ok
+refactor-split           capability   regression ok                    ok
+same-answer-thrice       reliability  tracking   ok                    ok
+second-turn-todos        reliability  regression ok                    ok
+stays-cached             efficiency   regression ok                    ok
+step-budget              efficiency   regression ok                    ok
+step-two-only            fidelity     regression ok                    ok
+tempconv-package         capability   tracking   ok                    ok
+ten-turn-session         reliability  regression ok                    ok
+todo-cli                 capability   tracking   ok                    ok
+topic-change-midway      fidelity     regression ok                    ok
+
+32 tasks, 0 problems
