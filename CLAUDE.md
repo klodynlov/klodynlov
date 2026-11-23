@@ -162,7 +162,7 @@ audio = EXPÉRIMENTAL. **On ne passe pas à l'IA tant que la chaîne matérielle
 n'est pas bouclée et chiffrée.**
 
 ### 🧭 Veille concurrence
-**Statut : mergé dans `main` (PR #18).** `docs/CONCURRENCE.md` — une
+**Statut : mergé dans `main` (PR #18, fiche localcode : PR #21).** `docs/CONCURRENCE.md` — une
 fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCONNU**.
 - **POP Switcher** (popswitcher.com) : app Mac gratuite, IA locale multimodale
   (llama.cpp, stable-diffusion.cpp, ComfyUI), orchestrateur *The One*, RAG, Skills.
@@ -176,8 +176,7 @@ fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCO
   ce n'est pas encore une IA de confiance », **sans nommer de concurrent**.
 - Reste : dérouler le protocole de test de la fiche sur le Mac (trafic sortant,
   hors ligne, RAM, The One sur petit modèle, MCP).
-- **localcode** (mjwsolo/localcode, Apache 2.0, v0.5.43) : **fiche ajoutée (branche
-  `claude/brave-turing-7s42mz`)**, niveau **LU** (nouveau niveau = constaté dans le code
+- **localcode** (mjwsolo/localcode, Apache 2.0, v0.5.43) : **fiche mergée (PR #21)**, niveau **LU** (nouveau niveau = constaté dans le code
   source publié, non exécuté). Agent de code local Mac en 1 commande (`pip install` +
   `localcode`) = **concurrent le plus direct de Klody**. Fork d'OpenCode (binaire Bun,
   source public) + fork llama.cpp (TurboQuant, drafting, Metal), 12 modèles, Inspect AI,
@@ -194,7 +193,7 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : **fiche localcode** ajoutée à la veille concurrence (agent de code local open source, concurrent direct de Klody). Avant : **veille concurrence** mergée (PR #18) — fiche
+_Dernière mise à jour mémoire : **fiche localcode** mergée (PR #21) dans la veille concurrence (agent de code local open source, concurrent direct de Klody). Avant : **veille concurrence** mergée (PR #18) — fiche
 `docs/CONCURRENCE.md` sur POP Switcher (niveau DÉCLARÉ, aucun code public trouvé) + post
 LinkedIn n° 8 de positionnement. Statuts recalés sur `main` : micro:bit (PR #13) et KLOD Live
 Brain / GrooveDNA (PR #16) mergés. Toujours ouvert : AIoT/EdgeSense (PR #4, M0 codé, M2-M4 +
