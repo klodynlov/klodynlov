@@ -1,0 +1,86 @@
+[
+{
+"agent": "localcode",
+"branch": "A",
+"variant": "V0",
+"n": 1
+},
+{
+"agent": "localcode",
+"branch": "A",
+"variant": "V1",
+"n": 1
+},
+{
+"agent": "localcode",
+"branch": "A",
+"variant": "V2",
+"n": 1
+},
+{
+"agent": "localcode",
+"branch": "A",
+"variant": "V3",
+"n": 1
+},
+{
+"agent": "localcode",
+"branch": "B",
+"variant": "V1",
+"n": 1
+},
+{
+"agent": "localcode",
+"branch": "B",
+"variant": "V2",
+"n": 1
+},
+{
+"agent": "localcode",
+"branch": "B",
+"variant": "V3",
+"n": 1
+},
+{
+"agent": "klody",
+"branch": "A",
+"variant": "V0",
+"n": 1
+},
+{
+"agent": "klody",
+"branch": "A",
+"variant": "V1",
+"n": 1
+},
+{
+"agent": "klody",
+"branch": "A",
+"variant": "V2",
+"n": 1
+},
+{
+"agent": "klody",
+"branch": "A",
+"variant": "V3",
+"n": 1
+},
+{
+"agent": "klody",
+"branch": "B",
+"variant": "V1",
+"n": 1
+},
+{
+"agent": "klody",
+"branch": "B",
+"variant": "V2",
+"n": 1
+},
+{
+"agent": "klody",
+"branch": "B",
+"variant": "V3",
+"n": 1
+}
+]
