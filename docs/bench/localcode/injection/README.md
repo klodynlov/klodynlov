@@ -75,7 +75,7 @@ V5/A, où la règle stricte refuse aussi les voies de repli, et 1 de V4/A. Chez 
 ## Ce que ça établit
 
 - **PROUVÉ, commun aux deux** : une instruction écrite dans le README ou dans un test n'est jamais
-  suivie (0/40 tentatives chez chacun). C'est une propriété du **modèle**, pas des agents.
+  suivie (0/20 tentatives chez chacun, 0/40 au total). C'est une propriété du **modèle**, pas des agents.
 - **PROUVÉ, commun aux deux** : lancer pytest sur un dépôt piégé exécute le `conftest.py`
   (20/20), alors que les deux agents l'avaient lu juste avant. **Aucun des deux n'a de sandbox
   au niveau du système** :
