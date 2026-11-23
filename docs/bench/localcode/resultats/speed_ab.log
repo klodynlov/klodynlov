@@ -1,0 +1,63 @@
+=== début Mon Nov 23 09:28:00 CET 2026
+Apple M5 Max
+System-wide memory free percentage: 58%
+cmd nodraft: ~/bench-localcode/venv/lib/python3.12/site-packages/localcode/bin/llama-server --host 127.0.0.1 --model ~/.local/share/localcode/models/Qwen3.6-35B-A3B-UD-Q8_K_XL.gguf --port 50404 --ctx-size 131072 --threads 12 --flash-attn on --load-mode mmap -ngl 999 --cache-type-k q8_0 --cache-type-v q8_0 --cache-reuse 256 -b 2048 -ub 512 --jinja --context-shift --ctx-checkpoints 4 --checkpoint-min-step 2048 -np 1 -fit off --api-key <R> --alias Qwen3.6-35B-A3B-UD-Q8_K_XL --reasoning off --reasoning-budget 0
+nodraft prêt (pid 69213)
+09:28:04 repos 120 s
+09:30:09 GPU avant passe = 0 %
+warmup L_draft 1200 tok 120.24 tok/s
+L_draft P1_codegen 0 ttft 0.128 decode 142.13 tok 600 usage
+L_draft P2_explain 0 ttft 0.112 decode 91.83 tok 590 usage
+L_draft P3_refactor 0 ttft 0.326 decode 127.85 tok 485 usage
+L_draft P1_codegen 1 ttft 0.126 decode 197.28 tok 600 usage
+L_draft P2_explain 1 ttft 0.118 decode 170.3 tok 600 usage
+L_draft P3_refactor 1 ttft 0.038 decode 170.55 tok 485 usage
+09:30:43 repos 120 s
+09:32:44 GPU avant passe = 0 %
+warmup L_nodraft 1200 tok 95.42 tok/s
+L_nodraft P1_codegen 0 ttft 0.393 decode 90.43 tok 600 usage
+L_nodraft P2_explain 0 ttft 0.123 decode 87.97 tok 568 usage
+L_nodraft P3_refactor 0 ttft 0.311 decode 87.81 tok 485 usage
+L_nodraft P1_codegen 1 ttft 0.126 decode 86.81 tok 600 usage
+L_nodraft P2_explain 1 ttft 0.11 decode 85.43 tok 568 usage
+L_nodraft P3_refactor 1 ttft 0.041 decode 83.66 tok 485 usage
+09:33:36 repos 120 s
+09:35:36 GPU avant passe = 0 %
+warmup L_nodraft 1200 tok 93.17 tok/s
+L_nodraft P1_codegen 0 ttft 0.111 decode 87.94 tok 600 usage
+L_nodraft P2_explain 0 ttft 0.106 decode 85.55 tok 568 usage
+L_nodraft P3_refactor 0 ttft 0.029 decode 87.16 tok 485 usage
+L_nodraft P1_codegen 1 ttft 0.116 decode 85.68 tok 600 usage
+L_nodraft P2_explain 1 ttft 0.102 decode 83.47 tok 568 usage
+L_nodraft P3_refactor 1 ttft 0.029 decode 73.43 tok 485 usage
+09:36:29 repos 120 s
+09:38:29 GPU avant passe = 0 %
+warmup L_draft 1200 tok 183.42 tok/s
+L_draft P1_codegen 0 ttft 0.115 decode 308.49 tok 600 usage
+L_draft P2_explain 0 ttft 0.108 decode 781.56 tok 600 usage
+L_draft P3_refactor 0 ttft 0.024 decode 187.87 tok 485 usage
+L_draft P1_codegen 1 ttft 0.112 decode 577.73 tok 600 usage
+L_draft P2_explain 1 ttft 0.101 decode 734.21 tok 600 usage
+L_draft P3_refactor 1 ttft 0.027 decode 183.38 tok 485 usage
+{"ok": true, "state": "stopping"}
+System-wide memory free percentage: 89%
+09:38:54 repos 120 s
+09:40:54 GPU avant passe = 0 %
+warmup K_mlx8 1200 tok 101.79 tok/s
+K_mlx8 P1_codegen 0 ttft 0.21 decode 101.62 tok 600 usage
+K_mlx8 P2_explain 0 ttft 0.182 decode 101.48 tok 573 usage
+K_mlx8 P3_refactor 0 ttft 0.309 decode 100.36 tok 485 usage
+K_mlx8 P1_codegen 1 ttft 0.211 decode 101.82 tok 600 usage
+K_mlx8 P2_explain 1 ttft 0.19 decode 101.45 tok 573 usage
+K_mlx8 P3_refactor 1 ttft 0.321 decode 100.4 tok 485 usage
+09:41:47 repos 120 s
+09:44:03 GPU avant passe = 0 %
+warmup K_mlx8 1200 tok 97.34 tok/s
+K_mlx8 P1_codegen 0 ttft 0.203 decode 101.92 tok 600 usage
+K_mlx8 P2_explain 0 ttft 0.176 decode 102.27 tok 573 usage
+K_mlx8 P3_refactor 0 ttft 0.3 decode 101.11 tok 485 usage
+K_mlx8 P1_codegen 1 ttft 0.196 decode 101.11 tok 600 usage
+K_mlx8 P2_explain 1 ttft 0.186 decode 100.89 tok 573 usage
+K_mlx8 P3_refactor 1 ttft 0.316 decode 100.94 tok 485 usage
+{"key":"brain","running":false,"free_gb":95.0}
+=== fin Mon Nov 23 09:44:50 CET 2026

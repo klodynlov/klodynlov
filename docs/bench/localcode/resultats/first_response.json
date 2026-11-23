@@ -1,0 +1,1 @@
+{"ttft_s": 0.694, "decode_tps": 171.51, "total_s": 1.388, "completion_tokens": 120, "prompt_tokens": 37, "tokens_source": "usage", "reasoning_chars": 0, "think_tag_in_output": false, "output_head": "```python\ndef is_palindrome(s: str) -> bool:\n    \"\"\"\n    Check if a string is a palindrome, ignoring case and non-alphanumeric characters.\n\n    >>> is_palindrom"}

@@ -1,0 +1,31 @@
+Relevé lsof 1 s, processus localcode, 2026-11-23 08:43:03 -> 10:26:35, 33964 échantillons
+
+Connexions hors machine (comm, distant, nb échantillons, premier -> dernier) :
+  python3.1  15.236.34.207:443  1716  09:20:19 -> 09:24:01
+  python3.1  [2600:9000:2111:a00:17:b174:6d00:93a1]:443  134  09:20:22 -> 09:21:28
+  python3.1  [2600:9000:2111:d800:17:b174:6d00:93a1]:443  144  09:21:29 -> 09:22:42
+  python3.1  13.39.241.58:443  6  09:21:34 -> 09:21:35
+  python3.1  13.36.183.231:443  1018  09:21:34 -> 09:26:26
+  python3.1  [2600:9000:2111:2600:17:b174:6d00:93a1]:443  154  09:22:43 -> 09:23:55
+  python3.1  13.37.0.65:443  7  09:22:46 -> 09:22:49
+  python3.1  15.236.85.177:443  842  09:22:47 -> 09:26:28
+  python3.1  15.236.197.3:443  177  09:22:48 -> 09:26:44
+  python3.1  [2600:9000:2111:1e00:17:b174:6d00:93a1]:443  133  09:23:56 -> 09:24:52
+  python3.1  13.36.122.243:443  8  09:24:00 -> 09:24:03
+  python3.1  13.37.65.55:443  855  09:24:01 -> 09:25:13
+  python3.1  [2600:9000:2111:5c00:17:b174:6d00:93a1]:443  176  09:24:53 -> 09:26:08
+  python3.1  15.237.164.118:443  12  09:25:13 -> 09:25:15
+  python3.1  [2600:9000:2111:600:17:b174:6d00:93a1]:443  81  09:26:09 -> 09:26:41
+
+Connexions loopback vers des ports fixes (< 49152) :
+  localcode-ui serve -> 127.0.0.1:8000  (sonde vLLM intégrée à OpenCode ; :8000 = API KlodyAI sur ce Mac)
+  localcode-ui       -> 127.0.0.1:8323  (port de contrôle du superviseur localcode)
+  client du banc     -> 127.0.0.1:8090  (mon script speedbench vers la gateway Klody, pas localcode)
+  (+ ports éphémères : llama-server, serveur interne de localcode-ui)
+
+Attribution des hôtes distants :
+  [2600:9000:2111:*:17:b174:6d00:93a1]  = huggingface.co (CloudFront, même suffixe que son AAAA)
+  15.236.34.207, 13.39.241.58, 15.236.85.177 = us.aws.cdn.hf.co (dig, cible du 302 de /resolve/)
+  autres 13.36/13.37/15.236/15.237.x (AWS eu-west-3) = même CDN, DNS rotatif : PROBABLE, non résolu nominativement
+Aucune connexion hors machine en dehors de la fenêtre de téléchargement 09:20:19 -> 09:26:44.
+Limites : lsof à 1 s rate les connexions < 1 s et ne voit pas le DNS ; pas de pare-feu applicatif (LuLu/Little Snitch absents).

@@ -126,8 +126,10 @@ méthode que mes propres mesures.
 ## localcode — [mjwsolo/localcode](https://github.com/mjwsolo/localcode)
 
 _Fiche créée le 23 novembre 2026 · version analysée : **0.5.43** (PyPI, 22/11/2026) ·
-niveau de preuve global : **LU** (archive source et dépôt lus ; rien exécuté, faute de
-Mac Apple Silicon dans la session)._
+niveau de preuve global : **LU**, et **VÉRIFIÉ** depuis le 23/11 pour l'installation, le
+réseau, le hors ligne, la vitesse et le build reproductible (voir
+[Mesures sur mon Mac](#mesures-sur-mon-mac-vérifié-23112026), données et scripts dans
+[`bench/localcode/`](bench/localcode/README.md))._
 
 ### En une phrase
 
@@ -145,7 +147,8 @@ Klody**, et elle est déjà livrée.
     en CI.
   - `localcode-ui` (102 Mo) : l'agent lui-même, un **fork d'OpenCode** compilé avec Bun.
     Son source est public ([mjwsolo/opencode](https://github.com/mjwsolo/opencode)) et
-    le commit exact du binaire (`FORK_COMMIT` 4cc1f15) y existe.
+    le commit exact du binaire (`FORK_COMMIT` 4cc1f15) y existe. **VÉRIFIÉ** : reconstruit
+    depuis ce commit, le binaire est identique octet pour octet à celui de la wheel.
 - Une couche **Python d'environ 16 000 lignes** : supervision, catalogue de modèles,
   téléchargement reprenable, garde mémoire, garde thermique, voix (whisper.cpp + Piper).
   Elle comprend aussi l'option `localcode api`, un endpoint OpenAI-compatible réutilisable
@@ -184,20 +187,100 @@ Klody**, et elle est déjà livrée.
   lue par `webfetch`) peut faire exécuter du shell et sortir des données. Son
   `SECURITY.md` le reconnaît lui-même : « évitez de lancer LocalCode sur des dépôts
   sensibles sans comprendre les permissions ».
+- **VÉRIFIÉ** (session hors ligne, 23/11) : sur la consigne « ajoute `sub` et lance les
+  tests », l'agent a lu, modifié, créé un fichier puis lancé `pytest` dans le shell
+  **sans aucune demande d'approbation**. La tâche entière a pris 6,0 s, l'appel shell est
+  parti 0,9 s après l'écriture, et la table `permission` de sa base de session est restée
+  vide. Ce n'est pas encore un test d'injection (phase 2), mais le comportement par défaut
+  est confirmé.
+
+### Mesures sur mon Mac (VÉRIFIÉ, 23/11/2026)
+
+MacBook Pro M5 Max, 128 Go, macOS 27.3 bêta, sur secteur. localcode 0.5.43 dans un venv
+isolé. Protocole complet, scripts et données brutes :
+[`bench/localcode/`](bench/localcode/README.md).
+
+**Installation et premier lancement**
+
+| Étape | Mesure |
+|---|---|
+| `uv pip install localcode` | **2,3 s**, 39 paquets, 366 Mo (cache `uv` probablement chaud) |
+| Modèle choisi automatiquement pour 128 Go | Qwen 3.6 35B-A3B **UD-Q8_K_XL** (38,5 Go) + drafter DFlash (0,42 Go) |
+| Téléchargement | **385 s** (≈ 101 Mo/s, dépend de la connexion) |
+| Démarrage de `llama-server` (mmap) | **4 s** |
+| Première réponse à froid | **0,69 s** avant le 1er token, puis 171 tok/s |
+
+Soit **≈ 6 min 30 s du choix du modèle à la première réponse**, presque tout en
+téléchargement. Incident **INCONNU** : mon choix dans le sélecteur de l'interface (onglet
+Terminal de l'app Claude) n'est jamais arrivé au superviseur ; le téléchargement a été
+déclenché par son API de contrôle locale (`POST /select`, celle qu'utilise l'interface).
+Cause non établie, peut-être liée au terminal plutôt qu'à localcode.
+
+**Trafic sortant** (relevé `lsof` toutes les secondes sur les processus localcode,
+1 h 43 de session, 33 964 échantillons)
+
+- **Hors machine : uniquement Hugging Face, uniquement pendant le téléchargement**
+  (09:20 → 09:26), uniquement depuis le superviseur Python : `huggingface.co` (CloudFront)
+  et `us.aws.cdn.hf.co` (cible de la redirection de `/resolve/`). **Aucune** connexion
+  externe en dehors de cette fenêtre, ni de la part du binaire `localcode-ui`.
+- **Sur la machine** : `localcode-ui` sonde **`127.0.0.1:8000`** (découverte vLLM intégrée à
+  OpenCode, lue dans le binaire : `GET /health` puis `/v1/models`). Sur mon Mac, ce port est
+  l'API de KlodyAI. C'est du trafic local, sans effet ici puisque la config refuse tout
+  fournisseur autre que le sien, mais un service local tiers voit passer ces requêtes.
+- **Non couvert** : DuckDuckGo et `webfetch` (aucune tâche web dans cette session, prévu en
+  phase 2). **Limites** : pas de pare-feu applicatif (LuLu/Little Snitch absents) ; `lsof` à
+  1 s ne voit ni les connexions de moins d'une seconde ni le DNS.
+- `HF_HUB_OFFLINE` n'est lu nulle part dans le code (LU) : le téléchargeur maison l'ignore.
+
+**Hors ligne** : Wi-Fi coupé et partage iPhone débranché, l'absence de réseau est prouvée
+par un `curl` en échec et l'absence de route par défaut. Lancement de localcode, puis la
+tâche « ajoute `sub(a, b)` + tests pytest + lance-les » : **réussie** (2 tests verts,
+relancés par moi ensuite), zéro tentative de connexion externe observée.
+
+**Vitesse** (même modèle Qwen 3.6 35B-A3B en 8 bits des deux côtés, température 0, 600
+tokens, raisonnement coupé, débit de décodage médian, 3 à 4 répétitions par case,
+écart-type < 2 %)
+
+| Prompt | localcode (défaut, drafting) | localcode sans drafting | Klody (MLX 8 bits) |
+|---|---|---|---|
+| Génération de code | **147,5 tok/s** | 88,7 | 101,7 |
+| Explication (prose) | 96,4 | 87,9 | **101,5** |
+| Refactorisation | **131,0** | 87,2 | 100,7 |
+
+- **Gain du drafting : ×1,66 (code), ×1,10 (prose), ×1,50 (refactorisation).** Le « ×2 »
+  est donc **partiellement réfuté** : vrai en ordre de grandeur sur du code, faux sur de
+  la prose. Son catalogue annonce ×1,74 sur une autre quantification (IQ2_M).
+- **Le *copy drafting* explose dès qu'un texte se répète** : sur un prompt rejoué à
+  l'identique, jusqu'à 782 tok/s. C'est le cas typique d'un agent qui réécrit un fichier
+  qu'il vient de lire. (Cet effet a d'abord faussé mon banc ; protocole corrigé, voir le
+  README du banc.)
+- **Moteur seul, sans drafting : MLX est ≈ 15 % plus rapide** que son llama.cpp patché.
+  L'avance de localcode vient du drafting, pas du moteur.
+- Le temps avant le premier token n'est pas comparable sur ces prompts courts : le cache
+  de prompt de llama.cpp le fausse dès la 2e passe. À la première passe, il vaut ≈ 0,3 s
+  des deux côtés.
+
+**Build reproductible** : `scripts/build_ui_binary.sh --check` avec Bun 1.4.2 (sa version de
+CI), depuis `mjwsolo/opencode` au commit `4cc1f15` → sha256 `39340944…8453`, **identique
+octet pour octet** au binaire de la wheel (recalculé avec `shasum` et `cmp`). Reconstruction
+en 14 s (clone et cache Bun déjà présents). Le build télécharge le runtime Bun depuis GitHub
+avec contrôle sha256, et vide volontairement le catalogue `models.dev`, donc rien de daté
+n'est embarqué. **INCONNU** : la reproductibilité de `llama-server` (fork llama.cpp,
+non reconstruit).
 
 ### Comparaison brique par brique
 
 | Brique | localcode | Klody Code AI | Avantage |
 |---|---|---|---|
-| **Installation** | `pip install` + 1 commande, modèle choisi selon la RAM (LU) | « Consulting-ready » prévu le 15/12 ([jalon D](KLODY-ROADMAP.md)) | **localcode**, nettement |
-| **Moteur d'inférence** | llama.cpp patché : TurboQuant, drafting spéculatif, *copy drafting*, noyaux Metal (LU) | MLX + [ram-aware-scheduler](https://github.com/klodynlov/ram-aware-scheduler) | **localcode** en profondeur d'optimisation ; MLX reste un bon choix pour la génération sur Apple Silicon |
+| **Installation** | `pip install` + 1 commande, modèle choisi selon la RAM : **≈ 6 min 30 s jusqu'à la 1re réponse**, téléchargement compris (VÉRIFIÉ) | « Consulting-ready » prévu le 15/12 ([jalon D](KLODY-ROADMAP.md)) | **localcode**, nettement |
+| **Moteur d'inférence** | llama.cpp patché + drafting spéculatif et *copy drafting* actifs par défaut : **147 tok/s sur du code** (VÉRIFIÉ) | MLX + [ram-aware-scheduler](https://github.com/klodynlov/ram-aware-scheduler) : **102 tok/s**, même modèle (VÉRIFIÉ) | **localcode** de +30 à +45 % sur du code grâce au drafting ; **moteur seul, MLX +15 %** ; prose : égalité (Klody +5 %) |
 | **Choix de modèles** | 12 familles, 169 quantifications, téléchargement reprenable | Modèles MLX | **localcode** |
 | **Boucle d'agent** | OpenCode (communauté large), plan, détection de blocage, sans sous-agents (LU) | ReAct maison, 69 outils, routeur adaptatif, Best-of-N en cours | Égalité : base éprouvée (localcode) vs orchestration sur mesure (moi) |
 | **Approbations** | Shell, web et MCP **sans approbation** dans le projet (LU + doc) | Lecture seule par défaut, **approbation humaine avant toute écriture sensible** | **Moi**, et c'est décisif pour une équipe |
 | **Isolation / réseau** | Pas de sandbox OS ; `webfetch` vers toute URL (LU) | Sandbox multi-racines, anti-SSRF, 0 requête tierce mesurée | **Moi** |
 | **RAG / mémoire** | Mémoire de tâche, pas de RAG documentaire (LU) | Library Brain : réponses sourcées, refus sans preuve | **Moi** |
 | **MCP** | Client (ajout de serveurs locaux ou distants, OAuth) | Client **et** serveur, plus le matériel ([micro:bit](MICROBIT-BLUETOOTH.md), EdgeSense) | **Moi** côté serveur et matériel ; égalité côté client |
-| **Ouverture / auditabilité** | Apache 2.0, toute la chaîne publique (agent, fork OpenCode, fork llama.cpp) | MIT, 2 829 tests publics | **Égalité**. L'argument « je suis auditable, eux non » ne tient plus ici |
+| **Ouverture / auditabilité** | Apache 2.0, toute la chaîne publique ; binaire de l'agent **reconstruit à l'identique** depuis le source (VÉRIFIÉ) | MIT, 2 829 tests publics | **Égalité**. L'argument « je suis auditable, eux non » ne tient plus ici |
 | **Évaluation** | Inspect AI + Harness-Bench, gate de release par modèle | Benchmark public local vs cloud ([jalon C](KLODY-ROADMAP.md)) | **localcode** aujourd'hui sur l'outillage d'éval |
 | **Voix** | Dictée (whisper.cpp) + synthèse (Piper) | VocalBrain | Égalité |
 | **Plateforme** | Apple Silicon uniquement, ≥ 16 Go | Apple Silicon (MLX) | Égalité |
@@ -215,8 +298,10 @@ spécialisation code.
   Klody se présente seulement comme ça, la question devient « pourquoi pas localcode ? ».
 - **Il a déjà livré ce que vise mon jalon D**, et la barre monte : l'installation par un
   tiers devra tenir en une commande, avec choix automatique du modèle.
-- **Il est en avance sur l'optimisation de l'inférence** : cache KV compressé, drafting,
-  patchs Metal, et sur l'outillage d'évaluation.
+- **Il est en avance sur l'optimisation de l'inférence** : grâce au drafting, il décode
+  **+45 % plus vite que Klody sur du code**, avec le même modèle (mesuré). Mon moteur MLX
+  est plus rapide à nu (+15 %) : l'écart vient d'une technique (drafting), pas du moteur.
+  Il est aussi en avance sur l'outillage d'évaluation.
 
 **Où je mène**
 - **La gouvernance.** Il a fait un choix de produit assumé : un développeur seul, sur son
@@ -247,21 +332,23 @@ spécialisation code.
 
 ### À vérifier (protocole de test sur mon Mac)
 
-- [ ] **Installation réelle** : temps de `uv pip install localcode` plus le premier
-      lancement (build, téléchargement, warm-up) sur un Mac 16 Go puis 32 Go+.
-- [ ] **Trafic sortant** : session normale avec pare-feu applicatif (LuLu / Little Snitch).
-      Seuls Hugging Face, DuckDuckGo et les URL demandées doivent apparaître.
+- [x] **Installation réelle** (23/11, Mac 128 Go) : 2,3 s d'installation, ≈ 6 min 30 s
+      jusqu'à la première réponse. Reste : un Mac 16 Go (choix de modèle différent).
+- [x] **Trafic sortant** (23/11) : seul Hugging Face, pendant le téléchargement ; sonde
+      locale vers `127.0.0.1:8000`. Relevé `lsof`, pas de pare-feu applicatif. Reste :
+      DuckDuckGo et `webfetch` (phase 2).
 - [ ] **Injection de prompt** : un dépôt de test dont le README demande de lire une URL
       puis d'exécuter une commande. Le shell part-il sans approbation ? Ensuite, même test
-      sur Klody, en publiant les deux résultats.
-- [ ] **Hors ligne** : Wi-Fi coupé une fois le modèle téléchargé, est-ce que tout
-      fonctionne ?
-- [ ] **Vitesse** : tokens/s et temps de première réponse, même modèle et même
-      quantification, llama.cpp patché vs MLX (Klody). Vérifier le ×2 annoncé du drafting.
+      sur Klody, en publiant les deux résultats. (Déjà VÉRIFIÉ : le shell part sans
+      approbation sur une consigne normale.)
+- [x] **Hors ligne** (23/11) : tâche de code réussie, Wi-Fi et partage iPhone coupés.
+- [x] **Vitesse** (23/11) : drafting ×1,10 à ×1,66 selon le contenu (« ×2 »
+      partiellement réfuté) ; localcode +45 % sur du code face à Klody MLX ; MLX +15 %
+      sans drafting.
 - [ ] **Qualité** : ses 33 tâches d'éval avec le modèle recommandé, puis les mêmes avec
       Klody.
-- [ ] **Build reproductible** : le binaire `localcode-ui` de la wheel correspond-il au
-      `FORK_COMMIT` publié ? (Le source existe, la reproductibilité n'est pas vérifiée.)
+- [x] **Build reproductible** (23/11) : `localcode-ui` reconstruit à l'identique depuis
+      `FORK_COMMIT`. Reste INCONNU : `llama-server`.
 - [ ] **Licences des modèles** : affichées dans le picker avant téléchargement ?
 
 ### Sources

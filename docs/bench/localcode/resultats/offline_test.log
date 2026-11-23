@@ -1,0 +1,8 @@
+2026-11-23 10:24:07 attente de la coupure réseau (coupe le Wi-Fi)...
+2026-11-23 10:25:13 HORS LIGNE confirmé : curl huggingface.co échoue ; route = route: writing to routing socket: not in table
+2026-11-23 10:25:13 lancement localcode --model qwen-q8
+2026-11-23 10:26:36 localcode quitté (code 0) ; réseau : 000hors-ligne
+ M calc.py
+?? __pycache__/
+?? test_calc.py
+Tu peux rallumer le Wi-Fi.

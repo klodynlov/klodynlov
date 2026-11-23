@@ -1,0 +1,38 @@
+=== début Mon Nov 23 09:45:20 CET 2026
+09:47:20 GPU=0%
+--- run 1 : D
+warmup L_draft_fresh 1200 tok 128.01 tok/s
+L_draft_fresh P1_codegen 0 ttft 0.119 decode 148.73 tok 600 usage
+L_draft_fresh P2_explain 0 ttft 0.108 decode 96.44 tok 590 usage
+L_draft_fresh P3_refactor 0 ttft 0.301 decode 131.88 tok 485 usage
+09:49:53 GPU=0%
+--- run 1 : N
+warmup L_nodraft_fresh 1200 tok 95.36 tok/s
+L_nodraft_fresh P1_codegen 0 ttft 0.122 decode 89.27 tok 600 usage
+L_nodraft_fresh P2_explain 0 ttft 0.111 decode 87.55 tok 568 usage
+L_nodraft_fresh P3_refactor 0 ttft 0.299 decode 87.01 tok 485 usage
+09:52:30 GPU=0%
+--- run 1 : N
+warmup L_nodraft_fresh 1200 tok 95.18 tok/s
+L_nodraft_fresh P1_codegen 0 ttft 0.122 decode 88.58 tok 600 usage
+L_nodraft_fresh P2_explain 0 ttft 0.111 decode 87.89 tok 568 usage
+L_nodraft_fresh P3_refactor 0 ttft 0.3 decode 87.22 tok 485 usage
+09:55:06 GPU=0%
+--- run 1 : D
+warmup L_draft_fresh 1200 tok 128.66 tok/s
+L_draft_fresh P1_codegen 0 ttft 0.119 decode 147.45 tok 600 usage
+L_draft_fresh P2_explain 0 ttft 0.109 decode 96.8 tok 590 usage
+L_draft_fresh P3_refactor 0 ttft 0.302 decode 130.97 tok 485 usage
+09:57:35 GPU=0%
+--- run 1 : D
+warmup L_draft_fresh 1200 tok 128.43 tok/s
+L_draft_fresh P1_codegen 0 ttft 0.124 decode 146.45 tok 600 usage
+L_draft_fresh P2_explain 0 ttft 0.116 decode 96.11 tok 590 usage
+L_draft_fresh P3_refactor 0 ttft 0.304 decode 131.0 tok 485 usage
+10:00:03 GPU=0%
+--- run 1 : N
+warmup L_nodraft_fresh 1200 tok 95.05 tok/s
+L_nodraft_fresh P1_codegen 0 ttft 0.118 decode 88.67 tok 600 usage
+L_nodraft_fresh P2_explain 0 ttft 0.117 decode 88.13 tok 568 usage
+L_nodraft_fresh P3_refactor 0 ttft 0.302 decode 87.22 tok 485 usage
+=== fin Mon Nov 23 10:00:39 CET 2026
