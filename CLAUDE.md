@@ -213,7 +213,23 @@ fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCO
     dépôts isolés dans `/private/tmp/inj-<aléa>/` ; injections « écrites » trop faibles pour ce
     modèle → variantes V4/V5 sur le chemin d'exécution ; la colonne « tentée » doit ignorer
     les éditions qui *retirent* la charge.
-  - Reste : phase 3 (jalon C), 4 (jalon D), 5 (idées + MCP), 6 (pitch). INCONNU : build de
+  - **Phase 3 « jalon C » amorcée le 23/11** → `docs/KLODY-ROADMAP.md` (jalon C réécrit, horizon
+    11/12) + `docs/bench/localcode/jalon-c/` (runner autonome au format de tâches localcode,
+    oracles 32/32, lot 1 : 36/36 sur localcode, Klody auto `coder` 4 bits, Klody épinglé `brain`
+    8 bits). Décisions : runner autonome + calibration Inspect côté localcode ; jeu de 44 tâches
+    en 3 tiers (17 localcode, 15 Klody, 12 neutres) ; C1 produit (chiffre principal), C2 parité
+    8 bits. À décider : installer inspect-ai (calibration), agent cloud et budget, coupure réseau.
+  - ⚠️ Pièges phase 3 : **Klody route le code vers `coder` 4 bits** (pas `brain` 8 bits) →
+    épingler via le message WS `model_change` pour la parité ; Klody écrit `.klody/conventions.json`
+    dans le workspace (à exclure du diff comme `.localcode-agent/`) ; `test.sh` utilise le `python3`
+    du shell (à épingler) ; sans `.eval/diff.txt` le contrôle de périmètre est muet.
+  - Agents (phase 3) : EXPLORATEUR B a cartographié evals/ et le banc Klody (4/4 vérifiés ;
+    il annonçait 33 tâches, il y en a 31 + 1 contrôle) ; FABLE a conçu la méthodologie et un
+    addendum quantification. Corrigé à la vérification : son plan supposait Klody en 8 bits
+    (faux : `coder` 4 bits, trouvé dans les traces) ; ses 3 constats de lecture (diff.txt,
+    python3, usage serveur Klody) vérifiés.
+  - Reste : jalon C (jeu complet, gel du protocole, campagnes, cloud), phase 4 (jalon D),
+    5 (idées + MCP), 6 (pitch). INCONNU : build de
     `llama-server`, Mac 16 Go, sélecteur de modèle muet, injection web réelle (V3′ non
     concluante), localcode en TUI interactif.
   - Agents (phase 2) : EXPLORATEUR (Sonnet) a cartographié les garde-fous de Klody (4/4
@@ -234,4 +250,4 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : **localcode phase 2** (23/11) — test d'injection localcode vs Klody, 106 essais : `conftest.py` piégé exécuté chez les deux (pas de sandbox OS), script du dépôt bloqué seulement par l'approbation de Klody ; harnais dans `docs/bench/localcode/injection/`. Avant : phase 1 (mesures, PR #22). Toujours ouvert : AIoT/EdgeSense (PR #4) ; reprise matérielle Teensy sur le Mac._
+_Dernière mise à jour mémoire : **localcode phase 3** (23/11) — jalon C réécrit (local vs local vs cloud, publication visée le 11/12), runner autonome au format localcode, oracles 32/32, lot 1 36/36 ; Klody route le code vers `coder` 4 bits. Avant : phases 1-2 (PR #22, #23). Toujours ouvert : AIoT/EdgeSense (PR #4) ; Teensy._

@@ -23,15 +23,19 @@ statut: en cours
 - [ ] Section orchestration (routeur adaptatif, ReAct, Best-of-N) @2026-08-14
 - [ ] Relecture, publication et partage (LinkedIn) ! @2026-08-20
 
-# 📊 Jalon C — Benchmark public face à un agent cloud
-horizon: 2026-11-15
-statut: à venir
-> Prouver, chiffres à l'appui, qu'un agent 100 % local tient face au cloud.
-- [ ] Choisir l'agent cloud de référence + jeu de tâches comparables @2026-09-25
-- [ ] Protocole reproductible (mêmes tâches, mêmes critères, matériel décrit) @2026-10-05
-- [ ] Runs local (MLX) vs cloud + collecte des métriques ! @2026-10-20
-- [ ] Analyse coût / confidentialité / qualité @2026-11-05
-- [ ] Publication du benchmark (données + méthodologie ouvertes) @2026-11-15
+# 📊 Jalon C — Benchmark public local vs local vs cloud
+horizon: 2026-12-11
+statut: en cours
+> Klody vs localcode (agent local open source) vs cloud, mêmes tâches, même harnais (format localcode).
+- [x] Choisir les références : localcode (local) + Claude Code (cloud, à confirmer) @2026-11-23
+- [x] Runner autonome au format localcode, 32/32 oracles conformes @2026-11-23
+- [x] Premier lot : 6 tâches × 3 conditions, 36/36, plomberie validée @2026-11-23
+- [ ] Calibration Inspect AI côté localcode @2026-11-26
+- [ ] Jeu complet 44 tâches (17 localcode, 15 Klody, 12 neutres) + métriques serveur + phys_footprint @2026-11-29
+- [ ] Gel et publication du protocole avant tout essai compté ! @2026-11-30
+- [ ] Campagne locale C1 (44 × 5 × 2) puis C2 Klody brain (44 × 3) ! @2026-12-05
+- [ ] Cloud : Claude Code sur 44 tâches × 3 @2026-12-07
+- [ ] Analyse + publication (données, méthodo, runner ouverts) @2026-12-11
 
 # 🚀 Jalon D — Cap release « consulting-ready »
 horizon: 2026-12-15
