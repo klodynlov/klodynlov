@@ -23,7 +23,13 @@
 
 ## Projet phare — [Klody Code AI](https://github.com/klodynlov/klody-code-ai)
 
-Un agent de code **100 % local** : modèle, outils, mémoire, RAG et connecteurs tournent sur la machine. Il combine une boucle ReAct, 69 schémas d'outils natifs, MCP client/serveur et un dashboard desktop Tauri.
+**L'agent de code local qui demande avant d'agir.**
+
+Un agent de code qui tourne sur votre machine : modèle, outils, mémoire et RAG. Il soumet à approbation chaque écriture et chaque commande qu'il demande. Sur un dépôt piégé, un script présenté comme nécessaire a été **exécuté 0 fois sur 5 quand l'humain refuse**, 5 sur 5 quand il approuve (PROUVÉ, 23/11/2026, [protocole et résultats](docs/bench/localcode/injection/README.md)). L'agent l'avait demandé 9 fois sur 10 : la protection vient de la personne qui décide, pas du modèle.
+
+*Limite honnête :* pas de confinement d'exécution au niveau du système. Un `conftest.py` piégé s'exécute 10 fois sur 10 dès que pytest est approuvé ; c'est le prochain chantier.
+
+Sous le capot : une boucle ReAct, 69 schémas d'outils natifs, MCP client/serveur et un dashboard desktop Tauri.
 
 ![Tests](https://img.shields.io/badge/tests-2829%20passing-success)
 ![AI](https://img.shields.io/badge/IA-100%25%20locale-orange)
@@ -34,6 +40,7 @@ Un agent de code **100 % local** : modèle, outils, mémoire, RAG et connecteurs
 - [Architecture locale](https://github.com/klodynlov/klody-code-ai/blob/main/README-local-ai.md)
 - [Frontend Tauri + React](https://github.com/klodynlov/klody-ui)
 - [Feuille de route](docs/KLODY-ROADMAP.md)
+- [Test d'injection de prompt (106 essais, protocole rejouable)](docs/bench/localcode/injection/README.md)
 
 ## Preuves mesurées
 
