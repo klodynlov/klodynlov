@@ -162,7 +162,8 @@ audio = EXPÉRIMENTAL. **On ne passe pas à l'IA tant que la chaîne matérielle
 n'est pas bouclée et chiffrée.**
 
 ### 🚂 Suite Éveil — apps iPad d'éveil (langage + motricité fine), 3 ans et +
-**Statut : branche `claude/ios-educational-apps-suite-dljtt6`, basée sur `main`, PR brouillon.**
+**Statut : mergé dans `main` (PR #17, 23/11/2026) depuis la branche `claude/ios-educational-apps-suite-dljtt6`.**
+Au merge : Swift 240 + WordEndCore 30, Python 187 + 98, tous verts, 0 avertissement.
 Nouvel axe (EdTech petite enfance, iPad, Swift/SwiftUI, 100 % on-device). Indépendant des autres
 modules : aucun import croisé ; même discipline (référence stdlib testée, statuts honnêtes).
 
@@ -669,7 +670,7 @@ VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : **plan localcode terminé et mergé** (23/11) — 6 phases dans `main` (PR #22→#27, `f59fc2f`), pitch « agent de code local gouverné » aussi dans le README de Klody (klody-code-ai#336, `deea2ca`) ; post LinkedIn n° 9 en brouillon. Ouvert : jalons C et D de Klody, formules trop fortes à trancher, MCP en TUI. Toujours ouvert ailleurs : AIoT/EdgeSense (PR #4) ; Teensy ; Suite Éveil (PR #17, brouillon). Avant : **fiche localcode** mergée (PR #21) dans la veille concurrence (agent de code local open source, concurrent direct de Klody). Avant : **Suite Éveil — conseils d'une orthophoniste** (06/10/2026) : petit train
+_Dernière mise à jour mémoire : **Suite Éveil mergée dans `main`** (PR #17, 23/11/2026). Avant : **plan localcode terminé et mergé** (23/11) — 6 phases dans `main` (PR #22→#27, `f59fc2f`), pitch « agent de code local gouverné » aussi dans le README de Klody (klody-code-ai#336, `deea2ca`) ; post LinkedIn n° 9 en brouillon. Ouvert : jalons C et D de Klody, formules trop fortes à trancher, MCP en TUI. Toujours ouvert ailleurs : AIoT/EdgeSense (PR #4) ; Teensy. Avant : **fiche localcode** mergée (PR #21) dans la veille concurrence (agent de code local open source, concurrent direct de Klody). Avant : **Suite Éveil — conseils d'une orthophoniste** (06/10/2026) : petit train
 par niveaux « quand il réussit » (une syllabe d'abord ; Python 97 + Swift 192 tests verts, app compilée, ordre
 vérifié au simulateur : douche → bouche → niche), livres des sons triés par nombre de syllabes, relevé des gestes
 de Borel-Maisonny (`docs/EVEIL-BOREL-MAISONNY.md`) et planche des gestes et bouches de Lou à montrer à
