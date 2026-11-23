@@ -1,0 +1,4118 @@
+{
+ "source": "eveil/outils/phrases (python3 -m phrases.generer)",
+ "sentences": [
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "chat"
+    },
+    {
+     "role": "verbe",
+     "id": "dormir"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "Le chat dort.",
+    "chunks": [
+     "le chat",
+     "dort"
+    ]
+   },
+   "en-US": {
+    "sentence": "The cat sleeps.",
+    "chunks": [
+     "the cat",
+     "sleeps"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "chien"
+    },
+    {
+     "role": "verbe",
+     "id": "sauter"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "Le chien saute.",
+    "chunks": [
+     "le chien",
+     "saute"
+    ]
+   },
+   "en-US": {
+    "sentence": "The dog jumps.",
+    "chunks": [
+     "the dog",
+     "jumps"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "vache"
+    },
+    {
+     "role": "verbe",
+     "id": "danser"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La vache danse.",
+    "chunks": [
+     "la vache",
+     "danse"
+    ]
+   },
+   "en-US": {
+    "sentence": "The cow dances.",
+    "chunks": [
+     "the cow",
+     "dances"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "biche"
+    },
+    {
+     "role": "verbe",
+     "id": "courir"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La biche court.",
+    "chunks": [
+     "la biche",
+     "court"
+    ]
+   },
+   "en-US": {
+    "sentence": "The deer runs.",
+    "chunks": [
+     "the deer",
+     "runs"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "mouche"
+    },
+    {
+     "role": "verbe",
+     "id": "chanter"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La mouche chante.",
+    "chunks": [
+     "la mouche",
+     "chante"
+    ]
+   },
+   "en-US": {
+    "sentence": "The fly sings.",
+    "chunks": [
+     "the fly",
+     "sings"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "oiseau"
+    },
+    {
+     "role": "verbe",
+     "id": "nager"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'oiseau nage.",
+    "chunks": [
+     "l'oiseau",
+     "nage"
+    ]
+   },
+   "en-US": {
+    "sentence": "The bird swims.",
+    "chunks": [
+     "the bird",
+     "swims"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "biche"
+    },
+    {
+     "role": "verbe",
+     "id": "danser"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La biche danse.",
+    "chunks": [
+     "la biche",
+     "danse"
+    ]
+   },
+   "en-US": {
+    "sentence": "The deer dances.",
+    "chunks": [
+     "the deer",
+     "dances"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "mouche"
+    },
+    {
+     "role": "verbe",
+     "id": "courir"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La mouche court.",
+    "chunks": [
+     "la mouche",
+     "court"
+    ]
+   },
+   "en-US": {
+    "sentence": "The fly runs.",
+    "chunks": [
+     "the fly",
+     "runs"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "oiseau"
+    },
+    {
+     "role": "verbe",
+     "id": "chanter"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'oiseau chante.",
+    "chunks": [
+     "l'oiseau",
+     "chante"
+    ]
+   },
+   "en-US": {
+    "sentence": "The bird sings.",
+    "chunks": [
+     "the bird",
+     "sings"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "limace"
+    },
+    {
+     "role": "verbe",
+     "id": "nager"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La limace nage.",
+    "chunks": [
+     "la limace",
+     "nage"
+    ]
+   },
+   "en-US": {
+    "sentence": "The slug swims.",
+    "chunks": [
+     "the slug",
+     "swims"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "autruche"
+    },
+    {
+     "role": "verbe",
+     "id": "voler"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'autruche vole.",
+    "chunks": [
+     "l'autruche",
+     "vole"
+    ]
+   },
+   "en-US": {
+    "sentence": "The ostrich flies.",
+    "chunks": [
+     "the ostrich",
+     "flies"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "poisson"
+    },
+    {
+     "role": "verbe",
+     "id": "tourner"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "Le poisson tourne.",
+    "chunks": [
+     "le poisson",
+     "tourne"
+    ]
+   },
+   "en-US": {
+    "sentence": "The fish spins.",
+    "chunks": [
+     "the fish",
+     "spins"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "limace"
+    },
+    {
+     "role": "verbe",
+     "id": "chanter"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La limace chante.",
+    "chunks": [
+     "la limace",
+     "chante"
+    ]
+   },
+   "en-US": {
+    "sentence": "The slug sings.",
+    "chunks": [
+     "the slug",
+     "sings"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "autruche"
+    },
+    {
+     "role": "verbe",
+     "id": "nager"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'autruche nage.",
+    "chunks": [
+     "l'autruche",
+     "nage"
+    ]
+   },
+   "en-US": {
+    "sentence": "The ostrich swims.",
+    "chunks": [
+     "the ostrich",
+     "swims"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "poisson"
+    },
+    {
+     "role": "verbe",
+     "id": "voler"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "Le poisson vole.",
+    "chunks": [
+     "le poisson",
+     "vole"
+    ]
+   },
+   "en-US": {
+    "sentence": "The fish flies.",
+    "chunks": [
+     "the fish",
+     "flies"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "oie"
+    },
+    {
+     "role": "verbe",
+     "id": "tourner"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'oie tourne.",
+    "chunks": [
+     "l'oie",
+     "tourne"
+    ]
+   },
+   "en-US": {
+    "sentence": "The goose spins.",
+    "chunks": [
+     "the goose",
+     "spins"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "elan"
+    },
+    {
+     "role": "verbe",
+     "id": "rire"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'élan rit.",
+    "chunks": [
+     "l'élan",
+     "rit"
+    ]
+   },
+   "en-US": {
+    "sentence": "The moose laughs.",
+    "chunks": [
+     "the moose",
+     "laughs"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "souris"
+    },
+    {
+     "role": "verbe",
+     "id": "se_cacher"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La souris se cache.",
+    "chunks": [
+     "la souris",
+     "se cache"
+    ]
+   },
+   "en-US": {
+    "sentence": "The mouse hides.",
+    "chunks": [
+     "the mouse",
+     "hides"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "chat"
+    },
+    {
+     "role": "verbe",
+     "id": "manger"
+    },
+    {
+     "role": "quoi",
+     "id": "peche"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "Le chat mange la pêche.",
+    "chunks": [
+     "le chat",
+     "mange",
+     "la pêche"
+    ]
+   },
+   "en-US": {
+    "sentence": "The cat eats the peach.",
+    "chunks": [
+     "the cat",
+     "eats",
+     "the peach"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "chien"
+    },
+    {
+     "role": "verbe",
+     "id": "boire"
+    },
+    {
+     "role": "quoi",
+     "id": "tasse"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "Le chien boit la tasse.",
+    "chunks": [
+     "le chien",
+     "boit",
+     "la tasse"
+    ]
+   },
+   "en-US": {
+    "sentence": "The dog drinks the cup.",
+    "chunks": [
+     "the dog",
+     "drinks",
+     "the cup"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "vache"
+    },
+    {
+     "role": "verbe",
+     "id": "pousser"
+    },
+    {
+     "role": "quoi",
+     "id": "buche"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La vache pousse la bûche.",
+    "chunks": [
+     "la vache",
+     "pousse",
+     "la bûche"
+    ]
+   },
+   "en-US": {
+    "sentence": "The cow pushes the log.",
+    "chunks": [
+     "the cow",
+     "pushes",
+     "the log"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "biche"
+    },
+    {
+     "role": "verbe",
+     "id": "porter"
+    },
+    {
+     "role": "quoi",
+     "id": "tasse"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La biche porte la tasse.",
+    "chunks": [
+     "la biche",
+     "porte",
+     "la tasse"
+    ]
+   },
+   "en-US": {
+    "sentence": "The deer carries the cup.",
+    "chunks": [
+     "the deer",
+     "carries",
+     "the cup"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "mouche"
+    },
+    {
+     "role": "verbe",
+     "id": "lancer"
+    },
+    {
+     "role": "quoi",
+     "id": "brosse"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La mouche lance la brosse.",
+    "chunks": [
+     "la mouche",
+     "lance",
+     "la brosse"
+    ]
+   },
+   "en-US": {
+    "sentence": "The fly throws the brush.",
+    "chunks": [
+     "the fly",
+     "throws",
+     "the brush"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "oiseau"
+    },
+    {
+     "role": "verbe",
+     "id": "laver"
+    },
+    {
+     "role": "quoi",
+     "id": "brosse"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'oiseau lave la brosse.",
+    "chunks": [
+     "l'oiseau",
+     "lave",
+     "la brosse"
+    ]
+   },
+   "en-US": {
+    "sentence": "The bird washes the brush.",
+    "chunks": [
+     "the bird",
+     "washes",
+     "the brush"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "biche"
+    },
+    {
+     "role": "verbe",
+     "id": "pousser"
+    },
+    {
+     "role": "quoi",
+     "id": "carrosse"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La biche pousse le carrosse.",
+    "chunks": [
+     "la biche",
+     "pousse",
+     "le carrosse"
+    ]
+   },
+   "en-US": {
+    "sentence": "The deer pushes the carriage.",
+    "chunks": [
+     "the deer",
+     "pushes",
+     "the carriage"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "mouche"
+    },
+    {
+     "role": "verbe",
+     "id": "porter"
+    },
+    {
+     "role": "quoi",
+     "id": "os"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La mouche porte l'os.",
+    "chunks": [
+     "la mouche",
+     "porte",
+     "l'os"
+    ]
+   },
+   "en-US": {
+    "sentence": "The fly carries the bone.",
+    "chunks": [
+     "the fly",
+     "carries",
+     "the bone"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "oiseau"
+    },
+    {
+     "role": "verbe",
+     "id": "lancer"
+    },
+    {
+     "role": "quoi",
+     "id": "fleche"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'oiseau lance la flèche.",
+    "chunks": [
+     "l'oiseau",
+     "lance",
+     "la flèche"
+    ]
+   },
+   "en-US": {
+    "sentence": "The bird throws the arrow.",
+    "chunks": [
+     "the bird",
+     "throws",
+     "the arrow"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "limace"
+    },
+    {
+     "role": "verbe",
+     "id": "laver"
+    },
+    {
+     "role": "quoi",
+     "id": "bus"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La limace lave le bus.",
+    "chunks": [
+     "la limace",
+     "lave",
+     "le bus"
+    ]
+   },
+   "en-US": {
+    "sentence": "The slug washes the bus.",
+    "chunks": [
+     "the slug",
+     "washes",
+     "the bus"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "autruche"
+    },
+    {
+     "role": "verbe",
+     "id": "attraper"
+    },
+    {
+     "role": "quoi",
+     "id": "papillon"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'autruche attrape le papillon.",
+    "chunks": [
+     "l'autruche",
+     "attrape",
+     "le papillon"
+    ]
+   },
+   "en-US": {
+    "sentence": "The ostrich catches the butterfly.",
+    "chunks": [
+     "the ostrich",
+     "catches",
+     "the butterfly"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "poisson"
+    },
+    {
+     "role": "verbe",
+     "id": "lecher"
+    },
+    {
+     "role": "quoi",
+     "id": "glace"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "Le poisson lèche la glace.",
+    "chunks": [
+     "le poisson",
+     "lèche",
+     "la glace"
+    ]
+   },
+   "en-US": {
+    "sentence": "The fish licks the ice cream.",
+    "chunks": [
+     "the fish",
+     "licks",
+     "the ice cream"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "limace"
+    },
+    {
+     "role": "verbe",
+     "id": "lancer"
+    },
+    {
+     "role": "quoi",
+     "id": "peche"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La limace lance la pêche.",
+    "chunks": [
+     "la limace",
+     "lance",
+     "la pêche"
+    ]
+   },
+   "en-US": {
+    "sentence": "The slug throws the peach.",
+    "chunks": [
+     "the slug",
+     "throws",
+     "the peach"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "autruche"
+    },
+    {
+     "role": "verbe",
+     "id": "laver"
+    },
+    {
+     "role": "quoi",
+     "id": "vache"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'autruche lave la vache.",
+    "chunks": [
+     "l'autruche",
+     "lave",
+     "la vache"
+    ]
+   },
+   "en-US": {
+    "sentence": "The ostrich washes the cow.",
+    "chunks": [
+     "the ostrich",
+     "washes",
+     "the cow"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "poisson"
+    },
+    {
+     "role": "verbe",
+     "id": "attraper"
+    },
+    {
+     "role": "quoi",
+     "id": "fleche"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "Le poisson attrape la flèche.",
+    "chunks": [
+     "le poisson",
+     "attrape",
+     "la flèche"
+    ]
+   },
+   "en-US": {
+    "sentence": "The fish catches the arrow.",
+    "chunks": [
+     "the fish",
+     "catches",
+     "the arrow"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "oie"
+    },
+    {
+     "role": "verbe",
+     "id": "lecher"
+    },
+    {
+     "role": "quoi",
+     "id": "gateau"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'oie lèche le gâteau.",
+    "chunks": [
+     "l'oie",
+     "lèche",
+     "le gâteau"
+    ]
+   },
+   "en-US": {
+    "sentence": "The goose licks the cake.",
+    "chunks": [
+     "the goose",
+     "licks",
+     "the cake"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "elan"
+    },
+    {
+     "role": "verbe",
+     "id": "sentir"
+    },
+    {
+     "role": "quoi",
+     "id": "rose"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'élan sent la rose.",
+    "chunks": [
+     "l'élan",
+     "sent",
+     "la rose"
+    ]
+   },
+   "en-US": {
+    "sentence": "The moose smells the rose.",
+    "chunks": [
+     "the moose",
+     "smells",
+     "the rose"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "souris"
+    },
+    {
+     "role": "verbe",
+     "id": "tirer"
+    },
+    {
+     "role": "quoi",
+     "id": "valise"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La souris tire la valise.",
+    "chunks": [
+     "la souris",
+     "tire",
+     "la valise"
+    ]
+   },
+   "en-US": {
+    "sentence": "The mouse pulls the suitcase.",
+    "chunks": [
+     "the mouse",
+     "pulls",
+     "the suitcase"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "chat"
+    },
+    {
+     "role": "verbe",
+     "id": "dormir"
+    },
+    {
+     "role": "ou",
+     "id": "boite",
+     "preposition": "dans"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "Le chat dort dans la boîte.",
+    "chunks": [
+     "le chat",
+     "dort",
+     "dans la boîte"
+    ]
+   },
+   "en-US": {
+    "sentence": "The cat sleeps in the box.",
+    "chunks": [
+     "the cat",
+     "sleeps",
+     "in the box"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "chien"
+    },
+    {
+     "role": "verbe",
+     "id": "sauter"
+    },
+    {
+     "role": "ou",
+     "id": "niche",
+     "preposition": "sur"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "Le chien saute sur la niche.",
+    "chunks": [
+     "le chien",
+     "saute",
+     "sur la niche"
+    ]
+   },
+   "en-US": {
+    "sentence": "The dog jumps on the doghouse.",
+    "chunks": [
+     "the dog",
+     "jumps",
+     "on the doghouse"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "vache"
+    },
+    {
+     "role": "verbe",
+     "id": "danser"
+    },
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "sur"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La vache danse sur la maison.",
+    "chunks": [
+     "la vache",
+     "danse",
+     "sur la maison"
+    ]
+   },
+   "en-US": {
+    "sentence": "The cow dances on the house.",
+    "chunks": [
+     "the cow",
+     "dances",
+     "on the house"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "biche"
+    },
+    {
+     "role": "verbe",
+     "id": "courir"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "devant"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La biche court devant la table.",
+    "chunks": [
+     "la biche",
+     "court",
+     "devant la table"
+    ]
+   },
+   "en-US": {
+    "sentence": "The deer runs in front of the table.",
+    "chunks": [
+     "the deer",
+     "runs",
+     "in front of the table"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "mouche"
+    },
+    {
+     "role": "verbe",
+     "id": "chanter"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "dans"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La mouche chante dans le lit.",
+    "chunks": [
+     "la mouche",
+     "chante",
+     "dans le lit"
+    ]
+   },
+   "en-US": {
+    "sentence": "The fly sings in the bed.",
+    "chunks": [
+     "the fly",
+     "sings",
+     "in the bed"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "oiseau"
+    },
+    {
+     "role": "verbe",
+     "id": "nager"
+    },
+    {
+     "role": "ou",
+     "id": "baignoire",
+     "preposition": "dans"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'oiseau nage dans la baignoire.",
+    "chunks": [
+     "l'oiseau",
+     "nage",
+     "dans la baignoire"
+    ]
+   },
+   "en-US": {
+    "sentence": "The bird swims in the bathtub.",
+    "chunks": [
+     "the bird",
+     "swims",
+     "in the bathtub"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "biche"
+    },
+    {
+     "role": "verbe",
+     "id": "danser"
+    },
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "sur"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La biche danse sur la maison.",
+    "chunks": [
+     "la biche",
+     "danse",
+     "sur la maison"
+    ]
+   },
+   "en-US": {
+    "sentence": "The deer dances on the house.",
+    "chunks": [
+     "the deer",
+     "dances",
+     "on the house"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "mouche"
+    },
+    {
+     "role": "verbe",
+     "id": "courir"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "devant"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La mouche court devant la table.",
+    "chunks": [
+     "la mouche",
+     "court",
+     "devant la table"
+    ]
+   },
+   "en-US": {
+    "sentence": "The fly runs in front of the table.",
+    "chunks": [
+     "the fly",
+     "runs",
+     "in front of the table"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "oiseau"
+    },
+    {
+     "role": "verbe",
+     "id": "chanter"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "dans"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'oiseau chante dans le lit.",
+    "chunks": [
+     "l'oiseau",
+     "chante",
+     "dans le lit"
+    ]
+   },
+   "en-US": {
+    "sentence": "The bird sings in the bed.",
+    "chunks": [
+     "the bird",
+     "sings",
+     "in the bed"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "limace"
+    },
+    {
+     "role": "verbe",
+     "id": "nager"
+    },
+    {
+     "role": "ou",
+     "id": "baignoire",
+     "preposition": "dans"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La limace nage dans la baignoire.",
+    "chunks": [
+     "la limace",
+     "nage",
+     "dans la baignoire"
+    ]
+   },
+   "en-US": {
+    "sentence": "The slug swims in the bathtub.",
+    "chunks": [
+     "the slug",
+     "swims",
+     "in the bathtub"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "autruche"
+    },
+    {
+     "role": "verbe",
+     "id": "voler"
+    },
+    {
+     "role": "ou",
+     "id": "baignoire",
+     "preposition": "dans"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'autruche vole dans la baignoire.",
+    "chunks": [
+     "l'autruche",
+     "vole",
+     "dans la baignoire"
+    ]
+   },
+   "en-US": {
+    "sentence": "The ostrich flies in the bathtub.",
+    "chunks": [
+     "the ostrich",
+     "flies",
+     "in the bathtub"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "poisson"
+    },
+    {
+     "role": "verbe",
+     "id": "tourner"
+    },
+    {
+     "role": "ou",
+     "id": "voiture",
+     "preposition": "sur"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "Le poisson tourne sur la voiture.",
+    "chunks": [
+     "le poisson",
+     "tourne",
+     "sur la voiture"
+    ]
+   },
+   "en-US": {
+    "sentence": "The fish spins on the car.",
+    "chunks": [
+     "the fish",
+     "spins",
+     "on the car"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "limace"
+    },
+    {
+     "role": "verbe",
+     "id": "chanter"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "dans"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La limace chante dans le lit.",
+    "chunks": [
+     "la limace",
+     "chante",
+     "dans le lit"
+    ]
+   },
+   "en-US": {
+    "sentence": "The slug sings in the bed.",
+    "chunks": [
+     "the slug",
+     "sings",
+     "in the bed"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "autruche"
+    },
+    {
+     "role": "verbe",
+     "id": "nager"
+    },
+    {
+     "role": "ou",
+     "id": "baignoire",
+     "preposition": "dans"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'autruche nage dans la baignoire.",
+    "chunks": [
+     "l'autruche",
+     "nage",
+     "dans la baignoire"
+    ]
+   },
+   "en-US": {
+    "sentence": "The ostrich swims in the bathtub.",
+    "chunks": [
+     "the ostrich",
+     "swims",
+     "in the bathtub"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "poisson"
+    },
+    {
+     "role": "verbe",
+     "id": "voler"
+    },
+    {
+     "role": "ou",
+     "id": "baignoire",
+     "preposition": "dans"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "Le poisson vole dans la baignoire.",
+    "chunks": [
+     "le poisson",
+     "vole",
+     "dans la baignoire"
+    ]
+   },
+   "en-US": {
+    "sentence": "The fish flies in the bathtub.",
+    "chunks": [
+     "the fish",
+     "flies",
+     "in the bathtub"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "oie"
+    },
+    {
+     "role": "verbe",
+     "id": "tourner"
+    },
+    {
+     "role": "ou",
+     "id": "voiture",
+     "preposition": "sur"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'oie tourne sur la voiture.",
+    "chunks": [
+     "l'oie",
+     "tourne",
+     "sur la voiture"
+    ]
+   },
+   "en-US": {
+    "sentence": "The goose spins on the car.",
+    "chunks": [
+     "the goose",
+     "spins",
+     "on the car"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "elan"
+    },
+    {
+     "role": "verbe",
+     "id": "rire"
+    },
+    {
+     "role": "ou",
+     "id": "boite",
+     "preposition": "sur"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "L'élan rit sur la boîte.",
+    "chunks": [
+     "l'élan",
+     "rit",
+     "sur la boîte"
+    ]
+   },
+   "en-US": {
+    "sentence": "The moose laughs on the box.",
+    "chunks": [
+     "the moose",
+     "laughs",
+     "on the box"
+    ]
+   }
+  },
+  {
+   "cards": [
+    {
+     "role": "qui",
+     "id": "souris"
+    },
+    {
+     "role": "verbe",
+     "id": "se_cacher"
+    },
+    {
+     "role": "ou",
+     "id": "niche",
+     "preposition": "derriere"
+    }
+   ],
+   "fr-FR": {
+    "sentence": "La souris se cache derrière la niche.",
+    "chunks": [
+     "la souris",
+     "se cache",
+     "derrière la niche"
+    ]
+   },
+   "en-US": {
+    "sentence": "The mouse hides behind the doghouse.",
+    "chunks": [
+     "the mouse",
+     "hides",
+     "behind the doghouse"
+    ]
+   }
+  }
+ ],
+ "trays": [
+  {
+   "level": 1,
+   "round": 0,
+   "role": "qui",
+   "cards": [
+    {
+     "role": "qui",
+     "id": "chat"
+    },
+    {
+     "role": "qui",
+     "id": "chien"
+    },
+    {
+     "role": "qui",
+     "id": "vache"
+    },
+    {
+     "role": "qui",
+     "id": "biche"
+    },
+    {
+     "role": "qui",
+     "id": "mouche"
+    },
+    {
+     "role": "qui",
+     "id": "oiseau"
+    }
+   ]
+  },
+  {
+   "level": 1,
+   "round": 0,
+   "role": "verbe",
+   "cards": [
+    {
+     "role": "verbe",
+     "id": "dormir"
+    },
+    {
+     "role": "verbe",
+     "id": "sauter"
+    },
+    {
+     "role": "verbe",
+     "id": "danser"
+    },
+    {
+     "role": "verbe",
+     "id": "courir"
+    },
+    {
+     "role": "verbe",
+     "id": "chanter"
+    },
+    {
+     "role": "verbe",
+     "id": "nager"
+    }
+   ]
+  },
+  {
+   "level": 1,
+   "round": 1,
+   "role": "qui",
+   "cards": [
+    {
+     "role": "qui",
+     "id": "biche"
+    },
+    {
+     "role": "qui",
+     "id": "mouche"
+    },
+    {
+     "role": "qui",
+     "id": "oiseau"
+    },
+    {
+     "role": "qui",
+     "id": "limace"
+    },
+    {
+     "role": "qui",
+     "id": "autruche"
+    },
+    {
+     "role": "qui",
+     "id": "poisson"
+    }
+   ]
+  },
+  {
+   "level": 1,
+   "round": 1,
+   "role": "verbe",
+   "cards": [
+    {
+     "role": "verbe",
+     "id": "danser"
+    },
+    {
+     "role": "verbe",
+     "id": "courir"
+    },
+    {
+     "role": "verbe",
+     "id": "chanter"
+    },
+    {
+     "role": "verbe",
+     "id": "nager"
+    },
+    {
+     "role": "verbe",
+     "id": "voler"
+    },
+    {
+     "role": "verbe",
+     "id": "tourner"
+    }
+   ]
+  },
+  {
+   "level": 1,
+   "round": 2,
+   "role": "qui",
+   "cards": [
+    {
+     "role": "qui",
+     "id": "limace"
+    },
+    {
+     "role": "qui",
+     "id": "autruche"
+    },
+    {
+     "role": "qui",
+     "id": "poisson"
+    },
+    {
+     "role": "qui",
+     "id": "oie"
+    },
+    {
+     "role": "qui",
+     "id": "elan"
+    },
+    {
+     "role": "qui",
+     "id": "souris"
+    }
+   ]
+  },
+  {
+   "level": 1,
+   "round": 2,
+   "role": "verbe",
+   "cards": [
+    {
+     "role": "verbe",
+     "id": "chanter"
+    },
+    {
+     "role": "verbe",
+     "id": "nager"
+    },
+    {
+     "role": "verbe",
+     "id": "voler"
+    },
+    {
+     "role": "verbe",
+     "id": "tourner"
+    },
+    {
+     "role": "verbe",
+     "id": "rire"
+    },
+    {
+     "role": "verbe",
+     "id": "se_cacher"
+    }
+   ]
+  },
+  {
+   "level": 1,
+   "round": 3,
+   "role": "qui",
+   "cards": [
+    {
+     "role": "qui",
+     "id": "oie"
+    },
+    {
+     "role": "qui",
+     "id": "elan"
+    },
+    {
+     "role": "qui",
+     "id": "souris"
+    },
+    {
+     "role": "qui",
+     "id": "princesse"
+    },
+    {
+     "role": "qui",
+     "id": "lou"
+    },
+    {
+     "role": "qui",
+     "id": "fee"
+    }
+   ]
+  },
+  {
+   "level": 1,
+   "round": 3,
+   "role": "verbe",
+   "cards": [
+    {
+     "role": "verbe",
+     "id": "voler"
+    },
+    {
+     "role": "verbe",
+     "id": "tourner"
+    },
+    {
+     "role": "verbe",
+     "id": "rire"
+    },
+    {
+     "role": "verbe",
+     "id": "se_cacher"
+    },
+    {
+     "role": "verbe",
+     "id": "manger"
+    },
+    {
+     "role": "verbe",
+     "id": "boire"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 0,
+   "role": "qui",
+   "cards": [
+    {
+     "role": "qui",
+     "id": "chat"
+    },
+    {
+     "role": "qui",
+     "id": "chien"
+    },
+    {
+     "role": "qui",
+     "id": "vache"
+    },
+    {
+     "role": "qui",
+     "id": "biche"
+    },
+    {
+     "role": "qui",
+     "id": "mouche"
+    },
+    {
+     "role": "qui",
+     "id": "oiseau"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 0,
+   "role": "verbe",
+   "cards": [
+    {
+     "role": "verbe",
+     "id": "manger"
+    },
+    {
+     "role": "verbe",
+     "id": "boire"
+    },
+    {
+     "role": "verbe",
+     "id": "pousser"
+    },
+    {
+     "role": "verbe",
+     "id": "porter"
+    },
+    {
+     "role": "verbe",
+     "id": "lancer"
+    },
+    {
+     "role": "verbe",
+     "id": "laver"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 1,
+   "role": "qui",
+   "cards": [
+    {
+     "role": "qui",
+     "id": "biche"
+    },
+    {
+     "role": "qui",
+     "id": "mouche"
+    },
+    {
+     "role": "qui",
+     "id": "oiseau"
+    },
+    {
+     "role": "qui",
+     "id": "limace"
+    },
+    {
+     "role": "qui",
+     "id": "autruche"
+    },
+    {
+     "role": "qui",
+     "id": "poisson"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 1,
+   "role": "verbe",
+   "cards": [
+    {
+     "role": "verbe",
+     "id": "pousser"
+    },
+    {
+     "role": "verbe",
+     "id": "porter"
+    },
+    {
+     "role": "verbe",
+     "id": "lancer"
+    },
+    {
+     "role": "verbe",
+     "id": "laver"
+    },
+    {
+     "role": "verbe",
+     "id": "attraper"
+    },
+    {
+     "role": "verbe",
+     "id": "lecher"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 2,
+   "role": "qui",
+   "cards": [
+    {
+     "role": "qui",
+     "id": "limace"
+    },
+    {
+     "role": "qui",
+     "id": "autruche"
+    },
+    {
+     "role": "qui",
+     "id": "poisson"
+    },
+    {
+     "role": "qui",
+     "id": "oie"
+    },
+    {
+     "role": "qui",
+     "id": "elan"
+    },
+    {
+     "role": "qui",
+     "id": "souris"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 2,
+   "role": "verbe",
+   "cards": [
+    {
+     "role": "verbe",
+     "id": "lancer"
+    },
+    {
+     "role": "verbe",
+     "id": "laver"
+    },
+    {
+     "role": "verbe",
+     "id": "attraper"
+    },
+    {
+     "role": "verbe",
+     "id": "lecher"
+    },
+    {
+     "role": "verbe",
+     "id": "sentir"
+    },
+    {
+     "role": "verbe",
+     "id": "tirer"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 3,
+   "role": "qui",
+   "cards": [
+    {
+     "role": "qui",
+     "id": "oie"
+    },
+    {
+     "role": "qui",
+     "id": "elan"
+    },
+    {
+     "role": "qui",
+     "id": "souris"
+    },
+    {
+     "role": "qui",
+     "id": "princesse"
+    },
+    {
+     "role": "qui",
+     "id": "lou"
+    },
+    {
+     "role": "qui",
+     "id": "fee"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 3,
+   "role": "verbe",
+   "cards": [
+    {
+     "role": "verbe",
+     "id": "attraper"
+    },
+    {
+     "role": "verbe",
+     "id": "lecher"
+    },
+    {
+     "role": "verbe",
+     "id": "sentir"
+    },
+    {
+     "role": "verbe",
+     "id": "tirer"
+    },
+    {
+     "role": "verbe",
+     "id": "manger"
+    },
+    {
+     "role": "verbe",
+     "id": "boire"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 0,
+   "role": "quoi",
+   "verb": "manger",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "peche"
+    },
+    {
+     "role": "quoi",
+     "id": "saucisse"
+    },
+    {
+     "role": "quoi",
+     "id": "glace"
+    },
+    {
+     "role": "quoi",
+     "id": "os"
+    },
+    {
+     "role": "quoi",
+     "id": "radis"
+    },
+    {
+     "role": "quoi",
+     "id": "pomme"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 1,
+   "role": "quoi",
+   "verb": "manger",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "saucisse"
+    },
+    {
+     "role": "quoi",
+     "id": "glace"
+    },
+    {
+     "role": "quoi",
+     "id": "os"
+    },
+    {
+     "role": "quoi",
+     "id": "radis"
+    },
+    {
+     "role": "quoi",
+     "id": "pomme"
+    },
+    {
+     "role": "quoi",
+     "id": "banane"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 0,
+   "role": "quoi",
+   "verb": "boire",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "jus"
+    },
+    {
+     "role": "quoi",
+     "id": "tasse"
+    },
+    {
+     "role": "quoi",
+     "id": "soupe"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 1,
+   "role": "quoi",
+   "verb": "boire",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "tasse"
+    },
+    {
+     "role": "quoi",
+     "id": "soupe"
+    },
+    {
+     "role": "quoi",
+     "id": "jus"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 0,
+   "role": "quoi",
+   "verb": "pousser",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "bus"
+    },
+    {
+     "role": "quoi",
+     "id": "carrosse"
+    },
+    {
+     "role": "quoi",
+     "id": "buche"
+    },
+    {
+     "role": "quoi",
+     "id": "trousse"
+    },
+    {
+     "role": "quoi",
+     "id": "balle"
+    },
+    {
+     "role": "quoi",
+     "id": "cloche"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 1,
+   "role": "quoi",
+   "verb": "pousser",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "carrosse"
+    },
+    {
+     "role": "quoi",
+     "id": "buche"
+    },
+    {
+     "role": "quoi",
+     "id": "trousse"
+    },
+    {
+     "role": "quoi",
+     "id": "balle"
+    },
+    {
+     "role": "quoi",
+     "id": "cloche"
+    },
+    {
+     "role": "quoi",
+     "id": "camion"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 0,
+   "role": "quoi",
+   "verb": "porter",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "trousse"
+    },
+    {
+     "role": "quoi",
+     "id": "buche"
+    },
+    {
+     "role": "quoi",
+     "id": "os"
+    },
+    {
+     "role": "quoi",
+     "id": "tasse"
+    },
+    {
+     "role": "quoi",
+     "id": "cloche"
+    },
+    {
+     "role": "quoi",
+     "id": "peche"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 1,
+   "role": "quoi",
+   "verb": "porter",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "buche"
+    },
+    {
+     "role": "quoi",
+     "id": "os"
+    },
+    {
+     "role": "quoi",
+     "id": "tasse"
+    },
+    {
+     "role": "quoi",
+     "id": "cloche"
+    },
+    {
+     "role": "quoi",
+     "id": "peche"
+    },
+    {
+     "role": "quoi",
+     "id": "brosse"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 0,
+   "role": "quoi",
+   "verb": "lancer",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "balle"
+    },
+    {
+     "role": "quoi",
+     "id": "os"
+    },
+    {
+     "role": "quoi",
+     "id": "peche"
+    },
+    {
+     "role": "quoi",
+     "id": "fleche"
+    },
+    {
+     "role": "quoi",
+     "id": "brosse"
+    },
+    {
+     "role": "quoi",
+     "id": "trousse"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 1,
+   "role": "quoi",
+   "verb": "lancer",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "os"
+    },
+    {
+     "role": "quoi",
+     "id": "peche"
+    },
+    {
+     "role": "quoi",
+     "id": "fleche"
+    },
+    {
+     "role": "quoi",
+     "id": "brosse"
+    },
+    {
+     "role": "quoi",
+     "id": "trousse"
+    },
+    {
+     "role": "quoi",
+     "id": "de"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 0,
+   "role": "quoi",
+   "verb": "laver",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "tasse"
+    },
+    {
+     "role": "quoi",
+     "id": "assiette"
+    },
+    {
+     "role": "quoi",
+     "id": "chien"
+    },
+    {
+     "role": "quoi",
+     "id": "vache"
+    },
+    {
+     "role": "quoi",
+     "id": "bus"
+    },
+    {
+     "role": "quoi",
+     "id": "brosse"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 1,
+   "role": "quoi",
+   "verb": "laver",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "assiette"
+    },
+    {
+     "role": "quoi",
+     "id": "chien"
+    },
+    {
+     "role": "quoi",
+     "id": "vache"
+    },
+    {
+     "role": "quoi",
+     "id": "bus"
+    },
+    {
+     "role": "quoi",
+     "id": "brosse"
+    },
+    {
+     "role": "quoi",
+     "id": "carrosse"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 0,
+   "role": "quoi",
+   "verb": "attraper",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "balle"
+    },
+    {
+     "role": "quoi",
+     "id": "mouche"
+    },
+    {
+     "role": "quoi",
+     "id": "os"
+    },
+    {
+     "role": "quoi",
+     "id": "peche"
+    },
+    {
+     "role": "quoi",
+     "id": "fleche"
+    },
+    {
+     "role": "quoi",
+     "id": "papillon"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 1,
+   "role": "quoi",
+   "verb": "attraper",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "mouche"
+    },
+    {
+     "role": "quoi",
+     "id": "os"
+    },
+    {
+     "role": "quoi",
+     "id": "peche"
+    },
+    {
+     "role": "quoi",
+     "id": "fleche"
+    },
+    {
+     "role": "quoi",
+     "id": "papillon"
+    },
+    {
+     "role": "quoi",
+     "id": "plume"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 0,
+   "role": "quoi",
+   "verb": "lecher",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "glace"
+    },
+    {
+     "role": "quoi",
+     "id": "os"
+    },
+    {
+     "role": "quoi",
+     "id": "assiette"
+    },
+    {
+     "role": "quoi",
+     "id": "chat"
+    },
+    {
+     "role": "quoi",
+     "id": "fraise"
+    },
+    {
+     "role": "quoi",
+     "id": "gateau"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 1,
+   "role": "quoi",
+   "verb": "lecher",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "os"
+    },
+    {
+     "role": "quoi",
+     "id": "assiette"
+    },
+    {
+     "role": "quoi",
+     "id": "chat"
+    },
+    {
+     "role": "quoi",
+     "id": "fraise"
+    },
+    {
+     "role": "quoi",
+     "id": "gateau"
+    },
+    {
+     "role": "quoi",
+     "id": "glace"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 0,
+   "role": "quoi",
+   "verb": "sentir",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "peche"
+    },
+    {
+     "role": "quoi",
+     "id": "saucisse"
+    },
+    {
+     "role": "quoi",
+     "id": "glace"
+    },
+    {
+     "role": "quoi",
+     "id": "radis"
+    },
+    {
+     "role": "quoi",
+     "id": "jus"
+    },
+    {
+     "role": "quoi",
+     "id": "fleur"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 1,
+   "role": "quoi",
+   "verb": "sentir",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "saucisse"
+    },
+    {
+     "role": "quoi",
+     "id": "glace"
+    },
+    {
+     "role": "quoi",
+     "id": "radis"
+    },
+    {
+     "role": "quoi",
+     "id": "jus"
+    },
+    {
+     "role": "quoi",
+     "id": "fleur"
+    },
+    {
+     "role": "quoi",
+     "id": "rose"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 0,
+   "role": "quoi",
+   "verb": "tirer",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "carrosse"
+    },
+    {
+     "role": "quoi",
+     "id": "bus"
+    },
+    {
+     "role": "quoi",
+     "id": "buche"
+    },
+    {
+     "role": "quoi",
+     "id": "trousse"
+    },
+    {
+     "role": "quoi",
+     "id": "brosse"
+    },
+    {
+     "role": "quoi",
+     "id": "camion"
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "round": 1,
+   "role": "quoi",
+   "verb": "tirer",
+   "cards": [
+    {
+     "role": "quoi",
+     "id": "bus"
+    },
+    {
+     "role": "quoi",
+     "id": "buche"
+    },
+    {
+     "role": "quoi",
+     "id": "trousse"
+    },
+    {
+     "role": "quoi",
+     "id": "brosse"
+    },
+    {
+     "role": "quoi",
+     "id": "camion"
+    },
+    {
+     "role": "quoi",
+     "id": "velo"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 0,
+   "role": "qui",
+   "cards": [
+    {
+     "role": "qui",
+     "id": "chat"
+    },
+    {
+     "role": "qui",
+     "id": "chien"
+    },
+    {
+     "role": "qui",
+     "id": "vache"
+    },
+    {
+     "role": "qui",
+     "id": "biche"
+    },
+    {
+     "role": "qui",
+     "id": "mouche"
+    },
+    {
+     "role": "qui",
+     "id": "oiseau"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 0,
+   "role": "verbe",
+   "cards": [
+    {
+     "role": "verbe",
+     "id": "dormir"
+    },
+    {
+     "role": "verbe",
+     "id": "sauter"
+    },
+    {
+     "role": "verbe",
+     "id": "danser"
+    },
+    {
+     "role": "verbe",
+     "id": "courir"
+    },
+    {
+     "role": "verbe",
+     "id": "chanter"
+    },
+    {
+     "role": "verbe",
+     "id": "nager"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 1,
+   "role": "qui",
+   "cards": [
+    {
+     "role": "qui",
+     "id": "biche"
+    },
+    {
+     "role": "qui",
+     "id": "mouche"
+    },
+    {
+     "role": "qui",
+     "id": "oiseau"
+    },
+    {
+     "role": "qui",
+     "id": "limace"
+    },
+    {
+     "role": "qui",
+     "id": "autruche"
+    },
+    {
+     "role": "qui",
+     "id": "poisson"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 1,
+   "role": "verbe",
+   "cards": [
+    {
+     "role": "verbe",
+     "id": "danser"
+    },
+    {
+     "role": "verbe",
+     "id": "courir"
+    },
+    {
+     "role": "verbe",
+     "id": "chanter"
+    },
+    {
+     "role": "verbe",
+     "id": "nager"
+    },
+    {
+     "role": "verbe",
+     "id": "voler"
+    },
+    {
+     "role": "verbe",
+     "id": "tourner"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 2,
+   "role": "qui",
+   "cards": [
+    {
+     "role": "qui",
+     "id": "limace"
+    },
+    {
+     "role": "qui",
+     "id": "autruche"
+    },
+    {
+     "role": "qui",
+     "id": "poisson"
+    },
+    {
+     "role": "qui",
+     "id": "oie"
+    },
+    {
+     "role": "qui",
+     "id": "elan"
+    },
+    {
+     "role": "qui",
+     "id": "souris"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 2,
+   "role": "verbe",
+   "cards": [
+    {
+     "role": "verbe",
+     "id": "chanter"
+    },
+    {
+     "role": "verbe",
+     "id": "nager"
+    },
+    {
+     "role": "verbe",
+     "id": "voler"
+    },
+    {
+     "role": "verbe",
+     "id": "tourner"
+    },
+    {
+     "role": "verbe",
+     "id": "rire"
+    },
+    {
+     "role": "verbe",
+     "id": "se_cacher"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 3,
+   "role": "qui",
+   "cards": [
+    {
+     "role": "qui",
+     "id": "oie"
+    },
+    {
+     "role": "qui",
+     "id": "elan"
+    },
+    {
+     "role": "qui",
+     "id": "souris"
+    },
+    {
+     "role": "qui",
+     "id": "princesse"
+    },
+    {
+     "role": "qui",
+     "id": "lou"
+    },
+    {
+     "role": "qui",
+     "id": "fee"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 3,
+   "role": "verbe",
+   "cards": [
+    {
+     "role": "verbe",
+     "id": "voler"
+    },
+    {
+     "role": "verbe",
+     "id": "tourner"
+    },
+    {
+     "role": "verbe",
+     "id": "rire"
+    },
+    {
+     "role": "verbe",
+     "id": "se_cacher"
+    },
+    {
+     "role": "verbe",
+     "id": "dormir"
+    },
+    {
+     "role": "verbe",
+     "id": "sauter"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 0,
+   "role": "ou",
+   "verb": "dormir",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "boite",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "niche",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "dans"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 1,
+   "role": "ou",
+   "verb": "dormir",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "baignoire",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "voiture",
+     "preposition": "dans"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 0,
+   "role": "ou",
+   "verb": "sauter",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "boite",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "niche",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "dans"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 1,
+   "role": "ou",
+   "verb": "sauter",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "baignoire",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "voiture",
+     "preposition": "sur"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 0,
+   "role": "ou",
+   "verb": "danser",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "boite",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "niche",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "devant"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 1,
+   "role": "ou",
+   "verb": "danser",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "devant"
+    },
+    {
+     "role": "ou",
+     "id": "baignoire",
+     "preposition": "devant"
+    },
+    {
+     "role": "ou",
+     "id": "voiture",
+     "preposition": "sur"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 0,
+   "role": "ou",
+   "verb": "courir",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "boite",
+     "preposition": "devant"
+    },
+    {
+     "role": "ou",
+     "id": "niche",
+     "preposition": "devant"
+    },
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "devant"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "devant"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "devant"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "devant"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 1,
+   "role": "ou",
+   "verb": "courir",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "devant"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "devant"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "devant"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "devant"
+    },
+    {
+     "role": "ou",
+     "id": "baignoire",
+     "preposition": "devant"
+    },
+    {
+     "role": "ou",
+     "id": "voiture",
+     "preposition": "devant"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 0,
+   "role": "ou",
+   "verb": "chanter",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "boite",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "niche",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "dans"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 1,
+   "role": "ou",
+   "verb": "chanter",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "baignoire",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "voiture",
+     "preposition": "dans"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 0,
+   "role": "ou",
+   "verb": "nager",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "baignoire",
+     "preposition": "dans"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 1,
+   "role": "ou",
+   "verb": "nager",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "baignoire",
+     "preposition": "dans"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 0,
+   "role": "ou",
+   "verb": "voler",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "boite",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "niche",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "devant"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "dans"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 1,
+   "role": "ou",
+   "verb": "voler",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "devant"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "baignoire",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "voiture",
+     "preposition": "dans"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 0,
+   "role": "ou",
+   "verb": "tourner",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "boite",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "niche",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "devant"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 1,
+   "role": "ou",
+   "verb": "tourner",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "devant"
+    },
+    {
+     "role": "ou",
+     "id": "baignoire",
+     "preposition": "devant"
+    },
+    {
+     "role": "ou",
+     "id": "voiture",
+     "preposition": "sur"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 0,
+   "role": "ou",
+   "verb": "rire",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "boite",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "niche",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "dans"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 1,
+   "role": "ou",
+   "verb": "rire",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "sur"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "baignoire",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "voiture",
+     "preposition": "dans"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 0,
+   "role": "ou",
+   "verb": "se_cacher",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "boite",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "niche",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "sous"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "dans"
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "round": 1,
+   "role": "ou",
+   "verb": "se_cacher",
+   "cards": [
+    {
+     "role": "ou",
+     "id": "maison",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "table",
+     "preposition": "sous"
+    },
+    {
+     "role": "ou",
+     "id": "lit",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "arbre",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "baignoire",
+     "preposition": "dans"
+    },
+    {
+     "role": "ou",
+     "id": "voiture",
+     "preposition": "dans"
+    }
+   ]
+  }
+ ],
+ "noun_phrases": [
+  {
+   "id": "chat",
+   "fr-FR": "le chat",
+   "en-US": "the cat"
+  },
+  {
+   "id": "chien",
+   "fr-FR": "le chien",
+   "en-US": "the dog"
+  },
+  {
+   "id": "vache",
+   "fr-FR": "la vache",
+   "en-US": "the cow"
+  },
+  {
+   "id": "biche",
+   "fr-FR": "la biche",
+   "en-US": "the deer"
+  },
+  {
+   "id": "mouche",
+   "fr-FR": "la mouche",
+   "en-US": "the fly"
+  },
+  {
+   "id": "oiseau",
+   "fr-FR": "l'oiseau",
+   "en-US": "the bird"
+  },
+  {
+   "id": "limace",
+   "fr-FR": "la limace",
+   "en-US": "the slug"
+  },
+  {
+   "id": "autruche",
+   "fr-FR": "l'autruche",
+   "en-US": "the ostrich"
+  },
+  {
+   "id": "poisson",
+   "fr-FR": "le poisson",
+   "en-US": "the fish"
+  },
+  {
+   "id": "oie",
+   "fr-FR": "l'oie",
+   "en-US": "the goose"
+  },
+  {
+   "id": "elan",
+   "fr-FR": "l'élan",
+   "en-US": "the moose"
+  },
+  {
+   "id": "souris",
+   "fr-FR": "la souris",
+   "en-US": "the mouse"
+  },
+  {
+   "id": "princesse",
+   "fr-FR": "la princesse",
+   "en-US": "the princess"
+  },
+  {
+   "id": "lou",
+   "fr-FR": "Lou",
+   "en-US": "Lou"
+  },
+  {
+   "id": "peche",
+   "fr-FR": "la pêche",
+   "en-US": "the peach"
+  },
+  {
+   "id": "saucisse",
+   "fr-FR": "la saucisse",
+   "en-US": "the sausage"
+  },
+  {
+   "id": "glace",
+   "fr-FR": "la glace",
+   "en-US": "the ice cream"
+  },
+  {
+   "id": "os",
+   "fr-FR": "l'os",
+   "en-US": "the bone"
+  },
+  {
+   "id": "radis",
+   "fr-FR": "le radis",
+   "en-US": "the radish"
+  },
+  {
+   "id": "jus",
+   "fr-FR": "le jus",
+   "en-US": "the juice"
+  },
+  {
+   "id": "tasse",
+   "fr-FR": "la tasse",
+   "en-US": "the cup"
+  },
+  {
+   "id": "assiette",
+   "fr-FR": "l'assiette",
+   "en-US": "the plate"
+  },
+  {
+   "id": "brosse",
+   "fr-FR": "la brosse",
+   "en-US": "the brush"
+  },
+  {
+   "id": "cloche",
+   "fr-FR": "la cloche",
+   "en-US": "the bell"
+  },
+  {
+   "id": "trousse",
+   "fr-FR": "la trousse",
+   "en-US": "the pencil case"
+  },
+  {
+   "id": "fleche",
+   "fr-FR": "la flèche",
+   "en-US": "the arrow"
+  },
+  {
+   "id": "buche",
+   "fr-FR": "la bûche",
+   "en-US": "the log"
+  },
+  {
+   "id": "balle",
+   "fr-FR": "la balle",
+   "en-US": "the ball"
+  },
+  {
+   "id": "bus",
+   "fr-FR": "le bus",
+   "en-US": "the bus"
+  },
+  {
+   "id": "carrosse",
+   "fr-FR": "le carrosse",
+   "en-US": "the carriage"
+  },
+  {
+   "id": "fleur",
+   "fr-FR": "la fleur",
+   "en-US": "the flower"
+  },
+  {
+   "id": "fee",
+   "fr-FR": "la fée",
+   "en-US": "the fairy"
+  },
+  {
+   "id": "fusee",
+   "fr-FR": "la fusée",
+   "en-US": "the rocket"
+  },
+  {
+   "id": "fraise",
+   "fr-FR": "la fraise",
+   "en-US": "the strawberry"
+  },
+  {
+   "id": "fourchette",
+   "fr-FR": "la fourchette",
+   "en-US": "the fork"
+  },
+  {
+   "id": "phoque",
+   "fr-FR": "le phoque",
+   "en-US": "the seal"
+  },
+  {
+   "id": "girafe",
+   "fr-FR": "la girafe",
+   "en-US": "the giraffe"
+  },
+  {
+   "id": "velo",
+   "fr-FR": "le vélo",
+   "en-US": "the bike"
+  },
+  {
+   "id": "verre",
+   "fr-FR": "le verre",
+   "en-US": "the glass"
+  },
+  {
+   "id": "valise",
+   "fr-FR": "la valise",
+   "en-US": "the suitcase"
+  },
+  {
+   "id": "cheval",
+   "fr-FR": "le cheval",
+   "en-US": "the horse"
+  },
+  {
+   "id": "jupe",
+   "fr-FR": "la jupe",
+   "en-US": "the skirt"
+  },
+  {
+   "id": "orange",
+   "fr-FR": "l'orange",
+   "en-US": "the orange"
+  },
+  {
+   "id": "cage",
+   "fr-FR": "la cage",
+   "en-US": "the cage"
+  },
+  {
+   "id": "gateau",
+   "fr-FR": "le gâteau",
+   "en-US": "the cake"
+  },
+  {
+   "id": "gomme",
+   "fr-FR": "la gomme",
+   "en-US": "the eraser"
+  },
+  {
+   "id": "guitare",
+   "fr-FR": "la guitare",
+   "en-US": "the guitar"
+  },
+  {
+   "id": "gant",
+   "fr-FR": "le gant",
+   "en-US": "the glove"
+  },
+  {
+   "id": "grenouille",
+   "fr-FR": "la grenouille",
+   "en-US": "the frog"
+  },
+  {
+   "id": "bague",
+   "fr-FR": "la bague",
+   "en-US": "the ring"
+  },
+  {
+   "id": "dragon",
+   "fr-FR": "le dragon",
+   "en-US": "the dragon"
+  },
+  {
+   "id": "dinosaure",
+   "fr-FR": "le dinosaure",
+   "en-US": "the dinosaur"
+  },
+  {
+   "id": "de",
+   "fr-FR": "le dé",
+   "en-US": "the dice"
+  },
+  {
+   "id": "dauphin",
+   "fr-FR": "le dauphin",
+   "en-US": "the dolphin"
+  },
+  {
+   "id": "coq",
+   "fr-FR": "le coq",
+   "en-US": "the rooster"
+  },
+  {
+   "id": "canard",
+   "fr-FR": "le canard",
+   "en-US": "the duck"
+  },
+  {
+   "id": "cle",
+   "fr-FR": "la clé",
+   "en-US": "the key"
+  },
+  {
+   "id": "camion",
+   "fr-FR": "le camion",
+   "en-US": "the truck"
+  },
+  {
+   "id": "crocodile",
+   "fr-FR": "le crocodile",
+   "en-US": "the crocodile"
+  },
+  {
+   "id": "cadeau",
+   "fr-FR": "le cadeau",
+   "en-US": "the gift"
+  },
+  {
+   "id": "sac",
+   "fr-FR": "le sac",
+   "en-US": "the bag"
+  },
+  {
+   "id": "zebre",
+   "fr-FR": "le zèbre",
+   "en-US": "the zebra"
+  },
+  {
+   "id": "rose",
+   "fr-FR": "la rose",
+   "en-US": "the rose"
+  },
+  {
+   "id": "vase",
+   "fr-FR": "le vase",
+   "en-US": "the vase"
+  },
+  {
+   "id": "ciseaux",
+   "fr-FR": "les ciseaux",
+   "en-US": "the scissors"
+  },
+  {
+   "id": "nid",
+   "fr-FR": "le nid",
+   "en-US": "the nest"
+  },
+  {
+   "id": "banane",
+   "fr-FR": "la banane",
+   "en-US": "the banana"
+  },
+  {
+   "id": "pomme",
+   "fr-FR": "la pomme",
+   "en-US": "the apple"
+  },
+  {
+   "id": "pain",
+   "fr-FR": "le pain",
+   "en-US": "the bread"
+  },
+  {
+   "id": "papillon",
+   "fr-FR": "le papillon",
+   "en-US": "the butterfly"
+  },
+  {
+   "id": "parapluie",
+   "fr-FR": "le parapluie",
+   "en-US": "the umbrella"
+  },
+  {
+   "id": "lapin",
+   "fr-FR": "le lapin",
+   "en-US": "the rabbit"
+  },
+  {
+   "id": "soupe",
+   "fr-FR": "la soupe",
+   "en-US": "the soup"
+  },
+  {
+   "id": "moto",
+   "fr-FR": "la moto",
+   "en-US": "the motorbike"
+  },
+  {
+   "id": "mouton",
+   "fr-FR": "le mouton",
+   "en-US": "the sheep"
+  },
+  {
+   "id": "plume",
+   "fr-FR": "la plume",
+   "en-US": "the feather"
+  },
+  {
+   "id": "araignee",
+   "fr-FR": "l'araignée",
+   "en-US": "the spider"
+  },
+  {
+   "id": "champignon",
+   "fr-FR": "le champignon",
+   "en-US": "the mushroom"
+  },
+  {
+   "id": "peigne",
+   "fr-FR": "le peigne",
+   "en-US": "the comb"
+  }
+ ],
+ "counts": {
+  "qui": 30,
+  "quoi": 57,
+  "ou": 8,
+  "verbs": 20
+ }
+}

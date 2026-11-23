@@ -1,0 +1,1694 @@
+{
+ "schema": "eveil.golden.v1",
+ "generator": "eveil/reference/wordend/golden.py",
+ "constants": {
+  "analysis_rate": 24000,
+  "frame_size": 512,
+  "hop_size": 240
+ },
+ "config": {
+  "floor_percentile": 0.1,
+  "vad_on_db": 10.0,
+  "vad_min_ms": 50.0,
+  "vad_merge_gap_ms": 450.0,
+  "other_region_max_below_db": 10.0,
+  "envelope_smooth_frames": 5,
+  "nucleus_min_above_floor_db": 15.0,
+  "nucleus_max_below_peak_db": 20.0,
+  "nucleus_max_zcr_hz": 3000.0,
+  "nucleus_max_high_ratio": 0.5,
+  "nucleus_min_dip_db": 3.0,
+  "vowel_offset_drop_db": 10.0,
+  "fric_min_above_floor_db": 10.0,
+  "fric_min_high_ratio": 0.7,
+  "fric_min_zcr_hz": 3000.0,
+  "fric_min_ms": 50.0,
+  "fric_merge_gap_ms": 20.0,
+  "coda_max_gap_ms": 150.0,
+  "absence_guard_ms": 30.0,
+  "absence_window_ms": 250.0,
+  "absence_max_above_floor_db": 6.0,
+  "absence_max_fraction": 0.2,
+  "min_snr_db": 20.0,
+  "epenthesis_min_drop_db": 6.0,
+  "clip_level": 0.99,
+  "clip_max_fraction": 0.005,
+  "adult_f0_max_hz": 165.0,
+  "postalveolar_max_centroid_hz": 6000.0
+ },
+ "splitmix64": {
+  "seed": 42,
+  "u64": [
+   "13679457532755275413",
+   "2949826092126892291",
+   "5139283748462763858",
+   "6349198060258255764",
+   "701532786141963250"
+  ],
+  "unit_seed": 7,
+  "unit": [
+   0.389829748391271,
+   0.016788294528156,
+   0.900760680606883,
+   0.582930293028078,
+   0.452441895011468
+  ]
+ },
+ "fft": {
+  "input": [
+   0.5,
+   -1.0,
+   0.25,
+   2.0,
+   -0.75,
+   0.0,
+   1.5,
+   -0.5
+  ],
+  "re": [
+   2.0,
+   -1.224873734153,
+   -2.0,
+   3.724873734153,
+   1.0,
+   3.724873734153,
+   -2.0,
+   -1.224873734153
+  ],
+  "im": [
+   0.0,
+   0.18933982822,
+   2.5,
+   -2.31066017178,
+   0.0,
+   2.31066017178,
+   -2.5,
+   -0.18933982822
+  ]
+ },
+ "hann_head": [
+  0.0,
+  3.7649080428e-05,
+  0.000150590651898,
+  0.000338807705825
+ ],
+ "band_bins": {
+  "low": [
+   7,
+   54
+  ],
+  "high": [
+   64,
+   235
+  ],
+  "centroid": [
+   22,
+   235
+  ]
+ },
+ "cases": [
+  {
+   "name": "douche",
+   "spec": "d50 u230 S180",
+   "params": {
+    "seed": 11
+   },
+   "target": {
+    "nuclei": 1,
+    "coda": "S"
+   },
+   "signal": {
+    "count": 47040,
+    "sum": 5.734730236,
+    "sum_squares": 57.771904679,
+    "probe": {
+     "0": 0.000821328,
+     "1000": -0.001255351,
+     "7200": 0.003880393,
+     "23520": 0.000500685,
+     "47039": -0.00116183
+    }
+   },
+   "analysis": {
+    "frames": 194,
+    "floor_rms_db": -56.829859,
+    "floor_low_db": -14.402438,
+    "floor_high_db": -22.633801,
+    "speech": [
+     33,
+     76
+    ],
+    "nuclei": [
+     [
+      38,
+      23.623756,
+      35,
+      56,
+      303.797468
+     ]
+    ],
+    "frications": [
+     [
+      58,
+      76,
+      4503.95806
+     ]
+    ],
+    "clipped_fraction": 0.0,
+    "snr_db": 38.026194
+   },
+   "frame_probes": [
+    {
+     "index": 38,
+     "rms_db": -19.88374,
+     "low_db": 23.620196,
+     "high_db": -19.923732,
+     "high_ratio": 4.4e-05,
+     "centroid_hz": 1166.885248,
+     "zcr_hz": 843.75,
+     "peak": 0.204148418
+    },
+    {
+     "index": 67,
+     "rms_db": -30.279799,
+     "low_db": -9.169741,
+     "high_db": 16.277335,
+     "high_ratio": 0.997155,
+     "centroid_hz": 4530.978325,
+     "zcr_hz": 9046.875,
+     "peak": 0.081750035
+    },
+    {
+     "index": 97,
+     "rms_db": -55.297349,
+     "low_db": -12.457272,
+     "high_db": -21.560433,
+     "high_ratio": 0.109478,
+     "centroid_hz": 3366.162166,
+     "zcr_hz": 2906.25,
+     "peak": 0.005521454
+    }
+   ],
+   "verdict": {
+    "kind": "complete",
+    "heard_nuclei": 1,
+    "expected_nuclei": 1,
+    "coda_expected": true,
+    "coda_heard": true,
+    "coda_place": "postalveolar",
+    "coda_ms": 190.0,
+    "epenthesis": false,
+    "snr_db": 38.03,
+    "reasons": []
+   }
+  },
+  {
+   "name": "dou",
+   "spec": "d50 u260",
+   "params": {
+    "seed": 12
+   },
+   "target": {
+    "nuclei": 1,
+    "coda": "S"
+   },
+   "signal": {
+    "count": 43440,
+    "sum": 5.039991251,
+    "sum_squares": 60.774082211,
+    "probe": {
+     "0": 0.000481711,
+     "1000": 0.001321559,
+     "7200": -0.001036239,
+     "21720": 0.000537149,
+     "43439": 0.000131949
+    }
+   },
+   "analysis": {
+    "frames": 179,
+    "floor_rms_db": -56.807228,
+    "floor_low_db": -14.960643,
+    "floor_high_db": -23.08762,
+    "speech": [
+     33,
+     61
+    ],
+    "nuclei": [
+     [
+      57,
+      24.075549,
+      35,
+      59,
+      263.736264
+     ]
+    ],
+    "frications": [],
+    "clipped_fraction": 0.0,
+    "snr_db": 39.036191
+   },
+   "frame_probes": [
+    {
+     "index": 57,
+     "rms_db": -19.558963,
+     "low_db": 24.227221,
+     "high_db": -21.089692,
+     "high_ratio": 2.9e-05,
+     "centroid_hz": 1129.68702,
+     "zcr_hz": 984.375,
+     "peak": 0.196954272
+    },
+    {
+     "index": 89,
+     "rms_db": -53.621467,
+     "low_db": -12.809692,
+     "high_db": -22.893851,
+     "high_ratio": 0.08932,
+     "centroid_hz": 2922.181711,
+     "zcr_hz": 1921.875,
+     "peak": 0.005346964
+    }
+   ],
+   "verdict": {
+    "kind": "missing_final_consonant",
+    "heard_nuclei": 1,
+    "expected_nuclei": 1,
+    "coda_expected": true,
+    "coda_heard": false,
+    "coda_place": null,
+    "coda_ms": 0.0,
+    "epenthesis": false,
+    "snr_db": 39.04,
+    "reasons": []
+   }
+  },
+  {
+   "name": "douche_schwa",
+   "spec": "d50 u200 S150 @110/-9",
+   "params": {
+    "seed": 13
+   },
+   "target": {
+    "nuclei": 1,
+    "coda": "S"
+   },
+   "signal": {
+    "count": 48240,
+    "sum": 5.861143746,
+    "sum_squares": 53.073923367,
+    "probe": {
+     "0": -0.000751184,
+     "1000": 0.00094819,
+     "7200": -0.001765835,
+     "24120": -0.004963089,
+     "48239": 0.002745295
+    }
+   },
+   "analysis": {
+    "frames": 199,
+    "floor_rms_db": -56.859683,
+    "floor_low_db": -15.029705,
+    "floor_high_db": -23.160844,
+    "speech": [
+     33,
+     81
+    ],
+    "nuclei": [
+     [
+      38,
+      23.659484,
+      35,
+      53,
+      303.797468
+     ],
+     [
+      72,
+      17.513468,
+      69,
+      79,
+      266.666667
+     ]
+    ],
+    "frications": [
+     [
+      55,
+      68,
+      4452.787532
+     ]
+    ],
+    "clipped_fraction": 0.0,
+    "snr_db": 38.68919
+   },
+   "frame_probes": [
+    {
+     "index": 38,
+     "rms_db": -19.9367,
+     "low_db": 23.645516,
+     "high_db": -20.145265,
+     "high_ratio": 4.2e-05,
+     "centroid_hz": 1169.188993,
+     "zcr_hz": 796.875,
+     "peak": 0.203267529
+    },
+    {
+     "index": 62,
+     "rms_db": -29.781957,
+     "low_db": -8.668864,
+     "high_db": 16.723514,
+     "high_ratio": 0.997119,
+     "centroid_hz": 4485.726169,
+     "zcr_hz": 8812.5,
+     "peak": 0.09075573
+    },
+    {
+     "index": 72,
+     "rms_db": -28.713621,
+     "low_db": 17.665744,
+     "high_db": -21.028689,
+     "high_ratio": 0.000135,
+     "centroid_hz": 1502.315839,
+     "zcr_hz": 1031.25,
+     "peak": 0.079515419
+    },
+    {
+     "index": 99,
+     "rms_db": -55.354471,
+     "low_db": -12.74544,
+     "high_db": -22.533806,
+     "high_ratio": 0.095018,
+     "centroid_hz": 2969.813588,
+     "zcr_hz": 2765.625,
+     "peak": 0.004983209
+    }
+   ],
+   "verdict": {
+    "kind": "complete",
+    "heard_nuclei": 1,
+    "expected_nuclei": 1,
+    "coda_expected": true,
+    "coda_heard": true,
+    "coda_place": "postalveolar",
+    "coda_ms": 140.0,
+    "epenthesis": true,
+    "snr_db": 38.69,
+    "reasons": [
+     "epenthetic_schwa"
+    ]
+   }
+  },
+  {
+   "name": "dou_clic",
+   "spec": "d50 u260 _600 click15",
+   "params": {
+    "seed": 14
+   },
+   "target": {
+    "nuclei": 1,
+    "coda": "S"
+   },
+   "signal": {
+    "count": 58200,
+    "sum": 1.817289008,
+    "sum_squares": 62.636415107,
+    "probe": {
+     "0": 0.000699822,
+     "1000": 0.001935707,
+     "7200": -0.000958464,
+     "29100": -0.0624177,
+     "58199": 0.000664666
+    }
+   },
+   "analysis": {
+    "frames": 241,
+    "floor_rms_db": -56.803144,
+    "floor_low_db": -14.980493,
+    "floor_high_db": -22.887255,
+    "speech": [
+     33,
+     61
+    ],
+    "nuclei": [
+     [
+      38,
+      23.880967,
+      35,
+      59,
+      307.692308
+     ]
+    ],
+    "frications": [],
+    "clipped_fraction": 0.0,
+    "snr_db": 38.86146
+   },
+   "frame_probes": [
+    {
+     "index": 38,
+     "rms_db": -20.044132,
+     "low_db": 23.888107,
+     "high_db": -19.745286,
+     "high_ratio": 4.3e-05,
+     "centroid_hz": 1186.81784,
+     "zcr_hz": 796.875,
+     "peak": 0.202609834
+    },
+    {
+     "index": 120,
+     "rms_db": -25.764727,
+     "low_db": 13.904375,
+     "high_db": 20.146435,
+     "high_ratio": 0.808034,
+     "centroid_hz": 5891.704831,
+     "zcr_hz": 7781.25,
+     "peak": 0.118143138
+    }
+   ],
+   "verdict": {
+    "kind": "missing_final_consonant",
+    "heard_nuclei": 1,
+    "expected_nuclei": 1,
+    "coda_expected": true,
+    "coda_heard": false,
+    "coda_place": null,
+    "coda_ms": 0.0,
+    "epenthesis": false,
+    "snr_db": 38.86,
+    "reasons": []
+   }
+  },
+  {
+   "name": "minouche",
+   "spec": "m70 i140 n70 u190 S180",
+   "params": {
+    "seed": 15
+   },
+   "target": {
+    "nuclei": 2,
+    "coda": "S"
+   },
+   "signal": {
+    "count": 51600,
+    "sum": 2.374018232,
+    "sum_squares": 81.815858261,
+    "probe": {
+     "0": 0.00064871,
+     "1000": 0.001155836,
+     "7200": -0.016769376,
+     "25800": -0.002257935,
+     "51599": 0.000847377
+    }
+   },
+   "analysis": {
+    "frames": 213,
+    "floor_rms_db": -56.66553,
+    "floor_low_db": -14.619349,
+    "floor_high_db": -22.672769,
+    "speech": [
+     28,
+     95
+    ],
+    "nuclei": [
+     [
+      39,
+      22.122796,
+      34,
+      50,
+      311.688312
+     ],
+     [
+      72,
+      23.108366,
+      56,
+      75,
+      279.069767
+     ]
+    ],
+    "frications": [
+     [
+      77,
+      95,
+      4502.918084
+     ]
+    ],
+    "clipped_fraction": 0.0,
+    "snr_db": 37.727715
+   },
+   "frame_probes": [
+    {
+     "index": 39,
+     "rms_db": -19.832306,
+     "low_db": 22.321027,
+     "high_db": 4.32834,
+     "high_ratio": 0.015628,
+     "centroid_hz": 3116.742781,
+     "zcr_hz": 609.375,
+     "peak": 0.169499812
+    },
+    {
+     "index": 72,
+     "rms_db": -19.982354,
+     "low_db": 23.058281,
+     "high_db": -21.565527,
+     "high_ratio": 3.4e-05,
+     "centroid_hz": 1100.148689,
+     "zcr_hz": 1031.25,
+     "peak": 0.184701834
+    },
+    {
+     "index": 86,
+     "rms_db": -29.280172,
+     "low_db": -9.598296,
+     "high_db": 17.830171,
+     "high_ratio": 0.998195,
+     "centroid_hz": 4422.080902,
+     "zcr_hz": 9140.625,
+     "peak": 0.100962626
+    },
+    {
+     "index": 106,
+     "rms_db": -56.784306,
+     "low_db": -10.987403,
+     "high_db": -21.99929,
+     "high_ratio": 0.073401,
+     "centroid_hz": 2970.690307,
+     "zcr_hz": 2953.125,
+     "peak": 0.004193749
+    }
+   ],
+   "verdict": {
+    "kind": "complete",
+    "heard_nuclei": 2,
+    "expected_nuclei": 2,
+    "coda_expected": true,
+    "coda_heard": true,
+    "coda_place": "postalveolar",
+    "coda_ms": 190.0,
+    "epenthesis": false,
+    "snr_db": 37.73,
+    "reasons": []
+   }
+  },
+  {
+   "name": "minou",
+   "spec": "m70 i150 n70 u240",
+   "params": {
+    "seed": 16
+   },
+   "target": {
+    "nuclei": 2,
+    "coda": "S"
+   },
+   "signal": {
+    "count": 48720,
+    "sum": -1.22950985,
+    "sum_squares": 92.194737377,
+    "probe": {
+     "0": -0.000466975,
+     "1000": -0.001979778,
+     "7200": -0.016855446,
+     "24360": 0.000318916,
+     "48719": -0.001417397
+    }
+   },
+   "analysis": {
+    "frames": 201,
+    "floor_rms_db": -56.626551,
+    "floor_low_db": -15.012126,
+    "floor_high_db": -23.109264,
+    "speech": [
+     28,
+     83
+    ],
+    "nuclei": [
+     [
+      39,
+      21.881158,
+      34,
+      51,
+      311.688312
+     ],
+     [
+      78,
+      24.397431,
+      58,
+      81,
+      263.736264
+     ]
+    ],
+    "frications": [],
+    "clipped_fraction": 0.0,
+    "snr_db": 39.409557
+   },
+   "frame_probes": [
+    {
+     "index": 39,
+     "rms_db": -19.638067,
+     "low_db": 22.00294,
+     "high_db": 4.763458,
+     "high_ratio": 0.018532,
+     "centroid_hz": 3081.007635,
+     "zcr_hz": 562.5,
+     "peak": 0.173954058
+    },
+    {
+     "index": 78,
+     "rms_db": -19.517082,
+     "low_db": 24.391155,
+     "high_db": -20.50237,
+     "high_ratio": 3.2e-05,
+     "centroid_hz": 1145.005097,
+     "zcr_hz": 984.375,
+     "peak": 0.196971721
+    },
+    {
+     "index": 100,
+     "rms_db": -56.804866,
+     "low_db": -13.237321,
+     "high_db": -22.847692,
+     "high_ratio": 0.098601,
+     "centroid_hz": 2628.390646,
+     "zcr_hz": 3750.0,
+     "peak": 0.004615359
+    }
+   ],
+   "verdict": {
+    "kind": "missing_final_consonant",
+    "heard_nuclei": 2,
+    "expected_nuclei": 2,
+    "coda_expected": true,
+    "coda_heard": false,
+    "coda_place": null,
+    "coda_ms": 0.0,
+    "epenthesis": false,
+    "snr_db": 39.41,
+    "reasons": []
+   }
+  },
+  {
+   "name": "mi",
+   "spec": "m70 i260",
+   "params": {
+    "seed": 17
+   },
+   "target": {
+    "nuclei": 2,
+    "coda": "S"
+   },
+   "signal": {
+    "count": 43920,
+    "sum": -2.924961567,
+    "sum_squares": 61.845727906,
+    "probe": {
+     "0": -0.000820284,
+     "1000": 0.000583356,
+     "7200": -0.016998382,
+     "21960": -0.002957574,
+     "43919": 0.001830091
+    }
+   },
+   "analysis": {
+    "frames": 181,
+    "floor_rms_db": -56.736423,
+    "floor_low_db": -14.577538,
+    "floor_high_db": -22.935703,
+    "speech": [
+     28,
+     63
+    ],
+    "nuclei": [
+     [
+      39,
+      21.500815,
+      34,
+      61,
+      303.797468
+     ]
+    ],
+    "frications": [],
+    "clipped_fraction": 0.0,
+    "snr_db": 36.078353
+   },
+   "frame_probes": [
+    {
+     "index": 39,
+     "rms_db": -19.182873,
+     "low_db": 21.694184,
+     "high_db": 3.798115,
+     "high_ratio": 0.015973,
+     "centroid_hz": 3043.329009,
+     "zcr_hz": 609.375,
+     "peak": 0.185286631
+    },
+    {
+     "index": 90,
+     "rms_db": -55.258018,
+     "low_db": -11.818961,
+     "high_db": -23.081836,
+     "high_ratio": 0.069566,
+     "centroid_hz": 3026.983635,
+     "zcr_hz": 2437.5,
+     "peak": 0.004995152
+    }
+   ],
+   "verdict": {
+    "kind": "fewer_syllables",
+    "heard_nuclei": 1,
+    "expected_nuclei": 2,
+    "coda_expected": true,
+    "coda_heard": false,
+    "coda_place": null,
+    "coda_ms": 0.0,
+    "epenthesis": false,
+    "snr_db": 36.08,
+    "reasons": []
+   }
+  },
+  {
+   "name": "minousse",
+   "spec": "m70 i140 n70 u190 s180",
+   "params": {
+    "seed": 18
+   },
+   "target": {
+    "nuclei": 2,
+    "coda": "S"
+   },
+   "signal": {
+    "count": 51600,
+    "sum": 0.636797528,
+    "sum_squares": 82.161606896,
+    "probe": {
+     "0": 0.000930488,
+     "1000": -0.001778045,
+     "7200": -0.013181224,
+     "25800": -0.001686166,
+     "51599": 0.000924902
+    }
+   },
+   "analysis": {
+    "frames": 213,
+    "floor_rms_db": -56.719036,
+    "floor_low_db": -14.221737,
+    "floor_high_db": -22.565491,
+    "speech": [
+     28,
+     95
+    ],
+    "nuclei": [
+     [
+      39,
+      22.121691,
+      34,
+      50,
+      311.688312
+     ],
+     [
+      72,
+      23.099543,
+      56,
+      75,
+      279.069767
+     ]
+    ],
+    "frications": [
+     [
+      77,
+      95,
+      7915.019809
+     ]
+    ],
+    "clipped_fraction": 0.0,
+    "snr_db": 37.32128
+   },
+   "frame_probes": [
+    {
+     "index": 39,
+     "rms_db": -19.864912,
+     "low_db": 22.30392,
+     "high_db": 4.456162,
+     "high_ratio": 0.016149,
+     "centroid_hz": 3123.115864,
+     "zcr_hz": 609.375,
+     "peak": 0.169059052
+    },
+    {
+     "index": 72,
+     "rms_db": -19.963028,
+     "low_db": 23.069415,
+     "high_db": -19.978287,
+     "high_ratio": 5e-05,
+     "centroid_hz": 1102.077729,
+     "zcr_hz": 1031.25,
+     "peak": 0.185725216
+    },
+    {
+     "index": 86,
+     "rms_db": -30.057433,
+     "low_db": -14.312918,
+     "high_db": 16.954575,
+     "high_ratio": 0.999254,
+     "centroid_hz": 7907.210176,
+     "zcr_hz": 15796.875,
+     "peak": 0.095978142
+    },
+    {
+     "index": 106,
+     "rms_db": -56.502198,
+     "low_db": -14.212489,
+     "high_db": -21.895585,
+     "high_ratio": 0.145655,
+     "centroid_hz": 3205.006016,
+     "zcr_hz": 3421.875,
+     "peak": 0.004301156
+    }
+   ],
+   "verdict": {
+    "kind": "complete",
+    "heard_nuclei": 2,
+    "expected_nuclei": 2,
+    "coda_expected": true,
+    "coda_heard": true,
+    "coda_place": "alveolar",
+    "coda_ms": 190.0,
+    "epenthesis": false,
+    "snr_db": 37.32,
+    "reasons": [
+     "place_differs"
+    ]
+   }
+  },
+  {
+   "name": "fish",
+   "spec": "f90 i180 S170",
+   "params": {
+    "seed": 19
+   },
+   "target": {
+    "nuclei": 1,
+    "coda": "S"
+   },
+   "signal": {
+    "count": 46560,
+    "sum": -0.461192191,
+    "sum_squares": 45.376973049,
+    "probe": {
+     "0": -0.000409985,
+     "1000": -0.001478994,
+     "7200": -0.004470421,
+     "23280": 0.000357134,
+     "46559": 0.000783252
+    }
+   },
+   "analysis": {
+    "frames": 192,
+    "floor_rms_db": -56.606242,
+    "floor_low_db": -14.880528,
+    "floor_high_db": -22.895901,
+    "speech": [
+     29,
+     74
+    ],
+    "nuclei": [
+     [
+      41,
+      21.333264,
+      39,
+      55,
+      303.797468
+     ]
+    ],
+    "frications": [
+     [
+      29,
+      36,
+      7786.419471
+     ],
+     [
+      57,
+      74,
+      4553.707063
+     ]
+    ],
+    "clipped_fraction": 0.0,
+    "snr_db": 36.213791
+   },
+   "frame_probes": [
+    {
+     "index": 33,
+     "rms_db": -41.266438,
+     "low_db": -9.439191,
+     "high_db": 4.11508,
+     "high_ratio": 0.95775,
+     "centroid_hz": 7688.000852,
+     "zcr_hz": 16500.0,
+     "peak": 0.019717358
+    },
+    {
+     "index": 41,
+     "rms_db": -19.605137,
+     "low_db": 21.640624,
+     "high_db": 3.991906,
+     "high_ratio": 0.016894,
+     "centroid_hz": 3081.056143,
+     "zcr_hz": 609.375,
+     "peak": 0.18116608
+    },
+    {
+     "index": 66,
+     "rms_db": -30.089076,
+     "low_db": -7.163369,
+     "high_db": 16.50607,
+     "high_ratio": 0.995722,
+     "centroid_hz": 4600.451322,
+     "zcr_hz": 9187.5,
+     "peak": 0.099046927
+    },
+    {
+     "index": 96,
+     "rms_db": -56.998829,
+     "low_db": -13.104717,
+     "high_db": -22.034976,
+     "high_ratio": 0.113421,
+     "centroid_hz": 3298.394058,
+     "zcr_hz": 3375.0,
+     "peak": 0.003570534
+    }
+   ],
+   "verdict": {
+    "kind": "complete",
+    "heard_nuclei": 1,
+    "expected_nuclei": 1,
+    "coda_expected": true,
+    "coda_heard": true,
+    "coda_place": "postalveolar",
+    "coda_ms": 180.0,
+    "epenthesis": false,
+    "snr_db": 36.21,
+    "reasons": []
+   }
+  },
+  {
+   "name": "goose",
+   "spec": "g50 u220 s170",
+   "params": {
+    "seed": 20
+   },
+   "target": {
+    "nuclei": 1,
+    "coda": "s"
+   },
+   "signal": {
+    "count": 46560,
+    "sum": 7.304012743,
+    "sum_squares": 55.093342223,
+    "probe": {
+     "0": -0.00052329,
+     "1000": 0.000223486,
+     "7200": 0.001227234,
+     "23280": 0.003872919,
+     "46559": -0.000155313
+    }
+   },
+   "analysis": {
+    "frames": 192,
+    "floor_rms_db": -56.713768,
+    "floor_low_db": -15.060344,
+    "floor_high_db": -23.054005,
+    "speech": [
+     33,
+     74
+    ],
+    "nuclei": [
+     [
+      38,
+      23.562179,
+      35,
+      55,
+      300.0
+     ]
+    ],
+    "frications": [
+     [
+      57,
+      74,
+      7917.994124
+     ]
+    ],
+    "clipped_fraction": 0.0,
+    "snr_db": 38.622523
+   },
+   "frame_probes": [
+    {
+     "index": 38,
+     "rms_db": -19.88348,
+     "low_db": 23.493006,
+     "high_db": -20.031413,
+     "high_ratio": 4.4e-05,
+     "centroid_hz": 1162.43391,
+     "zcr_hz": 1031.25,
+     "peak": 0.201751505
+    },
+    {
+     "index": 66,
+     "rms_db": -29.592173,
+     "low_db": -13.842702,
+     "high_db": 17.349552,
+     "high_ratio": 0.999241,
+     "centroid_hz": 7992.899863,
+     "zcr_hz": 15656.25,
+     "peak": 0.104599073
+    },
+    {
+     "index": 96,
+     "rms_db": -54.092586,
+     "low_db": -13.899209,
+     "high_db": -21.918907,
+     "high_ratio": 0.136272,
+     "centroid_hz": 3140.045158,
+     "zcr_hz": 2437.5,
+     "peak": 0.006412799
+    }
+   ],
+   "verdict": {
+    "kind": "complete",
+    "heard_nuclei": 1,
+    "expected_nuclei": 1,
+    "coda_expected": true,
+    "coda_heard": true,
+    "coda_place": "alveolar",
+    "coda_ms": 180.0,
+    "epenthesis": false,
+    "snr_db": 38.62,
+    "reasons": []
+   }
+  },
+  {
+   "name": "goo",
+   "spec": "g50 u260",
+   "params": {
+    "seed": 21
+   },
+   "target": {
+    "nuclei": 1,
+    "coda": "s"
+   },
+   "signal": {
+    "count": 43440,
+    "sum": 6.761721832,
+    "sum_squares": 60.766180651,
+    "probe": {
+     "0": -0.000928719,
+     "1000": 0.001635132,
+     "7200": 0.001888254,
+     "21720": -0.002390106,
+     "43439": 0.001369314
+    }
+   },
+   "analysis": {
+    "frames": 179,
+    "floor_rms_db": -56.696343,
+    "floor_low_db": -14.623387,
+    "floor_high_db": -23.07422,
+    "speech": [
+     33,
+     61
+    ],
+    "nuclei": [
+     [
+      57,
+      24.099468,
+      35,
+      59,
+      263.736264
+     ]
+    ],
+    "frications": [],
+    "clipped_fraction": 0.0,
+    "snr_db": 38.722855
+   },
+   "frame_probes": [
+    {
+     "index": 57,
+     "rms_db": -19.555719,
+     "low_db": 24.238122,
+     "high_db": -20.876908,
+     "high_ratio": 3.1e-05,
+     "centroid_hz": 1128.347271,
+     "zcr_hz": 984.375,
+     "peak": 0.192462116
+    },
+    {
+     "index": 89,
+     "rms_db": -54.547222,
+     "low_db": -15.219822,
+     "high_db": -22.089633,
+     "high_ratio": 0.170536,
+     "centroid_hz": 2972.557049,
+     "zcr_hz": 1546.875,
+     "peak": 0.004541938
+    }
+   ],
+   "verdict": {
+    "kind": "missing_final_consonant",
+    "heard_nuclei": 1,
+    "expected_nuclei": 1,
+    "coda_expected": true,
+    "coda_heard": false,
+    "coda_place": null,
+    "coda_ms": 0.0,
+    "epenthesis": false,
+    "snr_db": 38.72,
+    "reasons": []
+   }
+  },
+  {
+   "name": "chut",
+   "spec": "S300",
+   "params": {
+    "seed": 22
+   },
+   "target": {
+    "nuclei": 1,
+    "coda": "S"
+   },
+   "signal": {
+    "count": 43200,
+    "sum": -3.180454588,
+    "sum_squares": 7.132644807,
+    "probe": {
+     "0": 0.000305319,
+     "1000": 0.003497634,
+     "7200": -0.012464906,
+     "21600": 0.000695997,
+     "43199": -0.002476466
+    }
+   },
+   "analysis": {
+    "frames": 178,
+    "floor_rms_db": -56.483099,
+    "floor_low_db": -14.797833,
+    "floor_high_db": -23.146814,
+    "speech": [
+     28,
+     60
+    ],
+    "nuclei": [],
+    "frications": [
+     [
+      28,
+      60,
+      4493.643547
+     ]
+    ],
+    "clipped_fraction": 0.0,
+    "snr_db": 7.066376
+   },
+   "frame_probes": [
+    {
+     "index": 44,
+     "rms_db": -29.602803,
+     "low_db": -11.025266,
+     "high_db": 16.847315,
+     "high_ratio": 0.998371,
+     "centroid_hz": 4703.185216,
+     "zcr_hz": 9140.625,
+     "peak": 0.102130916
+    },
+    {
+     "index": 89,
+     "rms_db": -57.186365,
+     "low_db": -14.103314,
+     "high_db": -22.475957,
+     "high_ratio": 0.126986,
+     "centroid_hz": 3093.92418,
+     "zcr_hz": 3515.625,
+     "peak": 0.004491189
+    }
+   ],
+   "verdict": {
+    "kind": "unsure",
+    "heard_nuclei": 0,
+    "expected_nuclei": 1,
+    "coda_expected": true,
+    "coda_heard": false,
+    "coda_place": null,
+    "coda_ms": 0.0,
+    "epenthesis": false,
+    "snr_db": 7.07,
+    "reasons": [
+     "no_vowel_nucleus"
+    ]
+   }
+  },
+  {
+   "name": "silence",
+   "spec": "_400",
+   "params": {
+    "seed": 23
+   },
+   "target": {
+    "nuclei": 1,
+    "coda": "S"
+   },
+   "signal": {
+    "count": 45600,
+    "sum": 0.874460274,
+    "sum_squares": 0.144199861,
+    "probe": {
+     "0": 0.000434389,
+     "1000": 2.3731e-05,
+     "7200": -0.000649353,
+     "22800": 0.003982004,
+     "45599": 0.001081034
+    }
+   },
+   "analysis": {
+    "frames": 188,
+    "floor_rms_db": -57.17646,
+    "floor_low_db": -14.806634,
+    "floor_high_db": -22.978734,
+    "speech": null,
+    "nuclei": [],
+    "frications": [],
+    "clipped_fraction": 0.0,
+    "snr_db": 0.0
+   },
+   "frame_probes": [
+    {
+     "index": 94,
+     "rms_db": -54.106503,
+     "low_db": -12.216833,
+     "high_db": -22.780327,
+     "high_ratio": 0.08074,
+     "centroid_hz": 2535.132934,
+     "zcr_hz": 2578.125,
+     "peak": 0.005505427
+    }
+   ],
+   "verdict": {
+    "kind": "no_speech",
+    "heard_nuclei": 0,
+    "expected_nuclei": 1,
+    "coda_expected": true,
+    "coda_heard": false,
+    "coda_place": null,
+    "coda_ms": 0.0,
+    "epenthesis": false,
+    "snr_db": 0.0,
+    "reasons": [
+     "no_speech"
+    ]
+   }
+  },
+  {
+   "name": "adulte",
+   "spec": "d50 u230 S180",
+   "params": {
+    "seed": 24,
+    "f0_start": 120.0,
+    "f0_end": 100.0
+   },
+   "target": {
+    "nuclei": 1,
+    "coda": "S"
+   },
+   "signal": {
+    "count": 47040,
+    "sum": -1.772033497,
+    "sum_squares": 57.562736428,
+    "probe": {
+     "0": -0.000838715,
+     "1000": 0.001192582,
+     "7200": 3.4312e-05,
+     "23520": 0.00047864,
+     "47039": 0.000812423
+    }
+   },
+   "analysis": {
+    "frames": 194,
+    "floor_rms_db": -56.826963,
+    "floor_low_db": -14.875718,
+    "floor_high_db": -22.887769,
+    "speech": [
+     32,
+     76
+    ],
+    "nuclei": [
+     [
+      54,
+      26.371155,
+      35,
+      56,
+      111.111111
+     ]
+    ],
+    "frications": [
+     [
+      58,
+      76,
+      4498.761826
+     ]
+    ],
+    "clipped_fraction": 0.0,
+    "snr_db": 41.246874
+   },
+   "frame_probes": [
+    {
+     "index": 54,
+     "rms_db": -18.805845,
+     "low_db": 26.623485,
+     "high_db": -21.702913,
+     "high_ratio": 1.5e-05,
+     "centroid_hz": 1157.95154,
+     "zcr_hz": 843.75,
+     "peak": 0.308578867
+    },
+    {
+     "index": 67,
+     "rms_db": -29.848981,
+     "low_db": -9.544112,
+     "high_db": 17.221765,
+     "high_ratio": 0.997899,
+     "centroid_hz": 4490.784795,
+     "zcr_hz": 8953.125,
+     "peak": 0.088463176
+    },
+    {
+     "index": 97,
+     "rms_db": -54.22633,
+     "low_db": -11.93013,
+     "high_db": -21.856116,
+     "high_ratio": 0.092327,
+     "centroid_hz": 3101.118916,
+     "zcr_hz": 2859.375,
+     "peak": 0.005571745
+    }
+   ],
+   "verdict": {
+    "kind": "unsure",
+    "heard_nuclei": 1,
+    "expected_nuclei": 1,
+    "coda_expected": true,
+    "coda_heard": true,
+    "coda_place": "postalveolar",
+    "coda_ms": 190.0,
+    "epenthesis": false,
+    "snr_db": 41.25,
+    "reasons": [
+     "adult_voice_suspected"
+    ]
+   }
+  },
+  {
+   "name": "ecretage",
+   "spec": "d50 u230 S180",
+   "params": {
+    "seed": 25,
+    "gain_db": 24.0
+   },
+   "target": {
+    "nuclei": 1,
+    "coda": "S"
+   },
+   "signal": {
+    "count": 47040,
+    "sum": 153.999246963,
+    "sum_squares": 4607.402868096,
+    "probe": {
+     "0": 0.003289076,
+     "1000": 0.017069746,
+     "7200": 0.011941365,
+     "23520": 0.037346021,
+     "47039": -0.001895008
+    }
+   },
+   "analysis": {
+    "frames": 194,
+    "floor_rms_db": -32.502974,
+    "floor_low_db": 9.342992,
+    "floor_high_db": 1.003427,
+    "speech": [
+     33,
+     76
+    ],
+    "nuclei": [
+     [
+      54,
+      41.337558,
+      34,
+      57,
+      282.352941
+     ]
+    ],
+    "frications": [
+     [
+      58,
+      76,
+      4544.27048
+     ]
+    ],
+    "clipped_fraction": 0.270772,
+    "snr_db": 31.994566
+   },
+   "frame_probes": [
+    {
+     "index": 54,
+     "rms_db": -1.825432,
+     "low_db": 41.30887,
+     "high_db": 15.700371,
+     "high_ratio": 0.002741,
+     "centroid_hz": 1248.618227,
+     "zcr_hz": 1078.125,
+     "peak": 1.0
+    },
+    {
+     "index": 67,
+     "rms_db": -7.39348,
+     "low_db": 17.080853,
+     "high_db": 39.302116,
+     "high_ratio": 0.99404,
+     "centroid_hz": 4702.874295,
+     "zcr_hz": 9140.625,
+     "peak": 1.0
+    },
+    {
+     "index": 97,
+     "rms_db": -31.355025,
+     "low_db": 11.701814,
+     "high_db": 0.994278,
+     "high_ratio": 0.078312,
+     "centroid_hz": 2353.470653,
+     "zcr_hz": 3187.5,
+     "peak": 0.076409841
+    }
+   ],
+   "verdict": {
+    "kind": "unsure",
+    "heard_nuclei": 1,
+    "expected_nuclei": 1,
+    "coda_expected": true,
+    "coda_heard": true,
+    "coda_place": "postalveolar",
+    "coda_ms": 190.0,
+    "epenthesis": false,
+    "snr_db": 31.99,
+    "reasons": [
+     "clipping"
+    ]
+   }
+  },
+  {
+   "name": "bruit_fort",
+   "spec": "d50 u260",
+   "params": {
+    "seed": 26,
+    "snr_db": 12.0
+   },
+   "target": {
+    "nuclei": 1,
+    "coda": "S"
+   },
+   "signal": {
+    "count": 43440,
+    "sum": 8.011485247,
+    "sum_squares": 87.302780109,
+    "probe": {
+     "0": 0.009816473,
+     "1000": -0.018545553,
+     "7200": 0.002676781,
+     "21720": 0.021249103,
+     "43439": 0.029138708
+    }
+   },
+   "analysis": {
+    "frames": 179,
+    "floor_rms_db": -33.838184,
+    "floor_low_db": 8.296556,
+    "floor_high_db": -0.043086,
+    "speech": [
+     35,
+     59
+    ],
+    "nuclei": [
+     [
+      56,
+      24.312387,
+      35,
+      59,
+      266.666667
+     ]
+    ],
+    "frications": [],
+    "clipped_fraction": 0.0,
+    "snr_db": 16.01583
+   },
+   "frame_probes": [
+    {
+     "index": 56,
+     "rms_db": -19.643824,
+     "low_db": 24.094356,
+     "high_db": 0.568919,
+     "high_ratio": 0.004421,
+     "centroid_hz": 1568.975459,
+     "zcr_hz": 1125.0,
+     "peak": 0.245596827
+    },
+    {
+     "index": 89,
+     "rms_db": -33.208353,
+     "low_db": 11.393337,
+     "high_db": 0.630569,
+     "high_ratio": 0.077399,
+     "centroid_hz": 3352.860846,
+     "zcr_hz": 3046.875,
+     "peak": 0.057360908
+    }
+   ],
+   "verdict": {
+    "kind": "unsure",
+    "heard_nuclei": 1,
+    "expected_nuclei": 1,
+    "coda_expected": true,
+    "coda_heard": false,
+    "coda_place": null,
+    "coda_ms": 0.0,
+    "epenthesis": false,
+    "snr_db": 16.02,
+    "reasons": [
+     "low_snr"
+    ]
+   }
+  },
+  {
+   "name": "bruit_blanc",
+   "spec": "m70 i140 n70 u190 S180",
+   "params": {
+    "seed": 27,
+    "noise": "white"
+   },
+   "target": {
+    "nuclei": 2,
+    "coda": "S"
+   },
+   "signal": {
+    "count": 51600,
+    "sum": -0.503525803,
+    "sum_squares": 82.132734618,
+    "probe": {
+     "0": 0.000249166,
+     "1000": 0.002421014,
+     "7200": -0.016553473,
+     "25800": -0.002641002,
+     "51599": 0.002576404
+    }
+   },
+   "analysis": {
+    "frames": 213,
+    "floor_rms_db": -55.192227,
+    "floor_low_db": -16.351889,
+    "floor_high_db": -10.267466,
+    "speech": [
+     28,
+     95
+    ],
+    "nuclei": [
+     [
+      39,
+      22.144697,
+      34,
+      50,
+      311.688312
+     ],
+     [
+      72,
+      23.10529,
+      56,
+      75,
+      279.069767
+     ]
+    ],
+    "frications": [
+     [
+      77,
+      94,
+      4544.839942
+     ]
+    ],
+    "clipped_fraction": 0.0,
+    "snr_db": 39.457179
+   },
+   "frame_probes": [
+    {
+     "index": 39,
+     "rms_db": -19.814979,
+     "low_db": 22.354593,
+     "high_db": 4.697236,
+     "high_ratio": 0.016861,
+     "centroid_hz": 3216.211513,
+     "zcr_hz": 609.375,
+     "peak": 0.171364037
+    },
+    {
+     "index": 72,
+     "rms_db": -19.955274,
+     "low_db": 23.059717,
+     "high_db": -9.710614,
+     "high_ratio": 0.000528,
+     "centroid_hz": 1144.039512,
+     "zcr_hz": 1031.25,
+     "peak": 0.184808648
+    },
+    {
+     "index": 86,
+     "rms_db": -30.136257,
+     "low_db": -9.313765,
+     "high_db": 17.095291,
+     "high_ratio": 0.997719,
+     "centroid_hz": 4583.876266,
+     "zcr_hz": 9328.125,
+     "peak": 0.087080282
+    },
+    {
+     "index": 106,
+     "rms_db": -55.038097,
+     "low_db": -17.188277,
+     "high_db": -9.215698,
+     "high_ratio": 0.862446,
+     "centroid_hz": 6372.183752,
+     "zcr_hz": 12375.0,
+     "peak": 0.003081102
+    }
+   ],
+   "verdict": {
+    "kind": "complete",
+    "heard_nuclei": 2,
+    "expected_nuclei": 2,
+    "coda_expected": true,
+    "coda_heard": true,
+    "coda_place": "postalveolar",
+    "coda_ms": 180.0,
+    "epenthesis": false,
+    "snr_db": 39.46,
+    "reasons": []
+   }
+  }
+ ]
+}
