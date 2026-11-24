@@ -664,13 +664,46 @@ fiche par concurrent, chaque affirmation marquée **VÉRIFIÉ / DÉCLARÉ / INCO
     n'était pas dans son rapport : trouvée par le relevé réseau puis dans le binaire.
     Exécution, mesures et doc : session principale (Opus).
 
+### 🍽️ Karib Truck — outils du food truck (hors de ce dépôt, sauf l'app HACCP)
+Food truck caribéen (`karibtruck.fr`) : deux apps natives, indépendantes l'une de l'autre.
+
+- 🥟 **App iPhone « Production »** — dépôt **privé `klodynlov/gestion-production`** (c'est
+  l'app « prix des fournitures au meilleur coût »). Pilotage de production d'un traiteur
+  (samoussas poulet, samoussas bœuf curry, accras de morue), **une seule utilisatrice**, SwiftUI +
+  SwiftData + **iCloud privé**, Foundation Models **sur l'iPhone**. Bundle
+  `fr.karibtruck.production`, iOS 26, iPhone seul. Mémoire détaillée : **`CLAUDE.md` de ce dépôt**
+  (fait foi), plan `docs/PLAN.md`.
+  - ✅ Phases 1 à 6 dans `main` (01/10/2026) : ventes, pilotage (recommandation par période,
+    marge réglable), **achats et prix** (prix habituel = médiane sur 6 mois, **fournisseur le moins
+    cher**, cycle des promos et prochaine promo attendue), dictée et analyse des notes, synchro
+    iCloud, export CSV, **coût de revient** d'après la fiche de l'utilisatrice, **promos vues** en
+    magasin (verdict « bonne affaire », stock conseillé jusqu'à la prochaine promo, promos dans les
+    courses). 142 + 47 tests, 0 avertissement, CI GitHub Actions (runner macOS).
+  - 🚧 **Phase 7 validée le 24/11/2026** (« go phase 7 », défauts Q23-Q29, PLAN §12), **rien de
+    codé** — branche `phase-7`, PR brouillon **gestion-production#2**. Née de l'analyse d'un
+    courriel de **Ratatool** (scan IA des factures + allergènes) : on garde le **scan des tickets
+    et factures** (sur l'iPhone, contrôle des totaux, mémoire des libellés par magasin, photo
+    gardée) et les **14 allergènes** (lexique à règles testé, pas de LLM ; obligation INCO +
+    décret 2015-447 pour la vente à emporter ; **affiche du stand refusée** tant qu'un produit est
+    incomplet) + coefficient réel et marge brute. Écarté : stock, allergènes devinés d'après le
+    nom, IA dans le cloud. Prix en **TTC** (régime TVA à confirmer par le comptable).
+  - ▶️ **REPRISE sur le Mac** (pas de Swift dans le cloud : `download.swift.org` bloqué) : prompt
+    prêt dans `gestion-production/docs/REPRISE-PHASE-7.md`. Attendu de l'utilisateur : photos de
+    3-4 vrais tickets/factures + étiquettes (Kub Or, Kub poulet, curry madras, 4 épices, feuilles).
+- 🧾 **App iPad « KaribTruck » (HACCP)** — dans **ce** dépôt, branche
+  `claude/foodtruck-ipad-app-rnq12x` (**jamais fusionnée dans `main`**, dernier commit 28/09/2026,
+  build 40 préparée pour TestFlight) : relevés de température, checklists, traçabilité réception
+  (fournisseur, lot, DLC, photo), traçabilité viande par fournée, huile, incidents, planning,
+  dossier de contrôle PDF, journal chaîné SHA-256. **Pas de caisse** (à acheter, logiciel certifié ;
+  bloquant : régime TVA). Aucun prix ni comparaison : ce n'est **pas** l'app des achats.
+
 ### Autres projets (mentionnés au README, hors de ce dépôt)
 Klody Code AI (agent de code local, projet phare) · klody-ui · LibraryBrain (RAG local) ·
 VocalBrain (voix) · Dream × World (mondes IA persistants).
 
 ---
 
-_Dernière mise à jour mémoire : **Suite Éveil mergée dans `main`** (PR #17, 23/11/2026). Avant : **plan localcode terminé et mergé** (23/11) — 6 phases dans `main` (PR #22→#27, `f59fc2f`), pitch « agent de code local gouverné » aussi dans le README de Klody (klody-code-ai#336, `deea2ca`) ; post LinkedIn n° 9 en brouillon. Ouvert : jalons C et D de Klody, formules trop fortes à trancher, MCP en TUI. Toujours ouvert ailleurs : AIoT/EdgeSense (PR #4) ; Teensy. Avant : **fiche localcode** mergée (PR #21) dans la veille concurrence (agent de code local open source, concurrent direct de Klody). Avant : **Suite Éveil — conseils d'une orthophoniste** (06/10/2026) : petit train
+_Dernière mise à jour mémoire : **Karib Truck retrouvé et documenté** (24/11/2026) — l'app iPhone « Production » (`klodynlov/gestion-production`, phases 1-6 dans `main`) reçoit une **phase 7 validée** (scan des tickets, allergènes, marge brute, d'après Ratatool), à coder sur le Mac (`docs/REPRISE-PHASE-7.md`, PR gestion-production#2) ; l'app iPad HACCP reste sur sa branche non fusionnée. Avant : **Suite Éveil mergée dans `main`** (PR #17, 23/11/2026). Avant : **plan localcode terminé et mergé** (23/11) — 6 phases dans `main` (PR #22→#27, `f59fc2f`), pitch « agent de code local gouverné » aussi dans le README de Klody (klody-code-ai#336, `deea2ca`) ; post LinkedIn n° 9 en brouillon. Ouvert : jalons C et D de Klody, formules trop fortes à trancher, MCP en TUI. Toujours ouvert ailleurs : AIoT/EdgeSense (PR #4) ; Teensy. Avant : **fiche localcode** mergée (PR #21) dans la veille concurrence (agent de code local open source, concurrent direct de Klody). Avant : **Suite Éveil — conseils d'une orthophoniste** (06/10/2026) : petit train
 par niveaux « quand il réussit » (une syllabe d'abord ; Python 97 + Swift 192 tests verts, app compilée, ordre
 vérifié au simulateur : douche → bouche → niche), livres des sons triés par nombre de syllabes, relevé des gestes
 de Borel-Maisonny (`docs/EVEIL-BOREL-MAISONNY.md`) et planche des gestes et bouches de Lou à montrer à
